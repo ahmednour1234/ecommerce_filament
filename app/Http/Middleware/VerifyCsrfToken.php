@@ -12,6 +12,6 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        'admin/login',
+        // Filament handles CSRF properly, no need to exclude admin/login
     ];
 }

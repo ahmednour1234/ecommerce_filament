@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Services\MainCore\ThemeService;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -22,18 +23,40 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+        /** @var ThemeService $themeService */
+        $themeService = app(ThemeService::class);
+
+        $theme = $themeService->defaultTheme();
+
+        // لو مفيش theme في الداتابيز، استخدم لون افتراضي
+        $primaryHex = $theme?->primary_color ?? '#F59E0B'; // نفس لون Amber تقريبًا
+
         return $panel
+            ->default()
             ->id('admin')
             ->path('admin')
+            ->login()
+            ->brandName(setting('app.name', 'MainCore Dashboard'))
+            // لو عندك logo مخزّن في Theme تقدر تستعمله هنا (اختياري)
+            ->brandLogo(fn () => $theme?->logo_light ? asset($theme->logo_light) : null)
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::hex($primaryHex),
             ])
-            ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
-            ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
+            ->discoverResources(
+                in: app_path('Filament/Resources'),
+                for: 'App\\Filament\\Resources',
+            )
+            ->discoverPages(
+                in: app_path('Filament/Pages'),
+                for: 'App\\Filament\\Pages',
+            )
             ->pages([
                 Pages\Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
+            ->discoverWidgets(
+                in: app_path('Filament/Widgets'),
+                for: 'App\\Filament\\Widgets',
+            )
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
