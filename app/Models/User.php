@@ -4,13 +4,16 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
-class User extends Authenticatable
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Permission\Traits\HasRoles;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasName;
+use Filament\Panel;
+class User extends Authenticatable implements FilamentUser, HasName
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable,HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -22,6 +25,8 @@ class User extends Authenticatable
         'email',
         'password',
     ];
+      protected $guarded = [];
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -44,5 +49,21 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    public function preferences()
+{
+    return $this->hasOne(\App\Models\MainCore\UserPreference::class);
+}
+
+    // دخول لوحة Filament
+    public function canAccessPanel(Panel $panel): bool
+    {
+        // اسمح لأي يوزر عنده role اسمه 'super_admin'
+        return $this->hasRole('super_admin');
+    }
+
+    public function getFilamentName(): string
+    {
+        return $this->name ?? $this->email;
     }
 }
