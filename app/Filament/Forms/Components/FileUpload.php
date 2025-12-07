@@ -38,8 +38,8 @@ class FileUpload extends BaseFileUpload
             ->openable()
             ->downloadable()
             ->previewable()
-            ->removeUploadedFileUsing(function ($file) {
-                if ($file) {
+            ->deleteUploadedFileUsing(function ($file) {
+                if ($file && is_string($file)) {
                     Storage::disk('public')->delete($file);
                 }
             });
