@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\Reports;
 
 use App\Services\Accounting\AccountingService;
+use App\Models\Accounting\Account;
 use App\Models\MainCore\Branch;
 use App\Models\MainCore\CostCenter;
 use Filament\Forms;
@@ -12,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
+use Illuminate\Support\Facades\DB;
 
 class TrialBalancePage extends Page implements HasTable
 {
@@ -80,37 +82,58 @@ class TrialBalancePage extends Page implements HasTable
             $costCenterId
         );
 
-        // Build the query from trial balance data
+        // Build the union query from trial balance data
         $subQueries = [];
         
         foreach ($trialBalance as $item) {
-            $subQueries[] = \DB::table('accounts')
-                ->where('id', $item['account']->id)
+            $account = $item['account'];
+            $debits = (float) $item['debits'];
+            $credits = (float) $item['credits'];
+            $balance = (float) $item['balance'];
+            
+            // Create a subquery with literal values using a simple table reference
+            $subQueries[] = DB::table('accounts')
+                ->whereRaw('1 = 0') // Never match any rows, we just need the structure
                 ->selectRaw("
-                    {$item['account']->id} as account_id,
-                    '{$item['account']->code}' as code,
-                    '{$item['account']->name}' as name,
-                    '{$item['account']->type}' as type,
-                    {$item['debits']} as debits,
-                    {$item['credits']} as credits,
-                    {$item['balance']} as balance
-                ");
+                    ? as account_id,
+                    ? as code,
+                    ? as name,
+                    ? as type,
+                    ? as debits,
+                    ? as credits,
+                    ? as balance
+                ", [
+                    $account->id,
+                    $account->code,
+                    $account->name,
+                    $account->type,
+                    $debits,
+                    $credits,
+                    $balance,
+                ]);
         }
 
-        // Build union query
-        $query = null;
+        // Build union query using Query Builder
+        $unionQuery = null;
         foreach ($subQueries as $subQuery) {
-            if ($query === null) {
-                $query = $subQuery;
+            if ($unionQuery === null) {
+                $unionQuery = $subQuery;
             } else {
-                $query->union($subQuery);
+                $unionQuery->union($subQuery);
             }
         }
 
         // If no data, create empty query
-        if ($query === null) {
-            $query = \DB::table('accounts')->whereRaw('1 = 0');
+        if ($unionQuery === null) {
+            $unionQuery = DB::table('accounts')->whereRaw('1 = 0')
+                ->selectRaw('NULL as account_id, NULL as code, NULL as name, NULL as type, 0 as debits, 0 as credits, 0 as balance');
         }
+
+        // Use Account model as base and wrap the union query in a subquery
+        // This creates an Eloquent Builder that Filament can accept
+        $query = Account::query()
+            ->fromSub($unionQuery, 'trial_balance_data')
+            ->select('trial_balance_data.*');
 
         return $table
             ->query($query)

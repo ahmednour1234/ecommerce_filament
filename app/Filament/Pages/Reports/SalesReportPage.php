@@ -4,6 +4,7 @@ namespace App\Filament\Pages\Reports;
 
 use App\Models\Sales\Invoice;
 use App\Models\Sales\Order;
+use App\Models\Sales\Customer;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Pages\Page;
@@ -192,7 +193,8 @@ class SalesReportPage extends Page implements HasTable
 
     protected function revenueTable(Table $table, $dateFrom, $dateTo): Table
     {
-        $query = DB::table('invoices')
+        // Build Query Builder for aggregated revenue data
+        $unionQuery = DB::table('invoices')
             ->select(
                 DB::raw('DATE(invoice_date) as date'),
                 DB::raw('COUNT(*) as invoice_count'),
@@ -202,6 +204,11 @@ class SalesReportPage extends Page implements HasTable
             ->whereBetween('invoice_date', [$dateFrom, $dateTo])
             ->groupBy('date')
             ->orderBy('date', 'desc');
+
+        // Wrap Query Builder in Eloquent Builder using Invoice model
+        $query = Invoice::query()
+            ->fromSub($unionQuery, 'revenue_data')
+            ->select('revenue_data.*');
 
         return $table
             ->query($query)
@@ -231,7 +238,8 @@ class SalesReportPage extends Page implements HasTable
 
     protected function customersTable(Table $table, $dateFrom, $dateTo): Table
     {
-        $query = DB::table('customers')
+        // Build Query Builder for aggregated customer data
+        $unionQuery = DB::table('customers')
             ->leftJoin('orders', function ($join) use ($dateFrom, $dateTo) {
                 $join->on('customers.id', '=', 'orders.customer_id')
                     ->whereBetween('orders.order_date', [$dateFrom, $dateTo]);
@@ -251,6 +259,11 @@ class SalesReportPage extends Page implements HasTable
             )
             ->groupBy('customers.id', 'customers.name', 'customers.code')
             ->havingRaw('order_count > 0 OR invoice_count > 0');
+
+        // Wrap Query Builder in Eloquent Builder using Customer model
+        $query = Customer::query()
+            ->fromSub($unionQuery, 'customer_report_data')
+            ->select('customer_report_data.*');
 
         return $table
             ->query($query)
