@@ -3,8 +3,11 @@
 namespace App\Models\Catalog;
 
 use App\Models\MainCore\Currency;
+use App\Models\MainCore\Warehouse;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 class Product extends Model
@@ -128,6 +131,24 @@ class Product extends Model
     public function scopeServices($query)
     {
         return $query->where('type', 'service');
+    }
+
+    /**
+     * Get all warehouses for this product
+     */
+    public function warehouses(): BelongsToMany
+    {
+        return $this->belongsToMany(Warehouse::class, 'product_warehouse')
+            ->withPivot('quantity', 'reserved_quantity', 'min_stock_level', 'max_stock_level')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get all batches for this product
+     */
+    public function batches(): HasMany
+    {
+        return $this->hasMany(Batch::class);
     }
 }
 

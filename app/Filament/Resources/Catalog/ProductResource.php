@@ -8,6 +8,7 @@ use App\Models\Catalog\Product;
 use App\Models\Catalog\Category;
 use App\Models\Catalog\Brand;
 use App\Models\MainCore\Currency;
+use App\Models\MainCore\Warehouse;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -117,6 +118,76 @@ class ProductResource extends Resource
                             ->required(),
                     ])
                     ->columns(2),
+
+                Forms\Components\Section::make('Warehouses')
+                    ->schema([
+                        Forms\Components\Repeater::make('warehouses')
+                            ->relationship('warehouses')
+                            ->schema([
+                                Forms\Components\Select::make('id')
+                                    ->label('Warehouse')
+                                    ->options(Warehouse::active()->pluck('name', 'id'))
+                                    ->required()
+                                    ->searchable()
+                                    ->preload(),
+                                Forms\Components\TextInput::make('pivot.quantity')
+                                    ->label('Quantity')
+                                    ->numeric()
+                                    ->default(0),
+                                Forms\Components\TextInput::make('pivot.min_stock_level')
+                                    ->label('Min Stock Level')
+                                    ->numeric()
+                                    ->default(0),
+                                Forms\Components\TextInput::make('pivot.max_stock_level')
+                                    ->label('Max Stock Level')
+                                    ->numeric()
+                                    ->default(0),
+                            ])
+                            ->columns(2)
+                            ->itemLabel(fn (array $state): ?string => Warehouse::find($state['id'] ?? null)?->name ?? null)
+                            ->collapsible(),
+                    ])
+                    ->collapsible()
+                    ->collapsed()
+                    ->visible(fn ($get) => $get('type') === 'product'),
+
+                Forms\Components\Section::make('Batches')
+                    ->schema([
+                        Forms\Components\Repeater::make('batches')
+                            ->relationship('batches')
+                            ->schema([
+                                Forms\Components\TextInput::make('batch_number')
+                                    ->label('Batch Number')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\Select::make('warehouse_id')
+                                    ->label('Warehouse')
+                                    ->relationship('warehouse', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(),
+                                Forms\Components\DatePicker::make('manufacturing_date')
+                                    ->label('Manufacturing Date'),
+                                Forms\Components\DatePicker::make('expiry_date')
+                                    ->label('Expiry Date'),
+                                Forms\Components\TextInput::make('quantity')
+                                    ->label('Quantity')
+                                    ->numeric()
+                                    ->required()
+                                    ->default(0),
+                                Forms\Components\TextInput::make('cost')
+                                    ->label('Cost')
+                                    ->numeric()
+                                    ->prefix('$')
+                                    ->default(0),
+                            ])
+                            ->columns(2)
+                            ->itemLabel(fn (array $state): ?string => $state['batch_number'] ?? null)
+                            ->collapsible(),
+                    ])
+                    ->collapsible()
+                    ->collapsed()
+                    ->visible(fn ($get) => $get('type') === 'product'),
 
                 Forms\Components\Section::make('Additional Information')
                     ->schema([

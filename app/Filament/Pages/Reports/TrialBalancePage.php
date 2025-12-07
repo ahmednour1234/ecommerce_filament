@@ -80,27 +80,40 @@ class TrialBalancePage extends Page implements HasTable
             $costCenterId
         );
 
+        // Build the query from trial balance data
+        $subQueries = [];
+        
+        foreach ($trialBalance as $item) {
+            $subQueries[] = \DB::table('accounts')
+                ->where('id', $item['account']->id)
+                ->selectRaw("
+                    {$item['account']->id} as account_id,
+                    '{$item['account']->code}' as code,
+                    '{$item['account']->name}' as name,
+                    '{$item['account']->type}' as type,
+                    {$item['debits']} as debits,
+                    {$item['credits']} as credits,
+                    {$item['balance']} as balance
+                ");
+        }
+
+        // Build union query
+        $query = null;
+        foreach ($subQueries as $subQuery) {
+            if ($query === null) {
+                $query = $subQuery;
+            } else {
+                $query->union($subQuery);
+            }
+        }
+
+        // If no data, create empty query
+        if ($query === null) {
+            $query = \DB::table('accounts')->whereRaw('1 = 0');
+        }
+
         return $table
-            ->query(
-                \Illuminate\Database\Eloquent\Builder::make()
-                    ->fromSub(function ($query) use ($trialBalance) {
-                        foreach ($trialBalance as $item) {
-                            $query->union(
-                                \DB::table('accounts')
-                                    ->where('id', $item['account']->id)
-                                    ->selectRaw("
-                                        {$item['account']->id} as account_id,
-                                        '{$item['account']->code}' as code,
-                                        '{$item['account']->name}' as name,
-                                        '{$item['account']->type}' as type,
-                                        {$item['debits']} as debits,
-                                        {$item['credits']} as credits,
-                                        {$item['balance']} as balance
-                                    ")
-                            );
-                        }
-                    }, 'trial_balance')
-            )
+            ->query($query)
             ->columns([
                 Tables\Columns\TextColumn::make('code')
                     ->label('Account Code')

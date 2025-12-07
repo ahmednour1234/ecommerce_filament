@@ -107,5 +107,14 @@ class Invoice extends Model
     {
         return !is_null($this->paid_at);
     }
+
+    /**
+     * Get installments for this invoice
+     */
+    public function installments(): HasMany
+    {
+        return $this->hasMany(Installment::class, 'installmentable_id')
+            ->where('installmentable_type', self::class);
+    }
 }
 

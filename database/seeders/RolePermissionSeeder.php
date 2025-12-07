@@ -36,6 +36,7 @@ class RolePermissionSeeder extends Seeder
             'translations',
             'branches',
             'cost_centers',
+            'warehouses',
         ];
 
         // Catalog Resources
@@ -43,6 +44,7 @@ class RolePermissionSeeder extends Seeder
             'brands',
             'categories',
             'products',
+            'batches',
         ];
 
         // Sales Resources
@@ -52,6 +54,8 @@ class RolePermissionSeeder extends Seeder
             'order_items',
             'invoices',
             'invoice_items',
+            'installments',
+            'installment_payments',
         ];
 
         // Accounting Resources
@@ -61,6 +65,7 @@ class RolePermissionSeeder extends Seeder
             'journal_entries',
             'journal_entry_lines',
             'vouchers',
+            'assets',
         ];
 
         // Combine all resources

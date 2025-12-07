@@ -86,5 +86,14 @@ class Order extends Model
     {
         return $this->hasOne(Invoice::class);
     }
+
+    /**
+     * Get installments for this order
+     */
+    public function installments(): HasMany
+    {
+        return $this->hasMany(Installment::class, 'installmentable_id')
+            ->where('installmentable_type', self::class);
+    }
 }
 
