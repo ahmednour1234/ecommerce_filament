@@ -11,11 +11,15 @@ class MainCoreSeeder extends Seeder
         $this->call([
             LanguageSeeder::class,
             CurrencySeeder::class,
+            CurrencyRateSeeder::class, // Must be after CurrencySeeder
             ThemeSeeder::class,
             SettingSeeder::class,
             PaymentSeeder::class,
             NotificationSeeder::class,
             ShippingSeeder::class,
+            BranchSeeder::class,
+            CostCenterSeeder::class,
+            UserPreferenceSeeder::class, // Must be after User, Currency, Language, Theme seeders
             DashboardTranslationSeeder::class, // Must be after LanguageSeeder
         ]);
     }

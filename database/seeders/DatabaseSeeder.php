@@ -15,11 +15,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-   $this->call([
-        AdminUserSeeder::class,
+        $this->call([
+            AdminUserSeeder::class,
             RolePermissionSeeder::class, // Seed permissions for all resources
-        \Database\Seeders\MainCore\MainCoreSeeder::class,
-    ]);
+            \Database\Seeders\MainCore\MainCoreSeeder::class,
+            \Database\Seeders\Catalog\CatalogSeeder::class, // Must be after MainCore (needs Currency)
+            \Database\Seeders\Accounting\AccountingSeeder::class, // Must be after MainCore (needs Branch, CostCenter)
+            \Database\Seeders\Sales\SalesSeeder::class, // Must be after Catalog and Accounting
+        ]);
+        
+        // Run payment transactions and shipments after sales data exists
+        $this->call([
+            \Database\Seeders\MainCore\PaymentTransactionSeeder::class,
+            \Database\Seeders\MainCore\ShipmentSeeder::class,
+        ]);
+        
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
