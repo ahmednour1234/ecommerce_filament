@@ -12,10 +12,10 @@ trait TranslatablePage
     public static function getNavigationLabel(): string
     {
         $translationService = app(TranslationService::class);
-        $defaultLabel = static::$navigationLabel ?? static::getTitle();
+        $defaultLabel = static::$navigationLabel ?? static::$title ?? 'Page';
         
         // Try to get translation - use page title or navigation label
-        $pageName = strtolower(str_replace([' ', '-'], '_', static::getTitle()));
+        $pageName = strtolower(str_replace([' ', '-'], '_', $defaultLabel));
         $translationKey = 'navigation.' . $pageName;
         $translated = $translationService->get($translationKey, null, 'dashboard', $defaultLabel);
         
