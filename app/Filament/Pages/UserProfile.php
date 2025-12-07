@@ -17,7 +17,7 @@ class UserProfile extends Page implements HasForms
     use TranslatablePage;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-circle';
-    protected static ?string $navigationGroup = 'MainCore';
+    protected static ?string $navigationGroup = null; // Not in sidebar
     protected static ?int $navigationSort = 1;
     protected static ?string $title = 'My Profile';
     protected static ?string $navigationLabel = 'My Profile';
@@ -172,7 +172,7 @@ class UserProfile extends Page implements HasForms
 
     public static function shouldRegisterNavigation(): bool
     {
-        return true; // Always visible to authenticated users
+        return false; // Not in sidebar, will be in navbar user menu
     }
 
 }

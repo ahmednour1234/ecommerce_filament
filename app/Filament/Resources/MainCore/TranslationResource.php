@@ -4,6 +4,7 @@ namespace App\Filament\Resources\MainCore;
 
 use App\Filament\Resources\MainCore\TranslationResource\Pages;
 use App\Filament\Resources\MainCore\TranslationResource\RelationManagers;
+use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\MainCore\Translation;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TranslationResource extends Resource
 {
+    use TranslatableNavigation;
     protected static ?string $model = Translation::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-language';

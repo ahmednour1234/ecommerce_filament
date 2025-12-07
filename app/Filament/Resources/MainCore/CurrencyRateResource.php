@@ -4,6 +4,7 @@ namespace App\Filament\Resources\MainCore;
 
 use App\Filament\Resources\MainCore\CurrencyRateResource\Pages;
 use App\Filament\Resources\MainCore\CurrencyRateResource\RelationManagers;
+use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\MainCore\CurrencyRate;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CurrencyRateResource extends Resource
 {
+    use TranslatableNavigation;
     protected static ?string $model = CurrencyRate::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-arrow-path-rounded-square';

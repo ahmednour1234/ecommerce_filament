@@ -4,6 +4,7 @@ namespace App\Filament\Resources\MainCore;
 
 use App\Filament\Resources\MainCore\NotificationChannelResource\Pages;
 use App\Filament\Resources\MainCore\NotificationChannelResource\RelationManagers;
+use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\MainCore\NotificationChannel;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class NotificationChannelResource extends Resource
 {
+    use TranslatableNavigation;
     protected static ?string $model = NotificationChannel::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-bell';

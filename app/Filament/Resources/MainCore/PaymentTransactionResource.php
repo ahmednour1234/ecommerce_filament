@@ -4,6 +4,7 @@ namespace App\Filament\Resources\MainCore;
 
 use App\Filament\Resources\MainCore\PaymentTransactionResource\Pages;
 use App\Filament\Resources\MainCore\PaymentTransactionResource\RelationManagers;
+use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\MainCore\PaymentTransaction;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PaymentTransactionResource extends Resource
 {
+    use TranslatableNavigation;
     protected static ?string $model = PaymentTransaction::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';

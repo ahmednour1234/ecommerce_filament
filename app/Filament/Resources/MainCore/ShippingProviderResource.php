@@ -4,6 +4,7 @@ namespace App\Filament\Resources\MainCore;
 
 use App\Filament\Resources\MainCore\ShippingProviderResource\Pages;
 use App\Filament\Resources\MainCore\ShippingProviderResource\RelationManagers;
+use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\MainCore\ShippingProvider;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ShippingProviderResource extends Resource
 {
+    use TranslatableNavigation;
     protected static ?string $model = ShippingProvider::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-truck';

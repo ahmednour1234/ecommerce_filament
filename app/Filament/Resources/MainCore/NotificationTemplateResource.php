@@ -4,6 +4,7 @@ namespace App\Filament\Resources\MainCore;
 
 use App\Filament\Resources\MainCore\NotificationTemplateResource\Pages;
 use App\Filament\Resources\MainCore\NotificationTemplateResource\RelationManagers;
+use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\MainCore\NotificationTemplate;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class NotificationTemplateResource extends Resource
 {
+    use TranslatableNavigation;
     protected static ?string $model = NotificationTemplate::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
