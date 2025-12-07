@@ -12,9 +12,18 @@ class NotificationService
     /**
      * Add a notification to session
      */
-    public static function add(string $title, string $body = '', string $type = 'success'): void
+    public static function add(string $title, string $body = '', string $type = 'success', bool $translate = true): void
     {
         $notifications = Session::get(self::SESSION_KEY, []);
+        
+        // Translate if requested
+        if ($translate) {
+            $translationService = app(\App\Services\MainCore\TranslationService::class);
+            $title = $translationService->get($title, null, 'dashboard', $title);
+            if ($body) {
+                $body = $translationService->get($body, null, 'dashboard', $body);
+            }
+        }
         
         $notifications[] = [
             'id' => uniqid('notif_', true),

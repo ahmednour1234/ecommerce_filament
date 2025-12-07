@@ -9,10 +9,12 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
 use Filament\Notifications\Notification;
 use Filament\Actions\Action;
+use App\Filament\Pages\TranslatablePage;
 
 class UserProfile extends Page implements HasForms
 {
     use InteractsWithForms;
+    use TranslatablePage;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-circle';
     protected static ?string $navigationGroup = 'MainCore';
@@ -156,13 +158,14 @@ class UserProfile extends Page implements HasForms
 
         // Add session notification
         \App\Services\NotificationService::add(
-            'Preferences saved successfully',
-            'Your personal preferences have been updated.',
+            'messages.updated',
+            'messages.updated',
             'success'
         );
 
+        $translationService = app(\App\Services\MainCore\TranslationService::class);
         Notification::make()
-            ->title('Preferences saved successfully')
+            ->title($translationService->get('messages.updated', null, 'dashboard', 'Preferences saved successfully'))
             ->success()
             ->send();
     }

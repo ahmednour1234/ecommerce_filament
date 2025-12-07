@@ -4,6 +4,7 @@ namespace App\Filament\Resources\MainCore;
 
 use App\Filament\Resources\MainCore\SettingResource\Pages;
 use App\Filament\Resources\MainCore\SettingResource\RelationManagers;
+use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\MainCore\Setting;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class SettingResource extends Resource
 {
+    use TranslatableNavigation;
     protected static ?string $model = Setting::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-cog-8-tooth';
@@ -65,8 +67,8 @@ class SettingResource extends Resource
             Forms\Components\TextInput::make('value')
                 ->label('Value')
                 ->required()
-                ->visible(fn (Forms\Get $get) => 
-                    $get('key') !== 'app.languages' && 
+                ->visible(fn (Forms\Get $get) =>
+                    $get('key') !== 'app.languages' &&
                     in_array($get('type'), ['string', 'int'])
                 )
                 ->maxLength(255),

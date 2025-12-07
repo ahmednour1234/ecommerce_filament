@@ -12,10 +12,12 @@ use Filament\Forms\Form;
 use Filament\Pages\Page;
 use Filament\Notifications\Notification;
 use Filament\Actions\Action;
+use App\Filament\Pages\TranslatablePage;
 
 class MainSettings extends Page implements Forms\Contracts\HasForms
 {
     use Forms\Concerns\InteractsWithForms;
+    use TranslatablePage;
 
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
     protected static ?string $navigationGroup = 'MainCore';
@@ -151,13 +153,14 @@ class MainSettings extends Page implements Forms\Contracts\HasForms
 
         // Add session notification
         \App\Services\NotificationService::add(
-            'Settings saved successfully',
-            'Your system settings have been updated.',
+            'messages.updated',
+            'messages.updated',
             'success'
         );
 
+        $translationService = app(\App\Services\MainCore\TranslationService::class);
         Notification::make()
-            ->title('Settings saved successfully')
+            ->title($translationService->get('messages.updated', null, 'dashboard', 'Settings saved successfully'))
             ->success()
             ->send();
     }
