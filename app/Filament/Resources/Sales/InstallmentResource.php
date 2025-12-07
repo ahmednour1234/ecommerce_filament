@@ -31,7 +31,6 @@ class InstallmentResource extends Resource
                             ->label('Installment Number')
                             ->required()
                             ->maxLength(255)
-                            ->unique(ignoreRecord: true)
                             ->default(fn () => 'INST-' . strtoupper(uniqid())),
 
                         Forms\Components\Select::make('installmentable_type')
@@ -61,73 +60,52 @@ class InstallmentResource extends Resource
                             })
                             ->preload(),
 
-                        Forms\Components\DatePicker::make('start_date')
-                            ->label('Start Date')
-                            ->required()
-                            ->default(now()),
-
-                        Forms\Components\Select::make('frequency')
-                            ->label('Payment Frequency')
-                            ->options([
-                                'daily' => 'Daily',
-                                'weekly' => 'Weekly',
-                                'biweekly' => 'Biweekly',
-                                'monthly' => 'Monthly',
-                                'quarterly' => 'Quarterly',
-                                'yearly' => 'Yearly',
-                            ])
-                            ->required()
-                            ->default('monthly'),
-
-                        Forms\Components\Select::make('status')
-                            ->label('Status')
-                            ->options([
-                                'active' => 'Active',
-                                'completed' => 'Completed',
-                                'cancelled' => 'Cancelled',
-                                'overdue' => 'Overdue',
-                            ])
-                            ->required()
-                            ->default('active'),
-                    ])
-                    ->columns(2),
-
-                Forms\Components\Section::make('Payment Details')
-                    ->schema([
-                        Forms\Components\TextInput::make('total_amount')
-                            ->label('Total Amount')
+                        Forms\Components\TextInput::make('amount')
+                            ->label('Amount')
                             ->numeric()
                             ->required()
                             ->default(0)
                             ->prefix('$'),
 
-                        Forms\Components\IntegerInput::make('installment_count')
-                            ->label('Number of Installments')
+                        Forms\Components\DatePicker::make('due_date')
+                            ->label('Due Date')
                             ->required()
-                            ->default(1)
-                            ->minValue(1)
-                            ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                                if ($state && $get('total_amount')) {
-                                    $set('installment_amount', $get('total_amount') / $state);
-                                }
-                            }),
+                            ->default(now()->addDays(30)),
 
-                        Forms\Components\TextInput::make('installment_amount')
-                            ->label('Amount Per Installment')
-                            ->numeric()
+                        Forms\Components\DatePicker::make('paid_date')
+                            ->label('Paid Date')
+                            ->nullable()
+                            ->visible(fn ($get) => in_array($get('status'), ['paid'])),
+
+                        Forms\Components\Select::make('status')
+                            ->label('Status')
+                            ->options([
+                                'pending' => 'Pending',
+                                'paid' => 'Paid',
+                                'overdue' => 'Overdue',
+                                'cancelled' => 'Cancelled',
+                            ])
                             ->required()
-                            ->default(0)
-                            ->prefix('$')
-                            ->disabled(),
+                            ->default('pending')
+                            ->reactive(),
 
-                        Forms\Components\TextInput::make('interest_rate')
-                            ->label('Interest Rate (%)')
-                            ->numeric()
-                            ->default(0)
-                            ->minValue(0)
-                            ->maxValue(100)
-                            ->suffix('%'),
+                        Forms\Components\Select::make('payment_method_id')
+                            ->label('Payment Method')
+                            ->relationship('paymentMethod', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->nullable(),
+
+                        Forms\Components\TextInput::make('payment_reference')
+                            ->label('Payment Reference')
+                            ->maxLength(255)
+                            ->nullable(),
+
+                        Forms\Components\Textarea::make('notes')
+                            ->label('Notes')
+                            ->rows(3)
+                            ->columnSpanFull()
+                            ->nullable(),
                     ])
                     ->columns(2),
             ]);
@@ -160,25 +138,22 @@ class InstallmentResource extends Resource
                     })
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('total_amount')
-                    ->label('Total Amount')
+                Tables\Columns\TextColumn::make('amount')
+                    ->label('Amount')
                     ->money('USD')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('installment_count')
-                    ->label('Count')
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('due_date')
+                    ->label('Due Date')
+                    ->date()
+                    ->sortable()
+                    ->color(fn ($record) => $record->isOverdue() ? 'danger' : null),
 
-                Tables\Columns\TextColumn::make('installment_amount')
-                    ->label('Per Installment')
-                    ->money('USD')
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('paid_amount')
-                    ->label('Paid Amount')
-                    ->money('USD')
-                    ->getStateUsing(fn ($record) => $record->paid_amount)
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('paid_date')
+                    ->label('Paid Date')
+                    ->date()
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('remaining_amount')
                     ->label('Remaining')
@@ -187,29 +162,36 @@ class InstallmentResource extends Resource
                     ->color('danger')
                     ->sortable(),
 
+                Tables\Columns\TextColumn::make('paymentMethod.name')
+                    ->label('Payment Method')
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('payment_reference')
+                    ->label('Reference')
+                    ->searchable()
+                    ->toggleable(),
+
                 Tables\Columns\BadgeColumn::make('status')
                     ->colors([
-                        'success' => 'active',
-                        'primary' => 'completed',
+                        'warning' => 'pending',
+                        'success' => 'paid',
                         'danger' => 'overdue',
                         'gray' => 'cancelled',
                     ])
                     ->sortable(),
-
-                Tables\Columns\TextColumn::make('overdue_payments_count')
-                    ->label('Overdue')
-                    ->getStateUsing(fn ($record) => $record->overdue_payments_count)
-                    ->color('danger'),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status'),
-                Tables\Filters\SelectFilter::make('frequency'),
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'paid' => 'Paid',
+                        'overdue' => 'Overdue',
+                        'cancelled' => 'Cancelled',
+                    ]),
                 Tables\Filters\Filter::make('overdue')
                     ->label('Overdue Installments')
-                    ->query(fn ($query) => $query->where('status', 'overdue')
-                        ->orWhereHas('payments', fn ($q) => 
-                            $q->where('status', 'overdue')
-                        )),
+                    ->query(fn ($query) => $query->where('status', 'pending')
+                        ->where('due_date', '<', now())),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

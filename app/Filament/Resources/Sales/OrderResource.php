@@ -122,7 +122,19 @@ class OrderResource extends Resource
                             ->default(0)
                             ->required()
                             ->prefix('$')
-                            ->disabled(),
+                            ->disabled()
+                            ->dehydrated()
+                            ->afterStateHydrated(function ($component, $state, $get) {
+                                // Calculate total from items if not set
+                                if (!$state && $get('items')) {
+                                    $items = $get('items');
+                                    $subtotal = collect($items)->sum('total') ?? 0;
+                                    $tax = $get('tax_amount') ?? 0;
+                                    $discount = $get('discount_amount') ?? 0;
+                                    $total = $subtotal + $tax - $discount;
+                                    $component->state($total);
+                                }
+                            }),
                     ])
                     ->columns(3),
 

@@ -2,9 +2,9 @@
 
 namespace App\Models\Sales;
 
-use App\Models\MainCore\PaymentTransaction;
+use App\Models\MainCore\PaymentMethod;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Installment extends Model
@@ -13,22 +13,19 @@ class Installment extends Model
         'installmentable_type',
         'installmentable_id',
         'installment_number',
-        'total_amount',
-        'installment_count',
-        'installment_amount',
-        'start_date',
-        'frequency',
-        'interest_rate',
+        'amount',
+        'due_date',
+        'paid_date',
         'status',
-        'payment_schedule',
+        'payment_method_id',
+        'payment_reference',
+        'notes',
     ];
 
     protected $casts = [
-        'total_amount' => 'decimal:2',
-        'installment_amount' => 'decimal:2',
-        'start_date' => 'date',
-        'interest_rate' => 'decimal:2',
-        'payment_schedule' => 'array',
+        'amount' => 'decimal:2',
+        'due_date' => 'date',
+        'paid_date' => 'date',
     ];
 
     /**
@@ -40,19 +37,27 @@ class Installment extends Model
     }
 
     /**
-     * Get all installment payments
+     * Get the payment method
      */
-    public function payments(): HasMany
+    public function paymentMethod(): BelongsTo
     {
-        return $this->hasMany(InstallmentPayment::class);
+        return $this->belongsTo(\App\Models\MainCore\PaymentMethod::class);
     }
 
     /**
-     * Get paid amount
+     * Check if installment is paid
      */
-    public function getPaidAmountAttribute(): float
+    public function isPaid(): bool
     {
-        return $this->payments()->where('status', 'paid')->sum('paid_amount');
+        return $this->status === 'paid' || !is_null($this->paid_date);
+    }
+
+    /**
+     * Check if installment is overdue
+     */
+    public function isOverdue(): bool
+    {
+        return $this->status === 'pending' && $this->due_date && $this->due_date->isPast();
     }
 
     /**
@@ -60,28 +65,9 @@ class Installment extends Model
      */
     public function getRemainingAmountAttribute(): float
     {
-        return $this->total_amount - $this->paid_amount;
-    }
-
-    /**
-     * Get overdue payments count
-     */
-    public function getOverduePaymentsCountAttribute(): int
-    {
-        return $this->payments()
-            ->where('status', 'overdue')
-            ->orWhere(function ($query) {
-                $query->where('status', 'pending')
-                    ->where('due_date', '<', now());
-            })
-            ->count();
-    }
-
-    /**
-     * Check if installment is completed
-     */
-    public function isCompleted(): bool
-    {
-        return $this->status === 'completed' || $this->remaining_amount <= 0;
+        if ($this->isPaid()) {
+            return 0;
+        }
+        return $this->amount;
     }
 }

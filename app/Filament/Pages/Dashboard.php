@@ -23,5 +23,14 @@ class Dashboard extends BaseDashboard
             AccountingSummaryWidget::class,
         ];
     }
+
+    protected function getFooterWidgets(): array
+    {
+        return [
+            \App\Filament\Widgets\OrdersChartWidget::class,
+            \App\Filament\Widgets\InvoicesChartWidget::class,
+            \App\Filament\Widgets\SalesByStatusWidget::class,
+        ];
+    }
 }
 

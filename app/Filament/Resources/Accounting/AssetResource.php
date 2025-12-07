@@ -109,7 +109,7 @@ class AssetResource extends Resource
                             ->label('Purchase Date')
                             ->nullable(),
 
-                        Forms\Components\IntegerInput::make('useful_life_years')
+                        Forms\Components\TextInput::make('useful_life_years')
                             ->label('Useful Life (Years)')
                             ->numeric()
                             ->minValue(0)
