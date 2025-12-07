@@ -13,85 +13,100 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+
 class CurrencyRateResource extends Resource
 {
     protected static ?string $model = CurrencyRate::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-arrow-path-rounded-square';
+    protected static ?string $navigationGroup = 'MainCore';
+    protected static ?int $navigationSort = 25;
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('base_currency_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('target_currency_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('rate')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\DateTimePicker::make('valid_from'),
-                Forms\Components\TextInput::make('source')
-                    ->maxLength(255)
-                    ->default(null),
-            ]);
+        return $form->schema([
+            Forms\Components\Select::make('base_currency_id')
+                ->label('Base Currency')
+                ->relationship('baseCurrency', 'code')
+                ->options(Currency::pluck('code', 'id'))
+                ->required()
+                ->searchable()
+                ->preload(),
+
+            Forms\Components\Select::make('target_currency_id')
+                ->label('Target Currency')
+                ->relationship('targetCurrency', 'code')
+                ->options(Currency::pluck('code', 'id'))
+                ->required()
+                ->searchable()
+                ->preload(),
+
+            Forms\Components\TextInput::make('rate')
+                ->numeric()
+                ->required()
+                ->minValue(0.000001),
+
+            Forms\Components\DateTimePicker::make('valid_from')
+                ->label('Valid From')
+                ->default(now())
+                ->required(),
+        ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('base_currency_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('target_currency_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('rate')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('valid_from')
-                    ->dateTime()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('source')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                //
+                Tables\Columns\TextColumn::make('baseCurrency.code')->label('Base'),
+                Tables\Columns\TextColumn::make('targetCurrency.code')->label('Target'),
+                Tables\Columns\TextColumn::make('rate'),
+                Tables\Columns\TextColumn::make('valid_from')->dateTime(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->visible(fn () => auth()->user()?->can('currency_rates.update') ?? false),
+                Tables\Actions\DeleteAction::make()
+                    ->visible(fn () => auth()->user()?->can('currency_rates.delete') ?? false),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->visible(fn () => auth()->user()?->can('currency_rates.delete') ?? false),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCurrencyRates::route('/'),
+            'index'  => Pages\ListCurrencyRates::route('/'),
             'create' => Pages\CreateCurrencyRate::route('/create'),
-            'edit' => Pages\EditCurrencyRate::route('/{record}/edit'),
+            'edit'   => Pages\EditCurrencyRate::route('/{record}/edit'),
         ];
+    }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('currency_rates.view_any') ?? false;
+    }
+    public static function canCreate(): bool
+    {
+        return auth()->user()?->can('currency_rates.create') ?? false;
+    }
+    public static function canEdit(mixed $record): bool
+    {
+        return auth()->user()?->can('currency_rates.update') ?? false;
+    }
+    public static function canDelete(mixed $record): bool
+    {
+        return auth()->user()?->can('currency_rates.delete') ?? false;
+    }
+    public static function canDeleteAny(): bool
+    {
+        return auth()->user()?->can('currency_rates.delete') ?? false;
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canViewAny();
     }
 }

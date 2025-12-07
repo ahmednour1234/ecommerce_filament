@@ -17,80 +17,105 @@ class LanguageResource extends Resource
 {
     protected static ?string $model = Language::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-language';
+    protected static ?string $navigationGroup = 'MainCore';
+    protected static ?int $navigationSort = 10;
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('code')
-                    ->required()
-                    ->maxLength(10),
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('native_name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('direction')
-                    ->required(),
-                Forms\Components\Toggle::make('is_default')
-                    ->required(),
-                Forms\Components\Toggle::make('is_active')
-                    ->required(),
-            ]);
+        return $form->schema([
+            Forms\Components\TextInput::make('code')
+                ->label('Code')
+                ->required()
+                ->maxLength(10)
+                ->unique(ignoreRecord: true),
+
+            Forms\Components\TextInput::make('name')
+                ->label('Name (EN)')
+                ->required()
+                ->maxLength(100),
+
+            Forms\Components\TextInput::make('native_name')
+                ->label('Native Name')
+                ->required()
+                ->maxLength(100),
+
+            Forms\Components\Toggle::make('is_default')
+                ->label('Default')
+                ->helperText('Only one language should be default.'),
+
+            Forms\Components\Toggle::make('is_active')
+                ->label('Active')
+                ->default(true),
+
+            Forms\Components\Select::make('direction')
+                ->label('Direction')
+                ->options([
+                    'ltr' => 'Left to Right',
+                    'rtl' => 'Right to Left',
+                ])
+                ->default('ltr')
+                ->required(),
+        ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('code')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('native_name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('direction'),
-                Tables\Columns\IconColumn::make('is_default')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('is_active')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                //
+                Tables\Columns\TextColumn::make('code')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('name')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('native_name')->sortable()->searchable(),
+                Tables\Columns\IconColumn::make('is_default')->boolean()->label('Default'),
+                Tables\Columns\IconColumn::make('is_active')->boolean()->label('Active'),
+                Tables\Columns\TextColumn::make('direction')->label('Dir'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->visible(fn () => auth()->user()?->can('languages.update') ?? false),
+                Tables\Actions\DeleteAction::make()
+                    ->visible(fn () => auth()->user()?->can('languages.delete') ?? false),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->visible(fn () => auth()->user()?->can('languages.delete') ?? false),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListLanguages::route('/'),
+            'index'  => Pages\ListLanguages::route('/'),
             'create' => Pages\CreateLanguage::route('/create'),
-            'edit' => Pages\EditLanguage::route('/{record}/edit'),
+            'edit'   => Pages\EditLanguage::route('/{record}/edit'),
         ];
+    }
+
+    /* صلاحيات مبنية على Spatie */
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('languages.view_any') ?? false;
+    }
+    public static function canCreate(): bool
+    {
+        return auth()->user()?->can('languages.create') ?? false;
+    }
+    public static function canEdit(mixed $record): bool
+    {
+        return auth()->user()?->can('languages.update') ?? false;
+    }
+    public static function canDelete(mixed $record): bool
+    {
+        return auth()->user()?->can('languages.delete') ?? false;
+    }
+    public static function canDeleteAny(): bool
+    {
+        return auth()->user()?->can('languages.delete') ?? false;
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canViewAny();
     }
 }

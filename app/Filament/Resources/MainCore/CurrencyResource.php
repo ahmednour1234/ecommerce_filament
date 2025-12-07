@@ -13,88 +13,102 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+
 class CurrencyResource extends Resource
 {
     protected static ?string $model = Currency::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-banknotes';
+    protected static ?string $navigationGroup = 'MainCore';
+    protected static ?int $navigationSort = 20;
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('code')
-                    ->required()
-                    ->maxLength(10),
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('symbol')
-                    ->maxLength(10)
-                    ->default(null),
-                Forms\Components\TextInput::make('precision')
-                    ->required()
-                    ->numeric()
-                    ->default(2),
-                Forms\Components\Toggle::make('is_default')
-                    ->required(),
-                Forms\Components\Toggle::make('is_active')
-                    ->required(),
-            ]);
+        return $form->schema([
+            Forms\Components\TextInput::make('code')
+                ->required()
+                ->maxLength(10)
+                ->unique(ignoreRecord: true),
+
+            Forms\Components\TextInput::make('name')
+                ->required()
+                ->maxLength(100),
+
+            Forms\Components\TextInput::make('symbol')
+                ->maxLength(10),
+
+            Forms\Components\TextInput::make('precision')
+                ->numeric()
+                ->default(2)
+                ->minValue(0)
+                ->maxValue(6),
+
+            Forms\Components\Toggle::make('is_default')
+                ->label('Default')
+                ->helperText('Only one currency should be default.'),
+
+            Forms\Components\Toggle::make('is_active')
+                ->label('Active')
+                ->default(true),
+        ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('code')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('symbol')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('precision')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\IconColumn::make('is_default')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('is_active')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                //
+                Tables\Columns\TextColumn::make('code')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('name')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('symbol'),
+                Tables\Columns\TextColumn::make('precision'),
+                Tables\Columns\IconColumn::make('is_default')->boolean()->label('Default'),
+                Tables\Columns\IconColumn::make('is_active')->boolean()->label('Active'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->visible(fn () => auth()->user()?->can('currencies.update') ?? false),
+                Tables\Actions\DeleteAction::make()
+                    ->visible(fn () => auth()->user()?->can('currencies.delete') ?? false),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->visible(fn () => auth()->user()?->can('currencies.delete') ?? false),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCurrencies::route('/'),
+            'index'  => Pages\ListCurrencies::route('/'),
             'create' => Pages\CreateCurrency::route('/create'),
-            'edit' => Pages\EditCurrency::route('/{record}/edit'),
+            'edit'   => Pages\EditCurrency::route('/{record}/edit'),
         ];
+    }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('currencies.view_any') ?? false;
+    }
+    public static function canCreate(): bool
+    {
+        return auth()->user()?->can('currencies.create') ?? false;
+    }
+    public static function canEdit(mixed $record): bool
+    {
+        return auth()->user()?->can('currencies.update') ?? false;
+    }
+    public static function canDelete(mixed $record): bool
+    {
+        return auth()->user()?->can('currencies.delete') ?? false;
+    }
+    public static function canDeleteAny(): bool
+    {
+        return auth()->user()?->can('currencies.delete') ?? false;
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canViewAny();
     }
 }
