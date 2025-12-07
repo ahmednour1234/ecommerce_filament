@@ -23,14 +23,32 @@ class SettingResource extends Resource
 
     public static function form(Form $form): Form
     {
+        // Get available setting keys for selection
+        $availableKeys = [
+            'app.name' => 'Application Name',
+            'app.url' => 'Application URL',
+            'app.languages' => 'Available Languages',
+            'app.default_language' => 'Default Language',
+            'app.default_currency' => 'Default Currency',
+            'app.timezone' => 'Timezone',
+            'mail.from.address' => 'Mail From Address',
+            'mail.from.name' => 'Mail From Name',
+        ];
+
         return $form->schema([
-            Forms\Components\TextInput::make('key')
+            Forms\Components\Select::make('key')
+                ->label('Setting Key')
+                ->options($availableKeys)
+                ->searchable()
                 ->required()
-                ->maxLength(191)
-                ->unique(ignoreRecord: true),
+                ->reactive()
+                ->afterStateUpdated(fn ($state, callable $set) => $set('value', null))
+                ->unique(ignoreRecord: true)
+                ->helperText('Select a setting key. Common keys: ' . implode(', ', array_keys($availableKeys))),
 
             Forms\Components\TextInput::make('group')
                 ->maxLength(50)
+                ->default('app')
                 ->helperText('Example: app, mail, payment, ui'),
 
             Forms\Components\Select::make('type')
@@ -40,11 +58,43 @@ class SettingResource extends Resource
                     'bool'   => 'Boolean',
                     'array'  => 'Array/JSON',
                 ])
-                ->default('string'),
+                ->default('string')
+                ->reactive(),
+
+            // Dynamic value field based on key
+            Forms\Components\TextInput::make('value')
+                ->label('Value')
+                ->required()
+                ->visible(fn (Forms\Get $get) => 
+                    $get('key') !== 'app.languages' && 
+                    in_array($get('type'), ['string', 'int'])
+                )
+                ->maxLength(255),
+
+            Forms\Components\Select::make('value')
+                ->label('Value')
+                ->required()
+                ->visible(fn (Forms\Get $get) => $get('key') === 'app.languages')
+                ->multiple()
+                ->options(
+                    \App\Models\MainCore\Language::where('is_active', true)
+                        ->pluck('name', 'code')
+                )
+                ->searchable()
+                ->preload()
+                ->dehydrateStateUsing(fn ($state) => is_array($state) ? json_encode($state) : $state),
 
             Forms\Components\Textarea::make('value')
+                ->label('Value')
+                ->required()
+                ->visible(fn (Forms\Get $get) => $get('type') === 'array')
                 ->rows(4)
                 ->helperText('For JSON/array, use valid JSON.'),
+
+            Forms\Components\Toggle::make('value')
+                ->label('Value')
+                ->required()
+                ->visible(fn (Forms\Get $get) => $get('type') === 'bool'),
 
             Forms\Components\Toggle::make('is_public')->label('Public'),
             Forms\Components\Toggle::make('autoload')->label('Autoload'),

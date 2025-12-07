@@ -16,4 +16,29 @@ class EditSetting extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        // If key is app.languages and value is JSON, decode it
+        if (isset($data['key']) && $data['key'] === 'app.languages' && isset($data['value'])) {
+            if (is_string($data['value'])) {
+                $decoded = json_decode($data['value'], true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                    $data['value'] = $decoded;
+                }
+            }
+        }
+        return $data;
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        // If key is app.languages and value is array, encode it as JSON
+        if (isset($data['key']) && $data['key'] === 'app.languages' && isset($data['value'])) {
+            if (is_array($data['value'])) {
+                $data['value'] = json_encode($data['value']);
+            }
+        }
+        return $data;
+    }
 }
