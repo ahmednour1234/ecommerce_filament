@@ -34,10 +34,43 @@ class RolePermissionSeeder extends Seeder
             'shipping_providers',
             'shipments',
             'translations',
+            'branches',
+            'cost_centers',
+        ];
+
+        // Catalog Resources
+        $catalogResources = [
+            'brands',
+            'categories',
+            'products',
+        ];
+
+        // Sales Resources
+        $salesResources = [
+            'customers',
+            'orders',
+            'order_items',
+            'invoices',
+            'invoice_items',
+        ];
+
+        // Accounting Resources
+        $accountingResources = [
+            'accounts',
+            'journals',
+            'journal_entries',
+            'journal_entry_lines',
+            'vouchers',
         ];
 
         // Combine all resources
-        $allResources = array_merge($systemResources, $mainCoreResources);
+        $allResources = array_merge(
+            $systemResources,
+            $mainCoreResources,
+            $catalogResources,
+            $salesResources,
+            $accountingResources
+        );
 
         $permNames = [];
         $permissions = [];
@@ -47,13 +80,27 @@ class RolePermissionSeeder extends Seeder
             foreach (['view_any', 'view', 'create', 'update', 'delete'] as $action) {
                 $permName = "{$resource}.{$action}";
                 $permNames[] = $permName;
-                
+
                 // Create permission and collect the object
                 $permission = Permission::firstOrCreate(
                     ['name' => $permName, 'guard_name' => 'web']
                 );
                 $permissions[] = $permission;
             }
+        }
+
+        // Add special permissions for specific resources
+        $specialPermissions = [
+            'journal_entries.post', // Post journal entries
+            'vouchers.create_journal_entry', // Create journal entry from voucher
+        ];
+
+        foreach ($specialPermissions as $permName) {
+            $permNames[] = $permName;
+            $permission = Permission::firstOrCreate(
+                ['name' => $permName, 'guard_name' => 'web']
+            );
+            $permissions[] = $permission;
         }
 
         // Create super_admin role
