@@ -28,28 +28,78 @@ class ThemeResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\TextInput::make('name')
-                ->required()
-                ->maxLength(100),
+            Forms\Components\Section::make('Theme Information')
+                ->description('Configure the theme name and default status')
+                ->icon('heroicon-o-information-circle')
+                ->schema([
+                    Forms\Components\TextInput::make('name')
+                        ->label('Theme Name')
+                        ->required()
+                        ->maxLength(100)
+                        ->placeholder('Enter theme name')
+                        ->columnSpanFull(),
+                    
+                    Forms\Components\Toggle::make('is_default')
+                        ->label('Set as Default Theme')
+                        ->helperText('Only one theme can be default at a time')
+                        ->columnSpanFull(),
+                ])
+                ->columns(2),
 
-            Forms\Components\ColorPicker::make('primary_color')
-                ->required(),
+            Forms\Components\Section::make('Color Scheme')
+                ->description('Customize the color palette for your theme')
+                ->icon('heroicon-o-swatch')
+                ->schema([
+                    Forms\Components\ColorPicker::make('primary_color')
+                        ->label('Primary Color')
+                        ->required()
+                        ->helperText('Main color used throughout the dashboard')
+                        ->default('#F59E0B'),
+                    
+                    Forms\Components\ColorPicker::make('secondary_color')
+                        ->label('Secondary Color')
+                        ->helperText('Secondary accent color')
+                        ->default('#0EA5E9'),
+                    
+                    Forms\Components\ColorPicker::make('accent_color')
+                        ->label('Accent Color')
+                        ->helperText('Accent color for highlights')
+                        ->default('#22C55E'),
+                ])
+                ->columns(3),
 
-            Forms\Components\ColorPicker::make('secondary_color'),
-            Forms\Components\ColorPicker::make('accent_color'),
-
-            Forms\Components\FileUpload::make('logo_light')
-                ->directory('themes/logos')
-                ->image()
-                ->imagePreviewHeight('100'),
-
-            Forms\Components\FileUpload::make('logo_dark')
-                ->directory('themes/logos')
-                ->image()
-                ->imagePreviewHeight('100'),
-
-            Forms\Components\Toggle::make('is_default')
-                ->label('Default theme'),
+            Forms\Components\Section::make('Branding')
+                ->description('Upload logos for light and dark modes')
+                ->icon('heroicon-o-photo')
+                ->schema([
+                    \App\Filament\Forms\Components\FileUpload::image('logo_light')
+                        ->label('Light Mode Logo')
+                        ->directory('themes/logos')
+                        ->helperText('Logo displayed on light backgrounds (recommended: transparent PNG, max 5MB)')
+                        ->imagePreviewHeight('200')
+                        ->imageEditor()
+                        ->imageEditorAspectRatios([
+                            null,
+                            '16:9',
+                            '4:3',
+                            '1:1',
+                        ])
+                        ->columnSpanFull(),
+                    
+                    \App\Filament\Forms\Components\FileUpload::image('logo_dark')
+                        ->label('Dark Mode Logo')
+                        ->directory('themes/logos')
+                        ->helperText('Logo displayed on dark backgrounds (recommended: transparent PNG, max 5MB)')
+                        ->imagePreviewHeight('200')
+                        ->imageEditor()
+                        ->imageEditorAspectRatios([
+                            null,
+                            '16:9',
+                            '4:3',
+                            '1:1',
+                        ])
+                        ->columnSpanFull(),
+                ]),
         ]);
     }
 
@@ -57,9 +107,34 @@ class ThemeResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->sortable()->searchable(),
-                Tables\Columns\ColorColumn::make('primary_color'),
-                Tables\Columns\IconColumn::make('is_default')->boolean()->label('Default'),
+                Tables\Columns\ImageColumn::make('logo_light')
+                    ->label('Light Logo')
+                    ->circular()
+                    ->size(50)
+                    ->defaultImageUrl(url('/images/placeholder-logo.png')),
+                
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Theme Name')
+                    ->sortable()
+                    ->searchable()
+                    ->weight('bold'),
+                
+                Tables\Columns\ColorColumn::make('primary_color')
+                    ->label('Primary Color'),
+                
+                Tables\Columns\ColorColumn::make('secondary_color')
+                    ->label('Secondary Color'),
+                
+                Tables\Columns\ColorColumn::make('accent_color')
+                    ->label('Accent Color'),
+                
+                Tables\Columns\IconColumn::make('is_default')
+                    ->label('Default')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('gray'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
