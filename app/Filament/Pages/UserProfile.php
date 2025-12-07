@@ -37,7 +37,7 @@ class UserProfile extends Page implements HasForms
         ]);
     }
 
-    public function form(Form $form): Form
+    public function form(Forms\Form $form): Forms\Form
     {
         // Common timezones
         $timezones = [
