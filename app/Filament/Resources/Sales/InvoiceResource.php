@@ -1,0 +1,314 @@
+<?php
+
+namespace App\Filament\Resources\Sales;
+
+use App\Filament\Resources\Sales\InvoiceResource\Pages;
+use App\Filament\Concerns\TranslatableNavigation;
+use App\Models\Sales\Invoice;
+use App\Models\Sales\Order;
+use App\Models\Sales\Customer;
+use App\Models\MainCore\Currency;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+
+class InvoiceResource extends Resource
+{
+    use TranslatableNavigation;
+
+    protected static ?string $model = Invoice::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationGroup = 'Sales';
+    protected static ?int $navigationSort = 3;
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\Section::make('Invoice Information')
+                    ->schema([
+                        Forms\Components\TextInput::make('invoice_number')
+                            ->label('Invoice Number')
+                            ->required()
+                            ->maxLength(255)
+                            ->unique(ignoreRecord: true)
+                            ->default(fn () => 'INV-' . strtoupper(uniqid())),
+
+                        Forms\Components\DatePicker::make('invoice_date')
+                            ->label('Invoice Date')
+                            ->required()
+                            ->default(now()),
+
+                        Forms\Components\Select::make('order_id')
+                            ->label('Order')
+                            ->relationship('order', 'order_number')
+                            ->searchable()
+                            ->preload()
+                            ->nullable()
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                if ($state) {
+                                    $order = Order::find($state);
+                                    if ($order) {
+                                        $set('customer_id', $order->customer_id);
+                                        $set('currency_id', $order->currency_id);
+                                        $set('subtotal', $order->subtotal);
+                                        $set('tax_amount', $order->tax_amount);
+                                        $set('discount_amount', $order->discount_amount);
+                                        $set('total', $order->total);
+                                    }
+                                }
+                            }),
+
+                        Forms\Components\Select::make('customer_id')
+                            ->label('Customer')
+                            ->relationship('customer', 'name')
+                            ->required()
+                            ->searchable()
+                            ->preload(),
+
+                        Forms\Components\Select::make('status')
+                            ->label('Status')
+                            ->options([
+                                'draft' => 'Draft',
+                                'sent' => 'Sent',
+                                'paid' => 'Paid',
+                                'partial' => 'Partial',
+                                'overdue' => 'Overdue',
+                                'cancelled' => 'Cancelled',
+                            ])
+                            ->required()
+                            ->default('draft'),
+
+                        Forms\Components\DatePicker::make('due_date')
+                            ->label('Due Date')
+                            ->required()
+                            ->default(now()->addDays(30)),
+
+                        Forms\Components\DateTimePicker::make('paid_at')
+                            ->label('Paid At')
+                            ->nullable()
+                            ->visible(fn ($get) => in_array($get('status'), ['paid', 'partial'])),
+                    ])
+                    ->columns(2),
+
+                Forms\Components\Section::make('Financial Information')
+                    ->schema([
+                        Forms\Components\Select::make('currency_id')
+                            ->label('Currency')
+                            ->relationship('currency', 'name')
+                            ->options(Currency::active()->pluck('name', 'id'))
+                            ->required()
+                            ->searchable()
+                            ->preload(),
+
+                        Forms\Components\TextInput::make('subtotal')
+                            ->label('Subtotal')
+                            ->numeric()
+                            ->default(0)
+                            ->required()
+                            ->prefix('$'),
+
+                        Forms\Components\TextInput::make('tax_amount')
+                            ->label('Tax Amount')
+                            ->numeric()
+                            ->default(0)
+                            ->prefix('$'),
+
+                        Forms\Components\TextInput::make('discount_amount')
+                            ->label('Discount Amount')
+                            ->numeric()
+                            ->default(0)
+                            ->prefix('$'),
+
+                        Forms\Components\TextInput::make('total')
+                            ->label('Total')
+                            ->numeric()
+                            ->default(0)
+                            ->required()
+                            ->prefix('$')
+                            ->disabled(),
+                    ])
+                    ->columns(4),
+
+                Forms\Components\Section::make('Invoice Items')
+                    ->schema([
+                        Forms\Components\Repeater::make('items')
+                            ->relationship('items')
+                            ->schema([
+                                Forms\Components\Select::make('product_id')
+                                    ->label('Product')
+                                    ->relationship('product', 'name')
+                                    ->required()
+                                    ->searchable()
+                                    ->preload(),
+
+                                Forms\Components\Textarea::make('description')
+                                    ->label('Description')
+                                    ->rows(2)
+                                    ->columnSpanFull(),
+
+                                Forms\Components\TextInput::make('quantity')
+                                    ->label('Quantity')
+                                    ->numeric()
+                                    ->required()
+                                    ->default(1)
+                                    ->minValue(1),
+
+                                Forms\Components\TextInput::make('unit_price')
+                                    ->label('Unit Price')
+                                    ->numeric()
+                                    ->required()
+                                    ->default(0)
+                                    ->prefix('$'),
+
+                                Forms\Components\TextInput::make('discount')
+                                    ->label('Discount')
+                                    ->numeric()
+                                    ->default(0)
+                                    ->prefix('$'),
+
+                                Forms\Components\TextInput::make('total')
+                                    ->label('Total')
+                                    ->numeric()
+                                    ->default(0)
+                                    ->prefix('$')
+                                    ->disabled(),
+                            ])
+                            ->columns(5)
+                            ->defaultItems(1)
+                            ->itemLabel(fn (array $state): ?string => 
+                                $state['product_id'] ? \App\Models\Catalog\Product::find($state['product_id'])?->name : 'New Item'
+                            )
+                            ->collapsible(),
+                    ])
+                    ->collapsible(),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('invoice_number')
+                    ->label('Invoice #')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('invoice_date')
+                    ->label('Date')
+                    ->date()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('customer.name')
+                    ->label('Customer')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('order.order_number')
+                    ->label('Order')
+                    ->searchable()
+                    ->toggleable(),
+
+                Tables\Columns\BadgeColumn::make('status')
+                    ->colors([
+                        'gray' => 'draft',
+                        'info' => 'sent',
+                        'success' => 'paid',
+                        'warning' => 'partial',
+                        'danger' => 'overdue',
+                    ])
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('total')
+                    ->label('Total')
+                    ->money('USD')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('due_date')
+                    ->label('Due Date')
+                    ->date()
+                    ->sortable()
+                    ->color(fn ($record) => $record->due_date && $record->due_date->isPast() && $record->status !== 'paid' ? 'danger' : null),
+
+                Tables\Columns\TextColumn::make('paid_at')
+                    ->label('Paid At')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(),
+            ])
+            ->filters([
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'draft' => 'Draft',
+                        'sent' => 'Sent',
+                        'paid' => 'Paid',
+                        'partial' => 'Partial',
+                        'overdue' => 'Overdue',
+                        'cancelled' => 'Cancelled',
+                    ]),
+
+                Tables\Filters\SelectFilter::make('customer_id')
+                    ->label('Customer')
+                    ->relationship('customer', 'name')
+                    ->searchable()
+                    ->preload(),
+
+                Tables\Filters\Filter::make('overdue')
+                    ->label('Overdue Invoices')
+                    ->query(fn ($query) => $query->where('due_date', '<', now())
+                        ->whereNotIn('status', ['paid', 'cancelled'])),
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make()
+                    ->visible(fn () => auth()->user()?->can('invoices.update') ?? false),
+                Tables\Actions\DeleteAction::make()
+                    ->visible(fn () => auth()->user()?->can('invoices.delete') ?? false),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->visible(fn () => auth()->user()?->can('invoices.delete') ?? false),
+                ]),
+            ])
+            ->defaultSort('invoice_date', 'desc');
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListInvoices::route('/'),
+            'create' => Pages\CreateInvoice::route('/create'),
+            'edit' => Pages\EditInvoice::route('/{record}/edit'),
+        ];
+    }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('invoices.view_any') ?? false;
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()?->can('invoices.create') ?? false;
+    }
+
+    public static function canEdit(mixed $record): bool
+    {
+        return auth()->user()?->can('invoices.update') ?? false;
+    }
+
+    public static function canDelete(mixed $record): bool
+    {
+        return auth()->user()?->can('invoices.delete') ?? false;
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canViewAny();
+    }
+}
+

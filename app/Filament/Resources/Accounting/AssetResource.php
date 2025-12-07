@@ -30,8 +30,8 @@ class AssetResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Basic Information')
                     ->schema([
-                        Forms\Components\TextInput::make('asset_number')
-                            ->label('Asset Number')
+                        Forms\Components\TextInput::make('code')
+                            ->label('Asset Code')
                             ->required()
                             ->maxLength(50)
                             ->unique(ignoreRecord: true),
@@ -51,12 +51,12 @@ class AssetResource extends Resource
                             ->relationship('account', 'name', fn ($query) => 
                                 $query->where('type', 'asset')
                             )
-                            ->required()
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->nullable(),
 
-                        Forms\Components\Select::make('category')
-                            ->label('Category')
+                        Forms\Components\Select::make('type')
+                            ->label('Type')
                             ->options([
                                 'fixed' => 'Fixed Asset',
                                 'intangible' => 'Intangible Asset',
@@ -66,13 +66,26 @@ class AssetResource extends Resource
                             ->required()
                             ->default('fixed'),
 
+                        Forms\Components\Select::make('category')
+                            ->label('Category')
+                            ->options([
+                                'property' => 'Property',
+                                'equipment' => 'Equipment',
+                                'vehicle' => 'Vehicle',
+                                'furniture' => 'Furniture',
+                                'computer' => 'Computer',
+                                'other' => 'Other',
+                            ])
+                            ->required()
+                            ->default('other'),
+
                         Forms\Components\Select::make('status')
                             ->label('Status')
                             ->options([
                                 'active' => 'Active',
+                                'deprecated' => 'Deprecated',
                                 'disposed' => 'Disposed',
-                                'sold' => 'Sold',
-                                'damaged' => 'Damaged',
+                                'maintenance' => 'Maintenance',
                             ])
                             ->required()
                             ->default('active'),
@@ -94,19 +107,20 @@ class AssetResource extends Resource
 
                         Forms\Components\DatePicker::make('purchase_date')
                             ->label('Purchase Date')
-                            ->required()
-                            ->default(now()),
+                            ->nullable(),
 
                         Forms\Components\IntegerInput::make('useful_life_years')
                             ->label('Useful Life (Years)')
                             ->numeric()
-                            ->minValue(0),
+                            ->minValue(0)
+                            ->nullable(),
 
                         Forms\Components\TextInput::make('depreciation_rate')
                             ->label('Depreciation Rate (%)')
                             ->numeric()
                             ->minValue(0)
                             ->maxValue(100)
+                            ->default(0)
                             ->suffix('%'),
                     ])
                     ->columns(2),
@@ -129,14 +143,13 @@ class AssetResource extends Resource
 
                         Forms\Components\TextInput::make('location')
                             ->label('Location')
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->nullable(),
 
                         Forms\Components\TextInput::make('serial_number')
                             ->label('Serial Number')
-                            ->maxLength(255),
-
-                        Forms\Components\DatePicker::make('warranty_expiry_date')
-                            ->label('Warranty Expiry Date'),
+                            ->maxLength(255)
+                            ->nullable(),
                     ])
                     ->columns(2),
             ]);
@@ -146,8 +159,8 @@ class AssetResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('asset_number')
-                    ->label('Asset #')
+                Tables\Columns\TextColumn::make('code')
+                    ->label('Code')
                     ->searchable()
                     ->sortable(),
 
@@ -158,10 +171,11 @@ class AssetResource extends Resource
 
                 Tables\Columns\TextColumn::make('account.name')
                     ->label('Account')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
-                Tables\Columns\BadgeColumn::make('category')
-                    ->label('Category')
+                Tables\Columns\BadgeColumn::make('type')
+                    ->label('Type')
                     ->colors([
                         'primary' => 'fixed',
                         'success' => 'current',
@@ -169,6 +183,11 @@ class AssetResource extends Resource
                         'info' => 'investment',
                     ])
                     ->sortable(),
+
+                Tables\Columns\BadgeColumn::make('category')
+                    ->label('Category')
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('purchase_cost')
                     ->label('Purchase Cost')
@@ -190,12 +209,13 @@ class AssetResource extends Resource
                     ->colors([
                         'success' => 'active',
                         'danger' => 'disposed',
-                        'warning' => 'damaged',
-                        'gray' => 'sold',
+                        'warning' => 'maintenance',
+                        'gray' => 'deprecated',
                     ])
                     ->sortable(),
             ])
             ->filters([
+                Tables\Filters\SelectFilter::make('type'),
                 Tables\Filters\SelectFilter::make('category'),
                 Tables\Filters\SelectFilter::make('status'),
                 Tables\Filters\SelectFilter::make('branch_id')
@@ -214,7 +234,7 @@ class AssetResource extends Resource
                         ->visible(fn () => auth()->user()?->can('assets.delete') ?? false),
                 ]),
             ])
-            ->defaultSort('asset_number', 'asc');
+            ->defaultSort('code', 'asc');
     }
 
     public static function getPages(): array

@@ -14,17 +14,17 @@ class Asset extends Model
     use HasBranch, HasCostCenter;
 
     protected $fillable = [
-        'asset_number',
+        'code',
         'name',
         'description',
         'account_id',
         'branch_id',
         'cost_center_id',
+        'type',
         'category',
         'purchase_cost',
         'current_value',
         'purchase_date',
-        'warranty_expiry_date',
         'useful_life_years',
         'depreciation_rate',
         'location',
@@ -37,7 +37,6 @@ class Asset extends Model
         'purchase_cost' => 'decimal:2',
         'current_value' => 'decimal:2',
         'purchase_date' => 'date',
-        'warranty_expiry_date' => 'date',
         'depreciation_rate' => 'decimal:2',
         'metadata' => 'array',
     ];
@@ -71,7 +70,7 @@ class Asset extends Model
      */
     public function getAccumulatedDepreciationAttribute(): float
     {
-        if (!$this->depreciation_rate || !$this->useful_life_years) {
+        if (!$this->depreciation_rate || !$this->useful_life_years || !$this->purchase_date) {
             return 0;
         }
 
@@ -88,16 +87,6 @@ class Asset extends Model
         return $this->purchase_cost - $this->accumulated_depreciation;
     }
 
-    /**
-     * Check if asset is under warranty
-     */
-    public function isUnderWarranty(): bool
-    {
-        if (!$this->warranty_expiry_date) {
-            return false;
-        }
-        return $this->warranty_expiry_date->isFuture();
-    }
 
     /**
      * Scope to get only active assets

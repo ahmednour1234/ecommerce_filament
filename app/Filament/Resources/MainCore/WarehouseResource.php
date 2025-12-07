@@ -27,11 +27,14 @@ class WarehouseResource extends Resource
             Forms\Components\Section::make('Basic Information')
                 ->schema([
                     Forms\Components\TextInput::make('code')
+                        ->label('Warehouse Code')
                         ->required()
                         ->unique(ignoreRecord: true)
-                        ->maxLength(50),
+                        ->maxLength(50)
+                        ->helperText('Unique code for the warehouse (e.g., WH-MAIN)'),
 
                     Forms\Components\TextInput::make('name')
+                        ->label('Warehouse Name')
                         ->required()
                         ->maxLength(255),
 

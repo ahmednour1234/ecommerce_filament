@@ -18,6 +18,7 @@ class MainCoreSeeder extends Seeder
             NotificationSeeder::class,
             ShippingSeeder::class,
             BranchSeeder::class,
+            WarehouseSeeder::class, // Must be after BranchSeeder
             CostCenterSeeder::class,
             UserPreferenceSeeder::class, // Must be after User, Currency, Language, Theme seeders
             DashboardTranslationSeeder::class, // Must be after LanguageSeeder
