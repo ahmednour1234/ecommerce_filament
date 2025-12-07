@@ -29,4 +29,12 @@ class Currency extends Model
     {
         return $this->hasMany(CurrencyRate::class, 'target_currency_id');
     }
+
+    /**
+     * Scope to get only active currencies
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
 }
