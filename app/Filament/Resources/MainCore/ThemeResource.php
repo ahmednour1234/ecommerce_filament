@@ -32,9 +32,9 @@ class ThemeResource extends Resource
                 ->description('Configure the theme name and default status')
                 ->icon('heroicon-o-information-circle')
                 ->schema([
-                    Forms\Components\TextInput::make('name')
+            Forms\Components\TextInput::make('name')
                         ->label('Theme Name')
-                        ->required()
+                ->required()
                         ->maxLength(100)
                         ->placeholder('Enter theme name')
                         ->columnSpanFull(),
@@ -50,12 +50,12 @@ class ThemeResource extends Resource
                 ->description('Customize the color palette for your theme')
                 ->icon('heroicon-o-swatch')
                 ->schema([
-                    Forms\Components\ColorPicker::make('primary_color')
+            Forms\Components\ColorPicker::make('primary_color')
                         ->label('Primary Color')
                         ->required()
                         ->helperText('Main color used throughout the dashboard')
                         ->default('#F59E0B'),
-                    
+
                     Forms\Components\ColorPicker::make('secondary_color')
                         ->label('Secondary Color')
                         ->helperText('Secondary accent color')
@@ -72,9 +72,9 @@ class ThemeResource extends Resource
                 ->description('Upload logos for light and dark modes')
                 ->icon('heroicon-o-photo')
                 ->schema([
-                    \App\Filament\Forms\Components\FileUpload::image('logo_light')
+                    \App\Filament\Forms\Components\FileUpload::makeImage('logo_light')
                         ->label('Light Mode Logo')
-                        ->directory('themes/logos')
+                ->directory('themes/logos')
                         ->helperText('Logo displayed on light backgrounds (recommended: transparent PNG, max 5MB)')
                         ->imagePreviewHeight('200')
                         ->imageEditor()
@@ -85,10 +85,10 @@ class ThemeResource extends Resource
                             '1:1',
                         ])
                         ->columnSpanFull(),
-                    
-                    \App\Filament\Forms\Components\FileUpload::image('logo_dark')
+
+                    \App\Filament\Forms\Components\FileUpload::makeImage('logo_dark')
                         ->label('Dark Mode Logo')
-                        ->directory('themes/logos')
+                ->directory('themes/logos')
                         ->helperText('Logo displayed on dark backgrounds (recommended: transparent PNG, max 5MB)')
                         ->imagePreviewHeight('200')
                         ->imageEditor()

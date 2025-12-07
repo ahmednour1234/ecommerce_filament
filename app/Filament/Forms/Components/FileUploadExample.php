@@ -16,7 +16,7 @@ class FileUploadExample
      */
     public static function imageExample()
     {
-        return \App\Filament\Forms\Components\FileUpload::image('avatar', 'avatars')
+        return \App\Filament\Forms\Components\FileUpload::makeImage('avatar', 'avatars')
             ->label('Profile Picture')
             ->helperText('Upload your profile picture (max 5MB)')
             ->imagePreviewHeight('300')
@@ -59,7 +59,7 @@ class FileUploadExample
      */
     public static function multipleImagesExample()
     {
-        return \App\Filament\Forms\Components\FileUpload::image('gallery', 'gallery')
+        return \App\Filament\Forms\Components\FileUpload::makeImage('gallery', 'gallery')
             ->label('Image Gallery')
             ->multiple()
             ->maxFiles(10)

@@ -55,15 +55,15 @@ class MainSettings extends Page implements Forms\Contracts\HasForms
                 Forms\Components\Section::make('General Settings')
                     ->description('Configure basic application settings')
                     ->icon('heroicon-o-cog-6-tooth')
-                    ->schema([
-                        Forms\Components\TextInput::make('app_name')
-                            ->label('Application Name')
+                            ->schema([
+                                Forms\Components\TextInput::make('app_name')
+                                    ->label('Application Name')
                             ->required()
                             ->maxLength(255)
                             ->columnSpanFull(),
 
-                        Forms\Components\TextInput::make('app_url')
-                            ->label('Application URL')
+                                Forms\Components\TextInput::make('app_url')
+                                    ->label('Application URL')
                             ->url()
                             ->maxLength(255)
                             ->columnSpanFull(),
@@ -73,14 +73,14 @@ class MainSettings extends Page implements Forms\Contracts\HasForms
                 Forms\Components\Section::make('Localization')
                     ->description('Configure language, currency, and timezone settings')
                     ->icon('heroicon-o-globe-alt')
-                    ->schema([
-                        Forms\Components\Select::make('default_language')
-                            ->label('Default Language')
-                            ->options(
-                                \App\Models\MainCore\Language::where('is_active', true)
-                                    ->pluck('name', 'code')
-                            )
-                            ->searchable()
+                            ->schema([
+                                Forms\Components\Select::make('default_language')
+                                    ->label('Default Language')
+                                    ->options(
+                                        \App\Models\MainCore\Language::where('is_active', true)
+                                            ->pluck('name', 'code')
+                                    )
+                                    ->searchable()
                             ->required()
                             ->live()
                             ->afterStateUpdated(function ($state) {
@@ -91,31 +91,31 @@ class MainSettings extends Page implements Forms\Contracts\HasForms
                                 }
                             }),
 
-                        Forms\Components\Select::make('default_currency')
-                            ->label('Default Currency')
-                            ->options(
-                                \App\Models\MainCore\Currency::where('is_active', true)
+                                Forms\Components\Select::make('default_currency')
+                                    ->label('Default Currency')
+                                    ->options(
+                                        \App\Models\MainCore\Currency::where('is_active', true)
                                     ->pluck('name', 'code')
-                            )
-                            ->searchable()
-                            ->required(),
+                                    )
+                                    ->searchable()
+                                    ->required(),
 
-                        Forms\Components\Select::make('timezone')
-                            ->label('Timezone')
-                            ->options(
-                                collect(timezone_identifiers_list())
-                                    ->mapWithKeys(fn ($tz) => [$tz => $tz])
-                            )
-                            ->searchable()
-                            ->required(),
+                                Forms\Components\Select::make('timezone')
+                                    ->label('Timezone')
+                                    ->options(
+                                        collect(timezone_identifiers_list())
+                                            ->mapWithKeys(fn ($tz) => [$tz => $tz])
+                                    )
+                                    ->searchable()
+                                    ->required(),
                     ])
                     ->columns(3),
 
                 Forms\Components\Section::make('Appearance')
                     ->description('Customize the visual appearance of the dashboard')
                     ->icon('heroicon-o-paint-brush')
-                    ->schema([
-                        Forms\Components\ColorPicker::make('primary_color')
+                            ->schema([
+                                Forms\Components\ColorPicker::make('primary_color')
                             ->label('Primary Color')
                             ->helperText('The main color used throughout the dashboard'),
                     ]),

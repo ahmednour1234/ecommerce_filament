@@ -48,12 +48,11 @@ class FileUpload extends BaseFileUpload
     /**
      * Configure for image uploads only
      */
-    public static function image(string $name, string $directory = 'images'): static
+    public static function makeImage(string $name, string $directory = 'images'): static
     {
         return static::make($name)
             ->directory($directory)
             ->acceptedFileTypes(['image/*'])
-            ->image()
             ->imageEditor()
             ->imageEditorAspectRatios([
                 null,
