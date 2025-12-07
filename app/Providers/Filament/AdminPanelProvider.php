@@ -49,7 +49,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandName($brandName)
 
             // 🖼️ اللوجو الخفيف (light) من الـ theme
-            ->brandLogo(fn () => $theme?->logo_light ? asset($theme->logo_light) : null)
+            ->brandLogo(fn () => $theme?->logo_light_url ?? null)
 
             // 🎨 كل الألوان الأساسية متأثرة بالـ theme
             ->colors([
