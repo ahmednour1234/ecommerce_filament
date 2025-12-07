@@ -39,23 +39,28 @@ class RolePermissionSeeder extends Seeder
         // Combine all resources
         $allResources = array_merge($systemResources, $mainCoreResources);
 
-        $perms = [];
+        $permNames = [];
+        $permissions = [];
 
         // Generate permissions for all resources
         foreach ($allResources as $resource) {
             foreach (['view_any', 'view', 'create', 'update', 'delete'] as $action) {
-                $perms[] = "{$resource}.{$action}";
+                $permName = "{$resource}.{$action}";
+                $permNames[] = $permName;
+                
+                // Create permission and collect the object
+                $permission = Permission::firstOrCreate(
+                    ['name' => $permName, 'guard_name' => 'web']
+                );
+                $permissions[] = $permission;
             }
-        }
-
-        // Create all permissions
-        foreach ($perms as $permName) {
-            Permission::firstOrCreate(['name' => $permName, 'guard_name' => 'web']);
         }
 
         // Create super_admin role
         $superAdmin = Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
-        $superAdmin->syncPermissions($perms);
+        
+        // Sync using Permission objects (more reliable than names)
+        $superAdmin->syncPermissions($permissions);
 
         // Assign super_admin role to admin user
         $admin = User::where('email', 'admin@example.com')->first();
