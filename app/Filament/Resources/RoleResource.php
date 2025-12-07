@@ -35,14 +35,14 @@ class RoleResource extends Resource
                     ->required()
                     ->maxLength(50),
 
-                Forms\Components\Select::make('permissions')
+                Forms\Components\CheckboxList::make('permissions')
                     ->label('Permissions')
-                    ->multiple()
                     ->relationship('permissions', 'name')
                     ->options(Permission::query()->pluck('name', 'id'))
-                    ->preload()
+                    ->columns(2)
+                    ->gridDirection('row')
                     ->searchable()
-                    ->helperText('Select permissions assigned to this role.'),
+                    ->helperText('Select permissions assigned to this role. You can select all permissions at once using the checkbox.'),
             ]);
     }
 
@@ -65,8 +65,7 @@ class RoleResource extends Resource
 
                 Tables\Columns\TagsColumn::make('permissions.name')
                     ->label('Permissions')
-                    ->limit(3)
-                    ->expandable(),
+                    ->limit(3),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
