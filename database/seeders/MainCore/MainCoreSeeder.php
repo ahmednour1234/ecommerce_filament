@@ -16,6 +16,7 @@ class MainCoreSeeder extends Seeder
             PaymentSeeder::class,
             NotificationSeeder::class,
             ShippingSeeder::class,
+            DashboardTranslationSeeder::class, // Must be after LanguageSeeder
         ]);
     }
 }
