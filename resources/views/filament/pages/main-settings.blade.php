@@ -2,9 +2,10 @@
     <form wire:submit="save">
         {{ $this->form }}
 
-        <x-filament-panels::form.actions
-            :actions="$this->getCachedFormActions()"
-            :full-width="$this->hasFullWidthFormActions()"
-        />
+        <div class="mt-6 flex items-center justify-end gap-4">
+            <x-filament::button type="submit" color="primary">
+                Save Settings
+            </x-filament::button>
+        </div>
     </form>
 </x-filament-panels::page>

@@ -172,14 +172,5 @@ class UserProfile extends Page implements HasForms
         return true; // Always visible to authenticated users
     }
 
-    protected function getFormActions(): array
-    {
-        return [
-            Action::make('save')
-                ->label('Save Preferences')
-                ->submit('save')
-                ->color('primary'),
-        ];
-    }
 }
 

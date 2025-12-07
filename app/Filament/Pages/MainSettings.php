@@ -167,13 +167,4 @@ class MainSettings extends Page implements Forms\Contracts\HasForms
         return auth()->user()?->can('settings.view_any') ?? false;
     }
 
-    protected function getFormActions(): array
-    {
-        return [
-            Action::make('save')
-                ->label('Save Settings')
-                ->submit('save')
-                ->color('primary'),
-        ];
-    }
 }
