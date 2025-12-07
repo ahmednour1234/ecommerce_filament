@@ -55,6 +55,14 @@ class User extends Authenticatable implements FilamentUser, HasName
     return $this->hasOne(\App\Models\MainCore\UserPreference::class);
 }
 
+    /**
+     * Get all branches assigned to this user
+     */
+    public function branches()
+    {
+        return $this->belongsToMany(\App\Models\MainCore\Branch::class, 'branch_user');
+    }
+
     // دخول لوحة Filament
     public function canAccessPanel(Panel $panel): bool
     {
