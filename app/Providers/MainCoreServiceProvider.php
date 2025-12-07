@@ -32,6 +32,7 @@ class MainCoreServiceProvider extends ServiceProvider
             $view->with('mcTheme', $theme->defaultTheme());
             $view->with('mcCurrentLang', $locale->currentLanguageCode());
             $view->with('mcTimezone', $locale->currentTimezone());
+            $view->with('sessionNotifications', \App\Services\NotificationService::getAll());
         });
 
         // Blade directives بسيطة

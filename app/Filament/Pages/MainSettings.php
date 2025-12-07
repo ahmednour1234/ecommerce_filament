@@ -11,6 +11,7 @@ use Filament\Forms\Components\Tabs;
 use Filament\Forms\Form;
 use Filament\Pages\Page;
 use Filament\Notifications\Notification;
+use Filament\Actions\Action;
 
 class MainSettings extends Page implements Forms\Contracts\HasForms
 {
@@ -49,54 +50,72 @@ class MainSettings extends Page implements Forms\Contracts\HasForms
     {
         return $form
             ->schema([
-                Tabs::make('Settings')
-                    ->tabs([
-                        Tabs\Tab::make('General')
-                            ->schema([
-                                Forms\Components\TextInput::make('app_name')
-                                    ->label('Application Name')
-                                    ->required(),
+                Forms\Components\Section::make('General Settings')
+                    ->description('Configure basic application settings')
+                    ->icon('heroicon-o-cog-6-tooth')
+                    ->schema([
+                        Forms\Components\TextInput::make('app_name')
+                            ->label('Application Name')
+                            ->required()
+                            ->maxLength(255)
+                            ->columnSpanFull(),
 
-                                Forms\Components\TextInput::make('app_url')
-                                    ->label('Application URL')
-                                    ->url(),
-                            ]),
+                        Forms\Components\TextInput::make('app_url')
+                            ->label('Application URL')
+                            ->url()
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(2),
 
-                        Tabs\Tab::make('Localization')
-                            ->schema([
-                                Forms\Components\Select::make('default_language')
-                                    ->label('Default Language')
-                                    ->options(
-                                        \App\Models\MainCore\Language::where('is_active', true)
-                                            ->pluck('name', 'code')
-                                    )
-                                    ->searchable()
-                                    ->required(),
+                Forms\Components\Section::make('Localization')
+                    ->description('Configure language, currency, and timezone settings')
+                    ->icon('heroicon-o-globe-alt')
+                    ->schema([
+                        Forms\Components\Select::make('default_language')
+                            ->label('Default Language')
+                            ->options(
+                                \App\Models\MainCore\Language::where('is_active', true)
+                                    ->pluck('name', 'code')
+                            )
+                            ->searchable()
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(function ($state) {
+                                // Update app locale when language changes
+                                if ($state) {
+                                    app()->setLocale($state);
+                                    session(['locale' => $state]);
+                                }
+                            }),
 
-                                Forms\Components\Select::make('default_currency')
-                                    ->label('Default Currency')
-                                    ->options(
-                                        \App\Models\MainCore\Currency::where('is_active', true)
-                                            ->pluck('code', 'code')
-                                    )
-                                    ->searchable()
-                                    ->required(),
+                        Forms\Components\Select::make('default_currency')
+                            ->label('Default Currency')
+                            ->options(
+                                \App\Models\MainCore\Currency::where('is_active', true)
+                                    ->pluck('name', 'code')
+                            )
+                            ->searchable()
+                            ->required(),
 
-                                Forms\Components\Select::make('timezone')
-                                    ->label('Timezone')
-                                    ->options(
-                                        collect(timezone_identifiers_list())
-                                            ->mapWithKeys(fn ($tz) => [$tz => $tz])
-                                    )
-                                    ->searchable()
-                                    ->required(),
-                            ]),
+                        Forms\Components\Select::make('timezone')
+                            ->label('Timezone')
+                            ->options(
+                                collect(timezone_identifiers_list())
+                                    ->mapWithKeys(fn ($tz) => [$tz => $tz])
+                            )
+                            ->searchable()
+                            ->required(),
+                    ])
+                    ->columns(3),
 
-                        Tabs\Tab::make('Appearance')
-                            ->schema([
-                                Forms\Components\ColorPicker::make('primary_color')
-                                    ->label('Primary Color'),
-                            ]),
+                Forms\Components\Section::make('Appearance')
+                    ->description('Customize the visual appearance of the dashboard')
+                    ->icon('heroicon-o-paint-brush')
+                    ->schema([
+                        Forms\Components\ColorPicker::make('primary_color')
+                            ->label('Primary Color')
+                            ->helperText('The main color used throughout the dashboard'),
                     ]),
             ])
             ->statePath('data');
@@ -108,14 +127,14 @@ class MainSettings extends Page implements Forms\Contracts\HasForms
     ): void {
         $data = $this->form->getState();
 
-        // حفظ settings
+        // Save settings
         $settings->set('app.name', $data['app_name'] ?? null, group: 'app');
         $settings->set('app.url', $data['app_url'] ?? null, group: 'app');
         $settings->set('app.default_language', $data['default_language'] ?? null, group: 'app');
         $settings->set('app.default_currency', $data['default_currency'] ?? null, group: 'app');
         $settings->set('app.timezone', $data['timezone'] ?? null, group: 'app');
 
-        // تحديث الـ theme الافتراضي (لو موجود)
+        // Update default theme if primary color is set
         if (! empty($data['primary_color'])) {
             $theme = $themeService->defaultTheme();
             if ($theme) {
@@ -123,6 +142,19 @@ class MainSettings extends Page implements Forms\Contracts\HasForms
                 $theme->save();
             }
         }
+
+        // Update app locale if language changed
+        if (!empty($data['default_language'])) {
+            app()->setLocale($data['default_language']);
+            session(['locale' => $data['default_language']]);
+        }
+
+        // Add session notification
+        \App\Services\NotificationService::add(
+            'Settings saved successfully',
+            'Your system settings have been updated.',
+            'success'
+        );
 
         Notification::make()
             ->title('Settings saved successfully')
@@ -133,5 +165,15 @@ class MainSettings extends Page implements Forms\Contracts\HasForms
     public static function shouldRegisterNavigation(): bool
     {
         return auth()->user()?->can('settings.view_any') ?? false;
+    }
+
+    protected function getFormActions(): array
+    {
+        return [
+            Action::make('save')
+                ->label('Save Settings')
+                ->submit('save')
+                ->color('primary'),
+        ];
     }
 }

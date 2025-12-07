@@ -8,6 +8,7 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
 use Filament\Notifications\Notification;
+use Filament\Actions\Action;
 
 class UserProfile extends Page implements HasForms
 {
@@ -76,8 +77,9 @@ class UserProfile extends Page implements HasForms
 
         return $form
             ->schema([
-                Forms\Components\Section::make('User Preferences')
-                    ->description('Manage your personal preferences and settings')
+                Forms\Components\Section::make('Language & Theme')
+                    ->description('Configure your preferred language and visual theme')
+                    ->icon('heroicon-o-language')
                     ->schema([
                         Forms\Components\Select::make('language_id')
                             ->label('Language')
@@ -87,28 +89,44 @@ class UserProfile extends Page implements HasForms
                             )
                             ->searchable()
                             ->preload()
-                            ->required(),
+                            ->required()
+                            ->helperText('Select your preferred language for the dashboard'),
                         Forms\Components\Select::make('theme_id')
                             ->label('Theme')
                             ->options(
                                 \App\Models\MainCore\Theme::pluck('name', 'id')
                             )
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->helperText('Choose a visual theme for your dashboard'),
+                    ])
+                    ->columns(2),
+
+                Forms\Components\Section::make('Date & Time Preferences')
+                    ->description('Customize how dates and times are displayed')
+                    ->icon('heroicon-o-clock')
+                    ->schema([
                         Forms\Components\Select::make('timezone')
                             ->label('Timezone')
                             ->options($timezones)
                             ->searchable()
-                            ->default('UTC'),
+                            ->default('UTC')
+                            ->required()
+                            ->helperText('Select your timezone'),
                         Forms\Components\Select::make('date_format')
                             ->label('Date Format')
                             ->options($dateFormats)
-                            ->default('Y-m-d'),
+                            ->default('Y-m-d')
+                            ->required()
+                            ->helperText('Choose how dates are displayed'),
                         Forms\Components\Select::make('time_format')
                             ->label('Time Format')
                             ->options($timeFormats)
-                            ->default('H:i'),
-                    ]),
+                            ->default('H:i')
+                            ->required()
+                            ->helperText('Choose how times are displayed'),
+                    ])
+                    ->columns(3),
             ])
             ->statePath('data');
     }
@@ -131,8 +149,17 @@ class UserProfile extends Page implements HasForms
 
         // Update session locale if language changed
         if ($preference->language) {
-            session(['locale' => $preference->language->code]);
+            $languageCode = $preference->language->code;
+            session(['locale' => $languageCode]);
+            app()->setLocale($languageCode);
         }
+
+        // Add session notification
+        \App\Services\NotificationService::add(
+            'Preferences saved successfully',
+            'Your personal preferences have been updated.',
+            'success'
+        );
 
         Notification::make()
             ->title('Preferences saved successfully')
@@ -143,6 +170,16 @@ class UserProfile extends Page implements HasForms
     public static function shouldRegisterNavigation(): bool
     {
         return true; // Always visible to authenticated users
+    }
+
+    protected function getFormActions(): array
+    {
+        return [
+            Action::make('save')
+                ->label('Save Preferences')
+                ->submit('save')
+                ->color('primary'),
+        ];
     }
 }
 
