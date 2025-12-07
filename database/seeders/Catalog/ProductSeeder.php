@@ -7,6 +7,7 @@ use App\Models\Catalog\Category;
 use App\Models\Catalog\Product;
 use App\Models\MainCore\Currency;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class ProductSeeder extends Seeder
 {
@@ -83,6 +84,9 @@ class ProductSeeder extends Seeder
         ];
 
         foreach ($products as $product) {
+            // Generate slug from product name
+            $product['slug'] = Str::slug($product['name']);
+            
             Product::updateOrCreate(
                 ['sku' => $product['sku']],
                 $product
