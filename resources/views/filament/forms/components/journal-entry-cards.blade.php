@@ -52,6 +52,28 @@
     class="journal-entry-cards"
     :dir="$isRTL ? 'rtl' : 'ltr'"
 >
+    <!-- Global Currency Selector -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+        <div class="flex items-center gap-4">
+            <label class="text-sm font-semibold text-gray-700 whitespace-nowrap">
+                {{ trans_dash('accounting.global_currency', 'Global Currency for All Entries') }}:
+            </label>
+            <select 
+                x-model="globalCurrencyId"
+                @change="applyGlobalCurrency()"
+                class="flex-1 max-w-xs rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm"
+            >
+                <option value="">{{ trans_dash('accounting.select_currency', 'Select Currency') }}</option>
+                <template x-for="opt in currencyOptions" :key="opt.value">
+                    <option :value="opt.value" x-text="opt.label"></option>
+                </template>
+            </select>
+            <div class="text-xs text-gray-600">
+                <span x-show="globalCurrencyId">{{ trans_dash('accounting.applied_to_all', 'Applied to all entries') }}</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Toolbar -->
     <div class="flex gap-2 mb-4 flex-wrap">
         @if($allowAddRows)
@@ -102,7 +124,7 @@
                             <label class="text-sm font-bold text-green-800 uppercase">
                                 {{ trans_dash('accounting.debit', 'Debit') }}
                             </label>
-                            <span class="text-xs text-green-600" x-show="row.debit > 0" x-text="formatMoney(row.base_amount || row.debit)"></span>
+                            <span class="text-xs text-green-600" x-show="rows[index].debit > 0" x-text="formatMoney(rows[index].base_amount || rows[index].debit)"></span>
                         </div>
                         
                         <div class="space-y-3">
@@ -112,7 +134,7 @@
                                     {{ trans_dash('accounting.account', 'Account') }} *
                                 </label>
                                 <select 
-                                    x-model="row.account_id"
+                                    x-model="rows[index].account_id"
                                     @change="updateState()"
                                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm"
                                     required
@@ -132,7 +154,7 @@
                                 <input 
                                     type="number"
                                     step="0.01"
-                                    x-model.number="row.debit"
+                                    x-model.number="rows[index].debit"
                                     @input="onDebitChange(index)"
                                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-sm font-mono text-right"
                                     placeholder="0.00"
@@ -147,7 +169,7 @@
                                         {{ trans_dash('accounting.currency', 'Currency') }}
                                     </label>
                                     <select 
-                                        x-model="row.currency_id"
+                                        x-model="rows[index].currency_id"
                                         @change="onCurrencyChange(index)"
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm"
                                     >
@@ -164,7 +186,7 @@
                                     <input 
                                         type="number"
                                         step="0.000001"
-                                        x-model.number="row.exchange_rate"
+                                        x-model.number="rows[index].exchange_rate"
                                         @input="onExchangeRateChange(index)"
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm font-mono text-right"
                                         placeholder="1.00"
@@ -180,7 +202,7 @@
                                 </label>
                                 <input 
                                     type="number"
-                                    x-model.number="row.base_amount"
+                                    x-model.number="rows[index].base_amount"
                                     readonly
                                     class="w-full rounded-md border-gray-300 bg-gray-100 text-sm font-mono text-right cursor-not-allowed"
                                     placeholder="0.00"
@@ -194,10 +216,10 @@
                                 </label>
                                 <input 
                                     type="text"
-                                    x-model="row.description"
+                                    x-model="rows[index].description"
                                     @input="updateState()"
                                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm"
-                                    :placeholder="trans_dash('accounting.description_placeholder', 'Enter description')"
+                                    placeholder="{{ trans_dash('accounting.description_placeholder', 'Enter description') }}"
                                 />
                             </div>
                         </div>
@@ -209,7 +231,7 @@
                             <label class="text-sm font-bold text-red-800 uppercase">
                                 {{ trans_dash('accounting.credit', 'Credit') }}
                             </label>
-                            <span class="text-xs text-red-600" x-show="row.credit > 0" x-text="formatMoney(row.base_amount || row.credit)"></span>
+                            <span class="text-xs text-red-600" x-show="rows[index].credit > 0" x-text="formatMoney(rows[index].credit_base_amount || rows[index].credit)"></span>
                         </div>
                         
                         <div class="space-y-3">
@@ -219,7 +241,7 @@
                                     {{ trans_dash('accounting.account', 'Account') }} *
                                 </label>
                                 <select 
-                                    x-model="row.credit_account_id"
+                                    x-model="rows[index].credit_account_id"
                                     @change="updateState()"
                                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm"
                                 >
@@ -238,7 +260,7 @@
                                 <input 
                                     type="number"
                                     step="0.01"
-                                    x-model.number="row.credit"
+                                    x-model.number="rows[index].credit"
                                     @input="onCreditChange(index)"
                                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 text-sm font-mono text-right"
                                     placeholder="0.00"
@@ -253,7 +275,7 @@
                                         {{ trans_dash('accounting.currency', 'Currency') }}
                                     </label>
                                     <select 
-                                        x-model="row.credit_currency_id"
+                                        x-model="rows[index].credit_currency_id"
                                         @change="onCreditCurrencyChange(index)"
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm"
                                     >
@@ -270,7 +292,7 @@
                                     <input 
                                         type="number"
                                         step="0.000001"
-                                        x-model.number="row.credit_exchange_rate"
+                                        x-model.number="rows[index].credit_exchange_rate"
                                         @input="onCreditExchangeRateChange(index)"
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm font-mono text-right"
                                         placeholder="1.00"
@@ -286,7 +308,7 @@
                                 </label>
                                 <input 
                                     type="number"
-                                    x-model.number="row.credit_base_amount"
+                                    x-model.number="rows[index].credit_base_amount"
                                     readonly
                                     class="w-full rounded-md border-gray-300 bg-gray-100 text-sm font-mono text-right cursor-not-allowed"
                                     placeholder="0.00"
@@ -300,10 +322,10 @@
                                 </label>
                                 <input 
                                     type="text"
-                                    x-model="row.credit_description"
+                                    x-model="rows[index].credit_description"
                                     @input="updateState()"
                                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm"
-                                    :placeholder="trans_dash('accounting.description_placeholder', 'Enter description')"
+                                    placeholder="{{ trans_dash('accounting.description_placeholder', 'Enter description') }}"
                                 />
                             </div>
                         </div>
@@ -318,7 +340,7 @@
                             {{ trans_dash('accounting.cost_center', 'Cost Center') }}
                         </label>
                         <select 
-                            x-model="row.cost_center_id"
+                            x-model="rows[index].cost_center_id"
                             @change="updateState()"
                             class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm"
                         >
@@ -335,7 +357,7 @@
                             {{ trans_dash('accounting.project', 'Project') }}
                         </label>
                         <select 
-                            x-model="row.project_id"
+                            x-model="rows[index].project_id"
                             @change="updateState()"
                             class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm"
                         >
@@ -353,10 +375,10 @@
                         </label>
                         <input 
                             type="text"
-                            x-model="row.reference"
+                            x-model="rows[index].reference"
                             @input="updateState()"
                             class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm"
-                            :placeholder="trans_dash('accounting.reference_placeholder', 'Reference number')"
+                            placeholder="{{ trans_dash('accounting.reference_placeholder', 'Reference number') }}"
                         />
                     </div>
                 </div>
@@ -424,6 +446,7 @@ function journalEntryCards(config) {
         selectedRows: [],
         errors: [],
         entryDate: null,
+        globalCurrencyId: null,
         accountOptions: config.accountOptions || [],
         currencyOptions: config.currencyOptions || [],
         costCenterOptions: config.costCenterOptions || [],
@@ -433,11 +456,11 @@ function journalEntryCards(config) {
         init() {
             this.ensureRowsIsArray();
             
-            if (this.rows.length === 0) {
-                this.addRow();
-            }
+            // Start with 0 cards - don't auto-add row
+            // User must click "Add Row" button
             
             this.entryDate = this.getEntryDate();
+            this.globalCurrencyId = this.defaultCurrencyId || '';
             
             this.$watch('rows', () => {
                 this.ensureRowsIsArray();
@@ -482,11 +505,11 @@ function journalEntryCards(config) {
                 account_id: '',
                 debit: 0,
                 credit: 0,
-                currency_id: this.defaultCurrencyId || '',
+                currency_id: this.globalCurrencyId || this.defaultCurrencyId || '',
                 exchange_rate: 1,
                 base_amount: 0,
                 credit_account_id: '',
-                credit_currency_id: this.defaultCurrencyId || '',
+                credit_currency_id: this.globalCurrencyId || this.defaultCurrencyId || '',
                 credit_exchange_rate: 1,
                 credit_base_amount: 0,
                 description: '',
@@ -496,6 +519,66 @@ function journalEntryCards(config) {
                 reference: '',
             };
             this.rows.push(newRow);
+            
+            // Apply global currency if set
+            if (this.globalCurrencyId) {
+                this.applyCurrencyToRow(this.rows.length - 1, this.globalCurrencyId);
+            }
+            
+            this.updateState();
+        },
+        
+        async applyGlobalCurrency() {
+            if (!this.globalCurrencyId) return;
+            
+            // Apply to all existing rows
+            for (let i = 0; i < this.rows.length; i++) {
+                await this.applyCurrencyToRow(i, this.globalCurrencyId);
+            }
+        },
+        
+        async applyCurrencyToRow(index, currencyId) {
+            const row = this.rows[index];
+            if (!row) return;
+            
+            // Apply to debit side
+            if (currencyId) {
+                row.currency_id = currencyId;
+                if (currencyId == this.defaultCurrencyId) {
+                    row.exchange_rate = 1;
+                } else {
+                    try {
+                        const response = await fetch(`/api/exchange-rate?currency_id=${currencyId}&date=${this.entryDate}`);
+                        const data = await response.json();
+                        if (data.success) {
+                            row.exchange_rate = parseFloat(data.rate);
+                        }
+                    } catch (e) {
+                        row.exchange_rate = 1;
+                    }
+                }
+                this.calculateBaseAmount(index, 'debit');
+            }
+            
+            // Apply to credit side
+            if (currencyId) {
+                row.credit_currency_id = currencyId;
+                if (currencyId == this.defaultCurrencyId) {
+                    row.credit_exchange_rate = 1;
+                } else {
+                    try {
+                        const response = await fetch(`/api/exchange-rate?currency_id=${currencyId}&date=${this.entryDate}`);
+                        const data = await response.json();
+                        if (data.success) {
+                            row.credit_exchange_rate = parseFloat(data.rate);
+                        }
+                    } catch (e) {
+                        row.credit_exchange_rate = 1;
+                    }
+                }
+                this.calculateBaseAmount(index, 'credit');
+            }
+            
             this.updateState();
         },
 
