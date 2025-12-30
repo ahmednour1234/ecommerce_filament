@@ -102,6 +102,7 @@
                     <tr 
                         class="hover:bg-gray-50"
                         :class="{ 'bg-yellow-50': hasError(row, index) }"
+                        x-show="row && typeof row === 'object'"
                     >
                         <td class="border border-gray-300 p-1 text-center">
                             <input 
@@ -118,6 +119,11 @@
                         </template>
                     </tr>
                 </template>
+                <tr x-show="!rows || rows.length === 0">
+                    <td :colspan="{{ count($columns) + 1 }}" class="border border-gray-300 p-4 text-center text-gray-500">
+                        {{ trans_dash('accounting.no_rows', 'No rows. Click "Add Row" to add a new row.') }}
+                    </td>
+                </tr>
             </tbody>
             @if($totalDebitColumn || $totalCreditColumn)
                 <tfoot class="bg-gray-100 font-bold">
@@ -161,7 +167,9 @@
 
 @push('scripts')
 <script>
-function excelGridTable(config) {
+// Ensure function is available globally before Alpine initializes
+if (typeof window.excelGridTable === 'undefined') {
+    window.excelGridTable = function excelGridTable(config) {
     // Ensure rows is always an array
     let initialRows = config.rows || [];
     if (!Array.isArray(initialRows)) {
@@ -186,10 +194,6 @@ function excelGridTable(config) {
             // Ensure rows is always an array
             this.ensureRowsIsArray();
             
-            if (this.rows.length === 0) {
-                this.addRow();
-            }
-            
             // Get entry date from parent form if available
             this.entryDate = this.getEntryDate();
             
@@ -200,7 +204,14 @@ function excelGridTable(config) {
                 this.recalculateAll();
             }, { deep: true });
             
-            this.updateState();
+            // Only add initial row if we're in create mode (no existing data)
+            if (this.rows.length === 0 && !this.$wire?.get?.('data.id')) {
+                this.$nextTick(() => {
+                    this.addRow();
+                });
+            } else {
+                this.updateState();
+            }
         },
         
         ensureRowsIsArray() {
@@ -242,8 +253,11 @@ function excelGridTable(config) {
             this.columns.forEach(col => {
                 newRow[col.name] = col.default ?? '';
             });
+            // Use $nextTick to ensure reactivity
             this.rows.push(newRow);
-            this.updateState();
+            this.$nextTick(() => {
+                this.updateState();
+            });
         },
 
         addMultipleRows() {
@@ -576,7 +590,8 @@ function excelGridTable(config) {
                 });
             });
         }
-    }
+    };
+    };
 }
 </script>
 @endpush

@@ -3,12 +3,27 @@
 namespace App\Filament\Resources\Accounting\JournalEntryResource\Pages;
 
 use App\Filament\Resources\Accounting\JournalEntryResource;
+use App\Services\Accounting\JournalEntryService;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
 
 class ViewJournalEntry extends ViewRecord
 {
     protected static string $resource = JournalEntryResource::class;
+
+    protected function getJournalEntryService(): JournalEntryService
+    {
+        return app(JournalEntryService::class);
+    }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        // Load lines data using service transformation
+        $entry = $this->record->load(['lines.account', 'lines.currency']);
+        $data['lines'] = $this->getJournalEntryService()->transformLinesForDisplay($entry->lines);
+        
+        return $data;
+    }
 
     protected function getHeaderActions(): array
     {

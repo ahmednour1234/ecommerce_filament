@@ -37,9 +37,6 @@ function journalEntryCards(config) {
         init() {
             this.ensureRowsIsArray();
 
-            // Start with 0 cards - don't auto-add row
-            // User must click "Add Row" button
-
             this.entryDate = this.getEntryDate();
             this.globalCurrencyId = this.defaultCurrencyId || '';
 
@@ -59,8 +56,15 @@ function journalEntryCards(config) {
                 });
             }
 
+            // Watch for changes to ensure reactivity
+            this.$watch('rows', (newValue) => {
+                this.ensureRowsIsArray();
+            }, { deep: true });
+
             // Initial state sync (only once)
-            this.syncToLivewire();
+            this.$nextTick(() => {
+                this.syncToLivewire();
+            });
         },
 
         createEmptyRow() {
@@ -126,13 +130,16 @@ function journalEntryCards(config) {
             const newRow = this.createEmptyRow();
             this.rows.push(newRow);
 
-            // Apply global currency if set
-            if (this.globalCurrencyId) {
-                this.applyCurrencyToRow(this.rows.length - 1, this.globalCurrencyId);
-            } else {
-                // Only sync to Livewire, no debounce needed for add
-                this.syncToLivewire();
-            }
+            // Use $nextTick to ensure reactivity
+            this.$nextTick(() => {
+                // Apply global currency if set
+                if (this.globalCurrencyId) {
+                    this.applyCurrencyToRow(this.rows.length - 1, this.globalCurrencyId);
+                } else {
+                    // Only sync to Livewire, no debounce needed for add
+                    this.syncToLivewire();
+                }
+            });
         },
 
         async applyGlobalCurrency() {
