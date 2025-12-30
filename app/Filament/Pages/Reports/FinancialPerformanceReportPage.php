@@ -76,17 +76,19 @@ class FinancialPerformanceReportPage extends Page implements HasTable, HasForms
                 ->selectRaw('NULL as kpi, 0 as value, 0 as percentage');
         }
 
-        $query = \App\Models\Accounting\Account::query()
+        // Build the query from the union subquery using fromSub to avoid table reference issues
+        $query = DB::query()
             ->fromSub($unionQuery, 'financial_performance_data')
             ->select('financial_performance_data.*');
 
         return $table
             ->query($query)
             ->columns([
-                Tables\Columns\TextColumn::make('kpi')->label('KPI'),
-                Tables\Columns\TextColumn::make('value')->money(\App\Support\Money::defaultCurrencyCode()),
-                Tables\Columns\TextColumn::make('percentage')->formatStateUsing(fn ($state) => number_format($state, 2) . '%'),
+                Tables\Columns\TextColumn::make('kpi')->label('KPI')->sortable(),
+                Tables\Columns\TextColumn::make('value')->money(\App\Support\Money::defaultCurrencyCode())->sortable(),
+                Tables\Columns\TextColumn::make('percentage')->formatStateUsing(fn ($state) => number_format($state, 2) . '%')->sortable(),
             ])
+            ->defaultSort('kpi', 'asc')
             ->paginated(false);
     }
 
