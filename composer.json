@@ -13,6 +13,7 @@
         "laravel/tinker": "^2.10.1",
         "livewire/livewire": "^3.7",
         "maatwebsite/excel": "*",
+        "mpdf/mpdf": "*",
         "spatie/laravel-permission": "^6.23"
     },
     "require-dev": {

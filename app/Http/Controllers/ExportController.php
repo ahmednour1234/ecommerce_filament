@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Reports\DTOs\FilterDTO;
+use App\Services\Reports\TrialBalanceReportService;
+use App\Services\Reports\GeneralLedgerReportService;
+use App\Services\Reports\IncomeStatementReportService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -17,6 +21,36 @@ class ExportController extends Controller
         ]);
 
         return view('exports.table-print', $printData);
+    }
+
+    public function reportPrint(Request $request, string $report): View
+    {
+        $filters = new FilterDTO($request->get('filters', []));
+        
+        $service = match($report) {
+            'trial-balance' => new TrialBalanceReportService($filters),
+            'general-ledger' => new GeneralLedgerReportService($filters),
+            'income-statement' => new IncomeStatementReportService($filters),
+            'account-statement' => new \App\Services\Reports\AccountStatementReportService($filters),
+            'balance-sheet' => new \App\Services\Reports\BalanceSheetReportService($filters),
+            'cash-flow' => new \App\Services\Reports\CashFlowReportService($filters),
+            'vat' => new \App\Services\Reports\VatReportService($filters),
+            'fixed-assets' => new \App\Services\Reports\FixedAssetsReportService($filters),
+            'journal-entries-by-year' => new \App\Services\Reports\JournalEntriesByYearReportService($filters),
+            'accounts-receivable' => new \App\Services\Reports\AccountsReceivableReportService($filters),
+            'accounts-payable-aging-current' => new \App\Services\Reports\AccountsPayableAgingCurrentReportService($filters),
+            'accounts-payable-aging-overdue' => new \App\Services\Reports\AccountsPayableAgingOverdueReportService($filters),
+            'financial-position' => new \App\Services\Reports\FinancialPositionReportService($filters),
+            'changes-in-equity' => new \App\Services\Reports\ChangesInEquityReportService($filters),
+            'financial-performance' => new \App\Services\Reports\FinancialPerformanceReportService($filters),
+            'comparisons' => new \App\Services\Reports\ComparisonsReportService($filters),
+            default => throw new \InvalidArgumentException("Unknown report: {$report}"),
+        };
+
+        $printData = $service->getPrintViewData();
+        $viewName = "reports.{$report}-print";
+
+        return view($viewName, $printData);
     }
 }
 

@@ -1,0 +1,118 @@
+<?php
+
+namespace App\Filament\Pages\Reports;
+
+use App\Filament\Actions\ReportExportActions;
+use App\Filament\Forms\Components\ReportFilters;
+use App\Reports\DTOs\FilterDTO;
+use App\Services\Reports\AccountStatementReportService;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Pages\Page;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Table;
+use Filament\Tables;
+use Illuminate\Support\Facades\DB;
+
+class AccountStatementReportPage extends Page implements HasTable, HasForms
+{
+    use InteractsWithTable;
+    use InteractsWithForms;
+
+    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationGroup = 'Reports';
+    protected static ?int $navigationSort = 4;
+    protected static string $view = 'filament.pages.reports.account-statement-report';
+
+    public ?array $data = [];
+
+    public function mount(): void
+    {
+        $this->form->fill([
+            'from_date' => now()->startOfMonth()->format('Y-m-d'),
+            'to_date' => now()->format('Y-m-d'),
+            'posted_only' => true,
+        ]);
+    }
+
+    public function form(\Filament\Forms\Form $form): \Filament\Forms\Form
+    {
+        return $form
+            ->schema([
+                ReportFilters::section([
+                    'requireDateRange' => true,
+                    'showAccount' => true,
+                    'showCurrency' => false,
+                ]),
+            ])
+            ->statePath('data');
+    }
+
+    public function table(Table $table): Table
+    {
+        $filters = new FilterDTO($this->data);
+        $service = new AccountStatementReportService($filters);
+        $reportData = $service->getData();
+
+        $rows = $reportData->rows;
+        $unionQueries = [];
+
+        foreach ($rows as $row) {
+            $unionQueries[] = DB::table('general_ledger_entries')
+                ->whereRaw('1 = 0')
+                ->selectRaw('? as date, ? as entry_number, ? as reference, ? as description, ? as debit, ? as credit, ? as balance', [
+                    $row['date'] ?? '',
+                    $row['entry_number'] ?? '',
+                    $row['reference'] ?? '',
+                    $row['description'] ?? '',
+                    $row['debit'] ?? 0,
+                    $row['credit'] ?? 0,
+                    $row['balance'] ?? 0,
+                ]);
+        }
+
+        $unionQuery = null;
+        foreach ($unionQueries as $uq) {
+            $unionQuery = $unionQuery ? $unionQuery->union($uq) : $uq;
+        }
+
+        if ($unionQuery === null) {
+            $unionQuery = DB::table('general_ledger_entries')->whereRaw('1 = 0')
+                ->selectRaw('NULL as date, NULL as entry_number, NULL as reference, NULL as description, 0 as debit, 0 as credit, 0 as balance');
+        }
+
+        $query = \App\Models\Accounting\GeneralLedgerEntry::query()
+            ->fromSub($unionQuery, 'account_statement_data')
+            ->select('account_statement_data.*');
+
+        return $table
+            ->query($query)
+            ->columns([
+                Tables\Columns\TextColumn::make('date')->date()->sortable(),
+                Tables\Columns\TextColumn::make('entry_number')->searchable(),
+                Tables\Columns\TextColumn::make('reference')->searchable(),
+                Tables\Columns\TextColumn::make('description')->limit(50),
+                Tables\Columns\TextColumn::make('debit')->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('credit')->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('balance')->money(\App\Support\Money::defaultCurrencyCode()),
+            ])
+            ->defaultSort('date', 'asc')
+            ->paginated([10, 25, 50, 100]);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return ReportExportActions::actions(
+            fn () => route('reports.print', ['report' => 'account-statement', 'filters' => $this->data]),
+            fn () => (new AccountStatementReportService(new FilterDTO($this->data)))->exportPdf(),
+            fn () => (new AccountStatementReportService(new FilterDTO($this->data)))->exportExcel()
+        );
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return trans_dash('reports.account_statement.navigation', 'Account Statement');
+    }
+}
+
