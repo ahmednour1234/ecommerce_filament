@@ -28,12 +28,8 @@ trait ExportsResourceTable
         $columns = $this->extractTableColumns($table);
         
         // Apply filters from table
-        $filters = $table->getFilters();
-        foreach ($filters as $filter) {
-            if (method_exists($filter, 'apply') && $filter->isActive()) {
-                $filter->apply($tableQuery, $tableQuery);
-            }
-        }
+        // In Filament v3, filters are automatically applied to the query
+        // We don't need to manually apply them here as the table query already has them applied
         
         // Get all records (no pagination for export)
         $records = $tableQuery->get();
