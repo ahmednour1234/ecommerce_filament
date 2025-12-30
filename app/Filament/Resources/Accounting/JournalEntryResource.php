@@ -804,18 +804,20 @@ class JournalEntryResource extends Resource
                         Infolists\Components\TextEntry::make('balance_difference')
                             ->label(trans_dash('accounting.difference', 'Difference'))
                             ->money('USD')
-                            ->color(fn ($record) => {
-                                $difference = abs($record->total_debits - $record->total_credits);
-                                return $difference < 0.01 ? 'success' : 'danger';
-                            })
                             ->size('lg')
-                            ->formatStateUsing(fn ($state, $record) => {
+                            ->formatStateUsing(function ($state, $record) {
                                 $difference = abs($record->total_debits - $record->total_credits);
                                 return $difference < 0.01 ? 
                                     trans_dash('accounting.balanced', 'Balanced') : 
                                     number_format($difference, 2);
                             })
-                            ->state(fn ($record) => abs($record->total_debits - $record->total_credits)),
+                            ->color(function ($record) {
+                                $difference = abs($record->total_debits - $record->total_credits);
+                                return $difference < 0.01 ? 'success' : 'danger';
+                            })
+                            ->state(function ($record) {
+                                return abs($record->total_debits - $record->total_credits);
+                            }),
                     ])
                     ->columns(3),
             ]);
