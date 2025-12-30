@@ -353,7 +353,7 @@ class JournalEntryResource extends Resource
                             ->itemLabel(fn (array $state): ?string => 
                                 ($state['account_id'] ? (Account::find($state['account_id'])?->code . ' - ' . Account::find($state['account_id'])?->name) : null) . 
                                 ' (' . ($state['type'] ?? 'debit') . ': ' . 
-                                number_format($state['debit'] ?? $state['credit'] ?? 0, 2) . ')'
+                                number_format((float) ($state['debit'] ?? $state['credit'] ?? 0), 2) . ')'
                             )
                             ->collapsible()
                             ->reorderable()
@@ -761,7 +761,7 @@ class JournalEntryResource extends Resource
 
                                 Infolists\Components\TextEntry::make('exchange_rate')
                                     ->label(trans_dash('accounting.exchange_rate', 'Exchange Rate'))
-                                    ->formatStateUsing(fn ($state) => $state ? number_format($state, 6) : '1.000000')
+                                    ->formatStateUsing(fn ($state) => $state ? number_format((float) $state, 6) : '1.000000')
                                     ->visible(fn ($record) => $record->currency_id !== null),
 
                                 Infolists\Components\TextEntry::make('cost_center.name')
