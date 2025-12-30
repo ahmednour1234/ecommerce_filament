@@ -56,7 +56,7 @@ class TranslationService
         // Get default language
         $defaultLanguage = Language::where('is_default', true)->where('is_active', true)->first();
         
-        return $defaultLanguage?->code ?? 'en';
+        return $defaultLanguage?->code ?? 'ar';
     }
 
     /**

@@ -34,7 +34,7 @@ class LocaleService
 
         $lang = Language::where('is_default', true)->first();
 
-        return $lang?->code ?? config('app.locale', 'en');
+        return $lang?->code ?? config('app.locale', 'ar');
     }
 
     public function currentTimezone(): string
