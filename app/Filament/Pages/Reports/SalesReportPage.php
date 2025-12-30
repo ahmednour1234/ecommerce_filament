@@ -19,8 +19,8 @@ class SalesReportPage extends Page implements HasTable
     use InteractsWithTable;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
-    protected static ?string $navigationGroup = 'Reports';
-    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationGroup = 'Accounting';
+    protected static ?int $navigationSort = 9;
     protected static string $view = 'filament.pages.reports.sales-report';
 
     public ?array $data = [];

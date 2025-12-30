@@ -16,8 +16,8 @@ class OrdersReportPage extends Page implements HasTable
     use InteractsWithTable;
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
-    protected static ?string $navigationGroup = 'Reports';
-    protected static ?int $navigationSort = 3;
+    protected static ?string $navigationGroup = 'Accounting';
+    protected static ?int $navigationSort = 10;
     protected static string $view = 'filament.pages.reports.orders-report';
 
     public ?array $data = [];

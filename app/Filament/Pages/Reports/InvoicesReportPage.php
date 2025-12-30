@@ -16,8 +16,8 @@ class InvoicesReportPage extends Page implements HasTable
     use InteractsWithTable;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
-    protected static ?string $navigationGroup = 'Reports';
-    protected static ?int $navigationSort = 4;
+    protected static ?string $navigationGroup = 'Accounting';
+    protected static ?int $navigationSort = 11;
     protected static string $view = 'filament.pages.reports.invoices-report';
 
     public ?array $data = [];

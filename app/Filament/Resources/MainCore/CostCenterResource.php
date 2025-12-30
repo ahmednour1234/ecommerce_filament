@@ -18,7 +18,7 @@ class CostCenterResource extends Resource
     protected static ?string $model = CostCenter::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-pie';
-    protected static ?string $navigationGroup = 'MainCore';
+    protected static ?string $navigationGroup = 'Accounting';
     protected static ?int $navigationSort = 6;
 
     public static function form(Form $form): Form

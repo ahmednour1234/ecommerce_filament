@@ -20,8 +20,8 @@ class TrialBalancePage extends Page implements HasTable
     use InteractsWithTable;
 
     protected static ?string $navigationIcon = 'heroicon-o-calculator';
-    protected static ?string $navigationGroup = 'Reports';
-    protected static ?int $navigationSort = 1;
+    protected static ?string $navigationGroup = 'Accounting';
+    protected static ?int $navigationSort = 8;
     protected static string $view = 'filament.pages.reports.trial-balance';
 
     public ?array $data = [];
