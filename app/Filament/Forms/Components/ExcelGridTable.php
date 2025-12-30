@@ -29,13 +29,13 @@ class ExcelGridTable extends Component
         return $static;
     }
 
-    public function columns(array $columns): static
+    public function setColumns(array $columns): static
     {
         $this->columns = $columns;
         return $this;
     }
 
-    public function rows(array $rows): static
+    public function setRows(array $rows): static
     {
         $this->rows = $rows;
         return $this;

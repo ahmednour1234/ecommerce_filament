@@ -207,7 +207,7 @@ class JournalEntryResource extends Resource
                 Forms\Components\Section::make(trans_dash('accounting.journal_entry_lines', 'Journal Entry Lines'))
                     ->schema([
                         ExcelGridTable::make('lines')
-                            ->columns([
+                            ->setColumns([
                                 [
                                     'name' => 'account_id',
                                     'label' => trans_dash('accounting.account', 'Account'),
