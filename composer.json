@@ -31,10 +31,10 @@
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         },
-            "files": [
-        "app/Support/maincore.php",
-        "app/Support/helpers.php"
-    ]
+        "files": [
+            "app/Support/maincore.php",
+            "app/Support/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
