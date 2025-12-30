@@ -20,7 +20,7 @@ class FinancialPerformanceReportPage extends Page implements HasTable, HasForms
     use InteractsWithTable;
     use InteractsWithForms;
 
-    protected static ?string $navigationIcon = 'heroicon-o-trending-up';
+    protected static ?string $navigationIcon = 'heroicon-o-arrow-trending-up';
     protected static ?string $navigationGroup = 'Reports';
     protected static ?int $navigationSort = 15;
     protected static string $view = 'filament.pages.reports.financial-performance-report';
