@@ -4,7 +4,7 @@ namespace App\Filament\Resources\Accounting;
 
 use App\Filament\Resources\Accounting\JournalEntryResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
-use App\Filament\Forms\Components\ExcelGridTable;
+use App\Filament\Forms\Components\JournalEntryCards;
 use App\Models\Accounting\JournalEntry;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\Journal;
@@ -206,7 +206,7 @@ class JournalEntryResource extends Resource
 
                 Forms\Components\Section::make(trans_dash('accounting.journal_entry_lines', 'Journal Entry Lines'))
                     ->schema([
-                        ExcelGridTable::make('lines')
+                        JournalEntryCards::make('lines')
                             ->setColumns([
                                 [
                                     'name' => 'account_id',
@@ -219,9 +219,14 @@ class JournalEntryResource extends Resource
                                     ])->values()->toArray(),
                                 ],
                                 [
-                                    'name' => 'description',
-                                    'label' => trans_dash('accounting.description', 'Description'),
-                                    'type' => 'text',
+                                    'name' => 'currency_id',
+                                    'label' => trans_dash('accounting.currency', 'Currency'),
+                                    'type' => 'select',
+                                    'default' => $defaultCurrencyId,
+                                    'options' => collect($currencyOptions)->map(fn ($label, $value) => [
+                                        'value' => $value,
+                                        'label' => $label,
+                                    ])->values()->toArray(),
                                 ],
                                 [
                                     'name' => 'cost_center_id',
@@ -240,43 +245,6 @@ class JournalEntryResource extends Resource
                                         'value' => $p->id,
                                         'label' => $p->code . ' - ' . $p->name,
                                     ])->values()->toArray(),
-                                ],
-                                [
-                                    'name' => 'debit',
-                                    'label' => trans_dash('accounting.debit', 'Debit'),
-                                    'type' => 'money',
-                                ],
-                                [
-                                    'name' => 'credit',
-                                    'label' => trans_dash('accounting.credit', 'Credit'),
-                                    'type' => 'money',
-                                ],
-                                [
-                                    'name' => 'currency_id',
-                                    'label' => trans_dash('accounting.currency', 'Currency'),
-                                    'type' => 'select',
-                                    'default' => $defaultCurrencyId,
-                                    'options' => collect($currencyOptions)->map(fn ($label, $value) => [
-                                        'value' => $value,
-                                        'label' => $label,
-                                    ])->values()->toArray(),
-                                ],
-                                [
-                                    'name' => 'exchange_rate',
-                                    'label' => trans_dash('accounting.exchange_rate', 'Exchange Rate'),
-                                    'type' => 'money',
-                                    'default' => 1,
-                                ],
-                                [
-                                    'name' => 'base_amount',
-                                    'label' => trans_dash('accounting.amount_in_base', 'Amount in Base'),
-                                    'type' => 'money',
-                                    'readonly' => true,
-                                ],
-                                [
-                                    'name' => 'reference',
-                                    'label' => trans_dash('accounting.reference', 'Reference'),
-                                    'type' => 'text',
                                 ],
                             ])
                             ->totalDebitColumn('debit')
