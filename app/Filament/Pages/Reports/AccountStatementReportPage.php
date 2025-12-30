@@ -43,6 +43,7 @@ class AccountStatementReportPage extends Page implements HasTable, HasForms
                 ReportFilters::section([
                     'requireDateRange' => true,
                     'showAccount' => true,
+                    'requireAccount' => true,
                     'showCurrency' => false,
                 ]),
             ])
@@ -51,6 +52,28 @@ class AccountStatementReportPage extends Page implements HasTable, HasForms
 
     public function table(Table $table): Table
     {
+        // Don't build the query if account_id is not set
+        if (empty($this->data['account_id'])) {
+            $query = \App\Models\Accounting\GeneralLedgerEntry::query()
+                ->whereRaw('1 = 0')
+                ->selectRaw('NULL as date, NULL as entry_number, NULL as reference, NULL as description, 0 as debit, 0 as credit, 0 as balance');
+            
+            return $table
+                ->query($query)
+                ->columns([
+                    Tables\Columns\TextColumn::make('date')->date(),
+                    Tables\Columns\TextColumn::make('entry_number'),
+                    Tables\Columns\TextColumn::make('reference'),
+                    Tables\Columns\TextColumn::make('description'),
+                    Tables\Columns\TextColumn::make('debit')->money(\App\Support\Money::defaultCurrencyCode()),
+                    Tables\Columns\TextColumn::make('credit')->money(\App\Support\Money::defaultCurrencyCode()),
+                    Tables\Columns\TextColumn::make('balance')->money(\App\Support\Money::defaultCurrencyCode()),
+                ])
+                ->emptyStateHeading(trans_dash('reports.account_statement.select_account', 'Please select an account to view the statement'))
+                ->emptyStateDescription(trans_dash('reports.account_statement.select_account_description', 'Choose an account from the filters above to generate the account statement.'))
+                ->paginated(false);
+        }
+
         $filters = new FilterDTO($this->data);
         $service = new AccountStatementReportService($filters);
         $reportData = $service->getData();
@@ -103,6 +126,11 @@ class AccountStatementReportPage extends Page implements HasTable, HasForms
 
     protected function getHeaderActions(): array
     {
+        // Only show export actions if account is selected
+        if (empty($this->data['account_id'])) {
+            return [];
+        }
+
         return ReportExportActions::actions(
             fn () => route('reports.print', ['report' => 'account-statement', 'filters' => $this->data]),
             fn () => (new AccountStatementReportService(new FilterDTO($this->data)))->exportPdf(),

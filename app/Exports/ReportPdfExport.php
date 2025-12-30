@@ -41,29 +41,53 @@ class ReportPdfExport
      */
     protected function createMpdf(): Mpdf
     {
-        $defaultConfig = (new ConfigVariables())->getDefaults();
-        $fontDirs = $defaultConfig['fontDir'];
+        // Get default configuration
+        $defaultConfig = [];
+        $defaultFontData = [];
+        
+        try {
+            $configVars = new ConfigVariables();
+            $defaultConfig = $configVars->getDefaults();
+            $fontDirs = $defaultConfig['fontDir'] ?? [];
+            
+            $fontVars = new FontVariables();
+            $defaultFontData = $fontVars->getDefaults()['fontdata'] ?? [];
+        } catch (\Exception $e) {
+            // Fallback if classes are not available
+            $fontDirs = [];
+            $defaultFontData = [];
+        }
 
-        $defaultFontConfig = (new FontVariables())->getDefaults();
-        $fontData = $defaultFontConfig['fontdata'];
+        // Merge with custom font directories
+        $fontDirs = array_merge($fontDirs, [
+            public_path('fonts'),
+            resource_path('fonts'),
+        ]);
 
-        // Configure Arabic fonts
-        $fontData['dejavusans'] = [
-            'R' => 'DejaVuSans.ttf',
-            'B' => 'DejaVuSans-Bold.ttf',
-            'I' => 'DejaVuSans-Oblique.ttf',
-            'BI' => 'DejaVuSans-BoldOblique.ttf',
-        ];
+        // Configure Arabic fonts - merge with defaults
+        $fontData = array_merge($defaultFontData, [
+            'dejavusans' => [
+                'R' => 'DejaVuSans.ttf',
+                'B' => 'DejaVuSans-Bold.ttf',
+                'I' => 'DejaVuSans-Oblique.ttf',
+                'BI' => 'DejaVuSans-BoldOblique.ttf',
+            ],
+        ]);
 
-        $fontData['tajawal'] = [
-            'R' => 'Tajawal-Regular.ttf',
-            'B' => 'Tajawal-Bold.ttf',
-        ];
+        // Add custom Arabic fonts if they exist
+        if (file_exists(public_path('fonts/Tajawal-Regular.ttf'))) {
+            $fontData['tajawal'] = [
+                'R' => 'Tajawal-Regular.ttf',
+                'B' => 'Tajawal-Bold.ttf',
+            ];
+        }
 
-        $fontData['cairo'] = [
-            'R' => 'Cairo-Regular.ttf',
-            'B' => 'Cairo-Bold.ttf',
-        ];
+        if (file_exists(public_path('fonts/Cairo-Regular.ttf'))) {
+            $fontData['cairo'] = [
+                'R' => 'Cairo-Regular.ttf',
+                'B' => 'Cairo-Bold.ttf',
+            ];
+        }
 
         $config = [
             'mode' => 'utf-8',
@@ -75,13 +99,12 @@ class ReportPdfExport
             'margin_bottom' => 16,
             'margin_header' => 9,
             'margin_footer' => 9,
-            'fontDir' => array_merge($fontDirs, [
-                public_path('fonts'),
-                resource_path('fonts'),
-            ]),
+            'fontDir' => $fontDirs,
             'fontdata' => $fontData,
-            'default_font' => $this->isRtl ? 'dejavusans' : 'dejavusans',
+            'default_font' => 'dejavusans',
             'direction' => $this->isRtl ? 'rtl' : 'ltr',
+            'autoScriptToLang' => true,
+            'autoLangToFont' => true,
         ];
 
         return new Mpdf($config);

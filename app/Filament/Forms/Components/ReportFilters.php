@@ -35,6 +35,7 @@ class ReportFilters
     {
         $requireDateRange = $options['requireDateRange'] ?? true;
         $showAccount = $options['showAccount'] ?? true;
+        $requireAccount = $options['requireAccount'] ?? false;
         $showCurrency = $options['showCurrency'] ?? true;
         $showProject = $options['showProject'] ?? false;
         $showFiscalYear = $options['showFiscalYear'] ?? false;
@@ -83,16 +84,23 @@ class ReportFilters
 
         // Account (if enabled)
         if ($showAccount) {
-            $schema[] = Select::make('account_id')
+            $accountField = Select::make('account_id')
                 ->label(trans_dash('reports.filters.account', 'Account'))
                 ->options(fn () => Account::active()->orderBy('code')->get()->mapWithKeys(function ($account) {
                     return [$account->id => $account->code . ' - ' . $account->name];
                 }))
                 ->searchable()
                 ->preload()
-                ->nullable()
                 ->reactive()
                 ->afterStateUpdated(fn ($component) => $component->getContainer()->getParentComponent()?->dispatch('filters-updated'));
+            
+            if ($requireAccount) {
+                $accountField->required();
+            } else {
+                $accountField->nullable();
+            }
+            
+            $schema[] = $accountField;
         }
 
         // Currency (if enabled)
