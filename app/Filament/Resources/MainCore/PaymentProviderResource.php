@@ -101,5 +101,15 @@ class PaymentProviderResource extends Resource
             'edit' => Pages\EditPaymentProvider::route('/{record}/edit'),
         ];
     }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('payment_providers.view_any') ?? true;
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canViewAny();
+    }
 }
 

@@ -150,5 +150,10 @@ class WarehouseResource extends Resource
     {
         return auth()->user()?->can('warehouses.delete') ?? false;
     }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canViewAny();
+    }
 }
 

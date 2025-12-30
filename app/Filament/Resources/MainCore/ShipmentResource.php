@@ -143,5 +143,15 @@ class ShipmentResource extends Resource
             'edit' => Pages\EditShipment::route('/{record}/edit'),
         ];
     }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('shipments.view_any') ?? true;
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canViewAny();
+    }
 }
 

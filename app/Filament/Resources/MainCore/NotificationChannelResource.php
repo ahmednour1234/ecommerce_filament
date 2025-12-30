@@ -118,5 +118,15 @@ class NotificationChannelResource extends Resource
             'edit' => Pages\EditNotificationChannel::route('/{record}/edit'),
         ];
     }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('notification_channels.view_any') ?? true;
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canViewAny();
+    }
 }
 

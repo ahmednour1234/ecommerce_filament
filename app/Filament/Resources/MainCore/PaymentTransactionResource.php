@@ -170,5 +170,15 @@ class PaymentTransactionResource extends Resource
             'edit' => Pages\EditPaymentTransaction::route('/{record}/edit'),
         ];
     }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('payment_transactions.view_any') ?? true;
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canViewAny();
+    }
 }
 

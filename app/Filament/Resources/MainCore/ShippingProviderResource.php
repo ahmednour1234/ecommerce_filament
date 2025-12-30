@@ -95,5 +95,15 @@ class ShippingProviderResource extends Resource
             'edit' => Pages\EditShippingProvider::route('/{record}/edit'),
         ];
     }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('shipping_providers.view_any') ?? true;
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canViewAny();
+    }
 }
 

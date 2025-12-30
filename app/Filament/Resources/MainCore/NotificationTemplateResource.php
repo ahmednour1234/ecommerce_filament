@@ -118,5 +118,15 @@ class NotificationTemplateResource extends Resource
             'edit' => Pages\EditNotificationTemplate::route('/{record}/edit'),
         ];
     }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('notification_templates.view_any') ?? true;
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canViewAny();
+    }
 }
 
