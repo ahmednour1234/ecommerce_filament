@@ -197,7 +197,7 @@ class JournalEntryService
                 'currency_id' => isset($line['currency_id']) ? (int) $line['currency_id'] : null,
                 'exchange_rate' => (float) ($line['exchange_rate'] ?? 1),
                 'amount' => isset($line['amount']) ? (float) $line['amount'] : null,
-                'base_amount' => isset($line['base_amount']) ? (float) ($line['base_amount'] ?? 0),
+                'base_amount' => isset($line['base_amount']) ? (float) $line['base_amount'] : 0,
                 'reference' => $line['reference'] ?? null,
             ];
 
