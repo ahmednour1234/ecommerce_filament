@@ -115,15 +115,76 @@ class ReportPdfExport
      */
     protected function renderView(): string
     {
+        // Ensure all data is properly UTF-8 encoded
+        $cleanData = $this->data->map(function($row) {
+            if (is_array($row)) {
+                return array_map(function($value) {
+                    return $this->ensureUtf8($value);
+                }, array_values($row));
+            }
+            $array = (array) $row;
+            return array_map(function($value) {
+                return $this->ensureUtf8($value);
+            }, array_values($array));
+        })->toArray();
+
+        $cleanHeaders = array_map(function($header) {
+            return $this->ensureUtf8($header);
+        }, $this->headers);
+
+        $cleanTitle = $this->ensureUtf8($this->title);
+        
+        $cleanMetadata = array_map(function($value) {
+            return $this->ensureUtf8($value);
+        }, $this->metadata);
+
         $html = view($this->view, [
-            'title' => $this->title,
-            'headers' => $this->headers,
-            'rows' => $this->data->map(fn($row) => is_array($row) ? array_values($row) : array_values((array) $row))->toArray(),
-            'metadata' => $this->metadata,
+            'title' => $cleanTitle,
+            'headers' => $cleanHeaders,
+            'rows' => $cleanData,
+            'metadata' => $cleanMetadata,
             'isRtl' => $this->isRtl,
         ])->render();
 
+        // Ensure the HTML is UTF-8
+        if (!mb_check_encoding($html, 'UTF-8')) {
+            $html = mb_convert_encoding($html, 'UTF-8', 'UTF-8');
+        }
+
         return $html;
+    }
+
+    /**
+     * Ensure value is properly UTF-8 encoded
+     */
+    protected function ensureUtf8($value): string
+    {
+        if (is_null($value)) {
+            return '';
+        }
+
+        if (is_numeric($value) || is_bool($value)) {
+            return (string) $value;
+        }
+
+        if (!is_string($value)) {
+            $value = (string) $value;
+        }
+
+        // Check if already valid UTF-8
+        if (mb_check_encoding($value, 'UTF-8')) {
+            return $value;
+        }
+
+        // Try to convert to UTF-8
+        $converted = mb_convert_encoding($value, 'UTF-8', mb_detect_encoding($value, ['UTF-8', 'ISO-8859-1', 'Windows-1256', 'ASCII'], true));
+        
+        // If conversion fails, remove invalid characters
+        if ($converted === false || !mb_check_encoding($converted, 'UTF-8')) {
+            return mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+        }
+
+        return $converted;
     }
 
     /**

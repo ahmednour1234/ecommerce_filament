@@ -52,14 +52,14 @@ class ReportFilters
                 ->required($requireDateRange)
                 ->default(now()->startOfMonth())
                 ->reactive()
-                ->afterStateUpdated(fn ($component) => $component->getContainer()->getParentComponent()?->dispatch('filters-updated'));
+                ->afterStateUpdated(fn ($component) => $component->getLivewire()?->dispatch('filters-updated'));
 
             $schema[] = DatePicker::make('to_date')
                 ->label(trans_dash('reports.filters.to_date', 'To Date'))
                 ->required($requireDateRange)
                 ->default(now())
                 ->reactive()
-                ->afterStateUpdated(fn ($component) => $component->getContainer()->getParentComponent()?->dispatch('filters-updated'));
+                ->afterStateUpdated(fn ($component) => $component->getLivewire()?->dispatch('filters-updated'));
         }
 
         // Branch
@@ -92,7 +92,7 @@ class ReportFilters
                 ->searchable()
                 ->preload()
                 ->reactive()
-                ->afterStateUpdated(fn ($component) => $component->getContainer()->getParentComponent()?->dispatch('filters-updated'));
+                ->afterStateUpdated(fn ($component) => $component->getLivewire()?->dispatch('filters-updated'));
             
             if ($requireAccount) {
                 $accountField->required();
@@ -112,7 +112,7 @@ class ReportFilters
                 ->preload()
                 ->nullable()
                 ->reactive()
-                ->afterStateUpdated(fn ($component) => $component->getContainer()->getParentComponent()?->dispatch('filters-updated'));
+                ->afterStateUpdated(fn ($component) => $component->getLivewire()?->dispatch('filters-updated'));
         }
 
         // Project (if enabled)
@@ -124,7 +124,7 @@ class ReportFilters
                 ->preload()
                 ->nullable()
                 ->reactive()
-                ->afterStateUpdated(fn ($component) => $component->getContainer()->getParentComponent()?->dispatch('filters-updated'));
+                ->afterStateUpdated(fn ($component) => $component->getLivewire()?->dispatch('filters-updated'));
         }
 
         // Fiscal Year (if enabled)
@@ -136,7 +136,7 @@ class ReportFilters
                 ->preload()
                 ->nullable()
                 ->reactive()
-                ->afterStateUpdated(fn ($component) => $component->getContainer()->getParentComponent()?->dispatch('filters-updated'));
+                ->afterStateUpdated(fn ($component) => $component->getLivewire()?->dispatch('filters-updated'));
         }
 
         // Period (if enabled)
@@ -148,7 +148,7 @@ class ReportFilters
                 ->preload()
                 ->nullable()
                 ->reactive()
-                ->afterStateUpdated(fn ($component) => $component->getContainer()->getParentComponent()?->dispatch('filters-updated'));
+                ->afterStateUpdated(fn ($component) => $component->getLivewire()?->dispatch('filters-updated'));
         }
 
         // Toggles
