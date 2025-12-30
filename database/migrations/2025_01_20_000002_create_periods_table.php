@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
+        if (Schema::hasTable('periods')) {
+            return;
+        }
+        
         Schema::create('periods', function (Blueprint $table) {
             $table->id();
             $table->foreignId('fiscal_year_id')->constrained()->onDelete('cascade');

@@ -10,30 +10,87 @@ return new class extends Migration {
     {
         Schema::table('vouchers', function (Blueprint $table) {
             // Add new columns first
-            $table->enum('status', ['draft', 'pending_approval', 'approved', 'rejected', 'posted'])->default('draft')->after('type');
-            $table->foreignId('currency_id')->nullable()->after('amount')->constrained('currencies')->onDelete('restrict');
-            $table->decimal('exchange_rate', 18, 8)->default(1)->after('currency_id');
-            $table->decimal('base_amount', 15, 2)->nullable()->after('exchange_rate');
-            // Note: project_id foreign key added after projects table exists
-            $table->unsignedBigInteger('project_id')->nullable()->after('cost_center_id');
-            $table->foreignId('approved_by')->nullable()->after('created_by')->constrained('users')->onDelete('set null');
-            $table->timestamp('approved_at')->nullable()->after('approved_by');
-            // Note: fiscal_year_id and period_id foreign keys added after those tables exist
-            $table->unsignedBigInteger('fiscal_year_id')->nullable()->after('voucher_date');
-            $table->unsignedBigInteger('period_id')->nullable()->after('fiscal_year_id');
+            if (!Schema::hasColumn('vouchers', 'status')) {
+                $table->enum('status', ['draft', 'pending_approval', 'approved', 'rejected', 'posted'])->default('draft');
+            }
+            if (!Schema::hasColumn('vouchers', 'currency_id')) {
+                $table->unsignedBigInteger('currency_id')->nullable();
+            }
+            if (!Schema::hasColumn('vouchers', 'exchange_rate')) {
+                $table->decimal('exchange_rate', 18, 8)->default(1);
+            }
+            if (!Schema::hasColumn('vouchers', 'base_amount')) {
+                $table->decimal('base_amount', 15, 2)->nullable();
+            }
+            if (!Schema::hasColumn('vouchers', 'project_id')) {
+                $table->unsignedBigInteger('project_id')->nullable();
+            }
+            if (!Schema::hasColumn('vouchers', 'approved_by')) {
+                $table->unsignedBigInteger('approved_by')->nullable();
+            }
+            if (!Schema::hasColumn('vouchers', 'approved_at')) {
+                $table->timestamp('approved_at')->nullable();
+            }
+            if (!Schema::hasColumn('vouchers', 'fiscal_year_id')) {
+                $table->unsignedBigInteger('fiscal_year_id')->nullable();
+            }
+            if (!Schema::hasColumn('vouchers', 'period_id')) {
+                $table->unsignedBigInteger('period_id')->nullable();
+            }
             
             // Bank Guarantee specific fields
-            $table->enum('bg_type', ['issue', 'renew', 'release'])->nullable()->after('type');
-            $table->date('bg_issue_date')->nullable();
-            $table->date('bg_expiry_date')->nullable();
-            $table->string('bg_number')->nullable();
-            $table->unsignedBigInteger('bg_parent_id')->nullable()->after('bg_number');
-            
-            $table->index('status');
-            $table->index('currency_id');
-            $table->index('project_id');
-            $table->index('fiscal_year_id');
-            $table->index('period_id');
+            if (!Schema::hasColumn('vouchers', 'bg_type')) {
+                $table->enum('bg_type', ['issue', 'renew', 'release'])->nullable();
+            }
+            if (!Schema::hasColumn('vouchers', 'bg_issue_date')) {
+                $table->date('bg_issue_date')->nullable();
+            }
+            if (!Schema::hasColumn('vouchers', 'bg_expiry_date')) {
+                $table->date('bg_expiry_date')->nullable();
+            }
+            if (!Schema::hasColumn('vouchers', 'bg_number')) {
+                $table->string('bg_number')->nullable();
+            }
+            if (!Schema::hasColumn('vouchers', 'bg_parent_id')) {
+                $table->unsignedBigInteger('bg_parent_id')->nullable();
+            }
+        });
+        
+        // Add foreign keys
+        Schema::table('vouchers', function (Blueprint $table) {
+            try {
+                if (Schema::hasColumn('vouchers', 'currency_id') && Schema::hasTable('currencies')) {
+                    $table->foreign('currency_id')->references('id')->on('currencies')->onDelete('restrict');
+                }
+                if (Schema::hasColumn('vouchers', 'approved_by')) {
+                    $table->foreign('approved_by')->references('id')->on('users')->onDelete('set null');
+                }
+            } catch (\Exception $e) {
+                // Foreign keys might already exist
+            }
+        });
+        
+        // Add indexes
+        Schema::table('vouchers', function (Blueprint $table) {
+            try {
+                if (Schema::hasColumn('vouchers', 'status')) {
+                    $table->index('status');
+                }
+                if (Schema::hasColumn('vouchers', 'currency_id')) {
+                    $table->index('currency_id');
+                }
+                if (Schema::hasColumn('vouchers', 'project_id')) {
+                    $table->index('project_id');
+                }
+                if (Schema::hasColumn('vouchers', 'fiscal_year_id')) {
+                    $table->index('fiscal_year_id');
+                }
+                if (Schema::hasColumn('vouchers', 'period_id')) {
+                    $table->index('period_id');
+                }
+            } catch (\Exception $e) {
+                // Indexes might already exist
+            }
         });
         
         // Modify type enum using raw SQL (MySQL doesn't support direct enum modification)

@@ -30,9 +30,12 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\MainCore\ShipmentSeeder::class,
         ]);
         
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Only create test user if it doesn't exist
+        if (!User::where('email', 'test@example.com')->exists()) {
+            User::factory()->create([
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+            ]);
+        }
     }
 }
