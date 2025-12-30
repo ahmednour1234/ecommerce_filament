@@ -1,7 +1,7 @@
 @php
     $statePath = $getStatePath();
     $rows = $getState() ?? [];
-    $columns = $getColumns();
+    $columns = $getGridColumns();
     $isRTL = app()->getLocale() === 'ar';
     $allowAddRows = $getAllowAddRows();
     $allowDeleteRows = $getAllowDeleteRows();
@@ -15,8 +15,8 @@
 <div 
     x-data="excelGridTable({
         statePath: @js($statePath),
-        columns: @js($columns),
-        rows: @js($rows),
+        columns: @js($columns ?? []),
+        rows: @js($rows ?? []),
         allowAddRows: @js($allowAddRows),
         allowDeleteRows: @js($allowDeleteRows),
         allowQuickAdd: @js($allowQuickAdd),

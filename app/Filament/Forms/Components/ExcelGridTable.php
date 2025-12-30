@@ -11,8 +11,8 @@ class ExcelGridTable extends Component
 
     protected string $view = 'filament.forms.components.excel-grid-table';
 
-    protected ?array $columns = [];
-    protected ?array $rows = [];
+    protected ?array $gridColumns = [];
+    protected ?array $gridRows = [];
     protected bool $allowAddRows = true;
     protected bool $allowDeleteRows = true;
     protected bool $allowQuickAdd = true;
@@ -31,13 +31,13 @@ class ExcelGridTable extends Component
 
     public function setColumns(array $columns): static
     {
-        $this->columns = $columns;
+        $this->gridColumns = $columns;
         return $this;
     }
 
     public function setRows(array $rows): static
     {
-        $this->rows = $rows;
+        $this->gridRows = $rows;
         return $this;
     }
 
@@ -83,14 +83,14 @@ class ExcelGridTable extends Component
         return $this;
     }
 
-    public function getColumns(): array
+    public function getGridColumns(): array
     {
-        return $this->columns;
+        return $this->gridColumns ?? [];
     }
 
-    public function getRows(): array
+    public function getGridRows(): array
     {
-        return $this->rows;
+        return $this->gridRows ?? [];
     }
 
     public function getAllowAddRows(): bool
