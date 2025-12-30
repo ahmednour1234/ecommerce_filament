@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages\Reports;
 
+use App\Filament\Concerns\ExportsTable;
 use App\Services\Accounting\AccountingService;
 use App\Models\Accounting\Account;
 use App\Models\MainCore\Branch;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 class TrialBalancePage extends Page implements HasTable
 {
     use InteractsWithTable;
+    use ExportsTable;
 
     protected static ?string $navigationIcon = 'heroicon-o-calculator';
     protected static ?string $navigationGroup = 'Accounting';
@@ -176,13 +178,50 @@ class TrialBalancePage extends Page implements HasTable
     protected function getHeaderActions(): array
     {
         return [
-            \Filament\Actions\Action::make('export')
+            \Filament\Actions\Action::make('export_excel')
                 ->label('Export to Excel')
                 ->icon('heroicon-o-arrow-down-tray')
                 ->action(function () {
-                    // Export logic would go here
+                    return $this->exportToExcel(null, $this->getExportFilename('xlsx'));
                 }),
+
+            \Filament\Actions\Action::make('export_pdf')
+                ->label('Export to PDF')
+                ->icon('heroicon-o-document-arrow-down')
+                ->action(function () {
+                    return $this->exportToPdf(null, $this->getExportFilename('pdf'));
+                }),
+
+            \Filament\Actions\Action::make('print')
+                ->label('Print')
+                ->icon('heroicon-o-printer')
+                ->url(fn () => $this->getPrintUrl())
+                ->openUrlInNewTab(),
         ];
+    }
+
+    protected function getExportTitle(): ?string
+    {
+        $asOfDate = $this->data['as_of_date'] ?? now();
+        return 'Trial Balance as of ' . \Carbon\Carbon::parse($asOfDate)->format('Y-m-d');
+    }
+
+    protected function getExportMetadata(): array
+    {
+        $metadata = parent::getExportMetadata();
+        $metadata['as_of_date'] = $this->data['as_of_date'] ?? '';
+        
+        if (isset($this->data['branch_id'])) {
+            $branch = Branch::find($this->data['branch_id']);
+            $metadata['branch'] = $branch?->name ?? '';
+        }
+        
+        if (isset($this->data['cost_center_id'])) {
+            $costCenter = CostCenter::find($this->data['cost_center_id']);
+            $metadata['cost_center'] = $costCenter?->name ?? '';
+        }
+        
+        return $metadata;
     }
 
     public static function shouldRegisterNavigation(): bool

@@ -3,10 +3,13 @@
 namespace App\Filament\Resources\MainCore\LanguageResource\Pages;
 
 use App\Filament\Resources\MainCore\LanguageResource;
+use App\Filament\Concerns\ExportsResourceTable;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-class ListLanguages extends ListRecords
+use ExportsResourceTable;
+
+    class ListLanguages extends ListRecords
 {
     protected static string $resource = LanguageResource::class;
 
@@ -14,6 +17,21 @@ class ListLanguages extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+            Actions\Action::make('export_excel')
+                ->label('Export to Excel')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->action(fn () => $this->exportToExcel()),
+
+            Actions\Action::make('export_pdf')
+                ->label('Export to PDF')
+                ->icon('heroicon-o-document-arrow-down')
+                ->action(fn () => $this->exportToPdf()),
+
+            Actions\Action::make('print')
+                ->label('Print')
+                ->icon('heroicon-o-printer')
+                ->url(fn () => $this->getPrintUrl())
+                ->openUrlInNewTab(),
         ];
     }
 }

@@ -26,3 +26,9 @@ Route::prefix('api')->middleware(['web'])->group(function () {
     Route::get('/exchange-rate', [App\Http\Controllers\Api\ExchangeRateController::class, 'getRate']);
     Route::post('/exchange-rates/batch', [App\Http\Controllers\Api\ExchangeRateController::class, 'getBatchRates']);
 });
+
+// Export Routes
+Route::middleware(['web', 'auth'])->group(function () {
+    Route::get('/admin/exports/print', [App\Http\Controllers\ExportController::class, 'print'])
+        ->name('filament.exports.print');
+});

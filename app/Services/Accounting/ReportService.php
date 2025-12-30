@@ -274,19 +274,61 @@ class ReportService
         
         $revenue = 0;
         $expenses = 0;
+        $revenueAccounts = [];
+        $expenseAccounts = [];
         
         foreach ($entries as $entry) {
-            if ($entry->account->type === 'revenue') {
-                $revenue += $entry->credit - $entry->debit;
+            $account = $entry->account;
+            $accountId = $account->id;
+            
+            if ($account->type === 'revenue') {
+                $amount = $entry->credit - $entry->debit;
+                $revenue += $amount;
+                
+                if (!isset($revenueAccounts[$accountId])) {
+                    $revenueAccounts[$accountId] = [
+                        'account' => $account,
+                        'amount' => 0,
+                    ];
+                }
+                $revenueAccounts[$accountId]['amount'] += $amount;
             } else {
-                $expenses += $entry->debit - $entry->credit;
+                $amount = $entry->debit - $entry->credit;
+                $expenses += $amount;
+                
+                if (!isset($expenseAccounts[$accountId])) {
+                    $expenseAccounts[$accountId] = [
+                        'account' => $account,
+                        'amount' => 0,
+                    ];
+                }
+                $expenseAccounts[$accountId]['amount'] += $amount;
             }
         }
+        
+        // Convert to array format for table display
+        $revenueDetails = array_map(function($item) {
+            return [
+                'account_code' => $item['account']->code,
+                'account_name' => $item['account']->name,
+                'amount' => $item['amount'],
+            ];
+        }, $revenueAccounts);
+        
+        $expenseDetails = array_map(function($item) {
+            return [
+                'account_code' => $item['account']->code,
+                'account_name' => $item['account']->name,
+                'amount' => $item['amount'],
+            ];
+        }, $expenseAccounts);
         
         return [
             'revenue' => $revenue,
             'expenses' => $expenses,
             'net_income' => $revenue - $expenses,
+            'revenue_details' => $revenueDetails,
+            'expense_details' => $expenseDetails,
         ];
     }
 

@@ -3,10 +3,13 @@
 namespace App\Filament\Resources\MainCore\ShipmentResource\Pages;
 
 use App\Filament\Resources\MainCore\ShipmentResource;
+use App\Filament\Concerns\ExportsResourceTable;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-class ListShipments extends ListRecords
+use ExportsResourceTable;
+
+    class ListShipments extends ListRecords
 {
     protected static string $resource = ShipmentResource::class;
 

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages\Reports;
 
+use App\Filament\Concerns\ExportsTable;
 use App\Models\Sales\Order;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -14,6 +15,7 @@ use Filament\Tables\Contracts\HasTable;
 class OrdersReportPage extends Page implements HasTable
 {
     use InteractsWithTable;
+    use ExportsTable;
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
     protected static ?string $navigationGroup = 'Accounting';
@@ -147,13 +149,50 @@ class OrdersReportPage extends Page implements HasTable
     protected function getHeaderActions(): array
     {
         return [
-            \Filament\Actions\Action::make('export')
+            \Filament\Actions\Action::make('export_excel')
                 ->label('Export to Excel')
                 ->icon('heroicon-o-arrow-down-tray')
                 ->action(function () {
-                    // Export logic would go here
+                    return $this->exportToExcel(null, $this->getExportFilename('xlsx'));
                 }),
+
+            \Filament\Actions\Action::make('export_pdf')
+                ->label('Export to PDF')
+                ->icon('heroicon-o-document-arrow-down')
+                ->action(function () {
+                    return $this->exportToPdf(null, $this->getExportFilename('pdf'));
+                }),
+
+            \Filament\Actions\Action::make('print')
+                ->label('Print')
+                ->icon('heroicon-o-printer')
+                ->url(fn () => $this->getPrintUrl())
+                ->openUrlInNewTab(),
         ];
+    }
+
+    protected function getExportTitle(): ?string
+    {
+        $dateFrom = $this->data['date_from'] ?? now()->startOfMonth();
+        $dateTo = $this->data['date_to'] ?? now();
+        $status = $this->data['status'] ?? null;
+        
+        $title = 'Orders Report';
+        if ($status) {
+            $title .= ' - ' . ucfirst($status);
+        }
+        
+        return $title . ' (' . $dateFrom . ' to ' . $dateTo . ')';
+    }
+
+    protected function getExportMetadata(): array
+    {
+        $metadata = parent::getExportMetadata();
+        $metadata['date_from'] = $this->data['date_from'] ?? '';
+        $metadata['date_to'] = $this->data['date_to'] ?? '';
+        $metadata['status'] = $this->data['status'] ?? 'All';
+        
+        return $metadata;
     }
 
     public static function shouldRegisterNavigation(): bool

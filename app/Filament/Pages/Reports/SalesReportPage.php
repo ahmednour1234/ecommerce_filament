@@ -2,9 +2,13 @@
 
 namespace App\Filament\Pages\Reports;
 
+use App\Filament\Concerns\ExportsTable;
 use App\Models\Sales\Invoice;
 use App\Models\Sales\Order;
 use App\Models\Sales\Customer;
+use App\Models\MainCore\Branch;
+use App\Models\Accounting\Account;
+use App\Services\Accounting\ReportService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Pages\Page;
@@ -17,6 +21,7 @@ use Illuminate\Support\Facades\DB;
 class SalesReportPage extends Page implements HasTable
 {
     use InteractsWithTable;
+    use ExportsTable;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
     protected static ?string $navigationGroup = 'Accounting';
@@ -47,6 +52,7 @@ class SalesReportPage extends Page implements HasTable
                                 'invoices' => 'Invoices Report',
                                 'revenue' => 'Revenue Report',
                                 'customers' => 'Customers Report',
+                                'income_statement' => 'Income Statement',
                             ])
                             ->required()
                             ->default('orders')
@@ -66,6 +72,16 @@ class SalesReportPage extends Page implements HasTable
                             ->default(now())
                             ->reactive()
                             ->afterStateUpdated(fn () => $this->resetTable()),
+
+                        Forms\Components\Select::make('branch_id')
+                            ->label('Branch')
+                            ->options(Branch::active()->pluck('name', 'id'))
+                            ->searchable()
+                            ->preload()
+                            ->nullable()
+                            ->reactive()
+                            ->afterStateUpdated(fn () => $this->resetTable())
+                            ->visible(fn ($get) => $get('report_type') === 'income_statement'),
                     ])
                     ->columns(3),
             ])
@@ -84,6 +100,8 @@ class SalesReportPage extends Page implements HasTable
             return $this->invoicesTable($table, $dateFrom, $dateTo);
         } elseif ($reportType === 'revenue') {
             return $this->revenueTable($table, $dateFrom, $dateTo);
+        } elseif ($reportType === 'income_statement') {
+            return $this->incomeStatementTable($table, $dateFrom, $dateTo);
         } else {
             return $this->customersTable($table, $dateFrom, $dateTo);
         }
@@ -301,16 +319,214 @@ class SalesReportPage extends Page implements HasTable
             ->defaultSort('total_invoices', 'desc');
     }
 
+    protected function incomeStatementTable(Table $table, $dateFrom, $dateTo): Table
+    {
+        $reportService = app(ReportService::class);
+        $branchId = $this->data['branch_id'] ?? null;
+        
+        $filters = [
+            'from_date' => $dateFrom,
+            'to_date' => $dateTo,
+        ];
+        
+        if ($branchId) {
+            $filters['branch_id'] = $branchId;
+        }
+        
+        $incomeStatement = $reportService->getIncomeStatement($filters);
+        
+        // Combine revenue and expense details into a single dataset
+        $data = [];
+        
+        // Add revenue section
+        $data[] = (object) [
+            'type' => 'header',
+            'account_code' => '',
+            'account_name' => 'REVENUE',
+            'amount' => null,
+        ];
+        
+        foreach ($incomeStatement['revenue_details'] as $item) {
+            $data[] = (object) [
+                'type' => 'revenue',
+                'account_code' => $item['account_code'],
+                'account_name' => $item['account_name'],
+                'amount' => $item['amount'],
+            ];
+        }
+        
+        $data[] = (object) [
+            'type' => 'total',
+            'account_code' => '',
+            'account_name' => 'Total Revenue',
+            'amount' => $incomeStatement['revenue'],
+        ];
+        
+        // Add expense section
+        $data[] = (object) [
+            'type' => 'header',
+            'account_code' => '',
+            'account_name' => 'EXPENSES',
+            'amount' => null,
+        ];
+        
+        foreach ($incomeStatement['expense_details'] as $item) {
+            $data[] = (object) [
+                'type' => 'expense',
+                'account_code' => $item['account_code'],
+                'account_name' => $item['account_name'],
+                'amount' => $item['amount'],
+            ];
+        }
+        
+        $data[] = (object) [
+            'type' => 'total',
+            'account_code' => '',
+            'account_name' => 'Total Expenses',
+            'amount' => $incomeStatement['expenses'],
+        ];
+        
+        // Add net income
+        $data[] = (object) [
+            'type' => 'net',
+            'account_code' => '',
+            'account_name' => 'NET INCOME',
+            'amount' => $incomeStatement['net_income'],
+        ];
+        
+        // Build union query from data
+        $unionQueries = [];
+        foreach ($data as $item) {
+            $unionQueries[] = DB::table('accounts')
+                ->whereRaw('1 = 0')
+                ->selectRaw('? as type, ? as account_code, ? as account_name, ? as amount', [
+                    $item->type,
+                    $item->account_code ?? '',
+                    $item->account_name ?? '',
+                    $item->amount ?? 0,
+                ]);
+        }
+        
+        $unionQuery = null;
+        foreach ($unionQueries as $uq) {
+            if ($unionQuery === null) {
+                $unionQuery = $uq;
+            } else {
+                $unionQuery->union($uq);
+            }
+        }
+        
+        if ($unionQuery === null) {
+            $unionQuery = DB::table('accounts')->whereRaw('1 = 0')
+                ->selectRaw('NULL as type, NULL as account_code, NULL as account_name, 0 as amount');
+        }
+        
+        $query = Account::query()
+            ->fromSub($unionQuery, 'income_statement_data')
+            ->select('income_statement_data.*');
+        
+        return $table
+            ->query($query)
+            ->columns([
+                Tables\Columns\TextColumn::make('account_code')
+                    ->label('Account Code')
+                    ->searchable(false)
+                    ->sortable(false)
+                    ->formatStateUsing(fn ($record) => $record->account_code ?: ''),
+
+                Tables\Columns\TextColumn::make('account_name')
+                    ->label('Account Name')
+                    ->searchable(false)
+                    ->sortable(false)
+                    ->formatStateUsing(function ($record) {
+                        $name = $record->account_name;
+                        if ($record->type === 'header') {
+                            return '<strong>' . $name . '</strong>';
+                        }
+                        if ($record->type === 'total' || $record->type === 'net') {
+                            return '<strong>' . $name . '</strong>';
+                        }
+                        return $name;
+                    })
+                    ->html(),
+
+                Tables\Columns\TextColumn::make('amount')
+                    ->label('Amount')
+                    ->money('USD')
+                    ->sortable(false)
+                    ->formatStateUsing(function ($record) {
+                        if ($record->type === 'header') {
+                            return '';
+                        }
+                        return $record->amount ?? 0;
+                    })
+                    ->color(function ($record) {
+                        if ($record->type === 'net') {
+                            return $record->amount >= 0 ? 'success' : 'danger';
+                        }
+                        return null;
+                    }),
+            ])
+            ->defaultSort('account_code', 'asc')
+            ->paginated(false);
+    }
+
     protected function getHeaderActions(): array
     {
         return [
-            \Filament\Actions\Action::make('export')
+            \Filament\Actions\Action::make('export_excel')
                 ->label('Export to Excel')
                 ->icon('heroicon-o-arrow-down-tray')
                 ->action(function () {
-                    // Export logic would go here
+                    return $this->exportToExcel(null, $this->getExportFilename('xlsx'));
                 }),
+
+            \Filament\Actions\Action::make('export_pdf')
+                ->label('Export to PDF')
+                ->icon('heroicon-o-document-arrow-down')
+                ->action(function () {
+                    return $this->exportToPdf(null, $this->getExportFilename('pdf'));
+                }),
+
+            \Filament\Actions\Action::make('print')
+                ->label('Print')
+                ->icon('heroicon-o-printer')
+                ->url(fn () => $this->getPrintUrl())
+                ->openUrlInNewTab(),
         ];
+    }
+
+    protected function getExportTitle(): ?string
+    {
+        $reportType = $this->data['report_type'] ?? 'orders';
+        $titles = [
+            'orders' => 'Orders Report',
+            'invoices' => 'Invoices Report',
+            'revenue' => 'Revenue Report',
+            'customers' => 'Customers Report',
+            'income_statement' => 'Income Statement',
+        ];
+        
+        $title = $titles[$reportType] ?? 'Report';
+        $dateFrom = $this->data['date_from'] ?? now()->startOfMonth();
+        $dateTo = $this->data['date_to'] ?? now();
+        
+        return $title . ' (' . $dateFrom . ' to ' . $dateTo . ')';
+    }
+
+    protected function getExportMetadata(): array
+    {
+        $metadata = parent::getExportMetadata();
+        $metadata['report_type'] = $this->data['report_type'] ?? 'orders';
+        $metadata['date_from'] = $this->data['date_from'] ?? '';
+        $metadata['date_to'] = $this->data['date_to'] ?? '';
+        
+        if (isset($this->data['branch_id'])) {
+            $branch = Branch::find($this->data['branch_id']);
+            $metadata['branch'] = $branch?->name ?? '';
+        }
+        
+        return $metadata;
     }
 
     public static function shouldRegisterNavigation(): bool
