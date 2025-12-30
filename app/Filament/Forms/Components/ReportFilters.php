@@ -51,15 +51,13 @@ class ReportFilters
                 ->label(trans_dash('reports.filters.from_date', 'From Date'))
                 ->required($requireDateRange)
                 ->default(now()->startOfMonth())
-                ->reactive()
-                ->afterStateUpdated(fn ($component) => $component->getLivewire()?->dispatch('filters-updated'));
+                ->reactive();
 
             $schema[] = DatePicker::make('to_date')
                 ->label(trans_dash('reports.filters.to_date', 'To Date'))
                 ->required($requireDateRange)
                 ->default(now())
-                ->reactive()
-                ->afterStateUpdated(fn ($component) => $component->getLivewire()?->dispatch('filters-updated'));
+                ->reactive();
         }
 
         // Branch
@@ -70,7 +68,7 @@ class ReportFilters
             ->preload()
             ->nullable()
             ->reactive()
-            ->afterStateUpdated(fn ($component) => $component->getContainer()->getParentComponent()?->dispatch('filters-updated'));
+            ->afterStateUpdated(fn ($component) => $component->getLivewire()?->dispatch('filters-updated'));
 
         // Cost Center
         $schema[] = Select::make('cost_center_id')
@@ -80,7 +78,7 @@ class ReportFilters
             ->preload()
             ->nullable()
             ->reactive()
-            ->afterStateUpdated(fn ($component) => $component->getContainer()->getParentComponent()?->dispatch('filters-updated'));
+            ->afterStateUpdated(fn ($component) => $component->getLivewire()?->dispatch('filters-updated'));
 
         // Account (if enabled)
         if ($showAccount) {
@@ -91,8 +89,7 @@ class ReportFilters
                 }))
                 ->searchable()
                 ->preload()
-                ->reactive()
-                ->afterStateUpdated(fn ($component) => $component->getLivewire()?->dispatch('filters-updated'));
+                ->reactive();
             
             if ($requireAccount) {
                 $accountField->required();
@@ -111,8 +108,7 @@ class ReportFilters
                 ->searchable()
                 ->preload()
                 ->nullable()
-                ->reactive()
-                ->afterStateUpdated(fn ($component) => $component->getLivewire()?->dispatch('filters-updated'));
+                ->reactive();
         }
 
         // Project (if enabled)
@@ -123,8 +119,7 @@ class ReportFilters
                 ->searchable()
                 ->preload()
                 ->nullable()
-                ->reactive()
-                ->afterStateUpdated(fn ($component) => $component->getLivewire()?->dispatch('filters-updated'));
+                ->reactive();
         }
 
         // Fiscal Year (if enabled)
@@ -135,8 +130,7 @@ class ReportFilters
                 ->searchable()
                 ->preload()
                 ->nullable()
-                ->reactive()
-                ->afterStateUpdated(fn ($component) => $component->getLivewire()?->dispatch('filters-updated'));
+                ->reactive();
         }
 
         // Period (if enabled)
@@ -147,8 +141,7 @@ class ReportFilters
                 ->searchable()
                 ->preload()
                 ->nullable()
-                ->reactive()
-                ->afterStateUpdated(fn ($component) => $component->getLivewire()?->dispatch('filters-updated'));
+                ->reactive();
         }
 
         // Toggles
@@ -156,13 +149,13 @@ class ReportFilters
             ->label(trans_dash('reports.filters.include_zero_rows', 'Include Zero Rows'))
             ->default(false)
             ->reactive()
-            ->afterStateUpdated(fn ($component) => $component->getContainer()->getParentComponent()?->dispatch('filters-updated'));
+            ->afterStateUpdated(fn ($component) => $component->getLivewire()?->dispatch('filters-updated'));
 
         $schema[] = Toggle::make('posted_only')
             ->label(trans_dash('reports.filters.posted_only', 'Posted Only'))
             ->default(true)
             ->reactive()
-            ->afterStateUpdated(fn ($component) => $component->getContainer()->getParentComponent()?->dispatch('filters-updated'));
+            ->afterStateUpdated(fn ($component) => $component->getLivewire()?->dispatch('filters-updated'));
 
         return $schema;
     }
