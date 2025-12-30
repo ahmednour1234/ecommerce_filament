@@ -102,7 +102,7 @@
     <!-- Cards Container -->
     <div class="space-y-4">
         <template x-for="(row, index) in rows" :key="index">
-            <div class="bg-white rounded-lg shadow-md border border-gray-200 p-4 hover:shadow-lg transition-shadow">
+            <div x-show="row && rows[index] && typeof rows[index] === 'object'" class="bg-white rounded-lg shadow-md border border-gray-200 p-4 hover:shadow-lg transition-shadow">
                 <div class="flex items-start justify-between mb-4">
                     <h3 class="text-lg font-semibold text-gray-700" x-text="`{{ trans_dash('accounting.entry_line', 'Entry Line') }} #${index + 1}`"></h3>
                     @if($allowDeleteRows)
@@ -124,7 +124,7 @@
                             <label class="text-sm font-bold text-green-800 uppercase">
                                 {{ trans_dash('accounting.debit', 'Debit') }}
                             </label>
-                            <span class="text-xs text-green-600" x-show="rows[index].debit > 0" x-text="formatMoney(rows[index].base_amount || rows[index].debit)"></span>
+                            <span class="text-xs text-green-600" x-show="row && rows[index] && (rows[index].debit || 0) > 0" x-text="formatMoney((rows[index] && rows[index].base_amount) || (rows[index] && rows[index].debit) || 0)"></span>
                         </div>
 
                         <div class="space-y-3">
@@ -234,7 +234,7 @@
                             <label class="text-sm font-bold text-red-800 uppercase">
                                 {{ trans_dash('accounting.credit', 'Credit') }}
                             </label>
-                            <span class="text-xs text-red-600" x-show="rows[index].credit > 0" x-text="formatMoney(rows[index].credit_base_amount || rows[index].credit)"></span>
+                            <span class="text-xs text-red-600" x-show="row && rows[index] && (rows[index].credit || 0) > 0" x-text="formatMoney((rows[index] && rows[index].credit_base_amount) || (rows[index] && rows[index].credit) || 0)"></span>
                         </div>
 
                         <div class="space-y-3">
@@ -493,6 +493,26 @@ function journalEntryCards(config) {
             this.syncToLivewire();
         },
 
+        createEmptyRow() {
+            return {
+                account_id: '',
+                debit: 0,
+                credit: 0,
+                currency_id: this.globalCurrencyId || this.defaultCurrencyId || '',
+                exchange_rate: 1,
+                base_amount: 0,
+                credit_account_id: '',
+                credit_currency_id: this.globalCurrencyId || this.defaultCurrencyId || '',
+                credit_exchange_rate: 1,
+                credit_base_amount: 0,
+                description: '',
+                credit_description: '',
+                cost_center_id: '',
+                project_id: '',
+                reference: '',
+            };
+        },
+
         ensureRowsIsArray() {
             if (!Array.isArray(this.rows)) {
                 if (this.rows && typeof this.rows === 'object') {
@@ -501,6 +521,16 @@ function journalEntryCards(config) {
                     this.rows = [];
                 }
             }
+
+            // Ensure all rows are valid objects
+            const emptyRow = this.createEmptyRow();
+            this.rows = this.rows.map((row, idx) => {
+                if (!row || typeof row !== 'object') {
+                    return { ...emptyRow };
+                }
+                // Merge with empty row to ensure all properties exist
+                return { ...emptyRow, ...row };
+            });
         },
 
         getEntryDate() {
@@ -523,23 +553,7 @@ function journalEntryCards(config) {
 
         addRow() {
             this.ensureRowsIsArray();
-            const newRow = {
-                account_id: '',
-                debit: 0,
-                credit: 0,
-                currency_id: this.globalCurrencyId || this.defaultCurrencyId || '',
-                exchange_rate: 1,
-                base_amount: 0,
-                credit_account_id: '',
-                credit_currency_id: this.globalCurrencyId || this.defaultCurrencyId || '',
-                credit_exchange_rate: 1,
-                credit_base_amount: 0,
-                description: '',
-                credit_description: '',
-                cost_center_id: '',
-                project_id: '',
-                reference: '',
-            };
+            const newRow = this.createEmptyRow();
             this.rows.push(newRow);
 
             // Apply global currency if set
@@ -561,8 +575,10 @@ function journalEntryCards(config) {
         },
 
         async applyCurrencyToRow(index, currencyId) {
+            if (!this.rows[index]) {
+                return;
+            }
             const row = this.rows[index];
-            if (!row) return;
 
             // Apply to debit side
             if (currencyId) {
@@ -622,6 +638,9 @@ function journalEntryCards(config) {
         },
 
         async onCurrencyChange(index) {
+            if (!this.rows[index]) {
+                return;
+            }
             const row = this.rows[index];
             if (!row.currency_id) {
                 row.exchange_rate = 1;
@@ -651,6 +670,9 @@ function journalEntryCards(config) {
         },
 
         async onCreditCurrencyChange(index) {
+            if (!this.rows[index]) {
+                return;
+            }
             const row = this.rows[index];
             if (!row.credit_currency_id) {
                 row.credit_exchange_rate = 1;
@@ -680,6 +702,9 @@ function journalEntryCards(config) {
         },
 
         onDebitChange(index) {
+            if (!this.rows[index]) {
+                return;
+            }
             const row = this.rows[index];
             if (row.debit > 0) {
                 row.credit = 0;
@@ -688,6 +713,9 @@ function journalEntryCards(config) {
         },
 
         onCreditChange(index) {
+            if (!this.rows[index]) {
+                return;
+            }
             const row = this.rows[index];
             if (row.credit > 0) {
                 row.debit = 0;
@@ -704,6 +732,9 @@ function journalEntryCards(config) {
         },
 
         calculateBaseAmount(index, type) {
+            if (!this.rows[index]) {
+                return;
+            }
             const row = this.rows[index];
 
             if (type === 'debit') {
