@@ -2,12 +2,27 @@
 
 if (!function_exists('trans_dash')) {
     /**
-     * Get dashboard translation
+     * Get dashboard translation with optional replacements
      */
-    function trans_dash(string $key, ?string $default = null, ?string $languageCode = null): string
+    function trans_dash(string $key, ?string $default = null, array|string|null $replace = null, ?string $languageCode = null): string
     {
-        return app(\App\Services\MainCore\TranslationService::class)
+        // Handle backward compatibility: if 3rd param is string, it's language code
+        if (is_string($replace) && $languageCode === null) {
+            $languageCode = $replace;
+            $replace = null;
+        }
+        
+        $translation = app(\App\Services\MainCore\TranslationService::class)
             ->get($key, $languageCode, 'dashboard', $default ?? $key);
+        
+        // If $replace is an array, replace placeholders
+        if (is_array($replace)) {
+            foreach ($replace as $placeholder => $value) {
+                $translation = str_replace(':' . $placeholder, (string) $value, $translation);
+            }
+        }
+        
+        return $translation;
     }
 }
 
