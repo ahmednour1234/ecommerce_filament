@@ -184,5 +184,10 @@ class TrialBalancePage extends Page implements HasTable
                 }),
         ];
     }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()?->can('reports.trial_balance') ?? true;
+    }
 }
 

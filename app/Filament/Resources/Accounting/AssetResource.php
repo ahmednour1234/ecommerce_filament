@@ -265,4 +265,9 @@ class AssetResource extends Resource
     {
         return auth()->user()?->can('assets.delete') ?? false;
     }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canViewAny();
+    }
 }

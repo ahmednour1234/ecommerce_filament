@@ -312,5 +312,24 @@ class SalesReportPage extends Page implements HasTable
                 }),
         ];
     }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        // Check for any report permission or default to true
+        $user = auth()->user();
+        if (!$user) {
+            return false;
+        }
+        
+        // Check if user has any report permission
+        $hasReportPermission = $user->can('reports.trial_balance') ||
+                              $user->can('reports.general_ledger') ||
+                              $user->can('reports.account_statement') ||
+                              $user->can('reports.income_statement') ||
+                              $user->can('reports.balance_sheet') ||
+                              $user->can('reports.cash_flow');
+        
+        return $hasReportPermission;
+    }
 }
 

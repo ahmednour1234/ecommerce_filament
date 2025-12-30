@@ -344,4 +344,9 @@ class AccountsTreePage extends Page
             'accounts' => $this->accounts,
         ];
     }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()?->can('accounts.view_any') ?? false;
+    }
 }
