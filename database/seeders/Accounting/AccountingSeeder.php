@@ -11,6 +11,7 @@ class AccountingSeeder extends Seeder
         $this->call([
             AccountSeeder::class,
             JournalSeeder::class,
+            FiscalYearSeeder::class, // Must be after AccountSeeder
             JournalEntrySeeder::class,
             JournalEntryLineSeeder::class,
             VoucherSeeder::class,
