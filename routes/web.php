@@ -20,3 +20,8 @@ Route::get('/debug/session', function () {
         'app_debug' => config('app.debug'),
     ];
 });
+
+// API Routes
+Route::prefix('api')->middleware(['web'])->group(function () {
+    Route::get('/exchange-rate', [App\Http\Controllers\Api\ExchangeRateController::class, 'getRate']);
+});

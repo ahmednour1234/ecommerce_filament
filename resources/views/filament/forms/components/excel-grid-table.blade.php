@@ -108,7 +108,7 @@
                             />
                         </td>
                         <template x-for="column in columns" :key="column.name">
-                            <td class="border border-gray-300 p-1">
+                            <td class="border border-gray-300 p-1" :data-column="column.name">
                                 <div x-html="renderCell(column, row, index)"></div>
                             </td>
                         </template>
@@ -164,13 +164,43 @@ function excelGridTable(config) {
         rows: config.rows || [],
         selectedRows: [],
         errors: [],
+        entryDate: null,
+        defaultCurrencyId: @js(app(\App\Services\MainCore\CurrencyService::class)->defaultCurrency()?->id),
 
         init() {
             if (this.rows.length === 0) {
                 this.addRow();
             }
-            this.$watch('rows', () => this.updateState(), { deep: true });
+            
+            // Get entry date from parent form if available
+            this.entryDate = this.getEntryDate();
+            
+            this.$watch('rows', () => {
+                this.updateState();
+                this.recalculateAll();
+            }, { deep: true });
             this.updateState();
+        },
+        
+        getEntryDate() {
+            // Try to get entry_date from the form
+            try {
+                // Try multiple ways to get the entry date
+                const formData = this.$wire?.get?.('data');
+                if (formData?.entry_date) {
+                    return formData.entry_date;
+                }
+                
+                // Try to find date input in the form
+                const dateInput = document.querySelector('input[name="data.entry_date"]');
+                if (dateInput && dateInput.value) {
+                    return dateInput.value;
+                }
+                
+                return new Date().toISOString().split('T')[0];
+            } catch (e) {
+                return new Date().toISOString().split('T')[0];
+            }
         },
 
         addRow() {
@@ -223,11 +253,17 @@ function excelGridTable(config) {
             const value = row[column.name] ?? '';
             
             if (column.type === 'select') {
+                const onChangeHandler = column.name === 'currency_id' 
+                    ? `onCurrencyChange(${index})` 
+                    : (column.name === 'debit' || column.name === 'credit')
+                    ? `onDebitCreditChange(${index}, '${column.name}')`
+                    : 'updateState()';
+                    
                 return `
                     <select 
                         x-model="rows[${index}].${column.name}"
-                        @change="updateState(); ${column.onChange ? column.onChange : ''}"
-                        class="w-full border-0 focus:ring-0 p-1 text-sm bg-transparent"
+                        @change="${onChangeHandler}"
+                        class="w-full border-0 focus:ring-2 focus:ring-primary-500 p-1.5 text-sm bg-transparent rounded transition-all"
                         ${column.required ? 'required' : ''}
                     >
                         <option value="">--</option>
@@ -239,14 +275,27 @@ function excelGridTable(config) {
             }
             
             if (column.type === 'money') {
+                const onChangeHandler = column.name === 'exchange_rate'
+                    ? `onExchangeRateChange(${index})`
+                    : column.name === 'amount'
+                    ? `onAmountChange(${index})`
+                    : (column.name === 'debit' || column.name === 'credit')
+                    ? `onDebitCreditChange(${index}, '${column.name}')`
+                    : 'updateState()';
+                
+                const isReadonly = column.readonly || column.name === 'base_amount';
+                    
                 return `
                     <input 
                         type="number"
                         step="0.01"
                         x-model.number="rows[${index}].${column.name}"
-                        @input="updateState(); calculateBaseAmount(${index})"
-                        class="w-full border-0 focus:ring-0 p-1 text-sm text-right bg-transparent"
+                        @input="${onChangeHandler}"
+                        @keydown.tab="handleTab($event, ${index}, '${column.name}')"
+                        @keydown.enter.prevent="handleEnter($event, ${index}, '${column.name}')"
+                        class="w-full border-0 focus:ring-2 focus:ring-primary-500 p-1.5 text-sm text-right bg-transparent rounded transition-all font-mono ${isReadonly ? 'bg-gray-50 cursor-not-allowed' : ''}"
                         placeholder="0.00"
+                        ${isReadonly ? 'readonly' : ''}
                         ${column.required ? 'required' : ''}
                     />
                 `;
@@ -258,7 +307,9 @@ function excelGridTable(config) {
                         type="text"
                         x-model="rows[${index}].${column.name}"
                         @input="updateState()"
-                        class="w-full border-0 focus:ring-0 p-1 text-sm bg-transparent"
+                        @keydown.tab="handleTab($event, ${index}, '${column.name}')"
+                        @keydown.enter.prevent="handleEnter($event, ${index}, '${column.name}')"
+                        class="w-full border-0 focus:ring-2 focus:ring-primary-500 p-1.5 text-sm bg-transparent rounded transition-all"
                         placeholder="${column.placeholder ?? ''}"
                         ${column.required ? 'required' : ''}
                     />
@@ -268,12 +319,129 @@ function excelGridTable(config) {
             return value;
         },
 
+        async onCurrencyChange(index) {
+            const row = this.rows[index];
+            if (!row.currency_id) {
+                row.exchange_rate = 1;
+                row.base_amount = row.debit || row.credit || 0;
+                this.updateState();
+                return;
+            }
+            
+            // If currency is default, set rate to 1
+            if (row.currency_id == this.defaultCurrencyId) {
+                row.exchange_rate = 1;
+                this.calculateBaseAmount(index);
+                return;
+            }
+            
+            // Fetch exchange rate
+            try {
+                const response = await fetch(`/api/exchange-rate?currency_id=${row.currency_id}&date=${this.entryDate}`);
+                const data = await response.json();
+                if (data.success) {
+                    row.exchange_rate = parseFloat(data.rate);
+                    this.calculateBaseAmount(index);
+                }
+            } catch (e) {
+                console.error('Failed to fetch exchange rate:', e);
+                row.exchange_rate = 1;
+                this.calculateBaseAmount(index);
+            }
+        },
+
+        onDebitCreditChange(index, field) {
+            const row = this.rows[index];
+            // Make debit and credit mutually exclusive
+            if (field === 'debit' && row.debit > 0) {
+                row.credit = 0;
+            } else if (field === 'credit' && row.credit > 0) {
+                row.debit = 0;
+            }
+            this.calculateBaseAmount(index);
+        },
+
+        onAmountChange(index) {
+            this.calculateBaseAmount(index);
+        },
+
+        onExchangeRateChange(index) {
+            this.calculateBaseAmount(index);
+        },
+
         calculateBaseAmount(index) {
             const row = this.rows[index];
-            if (row.amount && row.exchange_rate) {
-                row.base_amount = parseFloat((row.amount * row.exchange_rate).toFixed(2));
+            const exchangeRate = parseFloat(row.exchange_rate) || 1;
+            
+            // Get the transaction amount (debit or credit)
+            const transactionAmount = parseFloat(row.debit) || parseFloat(row.credit) || 0;
+            
+            if (transactionAmount > 0) {
+                // If currency is not the base currency, calculate base amount
+                if (row.currency_id && row.currency_id != this.defaultCurrencyId) {
+                    // Store original amount in foreign currency
+                    row.amount = transactionAmount;
+                    // Convert to base currency
+                    row.base_amount = parseFloat((transactionAmount * exchangeRate).toFixed(2));
+                } else {
+                    // Base currency: amount equals base amount
+                    row.amount = transactionAmount;
+                    row.base_amount = transactionAmount;
+                }
+            } else {
+                // Clear amounts if no transaction
+                row.amount = 0;
+                row.base_amount = 0;
             }
+            
             this.updateState();
+        },
+
+        recalculateAll() {
+            this.rows.forEach((row, index) => {
+                if (row.debit || row.credit || row.amount) {
+                    this.calculateBaseAmount(index);
+                }
+            });
+        },
+
+        handleTab(event, rowIndex, columnName) {
+            // Allow default tab behavior, but we can enhance it later
+        },
+
+        handleEnter(event, rowIndex, columnName) {
+            // Move to next cell or add new row
+            event.preventDefault();
+            const currentColumnIndex = this.columns.findIndex(col => col.name === columnName);
+            if (currentColumnIndex < this.columns.length - 1) {
+                // Move to next column
+                const nextColumn = this.columns[currentColumnIndex + 1];
+                const nextInput = event.target.closest('tr').querySelector(`[data-column="${nextColumn.name}"] input, [data-column="${nextColumn.name}"] select`);
+                if (nextInput) {
+                    nextInput.focus();
+                    nextInput.select();
+                }
+            } else {
+                // Move to next row or add new row
+                if (rowIndex < this.rows.length - 1) {
+                    const nextRow = event.target.closest('tbody').children[rowIndex + 1];
+                    const firstInput = nextRow?.querySelector('input, select');
+                    if (firstInput) {
+                        firstInput.focus();
+                        firstInput.select();
+                    }
+                } else {
+                    this.addRow();
+                    this.$nextTick(() => {
+                        const newRow = event.target.closest('tbody').lastElementChild;
+                        const firstInput = newRow?.querySelector('input, select');
+                        if (firstInput) {
+                            firstInput.focus();
+                            firstInput.select();
+                        }
+                    });
+                }
+            }
         },
 
         hasError(row, index) {
@@ -284,16 +452,28 @@ function excelGridTable(config) {
         get totalDebits() {
             if (!config.totalDebitColumn) return 0;
             return this.rows.reduce((sum, row) => {
-                const val = parseFloat(row[config.totalDebitColumn] || row.debit || row.base_amount || 0);
-                return sum + (isNaN(val) ? 0 : val);
+                const debit = parseFloat(row.debit) || 0;
+                if (debit > 0) {
+                    // Use base_amount if available and currency is not base, otherwise use debit
+                    const baseAmount = parseFloat(row.base_amount) || 0;
+                    const val = baseAmount > 0 ? baseAmount : debit;
+                    return sum + (isNaN(val) ? 0 : val);
+                }
+                return sum;
             }, 0);
         },
 
         get totalCredits() {
             if (!config.totalCreditColumn) return 0;
             return this.rows.reduce((sum, row) => {
-                const val = parseFloat(row[config.totalCreditColumn] || row.credit || row.base_amount || 0);
-                return sum + (isNaN(val) ? 0 : val);
+                const credit = parseFloat(row.credit) || 0;
+                if (credit > 0) {
+                    // Use base_amount if available and currency is not base, otherwise use credit
+                    const baseAmount = parseFloat(row.base_amount) || 0;
+                    const val = baseAmount > 0 ? baseAmount : credit;
+                    return sum + (isNaN(val) ? 0 : val);
+                }
+                return sum;
             }, 0);
         },
 
@@ -348,21 +528,88 @@ function excelGridTable(config) {
     font-size: 13px;
 }
 
+.excel-grid-wrapper {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.excel-grid-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #f3f4f6;
+    font-weight: 600;
+}
+
 .excel-grid-table td input,
 .excel-grid-table td select {
     background: transparent;
     width: 100%;
+    transition: all 0.2s;
+}
+
+.excel-grid-table td input:hover,
+.excel-grid-table td select:hover {
+    background: #f9fafb;
 }
 
 .excel-grid-table td input:focus,
 .excel-grid-table td select:focus {
     background: #fff3cd;
     outline: 2px solid #ffc107;
-    border-radius: 2px;
+    border-radius: 3px;
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.1);
 }
 
 .excel-grid-table tbody tr:hover {
     background-color: #f9fafb;
+}
+
+.excel-grid-table tbody tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+.excel-grid-table tbody tr:nth-child(even):hover {
+    background-color: #f3f4f6;
+}
+
+.excel-grid-table tfoot {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    background: #f3f4f6;
+}
+
+.excel-grid-toolbar {
+    background: #f9fafb;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.excel-grid-toolbar button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* RTL Support */
+[dir="rtl"] .excel-grid-table {
+    direction: rtl;
+}
+
+[dir="rtl"] .excel-grid-table td input[type="number"] {
+    text-align: right;
+    direction: ltr;
+}
+
+/* Number input styling */
+.excel-grid-table input[type="number"] {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Error row styling */
+.excel-grid-table tbody tr.bg-yellow-50 {
+    border-left: 3px solid #f59e0b;
 }
 </style>
 @endpush

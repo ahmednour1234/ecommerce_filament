@@ -271,6 +271,7 @@ class JournalEntryResource extends Resource
                                     'name' => 'base_amount',
                                     'label' => trans_dash('accounting.amount_in_base', 'Amount in Base'),
                                     'type' => 'money',
+                                    'readonly' => true,
                                 ],
                                 [
                                     'name' => 'reference',
