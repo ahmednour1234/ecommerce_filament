@@ -2,6 +2,7 @@
 
 namespace App\Models\Accounting;
 
+use App\Models\Accounting\JournalEntryLine;
 use App\Models\MainCore\Branch;
 use App\Models\MainCore\CostCenter;
 use App\Models\User;
@@ -148,7 +149,8 @@ class JournalEntry extends Model
     {
         if (!$this->relationLoaded('lines')) {
             // Use database aggregation for better performance
-            $result = $this->lines()
+            // Create a fresh query without orderBy to avoid SQL errors with aggregate functions
+            $result = JournalEntryLine::where('journal_entry_id', $this->id)
                 ->where('debit', '>', 0)
                 ->selectRaw('SUM(COALESCE(base_amount, debit)) as total')
                 ->value('total');
@@ -173,7 +175,8 @@ class JournalEntry extends Model
     {
         if (!$this->relationLoaded('lines')) {
             // Use database aggregation for better performance
-            $result = $this->lines()
+            // Create a fresh query without orderBy to avoid SQL errors with aggregate functions
+            $result = JournalEntryLine::where('journal_entry_id', $this->id)
                 ->where('credit', '>', 0)
                 ->selectRaw('SUM(COALESCE(base_amount, credit)) as total')
                 ->value('total');
