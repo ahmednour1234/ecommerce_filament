@@ -11,8 +11,8 @@ class ExcelGridTable extends Component
 
     protected string $view = 'filament.forms.components.excel-grid-table';
 
-    protected array $columns = [];
-    protected array $rows = [];
+    protected ?array $columns = [];
+    protected ?array $rows = [];
     protected bool $allowAddRows = true;
     protected bool $allowDeleteRows = true;
     protected bool $allowQuickAdd = true;

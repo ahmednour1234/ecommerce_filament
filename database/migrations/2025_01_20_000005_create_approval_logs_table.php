@@ -13,15 +13,16 @@ return new class extends Migration {
         
         Schema::create('approval_logs', function (Blueprint $table) {
             $table->id();
-            $table->morphs('approvable');
+            $table->morphs('approvable'); // This already creates the index
             $table->enum('action', ['submitted', 'approved', 'rejected', 'posted'])->index();
             $table->foreignId('user_id')->constrained('users')->onDelete('restrict');
             $table->text('notes')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
             
-            $table->index(['approvable_type', 'approvable_id']);
-            $table->index('action');
+            // Don't add index again - morphs() already creates it
+            // $table->index(['approvable_type', 'approvable_id']);
+            // $table->index('action'); // Already added above
         });
     }
 
