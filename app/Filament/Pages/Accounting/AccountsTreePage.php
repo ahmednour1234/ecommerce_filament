@@ -207,6 +207,13 @@ class AccountsTreePage extends Page
                 return;
             }
             
+            // Check if account has any journal entries or transactions
+            if ($account->hasTransactions()) {
+                $transactionCount = $account->transaction_count;
+                session()->flash('error', "Cannot delete account. This account has {$transactionCount} transaction(s) or journal entry line(s). Please remove all transactions first.");
+                return;
+            }
+            
             $account->delete();
             $this->selectedAccountId = null;
             $this->loadAccounts();

@@ -112,5 +112,29 @@ class Account extends Model
     {
         return $query->whereDoesntHave('children');
     }
+
+    /**
+     * Get all journal entry lines for this account
+     */
+    public function journalEntryLines(): HasMany
+    {
+        return $this->hasMany(\App\Models\Accounting\JournalEntryLine::class);
+    }
+
+    /**
+     * Check if account has any journal entries or transactions
+     */
+    public function hasTransactions(): bool
+    {
+        return $this->journalEntryLines()->exists();
+    }
+
+    /**
+     * Get count of journal entry lines
+     */
+    public function getTransactionCountAttribute(): int
+    {
+        return $this->journalEntryLines()->count();
+    }
 }
 

@@ -276,128 +276,245 @@
 
     {{-- Edit/Create Modal --}}
     @if($showModal)
-        <div class="fixed inset-0 z-50 overflow-y-auto" x-data="{ show: @entangle('showModal') }" x-show="show" x-transition>
+        <div class="fixed inset-0 z-50 overflow-y-auto" 
+             x-data="{ show: @entangle('showModal') }" 
+             x-show="show" 
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
             <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75" x-on:click="show = false"></div>
+                <div class="fixed inset-0 transition-opacity bg-gray-900 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-90" 
+                     x-on:click="show = false"
+                     x-transition:enter="ease-out duration-300"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"></div>
 
-                <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-                    <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                {{ $isEditing ? 'Edit Account' : 'Create New Account' }}
-                            </h3>
-                            <button wire:click="closeModal" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full border border-gray-200 dark:border-gray-700"
+                     x-transition:enter="ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave="ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                    
+                    {{-- Modal Header --}}
+                    <div class="bg-gradient-to-r from-primary-600 to-primary-700 dark:from-primary-700 dark:to-primary-800 px-6 py-5">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-white/20 backdrop-blur-sm">
+                                    @if($isEditing)
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                    @else
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                    @endif
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-white">
+                                        {{ $isEditing ? 'Edit Account' : 'Create New Account' }}
+                                    </h3>
+                                    <p class="text-sm text-primary-100 mt-0.5">
+                                        {{ $isEditing ? 'Update account information' : 'Add a new account to your chart of accounts' }}
+                                    </p>
+                                </div>
+                            </div>
+                            <button 
+                                wire:click="closeModal" 
+                                class="text-white/80 hover:text-white hover:bg-white/20 rounded-lg p-2 transition-colors duration-150">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                 </svg>
                             </button>
                         </div>
+                    </div>
 
-                        <form wire:submit.prevent="saveAccount" class="space-y-4">
-                            {{-- Account Code --}}
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Account Code *</label>
-                                <input 
-                                    type="text"
-                                    wire:model="formData.code"
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500">
-                                @error('formData.code') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    {{-- Modal Body --}}
+                    <div class="bg-white dark:bg-gray-800 px-6 py-6">
+                        <form wire:submit.prevent="saveAccount" class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {{-- Account Code --}}
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
+                                        </svg>
+                                        Account Code *
+                                    </label>
+                                    <input 
+                                        type="text"
+                                        wire:model="formData.code"
+                                        placeholder="e.g., 1000, 1100"
+                                        class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-150">
+                                    @error('formData.code') 
+                                        <span class="text-red-500 text-xs mt-1 flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </span> 
+                                    @enderror
+                                </div>
+
+                                {{-- Account Name --}}
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                        </svg>
+                                        Account Name *
+                                    </label>
+                                    <input 
+                                        type="text"
+                                        wire:model="formData.name"
+                                        placeholder="Enter account name"
+                                        class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-150">
+                                    @error('formData.name') 
+                                        <span class="text-red-500 text-xs mt-1 flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </span> 
+                                    @enderror
+                                </div>
                             </div>
 
-                            {{-- Account Name --}}
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Account Name *</label>
-                                <input 
-                                    type="text"
-                                    wire:model="formData.name"
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500">
-                                @error('formData.name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {{-- Account Type --}}
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                        </svg>
+                                        Account Type *
+                                    </label>
+                                    <select 
+                                        wire:model.live="formData.type"
+                                        wire:change="$set('formData.parent_id', null)"
+                                        class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-150">
+                                        <option value="">Select Type</option>
+                                        <option value="asset">Asset</option>
+                                        <option value="liability">Liability</option>
+                                        <option value="equity">Equity</option>
+                                        <option value="revenue">Revenue</option>
+                                        <option value="expense">Expense</option>
+                                    </select>
+                                    @error('formData.type') 
+                                        <span class="text-red-500 text-xs mt-1 flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </span> 
+                                    @enderror
+                                </div>
 
-                            {{-- Account Type --}}
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Account Type *</label>
-                                <select 
-                                    wire:model.live="formData.type"
-                                    wire:change="$set('formData.parent_id', null)"
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500">
-                                    <option value="">Select Type</option>
-                                    <option value="asset">Asset</option>
-                                    <option value="liability">Liability</option>
-                                    <option value="equity">Equity</option>
-                                    <option value="revenue">Revenue</option>
-                                    <option value="expense">Expense</option>
-                                </select>
-                                @error('formData.type') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                            </div>
-
-                            {{-- Parent Account --}}
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Parent Account</label>
-                                <select 
-                                    wire:model.live="formData.parent_id"
-                                    wire:change="$wire.updateParentLevel"
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500">
-                                    <option value="">None (Root Account)</option>
-                                    @if(!empty($formData['type']))
-                                        @foreach($this->parentAccounts as $parent)
-                                            <option value="{{ $parent['id'] }}">{{ $parent['name'] }}</option>
-                                        @endforeach
-                                    @endif
-                                </select>
+                                {{-- Parent Account --}}
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                                        </svg>
+                                        Parent Account
+                                    </label>
+                                    <select 
+                                        wire:model.live="formData.parent_id"
+                                        wire:change="$wire.updateParentLevel"
+                                        class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-150">
+                                        <option value="">None (Root Account)</option>
+                                        @if(!empty($formData['type']))
+                                            @foreach($this->parentAccounts as $parent)
+                                                <option value="{{ $parent['id'] }}">{{ $parent['name'] }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
                             </div>
 
                             {{-- Level (readonly) --}}
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Level</label>
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                    </svg>
+                                    Level (Auto-calculated)
+                                </label>
                                 <input 
                                     type="number"
                                     wire:model="formData.level"
                                     readonly
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 cursor-not-allowed">
+                                    class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-900/50 text-gray-600 dark:text-gray-400 cursor-not-allowed">
                             </div>
 
-                            {{-- Is Active --}}
-                            <div class="flex items-center">
-                                <input 
-                                    type="checkbox"
-                                    wire:model="formData.is_active"
-                                    id="is_active"
-                                    class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
-                                <label for="is_active" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">Active</label>
-                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {{-- Is Active --}}
+                                <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border-2 border-gray-200 dark:border-gray-700">
+                                    <input 
+                                        type="checkbox"
+                                        wire:model="formData.is_active"
+                                        id="is_active"
+                                        class="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500 focus:ring-2">
+                                    <label for="is_active" class="ml-3 text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer">
+                                        Account is Active
+                                    </label>
+                                </div>
 
-                            {{-- Allow Manual Entry --}}
-                            <div class="flex items-center">
-                                <input 
-                                    type="checkbox"
-                                    wire:model="formData.allow_manual_entry"
-                                    id="allow_manual_entry"
-                                    class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
-                                <label for="allow_manual_entry" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">Allow Manual Entry</label>
+                                {{-- Allow Manual Entry --}}
+                                <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border-2 border-gray-200 dark:border-gray-700">
+                                    <input 
+                                        type="checkbox"
+                                        wire:model="formData.allow_manual_entry"
+                                        id="allow_manual_entry"
+                                        class="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500 focus:ring-2">
+                                    <label for="allow_manual_entry" class="ml-3 text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer">
+                                        Allow Manual Entry
+                                    </label>
+                                </div>
                             </div>
 
                             {{-- Notes --}}
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                    Notes (Optional)
+                                </label>
                                 <textarea 
                                     wire:model="formData.notes"
-                                    rows="3"
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"></textarea>
+                                    rows="4"
+                                    placeholder="Add any additional notes or comments about this account..."
+                                    class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-150 resize-none"></textarea>
                             </div>
 
                             {{-- Action Buttons --}}
-                            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center justify-end gap-3 pt-6 border-t-2 border-gray-200 dark:border-gray-700">
                                 <button 
                                     type="button"
                                     wire:click="closeModal"
-                                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                    class="px-6 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-150">
                                     Cancel
                                 </button>
                                 <button 
                                     type="submit"
-                                    class="px-4 py-2 text-sm font-medium text-white bg-primary-600 dark:bg-primary-500 border border-transparent rounded-lg hover:bg-primary-700 dark:hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                                    {{ $isEditing ? 'Update' : 'Create' }} Account
+                                    class="px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-700 dark:from-primary-500 dark:to-primary-600 border border-transparent rounded-xl hover:from-primary-700 hover:to-primary-800 dark:hover:from-primary-600 dark:hover:to-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 shadow-lg hover:shadow-xl transition-all duration-150 flex items-center gap-2">
+                                    @if($isEditing)
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        Update Account
+                                    @else
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                        Create Account
+                                    @endif
                                 </button>
                             </div>
                         </form>
