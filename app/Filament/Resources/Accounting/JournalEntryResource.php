@@ -53,8 +53,13 @@ class JournalEntryResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('journal_id')
                             ->label(trans_dash('accounting.journal', 'Journal'))
-                            ->relationship('journal', 'name')
-                            ->options(Journal::active()->pluck('name', 'id'))
+                            ->options(function () {
+                                try {
+                                    return Journal::active()->pluck('name', 'id');
+                                } catch (\Exception $e) {
+                                    return [];
+                                }
+                            })
                             ->required()
                             ->searchable()
                             ->preload()
@@ -100,26 +105,56 @@ class JournalEntryResource extends Resource
 
                         Forms\Components\Select::make('fiscal_year_id')
                             ->label(trans_dash('accounting.fiscal_year', 'Fiscal Year'))
-                            ->options(FiscalYear::all()->pluck('name', 'id'))
-                            ->searchable()
-                            ->preload()
-                            ->reactive()
-                            ->nullable(),
-
-                        Forms\Components\Select::make('period_id')
-                            ->label(trans_dash('accounting.period', 'Period'))
-                            ->options(function ($get) {
-                                $fiscalYearId = $get('fiscal_year_id');
-                                if ($fiscalYearId) {
-                                    return Period::where('fiscal_year_id', $fiscalYearId)
-                                        ->pluck('name', 'id');
+                            ->options(function () {
+                                try {
+                                    return FiscalYear::all()->pluck('name', 'id');
+                                } catch (\Exception $e) {
+                                    return [];
                                 }
-                                return Period::all()->pluck('name', 'id');
                             })
                             ->searchable()
                             ->preload()
                             ->reactive()
-                            ->nullable(),
+                            ->nullable()
+                            ->default(function () {
+                                try {
+                                    $fiscalYear = FiscalYear::getActive();
+                                    return $fiscalYear?->id;
+                                } catch (\Exception $e) {
+                                    return null;
+                                }
+                            }),
+
+                        Forms\Components\Select::make('period_id')
+                            ->label(trans_dash('accounting.period', 'Period'))
+                            ->options(function ($get) {
+                                try {
+                                    $fiscalYearId = $get('fiscal_year_id');
+                                    if ($fiscalYearId) {
+                                        return Period::where('fiscal_year_id', $fiscalYearId)
+                                            ->pluck('name', 'id');
+                                    }
+                                    return Period::all()->pluck('name', 'id');
+                                } catch (\Exception $e) {
+                                    return [];
+                                }
+                            })
+                            ->searchable()
+                            ->preload()
+                            ->reactive()
+                            ->nullable()
+                            ->default(function ($get) {
+                                try {
+                                    $entryDate = $get('entry_date');
+                                    if ($entryDate) {
+                                        $period = Period::getForDate(\Carbon\Carbon::parse($entryDate));
+                                        return $period?->id;
+                                    }
+                                    return null;
+                                } catch (\Exception $e) {
+                                    return null;
+                                }
+                            }),
 
                         Forms\Components\TextInput::make('reference')
                             ->label(trans_dash('accounting.reference', 'Reference'))
@@ -133,8 +168,13 @@ class JournalEntryResource extends Resource
 
                         Forms\Components\Select::make('branch_id')
                             ->label(trans_dash('accounting.branch', 'Branch'))
-                            ->relationship('branch', 'name')
-                            ->options(Branch::active()->pluck('name', 'id'))
+                            ->options(function () {
+                                try {
+                                    return Branch::active()->pluck('name', 'id');
+                                } catch (\Exception $e) {
+                                    return [];
+                                }
+                            })
                             ->required()
                             ->searchable()
                             ->preload()
@@ -142,8 +182,13 @@ class JournalEntryResource extends Resource
 
                         Forms\Components\Select::make('cost_center_id')
                             ->label(trans_dash('accounting.cost_center', 'Cost Center'))
-                            ->relationship('costCenter', 'name')
-                            ->options(CostCenter::active()->pluck('name', 'id'))
+                            ->options(function () {
+                                try {
+                                    return CostCenter::active()->pluck('name', 'id');
+                                } catch (\Exception $e) {
+                                    return [];
+                                }
+                            })
                             ->searchable()
                             ->preload()
                             ->nullable(),
