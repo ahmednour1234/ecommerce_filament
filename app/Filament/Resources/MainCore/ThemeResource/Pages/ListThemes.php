@@ -7,10 +7,9 @@ use App\Filament\Concerns\ExportsResourceTable;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-use ExportsResourceTable;
-
-    class ListThemes extends ListRecords
+class ListThemes extends ListRecords
 {
+    use ExportsResourceTable;
     protected static string $resource = ThemeResource::class;
 
     protected function getHeaderActions(): array

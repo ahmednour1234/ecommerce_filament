@@ -7,10 +7,9 @@ use App\Filament\Concerns\ExportsResourceTable;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-use ExportsResourceTable;
-
-    class ListSettings extends ListRecords
+class ListSettings extends ListRecords
 {
+    use ExportsResourceTable;
     protected static string $resource = SettingResource::class;
 
     protected function getHeaderActions(): array

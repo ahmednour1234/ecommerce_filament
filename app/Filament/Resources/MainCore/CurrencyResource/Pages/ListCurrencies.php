@@ -7,10 +7,9 @@ use App\Filament\Concerns\ExportsResourceTable;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-use ExportsResourceTable;
-
-    class ListCurrencies extends ListRecords
+class ListCurrencies extends ListRecords
 {
+    use ExportsResourceTable;
     protected static string $resource = CurrencyResource::class;
 
     protected function getHeaderActions(): array

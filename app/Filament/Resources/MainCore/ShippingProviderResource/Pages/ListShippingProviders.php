@@ -7,10 +7,9 @@ use App\Filament\Concerns\ExportsResourceTable;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-use ExportsResourceTable;
-
-    class ListShippingProviders extends ListRecords
+class ListShippingProviders extends ListRecords
 {
+    use ExportsResourceTable;
     protected static string $resource = ShippingProviderResource::class;
 
     protected function getHeaderActions(): array

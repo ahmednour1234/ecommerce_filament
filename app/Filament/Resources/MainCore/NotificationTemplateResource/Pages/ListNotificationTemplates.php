@@ -7,10 +7,9 @@ use App\Filament\Concerns\ExportsResourceTable;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-use ExportsResourceTable;
-
-    class ListNotificationTemplates extends ListRecords
+class ListNotificationTemplates extends ListRecords
 {
+    use ExportsResourceTable;
     protected static string $resource = NotificationTemplateResource::class;
 
     protected function getHeaderActions(): array

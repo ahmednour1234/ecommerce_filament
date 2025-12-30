@@ -7,10 +7,9 @@ use App\Filament\Concerns\ExportsResourceTable;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-use ExportsResourceTable;
-
-    class ListUserPreferences extends ListRecords
+class ListUserPreferences extends ListRecords
 {
+    use ExportsResourceTable;
     protected static string $resource = UserPreferenceResource::class;
 
     protected function getHeaderActions(): array
