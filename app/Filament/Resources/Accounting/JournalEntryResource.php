@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Accounting;
 
 use App\Filament\Resources\Accounting\JournalEntryResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
-use App\Filament\Forms\Components\JournalEntryCards;
 use App\Models\Accounting\JournalEntry;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\Journal;
@@ -17,6 +16,8 @@ use App\Models\MainCore\Currency;
 use App\Enums\Accounting\JournalEntryStatus;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -206,50 +207,191 @@ class JournalEntryResource extends Resource
 
                 Forms\Components\Section::make(trans_dash('accounting.journal_entry_lines', 'Journal Entry Lines'))
                     ->schema([
-                        JournalEntryCards::make('lines')
-                            ->setColumns([
-                                [
-                                    'name' => 'account_id',
-                                    'label' => trans_dash('accounting.account', 'Account'),
-                                    'type' => 'select',
-                                    'required' => true,
-                                    'options' => collect($accountOptions)->map(fn ($label, $value) => [
-                                        'value' => $value,
-                                        'label' => $label,
-                                    ])->values()->toArray(),
-                                ],
-                                [
-                                    'name' => 'currency_id',
-                                    'label' => trans_dash('accounting.currency', 'Currency'),
-                                    'type' => 'select',
-                                    'default' => $defaultCurrencyId,
-                                    'options' => collect($currencyOptions)->map(fn ($label, $value) => [
-                                        'value' => $value,
-                                        'label' => $label,
-                                    ])->values()->toArray(),
-                                ],
-                                [
-                                    'name' => 'cost_center_id',
-                                    'label' => trans_dash('accounting.cost_center', 'Cost Center'),
-                                    'type' => 'select',
-                                    'options' => CostCenter::active()->get()->map(fn ($cc) => [
-                                        'value' => $cc->id,
-                                        'label' => $cc->name,
-                                    ])->values()->toArray(),
-                                ],
-                                [
-                                    'name' => 'project_id',
-                                    'label' => trans_dash('accounting.project', 'Project'),
-                                    'type' => 'select',
-                                    'options' => Project::where('is_active', true)->get()->map(fn ($p) => [
-                                        'value' => $p->id,
-                                        'label' => $p->code . ' - ' . $p->name,
-                                    ])->values()->toArray(),
-                                ],
+                        Forms\Components\Repeater::make('lines')
+                            ->schema([
+                                Forms\Components\Select::make('type')
+                                    ->label(trans_dash('accounting.type', 'Type'))
+                                    ->options([
+                                        'debit' => trans_dash('accounting.debit', 'Debit'),
+                                        'credit' => trans_dash('accounting.credit', 'Credit'),
+                                    ])
+                                    ->required()
+                                    ->default('debit')
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, callable $set) {
+                                        // Clear amount when type changes
+                                        if ($state === 'debit') {
+                                            $set('credit', 0);
+                                        } else {
+                                            $set('debit', 0);
+                                        }
+                                    }),
+
+                                Forms\Components\Select::make('account_id')
+                                    ->label(trans_dash('accounting.account', 'Account'))
+                                    ->options($accountOptions)
+                                    ->required()
+                                    ->searchable()
+                                    ->preload(),
+
+                                Forms\Components\TextInput::make('debit')
+                                    ->label(trans_dash('accounting.debit_amount', 'Debit Amount'))
+                                    ->numeric()
+                                    ->default(0)
+                                    ->minValue(0)
+                                    ->step(0.01)
+                                    ->visible(fn ($get) => $get('type') === 'debit')
+                                    ->required(fn ($get) => $get('type') === 'debit')
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, callable $set, callable $get) use ($defaultCurrencyId) {
+                                        if ($state > 0) {
+                                            $set('credit', 0);
+                                        }
+                                        $currencyId = $get('currency_id');
+                                        $exchangeRate = $get('exchange_rate') ?? 1;
+                                        if ($currencyId && $currencyId != $defaultCurrencyId && $exchangeRate) {
+                                            $set('base_amount', round($state * $exchangeRate, 2));
+                                        } else {
+                                            $set('base_amount', $state);
+                                        }
+                                    }),
+
+                                Forms\Components\TextInput::make('credit')
+                                    ->label(trans_dash('accounting.credit_amount', 'Credit Amount'))
+                                    ->numeric()
+                                    ->default(0)
+                                    ->minValue(0)
+                                    ->step(0.01)
+                                    ->visible(fn ($get) => $get('type') === 'credit')
+                                    ->required(fn ($get) => $get('type') === 'credit')
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, callable $set, callable $get) use ($defaultCurrencyId) {
+                                        if ($state > 0) {
+                                            $set('debit', 0);
+                                        }
+                                        $currencyId = $get('currency_id');
+                                        $exchangeRate = $get('exchange_rate') ?? 1;
+                                        if ($currencyId && $currencyId != $defaultCurrencyId && $exchangeRate) {
+                                            $set('base_amount', round($state * $exchangeRate, 2));
+                                        } else {
+                                            $set('base_amount', $state);
+                                        }
+                                    }),
+
+                                Forms\Components\Select::make('currency_id')
+                                    ->label(trans_dash('accounting.currency', 'Currency'))
+                                    ->options($currencyOptions)
+                                    ->default($defaultCurrencyId)
+                                    ->searchable()
+                                    ->preload()
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, callable $set, callable $get) use ($defaultCurrencyId) {
+                                        if ($state == $defaultCurrencyId) {
+                                            $set('exchange_rate', 1);
+                                        }
+                                        $amount = $get('debit') > 0 ? $get('debit') : $get('credit');
+                                        $exchangeRate = $get('exchange_rate') ?? 1;
+                                        if ($state && $state != $defaultCurrencyId && $exchangeRate) {
+                                            $set('base_amount', round($amount * $exchangeRate, 2));
+                                        } else {
+                                            $set('base_amount', $amount);
+                                        }
+                                    }),
+
+                                Forms\Components\TextInput::make('exchange_rate')
+                                    ->label(trans_dash('accounting.exchange_rate', 'Exchange Rate'))
+                                    ->numeric()
+                                    ->default(1)
+                                    ->step(0.000001)
+                                    ->visible(fn ($get) => $get('currency_id') && $get('currency_id') != $defaultCurrencyId)
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, callable $set, callable $get) use ($defaultCurrencyId) {
+                                        $amount = $get('debit') > 0 ? $get('debit') : $get('credit');
+                                        $currencyId = $get('currency_id');
+                                        if ($currencyId && $currencyId != $defaultCurrencyId && $state) {
+                                            $set('base_amount', round($amount * $state, 2));
+                                        } else {
+                                            $set('base_amount', $amount);
+                                        }
+                                    }),
+
+                                Forms\Components\TextInput::make('base_amount')
+                                    ->label(trans_dash('accounting.base_amount', 'Base Amount'))
+                                    ->numeric()
+                                    ->disabled()
+                                    ->dehydrated()
+                                    ->default(0)
+                                    ->reactive(),
+
+                                Forms\Components\Textarea::make('description')
+                                    ->label(trans_dash('accounting.description', 'Description'))
+                                    ->rows(2)
+                                    ->columnSpanFull(),
+
+                                Forms\Components\Select::make('cost_center_id')
+                                    ->label(trans_dash('accounting.cost_center', 'Cost Center'))
+                                    ->options(CostCenter::active()->pluck('name', 'id'))
+                                    ->searchable()
+                                    ->preload()
+                                    ->nullable(),
+
+                                Forms\Components\Select::make('project_id')
+                                    ->label(trans_dash('accounting.project', 'Project'))
+                                    ->options(Project::where('is_active', true)->get()->mapWithKeys(fn ($p) => [
+                                        $p->id => $p->code . ' - ' . $p->name
+                                    ]))
+                                    ->searchable()
+                                    ->preload()
+                                    ->nullable(),
+
+                                Forms\Components\TextInput::make('reference')
+                                    ->label(trans_dash('accounting.reference', 'Reference'))
+                                    ->maxLength(255),
                             ])
-                            ->totalDebitColumn('debit')
-                            ->totalCreditColumn('credit')
-                            ->differenceColumn('difference'),
+                            ->columns(3)
+                            ->defaultItems(0)
+                            ->itemLabel(fn (array $state): ?string => 
+                                ($state['account_id'] ? (Account::find($state['account_id'])?->code . ' - ' . Account::find($state['account_id'])?->name) : null) . 
+                                ' (' . ($state['type'] ?? 'debit') . ': ' . 
+                                number_format($state['debit'] ?? $state['credit'] ?? 0, 2) . ')'
+                            )
+                            ->collapsible()
+                            ->reorderable()
+                            ->addActionLabel(trans_dash('accounting.add_line', 'Add Line'))
+                            ->minItems(2)
+                            ->helperText(trans_dash('accounting.minimum_two_lines', 'At least two lines are required. Total debits must equal total credits.')),
+
+                        Forms\Components\Placeholder::make('balance_summary')
+                            ->label('')
+                            ->content(function ($get) {
+                                $lines = $get('lines') ?? [];
+                                $totalDebits = 0;
+                                $totalCredits = 0;
+
+                                foreach ($lines as $line) {
+                                    $baseAmount = (float) ($line['base_amount'] ?? 0);
+                                    if ($line['type'] === 'debit' || ($line['debit'] ?? 0) > 0) {
+                                        $totalDebits += $baseAmount > 0 ? $baseAmount : (float) ($line['debit'] ?? 0);
+                                    } else {
+                                        $totalCredits += $baseAmount > 0 ? $baseAmount : (float) ($line['credit'] ?? 0);
+                                    }
+                                }
+
+                                $difference = abs($totalDebits - $totalCredits);
+                                $isBalanced = $difference < 0.01;
+
+                                $defaultCurrency = Currency::where('is_default', true)->first();
+                                $currencyCode = $defaultCurrency?->code ?? 'USD';
+
+                                return view('filament.forms.components.journal-entry-summary', [
+                                    'totalDebits' => $totalDebits,
+                                    'totalCredits' => $totalCredits,
+                                    'difference' => $difference,
+                                    'isBalanced' => $isBalanced,
+                                    'currencyCode' => $currencyCode,
+                                ]);
+                            })
+                            ->columnSpanFull(),
                     ])
                     ->collapsible(),
             ]);
@@ -517,6 +659,166 @@ class JournalEntryResource extends Resource
                 ]);
             })
             ->defaultSort('entry_date', 'desc');
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Infolists\Components\Section::make(trans_dash('accounting.entry_information', 'Entry Information'))
+                    ->schema([
+                        Infolists\Components\TextEntry::make('entry_number')
+                            ->label(trans_dash('accounting.entry_number', 'Entry Number'))
+                            ->badge()
+                            ->color('primary'),
+
+                        Infolists\Components\TextEntry::make('journal.name')
+                            ->label(trans_dash('accounting.journal', 'Journal')),
+
+                        Infolists\Components\TextEntry::make('entry_date')
+                            ->label(trans_dash('accounting.entry_date', 'Entry Date'))
+                            ->date(),
+
+                        Infolists\Components\TextEntry::make('fiscal_year.name')
+                            ->label(trans_dash('accounting.fiscal_year', 'Fiscal Year'))
+                            ->placeholder('-'),
+
+                        Infolists\Components\TextEntry::make('period.name')
+                            ->label(trans_dash('accounting.period', 'Period'))
+                            ->placeholder('-'),
+
+                        Infolists\Components\TextEntry::make('reference')
+                            ->label(trans_dash('accounting.reference', 'Reference'))
+                            ->placeholder('-'),
+
+                        Infolists\Components\TextEntry::make('description')
+                            ->label(trans_dash('accounting.description', 'Description'))
+                            ->placeholder('-')
+                            ->columnSpanFull(),
+
+                        Infolists\Components\TextEntry::make('branch.name')
+                            ->label(trans_dash('accounting.branch', 'Branch')),
+
+                        Infolists\Components\TextEntry::make('cost_center.name')
+                            ->label(trans_dash('accounting.cost_center', 'Cost Center'))
+                            ->placeholder('-'),
+
+                        Infolists\Components\TextEntry::make('status')
+                            ->label(trans_dash('accounting.status', 'Status'))
+                            ->badge()
+                            ->formatStateUsing(fn ($state) => $state ? JournalEntryStatus::from($state)->label() : 'Draft')
+                            ->color(fn ($state) => $state ? JournalEntryStatus::from($state)->color() : 'gray'),
+
+                        Infolists\Components\IconEntry::make('is_posted')
+                            ->label(trans_dash('accounting.posted', 'Posted'))
+                            ->boolean(),
+
+                        Infolists\Components\TextEntry::make('user.name')
+                            ->label(trans_dash('accounting.created_by', 'Created By')),
+
+                        Infolists\Components\TextEntry::make('created_at')
+                            ->label(trans_dash('accounting.created_at', 'Created At'))
+                            ->dateTime(),
+                    ])
+                    ->columns(2),
+
+                Infolists\Components\Section::make(trans_dash('accounting.journal_entry_lines', 'Journal Entry Lines'))
+                    ->schema([
+                        Infolists\Components\RepeatableEntry::make('lines')
+                            ->label('')
+                            ->schema([
+                                Infolists\Components\TextEntry::make('account.code')
+                                    ->label(trans_dash('accounting.account', 'Account'))
+                                    ->formatStateUsing(fn ($state, $record) => 
+                                        ($record->account->code ?? '') . ' - ' . ($record->account->name ?? '')
+                                    ),
+
+                                Infolists\Components\TextEntry::make('description')
+                                    ->label(trans_dash('accounting.description', 'Description'))
+                                    ->placeholder('-'),
+
+                                Infolists\Components\TextEntry::make('debit')
+                                    ->label(trans_dash('accounting.debit', 'Debit'))
+                                    ->money('USD')
+                                    ->default(0)
+                                    ->visible(fn ($record) => $record->debit > 0),
+
+                                Infolists\Components\TextEntry::make('credit')
+                                    ->label(trans_dash('accounting.credit', 'Credit'))
+                                    ->money('USD')
+                                    ->default(0)
+                                    ->visible(fn ($record) => $record->credit > 0),
+
+                                Infolists\Components\TextEntry::make('base_amount')
+                                    ->label(trans_dash('accounting.base_amount', 'Base Amount'))
+                                    ->money('USD')
+                                    ->default(0),
+
+                                Infolists\Components\TextEntry::make('currency.code')
+                                    ->label(trans_dash('accounting.currency', 'Currency'))
+                                    ->placeholder('-')
+                                    ->visible(fn ($record) => $record->currency_id !== null),
+
+                                Infolists\Components\TextEntry::make('exchange_rate')
+                                    ->label(trans_dash('accounting.exchange_rate', 'Exchange Rate'))
+                                    ->formatStateUsing(fn ($state) => $state ? number_format($state, 6) : '1.000000')
+                                    ->visible(fn ($record) => $record->currency_id !== null),
+
+                                Infolists\Components\TextEntry::make('cost_center.name')
+                                    ->label(trans_dash('accounting.cost_center', 'Cost Center'))
+                                    ->placeholder('-')
+                                    ->visible(fn ($record) => $record->cost_center_id !== null),
+
+                                Infolists\Components\TextEntry::make('project.code')
+                                    ->label(trans_dash('accounting.project', 'Project'))
+                                    ->formatStateUsing(fn ($state, $record) => 
+                                        $record->project ? ($record->project->code . ' - ' . $record->project->name) : '-'
+                                    )
+                                    ->placeholder('-')
+                                    ->visible(fn ($record) => $record->project_id !== null),
+
+                                Infolists\Components\TextEntry::make('reference')
+                                    ->label(trans_dash('accounting.reference', 'Reference'))
+                                    ->placeholder('-')
+                                    ->visible(fn ($record) => $record->reference !== null),
+                            ])
+                            ->columns(4)
+                            ->grid(2),
+                    ])
+                    ->collapsible(),
+
+                Infolists\Components\Section::make(trans_dash('accounting.summary', 'Summary'))
+                    ->schema([
+                        Infolists\Components\TextEntry::make('total_debits')
+                            ->label(trans_dash('accounting.total_debits', 'Total Debits'))
+                            ->money('USD')
+                            ->color('success')
+                            ->size('lg'),
+
+                        Infolists\Components\TextEntry::make('total_credits')
+                            ->label(trans_dash('accounting.total_credits', 'Total Credits'))
+                            ->money('USD')
+                            ->color('danger')
+                            ->size('lg'),
+
+                        Infolists\Components\TextEntry::make('balance_difference')
+                            ->label(trans_dash('accounting.difference', 'Difference'))
+                            ->money('USD')
+                            ->color(fn ($record) => {
+                                $difference = abs($record->total_debits - $record->total_credits);
+                                return $difference < 0.01 ? 'success' : 'danger';
+                            })
+                            ->size('lg')
+                            ->formatStateUsing(fn ($state, $record) => {
+                                $difference = abs($record->total_debits - $record->total_credits);
+                                return $difference < 0.01 ? 
+                                    trans_dash('accounting.balanced', 'Balanced') : 
+                                    number_format($difference, 2);
+                            })
+                            ->state(fn ($record) => abs($record->total_debits - $record->total_credits)),
+                    ])
+                    ->columns(3),
+            ]);
     }
 
     public static function getRelations(): array

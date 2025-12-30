@@ -146,8 +146,17 @@ class JournalEntryService
         $totalCredits = 0;
 
         foreach ($lines as $line) {
-            $debit = (float) ($line['debit'] ?? 0);
-            $credit = (float) ($line['credit'] ?? 0);
+            // Determine debit/credit based on type field or amounts
+            $type = $line['type'] ?? ($line['debit'] > 0 ? 'debit' : 'credit');
+            $debit = $type === 'debit' ? (float) ($line['debit'] ?? 0) : 0;
+            $credit = $type === 'credit' ? (float) ($line['credit'] ?? 0) : 0;
+
+            // If type not set, use existing debit/credit values
+            if (!isset($line['type'])) {
+                $debit = (float) ($line['debit'] ?? 0);
+                $credit = (float) ($line['credit'] ?? 0);
+            }
+
             $baseAmount = (float) ($line['base_amount'] ?? 0);
 
             if ($baseAmount > 0) {
@@ -184,28 +193,43 @@ class JournalEntryService
                 continue; // Skip lines without account
             }
 
-            // Each line from frontend already has either debit or credit
-            // So we can use it directly
+            // Determine debit/credit based on type field or amounts
+            $type = $line['type'] ?? ($line['debit'] > 0 ? 'debit' : 'credit');
+            $debit = $type === 'debit' ? (float) ($line['debit'] ?? 0) : 0;
+            $credit = $type === 'credit' ? (float) ($line['credit'] ?? 0) : 0;
+
+            // If type not set, use existing debit/credit values
+            if (!isset($line['type'])) {
+                $debit = (float) ($line['debit'] ?? 0);
+                $credit = (float) ($line['credit'] ?? 0);
+            }
+
             $lineData = [
                 'account_id' => (int) $line['account_id'],
-                'debit' => (float) ($line['debit'] ?? 0),
-                'credit' => (float) ($line['credit'] ?? 0),
+                'debit' => $debit,
+                'credit' => $credit,
                 'description' => $line['description'] ?? null,
                 'branch_id' => isset($line['branch_id']) ? (int) $line['branch_id'] : null,
                 'cost_center_id' => isset($line['cost_center_id']) ? (int) $line['cost_center_id'] : null,
                 'project_id' => isset($line['project_id']) ? (int) $line['project_id'] : null,
                 'currency_id' => isset($line['currency_id']) ? (int) $line['currency_id'] : null,
                 'exchange_rate' => (float) ($line['exchange_rate'] ?? 1),
-                'amount' => isset($line['amount']) ? (float) $line['amount'] : null,
-                'base_amount' => isset($line['base_amount']) ? (float) $line['base_amount'] : 0,
+                'amount' => isset($line['amount']) ? (float) $line['amount'] : ($debit > 0 ? $debit : $credit),
+                'base_amount' => isset($line['base_amount']) ? (float) $line['base_amount'] : null,
                 'reference' => $line['reference'] ?? null,
             ];
 
             // Calculate base_amount if not provided
-            if (empty($lineData['base_amount']) && $lineData['amount'] && $lineData['exchange_rate']) {
-                $lineData['base_amount'] = round($lineData['amount'] * $lineData['exchange_rate'], 2);
-            } elseif (empty($lineData['base_amount'])) {
-                $lineData['base_amount'] = $lineData['debit'] > 0 ? $lineData['debit'] : $lineData['credit'];
+            if (empty($lineData['base_amount'])) {
+                $amount = $lineData['amount'] ?? ($debit > 0 ? $debit : $credit);
+                $exchangeRate = $lineData['exchange_rate'];
+                $defaultCurrencyId = app(\App\Services\MainCore\CurrencyService::class)->defaultCurrency()?->id;
+                
+                if ($lineData['currency_id'] && $lineData['currency_id'] != $defaultCurrencyId) {
+                    $lineData['base_amount'] = round($amount * $exchangeRate, 2);
+                } else {
+                    $lineData['base_amount'] = $amount;
+                }
             }
 
             $transformed[] = $lineData;
@@ -222,6 +246,7 @@ class JournalEntryService
         return $lines->map(function ($line) {
             return [
                 'id' => $line->id,
+                'type' => $line->debit > 0 ? 'debit' : 'credit',
                 'account_id' => $line->account_id,
                 'description' => $line->description,
                 'debit' => (float) $line->debit,

@@ -52,7 +52,7 @@
         isRTL: @js($isRTL),
     })"
     class="journal-entry-cards"
-    :dir="$isRTL ? 'rtl' : 'ltr'"
+    :dir="isRTL ? 'rtl' : 'ltr'"
 >
     <!-- Global Currency Selector -->
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
