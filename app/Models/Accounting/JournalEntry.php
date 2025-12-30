@@ -142,36 +142,50 @@ class JournalEntry extends Model
     }
 
     /**
-     * Get total debits
+     * Get total debits using database aggregation
      */
     public function getTotalDebitsAttribute(): float
     {
-        $lines = $this->lines;
+        if (!$this->relationLoaded('lines')) {
+            // Use database aggregation for better performance
+            $result = $this->lines()
+                ->where('debit', '>', 0)
+                ->selectRaw('SUM(COALESCE(base_amount, debit)) as total')
+                ->value('total');
+            return (float) ($result ?? 0);
+        }
+
+        // If lines are already loaded, calculate from collection
         $total = 0;
-        foreach ($lines as $line) {
-            $baseAmount = $line->base_amount ?? ($line->debit > 0 ? $line->debit : $line->credit);
+        foreach ($this->lines as $line) {
             if ($line->debit > 0) {
+                $baseAmount = $line->base_amount ?? $line->debit;
                 $total += $baseAmount;
-            } else {
-                $total += $line->debit;
             }
         }
         return $total;
     }
 
     /**
-     * Get total credits
+     * Get total credits using database aggregation
      */
     public function getTotalCreditsAttribute(): float
     {
-        $lines = $this->lines;
+        if (!$this->relationLoaded('lines')) {
+            // Use database aggregation for better performance
+            $result = $this->lines()
+                ->where('credit', '>', 0)
+                ->selectRaw('SUM(COALESCE(base_amount, credit)) as total')
+                ->value('total');
+            return (float) ($result ?? 0);
+        }
+
+        // If lines are already loaded, calculate from collection
         $total = 0;
-        foreach ($lines as $line) {
-            $baseAmount = $line->base_amount ?? ($line->debit > 0 ? $line->debit : $line->credit);
+        foreach ($this->lines as $line) {
             if ($line->credit > 0) {
+                $baseAmount = $line->base_amount ?? $line->credit;
                 $total += $baseAmount;
-            } else {
-                $total += $line->credit;
             }
         }
         return $total;
@@ -267,6 +281,63 @@ class JournalEntry extends Model
     public function scopeByStatus($query, string $status)
     {
         return $query->where('status', $status);
+    }
+
+    /**
+     * Scope to filter by journal
+     */
+    public function scopeByJournal($query, int $journalId)
+    {
+        return $query->where('journal_id', $journalId);
+    }
+
+    /**
+     * Scope to filter by branch
+     */
+    public function scopeByBranch($query, int $branchId)
+    {
+        return $query->where('branch_id', $branchId);
+    }
+
+    /**
+     * Scope to filter by period
+     */
+    public function scopeByPeriod($query, int $periodId)
+    {
+        return $query->where('period_id', $periodId);
+    }
+
+    /**
+     * Scope to filter by fiscal year
+     */
+    public function scopeByFiscalYear($query, int $fiscalYearId)
+    {
+        return $query->where('fiscal_year_id', $fiscalYearId);
+    }
+
+    /**
+     * Scope to filter by date range
+     */
+    public function scopeDateRange($query, $startDate, $endDate)
+    {
+        return $query->whereBetween('entry_date', [$startDate, $endDate]);
+    }
+
+    /**
+     * Scope to eager load common relationships
+     */
+    public function scopeWithDetails($query)
+    {
+        return $query->with([
+            'journal',
+            'branch',
+            'costCenter',
+            'user',
+            'fiscalYear',
+            'period',
+            'lines.account',
+            'lines.currency',
+        ]);
     }
 }
 

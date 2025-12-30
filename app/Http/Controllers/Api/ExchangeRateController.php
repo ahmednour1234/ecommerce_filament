@@ -36,5 +36,35 @@ class ExchangeRateController extends Controller
             'rate' => $rate,
         ]);
     }
+
+    /**
+     * Get exchange rates for multiple currencies in batch
+     */
+    public function getBatchRates(Request $request): JsonResponse
+    {
+        $request->validate([
+            'currencies' => 'required|array|min:1',
+            'currencies.*.currency_id' => 'required|integer|exists:currencies,id',
+            'date' => 'nullable|date',
+        ]);
+
+        $currencies = $request->input('currencies', []);
+        $date = $request->input('date') ? new \DateTime($request->input('date')) : new \DateTime();
+
+        $rates = [];
+        foreach ($currencies as $currency) {
+            $currencyId = $currency['currency_id'];
+            $rate = $this->conversionService->getExchangeRate($currencyId, $date);
+            $rates[] = [
+                'currency_id' => $currencyId,
+                'rate' => $rate,
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'rates' => $rates,
+        ]);
+    }
 }
 

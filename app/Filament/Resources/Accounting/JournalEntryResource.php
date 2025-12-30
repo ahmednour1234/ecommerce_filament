@@ -505,6 +505,17 @@ class JournalEntryResource extends Resource
                         ->visible(fn () => auth()->user()?->can('journal_entries.delete') ?? false),
                 ]),
             ])
+            ->modifyQueryUsing(function ($query) {
+                // Eager load relationships to prevent N+1 queries
+                return $query->with([
+                    'journal',
+                    'branch',
+                    'costCenter',
+                    'user',
+                    'fiscalYear',
+                    'period',
+                ]);
+            })
             ->defaultSort('entry_date', 'desc');
     }
 
@@ -522,6 +533,7 @@ class JournalEntryResource extends Resource
             'create' => Pages\CreateJournalEntry::route('/create'),
             'view' => Pages\ViewJournalEntry::route('/{record}'),
             'edit' => Pages\EditJournalEntry::route('/{record}/edit'),
+            'print' => Pages\PrintJournalEntry::route('/{record}/print'),
         ];
     }
 
