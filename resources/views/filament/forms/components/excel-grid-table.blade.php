@@ -1,6 +1,10 @@
 @php
     $statePath = $getStatePath();
     $rows = $getState() ?? [];
+    // Ensure rows is always an array (not an object)
+    if (is_object($rows) || !is_array($rows)) {
+        $rows = [];
+    }
     $columns = $getGridColumns();
     $isRTL = app()->getLocale() === 'ar';
     $allowAddRows = $getAllowAddRows();
@@ -158,16 +162,30 @@
 @push('scripts')
 <script>
 function excelGridTable(config) {
+    // Ensure rows is always an array
+    let initialRows = config.rows || [];
+    if (!Array.isArray(initialRows)) {
+        if (initialRows && typeof initialRows === 'object') {
+            // Convert object to array
+            initialRows = Object.values(initialRows);
+        } else {
+            initialRows = [];
+        }
+    }
+    
     return {
         statePath: config.statePath,
-        columns: config.columns,
-        rows: config.rows || [],
+        columns: config.columns || [],
+        rows: initialRows,
         selectedRows: [],
         errors: [],
         entryDate: null,
         defaultCurrencyId: @js(app(\App\Services\MainCore\CurrencyService::class)->defaultCurrency()?->id),
 
         init() {
+            // Ensure rows is always an array
+            this.ensureRowsIsArray();
+            
             if (this.rows.length === 0) {
                 this.addRow();
             }
@@ -175,11 +193,26 @@ function excelGridTable(config) {
             // Get entry date from parent form if available
             this.entryDate = this.getEntryDate();
             
-            this.$watch('rows', () => {
+            // Watch for changes and ensure rows stays as array
+            this.$watch('rows', (newValue) => {
+                this.ensureRowsIsArray();
                 this.updateState();
                 this.recalculateAll();
             }, { deep: true });
+            
             this.updateState();
+        },
+        
+        ensureRowsIsArray() {
+            // Convert to array if it's not already
+            if (!Array.isArray(this.rows)) {
+                if (this.rows && typeof this.rows === 'object') {
+                    // If it's an object, convert to array
+                    this.rows = Object.values(this.rows);
+                } else {
+                    this.rows = [];
+                }
+            }
         },
         
         getEntryDate() {
@@ -204,6 +237,7 @@ function excelGridTable(config) {
         },
 
         addRow() {
+            this.ensureRowsIsArray();
             const newRow = {};
             this.columns.forEach(col => {
                 newRow[col.name] = col.default ?? '';
@@ -219,30 +253,41 @@ function excelGridTable(config) {
         },
 
         deleteSelectedRows() {
+            this.ensureRowsIsArray();
             if (this.selectedRows.length === 0) return;
             
             // Sort descending to delete from end to start
             const sorted = [...this.selectedRows].sort((a, b) => b - a);
             sorted.forEach(index => {
-                this.rows.splice(index, 1);
+                if (Array.isArray(this.rows) && index >= 0 && index < this.rows.length) {
+                    this.rows.splice(index, 1);
+                }
             });
             this.selectedRows = [];
             this.updateState();
         },
 
         duplicateSelectedRows() {
+            this.ensureRowsIsArray();
             if (this.selectedRows.length === 0) return;
             
             const duplicates = this.selectedRows.map(index => {
-                return JSON.parse(JSON.stringify(this.rows[index]));
-            });
-            this.rows.push(...duplicates);
+                if (this.rows[index]) {
+                    return JSON.parse(JSON.stringify(this.rows[index]));
+                }
+                return null;
+            }).filter(row => row !== null);
+            
+            if (duplicates.length > 0) {
+                this.rows.push(...duplicates);
+            }
             this.selectedRows = [];
             this.updateState();
         },
 
         toggleSelectAll(checked) {
-            if (checked) {
+            this.ensureRowsIsArray();
+            if (checked && Array.isArray(this.rows)) {
                 this.selectedRows = this.rows.map((_, index) => index);
             } else {
                 this.selectedRows = [];
@@ -398,8 +443,10 @@ function excelGridTable(config) {
         },
 
         recalculateAll() {
+            this.ensureRowsIsArray();
+            if (!Array.isArray(this.rows)) return;
             this.rows.forEach((row, index) => {
-                if (row.debit || row.credit || row.amount) {
+                if (row && (row.debit || row.credit || row.amount)) {
                     this.calculateBaseAmount(index);
                 }
             });
@@ -450,8 +497,10 @@ function excelGridTable(config) {
         },
 
         get totalDebits() {
-            if (!config.totalDebitColumn) return 0;
+            this.ensureRowsIsArray();
+            if (!config.totalDebitColumn || !Array.isArray(this.rows)) return 0;
             return this.rows.reduce((sum, row) => {
+                if (!row) return sum;
                 const debit = parseFloat(row.debit) || 0;
                 if (debit > 0) {
                     // Use base_amount if available and currency is not base, otherwise use debit
@@ -464,8 +513,10 @@ function excelGridTable(config) {
         },
 
         get totalCredits() {
-            if (!config.totalCreditColumn) return 0;
+            this.ensureRowsIsArray();
+            if (!config.totalCreditColumn || !Array.isArray(this.rows)) return 0;
             return this.rows.reduce((sum, row) => {
+                if (!row) return sum;
                 const credit = parseFloat(row.credit) || 0;
                 if (credit > 0) {
                     // Use base_amount if available and currency is not base, otherwise use credit
@@ -493,12 +544,20 @@ function excelGridTable(config) {
         },
 
         updateState() {
-            this.$wire.set(config.statePath, this.rows);
+            this.ensureRowsIsArray();
+            // Ensure we're setting an array, not an object
+            const rowsArray = Array.isArray(this.rows) ? this.rows : [];
+            this.$wire.set(config.statePath, rowsArray);
             this.validate();
         },
 
         validate() {
+            this.ensureRowsIsArray();
             this.errors = [];
+            
+            if (!Array.isArray(this.rows)) {
+                return;
+            }
             
             // Check balance
             if (Math.abs(this.difference) > 0.01) {
@@ -507,6 +566,7 @@ function excelGridTable(config) {
             
             // Validate each row
             this.rows.forEach((row, index) => {
+                if (!row) return;
                 this.columns.forEach(col => {
                     if (col.required && !row[col.name]) {
                         this.errors.push(`{{ trans_dash("accounting.row_required", "Row :row: :field is required", ["row" => ":row", "field" => ":field"]) }}`
