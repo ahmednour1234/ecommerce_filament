@@ -280,8 +280,7 @@ class JournalEntryResource extends Resource
                             ])
                             ->totalDebitColumn('debit')
                             ->totalCreditColumn('credit')
-                            ->differenceColumn('difference')
-                            ->required(),
+                            ->differenceColumn('difference'),
                     ])
                     ->collapsible(),
             ]);
