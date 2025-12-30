@@ -14,15 +14,20 @@ class AccountsTreePage extends Page
 
     public $accounts = [];
     public $selectedAccountType = 'all';
+    public $expandedAccounts = [];
 
     public function mount(): void
     {
         $this->loadAccounts();
+        // Expand all accounts by default
+        $this->expandAll();
     }
 
     public function updatedSelectedAccountType(): void
     {
         $this->loadAccounts();
+        // Reset and expand all accounts after filtering
+        $this->expandAll();
     }
 
     protected function loadAccounts(): void
@@ -54,6 +59,39 @@ class AccountsTreePage extends Page
         }
 
         return $tree;
+    }
+
+    public function toggleAccount($accountId): void
+    {
+        if (in_array($accountId, $this->expandedAccounts)) {
+            $this->expandedAccounts = array_values(array_diff($this->expandedAccounts, [$accountId]));
+        } else {
+            $this->expandedAccounts[] = $accountId;
+        }
+    }
+
+    public function isExpanded($accountId): bool
+    {
+        return in_array($accountId, $this->expandedAccounts);
+    }
+
+    protected function expandAll(): void
+    {
+        $this->expandedAccounts = [];
+        $this->collectAccountIds($this->accounts);
+    }
+
+    protected function collectAccountIds($accounts): void
+    {
+        foreach ($accounts as $item) {
+            $account = $item['account'];
+            $children = $item['children'] ?? [];
+            
+            if (count($children) > 0) {
+                $this->expandedAccounts[] = $account->id;
+                $this->collectAccountIds($children);
+            }
+        }
     }
 
     protected function getViewData(): array
