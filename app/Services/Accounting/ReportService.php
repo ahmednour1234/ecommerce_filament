@@ -3,9 +3,12 @@
 namespace App\Services\Accounting;
 
 use App\Models\Accounting\Account;
+use App\Models\Accounting\JournalEntry;
 use App\Models\Accounting\JournalEntryLine;
+use App\Models\Accounting\GeneralLedgerEntry;
 use App\Models\MainCore\Branch;
 use App\Models\MainCore\CostCenter;
+use App\Services\Accounting\GeneralLedgerService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -118,6 +121,216 @@ class ReportService
     {
         $cacheKey = 'dashboard_stats_' . ($branchId ?? 'all');
         Cache::forget($cacheKey);
+    }
+
+    /**
+     * Get trial balance with filters
+     */
+    public function getTrialBalance(array $filters = []): array
+    {
+        $fromDate = isset($filters['from_date']) ? \Carbon\Carbon::parse($filters['from_date']) : null;
+        $toDate = isset($filters['to_date']) ? \Carbon\Carbon::parse($filters['to_date']) : now();
+        
+        $query = GeneralLedgerEntry::query()
+            ->whereHas('account', fn($q) => $q->where('is_active', true));
+        
+        if ($fromDate) {
+            $query->whereDate('entry_date', '>=', $fromDate);
+        }
+        
+        if ($toDate) {
+            $query->whereDate('entry_date', '<=', $toDate);
+        }
+        
+        if (isset($filters['branch_id'])) {
+            $query->where('branch_id', $filters['branch_id']);
+        }
+        
+        if (isset($filters['cost_center_id'])) {
+            $query->where('cost_center_id', $filters['cost_center_id']);
+        }
+        
+        if (isset($filters['project_id'])) {
+            $query->where('project_id', $filters['project_id']);
+        }
+        
+        $entries = $query->with('account')->get();
+        
+        $accounts = [];
+        foreach ($entries as $entry) {
+            $accountId = $entry->account_id;
+            if (!isset($accounts[$accountId])) {
+                $accounts[$accountId] = [
+                    'account' => $entry->account,
+                    'debits' => 0,
+                    'credits' => 0,
+                ];
+            }
+            
+            $accounts[$accountId]['debits'] += $entry->debit;
+            $accounts[$accountId]['credits'] += $entry->credit;
+        }
+        
+        $trialBalance = [];
+        foreach ($accounts as $accountId => $data) {
+            $account = $data['account'];
+            $debits = $data['debits'];
+            $credits = $data['credits'];
+            
+            if (in_array($account->type, ['asset', 'expense'])) {
+                $balance = $debits - $credits;
+            } else {
+                $balance = $credits - $debits;
+            }
+            
+            $trialBalance[] = [
+                'account' => $account,
+                'debits' => $debits,
+                'credits' => $credits,
+                'balance' => $balance,
+            ];
+        }
+        
+        return $trialBalance;
+    }
+
+    /**
+     * Get general ledger with running balances
+     */
+    public function getGeneralLedger(array $filters = []): array
+    {
+        $query = GeneralLedgerEntry::query()
+            ->with(['account', 'branch', 'costCenter', 'project', 'source']);
+        
+        if (isset($filters['account_id'])) {
+            $query->where('account_id', $filters['account_id']);
+        }
+        
+        if (isset($filters['from_date'])) {
+            $query->whereDate('entry_date', '>=', $filters['from_date']);
+        }
+        
+        if (isset($filters['to_date'])) {
+            $query->whereDate('entry_date', '<=', $filters['to_date']);
+        }
+        
+        if (isset($filters['branch_id'])) {
+            $query->where('branch_id', $filters['branch_id']);
+        }
+        
+        if (isset($filters['cost_center_id'])) {
+            $query->where('cost_center_id', $filters['cost_center_id']);
+        }
+        
+        if (isset($filters['project_id'])) {
+            $query->where('project_id', $filters['project_id']);
+        }
+        
+        return $query->orderBy('entry_date')
+            ->orderBy('id')
+            ->get()
+            ->toArray();
+    }
+
+    /**
+     * Get account statement
+     */
+    public function getAccountStatement(int $accountId, array $filters = []): array
+    {
+        $glService = app(GeneralLedgerService::class);
+        
+        $fromDate = isset($filters['from_date']) ? \Carbon\Carbon::parse($filters['from_date']) : null;
+        $toDate = isset($filters['to_date']) ? \Carbon\Carbon::parse($filters['to_date']) : now();
+        
+        return $glService->getAccountStatement($accountId, $fromDate, $toDate, $filters);
+    }
+
+    /**
+     * Get income statement (Revenue - Expenses)
+     */
+    public function getIncomeStatement(array $filters = []): array
+    {
+        $fromDate = isset($filters['from_date']) ? \Carbon\Carbon::parse($filters['from_date']) : null;
+        $toDate = isset($filters['to_date']) ? \Carbon\Carbon::parse($filters['to_date']) : now();
+        
+        $query = GeneralLedgerEntry::query()
+            ->whereHas('account', function($q) {
+                $q->whereIn('type', ['revenue', 'expense']);
+            });
+        
+        if ($fromDate) {
+            $query->whereDate('entry_date', '>=', $fromDate);
+        }
+        
+        if ($toDate) {
+            $query->whereDate('entry_date', '<=', $toDate);
+        }
+        
+        if (isset($filters['branch_id'])) {
+            $query->where('branch_id', $filters['branch_id']);
+        }
+        
+        $entries = $query->with('account')->get();
+        
+        $revenue = 0;
+        $expenses = 0;
+        
+        foreach ($entries as $entry) {
+            if ($entry->account->type === 'revenue') {
+                $revenue += $entry->credit - $entry->debit;
+            } else {
+                $expenses += $entry->debit - $entry->credit;
+            }
+        }
+        
+        return [
+            'revenue' => $revenue,
+            'expenses' => $expenses,
+            'net_income' => $revenue - $expenses,
+        ];
+    }
+
+    /**
+     * Get balance sheet (Assets = Liabilities + Equity)
+     */
+    public function getBalanceSheet(\DateTime $asOfDate, array $filters = []): array
+    {
+        $query = GeneralLedgerEntry::query()
+            ->whereDate('entry_date', '<=', $asOfDate)
+            ->whereHas('account', function($q) {
+                $q->whereIn('type', ['asset', 'liability', 'equity']);
+            });
+        
+        if (isset($filters['branch_id'])) {
+            $query->where('branch_id', $filters['branch_id']);
+        }
+        
+        $entries = $query->with('account')->get();
+        
+        $assets = 0;
+        $liabilities = 0;
+        $equity = 0;
+        
+        foreach ($entries as $entry) {
+            $account = $entry->account;
+            $balance = $entry->balance;
+            
+            if ($account->type === 'asset') {
+                $assets += $balance;
+            } elseif ($account->type === 'liability') {
+                $liabilities += $balance;
+            } elseif ($account->type === 'equity') {
+                $equity += $balance;
+            }
+        }
+        
+        return [
+            'assets' => $assets,
+            'liabilities' => $liabilities,
+            'equity' => $equity,
+            'total_liabilities_equity' => $liabilities + $equity,
+            'is_balanced' => abs($assets - ($liabilities + $equity)) < 0.01,
+        ];
     }
 }
 
