@@ -12,12 +12,9 @@ class EditJournalEntry extends EditRecord
 {
     protected static string $resource = JournalEntryResource::class;
 
-    protected JournalEntryService $journalEntryService;
-
-    public function boot(): void
+    protected function getJournalEntryService(): JournalEntryService
     {
-        parent::boot();
-        $this->journalEntryService = app(JournalEntryService::class);
+        return app(JournalEntryService::class);
     }
 
     protected function getHeaderActions(): array
@@ -36,7 +33,7 @@ class EditJournalEntry extends EditRecord
     {
         // Load lines data using service transformation
         $entry = $this->record->load('lines');
-        $data['lines'] = $this->journalEntryService->transformLinesForDisplay($entry->lines);
+        $data['lines'] = $this->getJournalEntryService()->transformLinesForDisplay($entry->lines);
         
         return $data;
     }
@@ -50,7 +47,7 @@ class EditJournalEntry extends EditRecord
     protected function handleRecordUpdate($record, array $data): \Illuminate\Database\Eloquent\Model
     {
         // Use service to update the entry (with efficient line updates)
-        return $this->journalEntryService->update($record, $data);
+        return $this->getJournalEntryService()->update($record, $data);
     }
 }
 
