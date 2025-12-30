@@ -14,7 +14,8 @@ class AccountsPayableAgingOverdueReportService extends ReportBase
 {
     protected function buildQuery(): Builder
     {
-        return DB::table('accounts')->whereRaw('1 = 0');
+        // Return an Eloquent builder instead of Query builder
+        return \App\Models\Accounting\Account::query()->whereRaw('1 = 0');
     }
 
     public function getData(): \App\Reports\DTOs\ReportDataDTO

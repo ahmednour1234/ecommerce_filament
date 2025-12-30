@@ -10,7 +10,7 @@ use Filament\Resources\Pages\ListRecords;
 class ListRoles extends ListRecords
 {
     use ExportsResourceTable;
-{
+
     protected static string $resource = RoleResource::class;
 
     protected function getHeaderActions(): array

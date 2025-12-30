@@ -10,7 +10,7 @@ use Filament\Resources\Pages\ListRecords;
 class ListPermissions extends ListRecords
 {
     use ExportsResourceTable;
-{
+
     protected static string $resource = PermissionResource::class;
 
     protected function getHeaderActions(): array

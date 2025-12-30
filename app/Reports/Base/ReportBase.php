@@ -197,7 +197,6 @@ abstract class ReportBase
      */
     protected function getDateColumn(Builder $query): ?string
     {
-        $model = $query->getModel();
         $dateColumns = ['entry_date', 'created_at', 'date', 'voucher_date', 'invoice_date', 'purchase_date'];
         
         foreach ($dateColumns as $column) {
@@ -215,7 +214,15 @@ abstract class ReportBase
     protected function hasColumn(Builder $query, string $column): bool
     {
         try {
+            if (!method_exists($query, 'getModel')) {
+                return false;
+            }
+            
             $model = $query->getModel();
+            if (!$model || !method_exists($model, 'getTable')) {
+                return false;
+            }
+            
             $table = $model->getTable();
             return Schema::hasColumn($table, $column);
         } catch (\Exception $e) {
