@@ -4,6 +4,7 @@ namespace App\Filament\Pages\Accounting;
 
 use App\Models\Accounting\Account;
 use Filament\Pages\Page;
+use Illuminate\Support\Facades\Response;
 
 class AccountsTreePage extends Page
 {
@@ -17,6 +18,20 @@ class AccountsTreePage extends Page
     public $expandedAccounts = [];
     public $selectedAccountId = null;
     public $searchTerm = '';
+    
+    // Form properties for edit/create
+    public $showModal = false;
+    public $isEditing = false;
+    public $formData = [
+        'code' => '',
+        'name' => '',
+        'type' => '',
+        'parent_id' => null,
+        'level' => 1,
+        'is_active' => true,
+        'allow_manual_entry' => true,
+        'notes' => '',
+    ];
 
     public function mount(): void
     {
@@ -169,7 +184,7 @@ class AccountsTreePage extends Page
 
         fclose($file);
         
-        return $this->download($filepath, $filename);
+        return Response::download($filepath, $filename)->deleteFileAfterSend(true);
     }
 
     public function resetFilters(): void
@@ -198,6 +213,122 @@ class AccountsTreePage extends Page
             $this->expandAll();
             session()->flash('success', 'Account deleted successfully.');
         }
+    }
+
+    public function openCreateModal($parentId = null): void
+    {
+        $this->isEditing = false;
+        $this->showModal = true;
+        $this->formData = [
+            'code' => '',
+            'name' => '',
+            'type' => $this->selectedAccountType !== 'all' ? $this->selectedAccountType : 'asset',
+            'parent_id' => $parentId,
+            'level' => $parentId ? (Account::find($parentId)?->level + 1 ?? 1) : 1,
+            'is_active' => true,
+            'allow_manual_entry' => true,
+            'notes' => '',
+        ];
+    }
+
+    public function openEditModal($accountId): void
+    {
+        $account = Account::find($accountId);
+        
+        if ($account) {
+            $this->isEditing = true;
+            $this->showModal = true;
+            $this->formData = [
+                'code' => $account->code,
+                'name' => $account->name,
+                'type' => $account->type,
+                'parent_id' => $account->parent_id,
+                'level' => $account->level,
+                'is_active' => $account->is_active,
+                'allow_manual_entry' => $account->allow_manual_entry,
+                'notes' => $account->notes ?? '',
+            ];
+            $this->selectedAccountId = $accountId;
+        }
+    }
+
+    public function closeModal(): void
+    {
+        $this->showModal = false;
+        $this->isEditing = false;
+        $this->formData = [
+            'code' => '',
+            'name' => '',
+            'type' => '',
+            'parent_id' => null,
+            'level' => 1,
+            'is_active' => true,
+            'allow_manual_entry' => true,
+            'notes' => '',
+        ];
+    }
+
+    public function updatedFormDataParentId(): void
+    {
+        if ($this->formData['parent_id']) {
+            $parent = Account::find($this->formData['parent_id']);
+            if ($parent) {
+                $this->formData['level'] = $parent->level + 1;
+            }
+        } else {
+            $this->formData['level'] = 1;
+        }
+    }
+
+    public function updateParentLevel(): void
+    {
+        $this->updatedFormDataParentId();
+    }
+
+    public function saveAccount(): void
+    {
+        $this->validate([
+            'formData.code' => 'required|max:50|unique:accounts,code' . ($this->isEditing ? ',' . $this->selectedAccountId : ''),
+            'formData.name' => 'required|max:255',
+            'formData.type' => 'required|in:asset,liability,equity,revenue,expense',
+            'formData.parent_id' => 'nullable|exists:accounts,id',
+            'formData.level' => 'required|integer|min:1',
+            'formData.is_active' => 'boolean',
+            'formData.allow_manual_entry' => 'boolean',
+        ]);
+
+        if ($this->isEditing) {
+            $account = Account::find($this->selectedAccountId);
+            if ($account && auth()->user()?->can('accounts.update')) {
+                $account->update($this->formData);
+                session()->flash('success', 'Account updated successfully.');
+            }
+        } else {
+            if (auth()->user()?->can('accounts.create')) {
+                Account::create($this->formData);
+                session()->flash('success', 'Account created successfully.');
+            }
+        }
+
+        $this->loadAccounts();
+        $this->expandAll();
+        $this->closeModal();
+    }
+
+    public function getParentAccountsProperty()
+    {
+        if (empty($this->formData['type'])) {
+            return [];
+        }
+        
+        $query = Account::where('type', $this->formData['type'])
+            ->orderBy('code');
+            
+        if ($this->isEditing && $this->selectedAccountId) {
+            $query->where('id', '!=', $this->selectedAccountId);
+        }
+        
+        return $query->get()->map(fn($account) => ['id' => $account->id, 'name' => $account->code . ' - ' . $account->name]);
     }
 
     protected function getViewData(): array

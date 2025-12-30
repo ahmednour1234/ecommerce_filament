@@ -32,7 +32,7 @@
                         wire:click="$set('selectedAccountType', 'all')"
                         class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-150
                                {{ $selectedAccountType === 'all' 
-                                   ? 'bg-primary-600 text-white shadow-sm' 
+                                   ? 'bg-primary-600 dark:bg-primary-500 text-white shadow-sm' 
                                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -45,7 +45,7 @@
                             wire:click="$set('selectedAccountType', '{{ $type }}')"
                             class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-150
                                    {{ $selectedAccountType === $type 
-                                       ? 'bg-primary-600 text-white shadow-sm' 
+                                       ? 'bg-primary-600 dark:bg-primary-500 text-white shadow-sm' 
                                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                             {{ $label }}
                         </button>
@@ -57,7 +57,7 @@
                 {{-- Export Button --}}
                 <button 
                     wire:click="exportToExcel"
-                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-emerald-600 border border-transparent rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-150">
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-emerald-600 dark:bg-emerald-500 border border-transparent rounded-lg hover:bg-emerald-700 dark:hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-150">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
@@ -75,14 +75,14 @@
                 </button>
 
                 {{-- Add Account Button --}}
-                <a 
-                    href="{{ \App\Filament\Resources\Accounting\AccountResource::getUrl('create') }}"
-                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-150">
+                <button 
+                    wire:click="openCreateModal"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-600 dark:bg-primary-500 border border-transparent rounded-lg hover:bg-primary-700 dark:hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-150">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
-                    Add Account
-                </a>
+                Add Account
+                </button>
             </div>
         </div>
 
@@ -90,7 +90,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 flex-1 min-h-0">
             {{-- Left Panel: Account Details --}}
             <div class="lg:col-span-1">
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 h-full flex flex-col">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 h-full flex flex-col">
                     <div class="p-4 border-b border-gray-200 dark:border-gray-700">
                         <div class="flex items-center gap-2">
                             <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,14 +124,14 @@
                                 {{-- Account Name --}}
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Account Name</label>
-                                    <div class="text-base font-medium text-gray-900 dark:text-gray-100">{{ $account->name }}</div>
+                                    <div class="text-base font-semibold text-gray-900 dark:text-gray-100">{{ $account->name }}</div>
                                 </div>
 
                                 {{-- Parent Account --}}
                                 @if($account->parent)
                                     <div>
                                         <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Parent Account</label>
-                                        <div class="text-base text-gray-900 dark:text-gray-100">{{ $account->parent->code }} - {{ $account->parent->name }}</div>
+                                        <div class="text-base font-semibold text-gray-900 dark:text-gray-100">{{ $account->parent->code }} - {{ $account->parent->name }}</div>
                                     </div>
                                 @endif
 
@@ -173,35 +173,43 @@
                                         <div class="text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-900/50 rounded-md p-3">{{ $account->notes }}</div>
                                     </div>
                                 @endif
+
+                                {{-- Children Count --}}
+                                @if($account->children()->count() > 0)
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Child Accounts</label>
+                                        <div class="text-base text-gray-900 dark:text-gray-100">{{ $account->children()->count() }} sub-account(s)</div>
+                                    </div>
+                                @endif
                             </div>
 
                             {{-- Action Buttons --}}
                             <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 space-y-2">
-                                <a 
-                                    href="{{ \App\Filament\Resources\Accounting\AccountResource::getUrl('edit', ['record' => $account->id]) }}"
-                                    class="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-150">
+                                <button 
+                                    wire:click="openEditModal({{ $account->id }})"
+                                    class="w-full inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-white bg-primary-600 dark:bg-primary-500 border border-transparent rounded-lg hover:bg-primary-700 dark:hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-150">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                     </svg>
                                     Edit Account
-                                </a>
+                                </button>
 
                                 @if(auth()->user()?->can('accounts.create'))
-                                    <a 
-                                        href="{{ \App\Filament\Resources\Accounting\AccountResource::getUrl('create', ['parent_id' => $account->id]) }}"
-                                        class="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-emerald-600 border border-transparent rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-150">
+                                    <button 
+                                        wire:click="openCreateModal({{ $account->id }})"
+                                        class="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-emerald-600 dark:bg-emerald-500 border border-transparent rounded-lg hover:bg-emerald-700 dark:hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-150">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                         </svg>
                                         Add Sub Account
-                                    </a>
+                                    </button>
                                 @endif
 
                                 @if(auth()->user()?->can('accounts.delete'))
                                     <button 
                                         wire:click="deleteAccount({{ $account->id }})"
                                         wire:confirm="Are you sure you want to delete this account? This action cannot be undone."
-                                        class="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150">
+                                        class="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-red-600 dark:bg-red-500 border border-transparent rounded-lg hover:bg-red-700 dark:hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                         </svg>
@@ -224,7 +232,7 @@
 
             {{-- Right Panel: Account Tree --}}
             <div class="lg:col-span-2">
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 h-full flex flex-col">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 h-full flex flex-col">
                     {{-- Search Bar --}}
                     <div class="p-4 border-b border-gray-200 dark:border-gray-700">
                         <div class="flex items-center gap-2">
@@ -247,9 +255,9 @@
                     <div class="flex-1 overflow-y-auto p-4">
                         @if(count($accounts) > 0)
                             <div class="relative space-y-1">
-                                @foreach($accounts as $item)
-                                    @include('filament.pages.accounting.partials.account-tree-item', ['item' => $item, 'level' => 0])
-                                @endforeach
+                @foreach($accounts as $item)
+                    @include('filament.pages.accounting.partials.account-tree-item', ['item' => $item, 'level' => 0])
+                @endforeach
                             </div>
                         @else
                             <div class="text-center py-12">
@@ -265,4 +273,137 @@
             </div>
         </div>
     </div>
+
+    {{-- Edit/Create Modal --}}
+    @if($showModal)
+        <div class="fixed inset-0 z-50 overflow-y-auto" x-data="{ show: @entangle('showModal') }" x-show="show" x-transition>
+            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75" x-on:click="show = false"></div>
+
+                <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+                    <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                {{ $isEditing ? 'Edit Account' : 'Create New Account' }}
+                            </h3>
+                            <button wire:click="closeModal" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <form wire:submit.prevent="saveAccount" class="space-y-4">
+                            {{-- Account Code --}}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Account Code *</label>
+                                <input 
+                                    type="text"
+                                    wire:model="formData.code"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                @error('formData.code') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+
+                            {{-- Account Name --}}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Account Name *</label>
+                                <input 
+                                    type="text"
+                                    wire:model="formData.name"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                @error('formData.name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+
+                            {{-- Account Type --}}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Account Type *</label>
+                                <select 
+                                    wire:model.live="formData.type"
+                                    wire:change="$set('formData.parent_id', null)"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                    <option value="">Select Type</option>
+                                    <option value="asset">Asset</option>
+                                    <option value="liability">Liability</option>
+                                    <option value="equity">Equity</option>
+                                    <option value="revenue">Revenue</option>
+                                    <option value="expense">Expense</option>
+                                </select>
+                                @error('formData.type') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+
+                            {{-- Parent Account --}}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Parent Account</label>
+                                <select 
+                                    wire:model.live="formData.parent_id"
+                                    wire:change="$wire.updateParentLevel"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                    <option value="">None (Root Account)</option>
+                                    @if(!empty($formData['type']))
+                                        @foreach($this->parentAccounts as $parent)
+                                            <option value="{{ $parent['id'] }}">{{ $parent['name'] }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </div>
+
+                            {{-- Level (readonly) --}}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Level</label>
+                                <input 
+                                    type="number"
+                                    wire:model="formData.level"
+                                    readonly
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 cursor-not-allowed">
+                            </div>
+
+                            {{-- Is Active --}}
+                            <div class="flex items-center">
+                                <input 
+                                    type="checkbox"
+                                    wire:model="formData.is_active"
+                                    id="is_active"
+                                    class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
+                                <label for="is_active" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">Active</label>
+                            </div>
+
+                            {{-- Allow Manual Entry --}}
+                            <div class="flex items-center">
+                                <input 
+                                    type="checkbox"
+                                    wire:model="formData.allow_manual_entry"
+                                    id="allow_manual_entry"
+                                    class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
+                                <label for="allow_manual_entry" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">Allow Manual Entry</label>
+                            </div>
+
+                            {{-- Notes --}}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
+                                <textarea 
+                                    wire:model="formData.notes"
+                                    rows="3"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"></textarea>
+                            </div>
+
+                            {{-- Action Buttons --}}
+                            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                <button 
+                                    type="button"
+                                    wire:click="closeModal"
+                                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit"
+                                    class="px-4 py-2 text-sm font-medium text-white bg-primary-600 dark:bg-primary-500 border border-transparent rounded-lg hover:bg-primary-700 dark:hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                    {{ $isEditing ? 'Update' : 'Create' }} Account
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 </x-filament-panels::page>

@@ -45,12 +45,10 @@
     {{-- Account row --}}
     <div 
         wire:click="selectAccount({{ $account->id }})"
-        class="relative flex items-center justify-between py-2.5 px-4 rounded-lg transition-all duration-200 cursor-pointer
+        class="relative flex items-center justify-between py-3 px-4 rounded-lg transition-all duration-200 cursor-pointer mb-1
                {{ $isSelected 
-                   ? 'bg-primary-50 dark:bg-primary-900/20 border-2 border-primary-500 dark:border-primary-600 shadow-sm' 
-                   : ($isParent 
-                       ? 'bg-gray-50 dark:bg-gray-700/30 hover:bg-gray-100 dark:hover:bg-gray-700 border border-transparent hover:border-gray-300 dark:hover:border-gray-600' 
-                       : 'hover:bg-gray-50 dark:hover:bg-gray-700/50 border border-transparent hover:border-gray-200 dark:hover:border-gray-600') }}"
+                   ? 'bg-white dark:bg-gray-800 border-2 border-primary-500 dark:border-primary-600 shadow-lg' 
+                   : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg' }}"
         style="margin-left: {{ $indent }}px;">
         
         <div class="flex items-center gap-3 flex-1 min-w-0">
@@ -94,22 +92,20 @@
             </div>
 
             {{-- Account code --}}
-            <span class="font-mono text-sm font-semibold {{ $isSelected ? 'text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300' }} flex-shrink-0">
+            <span class="font-mono text-sm font-semibold text-gray-700 dark:text-gray-300 flex-shrink-0">
                 {{ $account->code }}
             </span>
 
             {{-- Account name --}}
-            <span class="text-sm {{ $isSelected 
-                ? 'font-semibold text-primary-900 dark:text-primary-100' 
-                : ($isParent 
-                    ? 'font-semibold text-gray-900 dark:text-gray-100' 
-                    : 'font-medium text-gray-700 dark:text-gray-300') }} truncate">
+            <span class="text-sm {{ $isParent 
+                ? 'font-semibold text-gray-900 dark:text-gray-100' 
+                : 'font-medium text-gray-700 dark:text-gray-300' }} truncate">
                 {{ $account->name }}
             </span>
 
             {{-- Account type badge --}}
             <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-md border 
-                         {{ $badgeStyle['bg'] }} {{ $badgeStyle['text'] }} {{ $badgeStyle['border'] }} flex-shrink-0">
+                         bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 flex-shrink-0">
                 {{ ucfirst($account->type) }}
             </span>
 
