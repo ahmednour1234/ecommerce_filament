@@ -13,28 +13,28 @@
     $totalDebitColumn = $getTotalDebitColumn();
     $totalCreditColumn = $getTotalCreditColumn();
     $differenceColumn = $getDifferenceColumn();
-    
+
     // Get account options
     $accountColumn = collect($columns)->firstWhere('name', 'account_id');
     $accountOptions = $accountColumn['options'] ?? [];
-    
+
     // Get currency options
     $currencyColumn = collect($columns)->firstWhere('name', 'currency_id');
     $currencyOptions = $currencyColumn['options'] ?? [];
-    
+
     // Get cost center options
     $costCenterColumn = collect($columns)->firstWhere('name', 'cost_center_id');
     $costCenterOptions = $costCenterColumn['options'] ?? [];
-    
+
     // Get project options
     $projectColumn = collect($columns)->firstWhere('name', 'project_id');
     $projectOptions = $projectColumn['options'] ?? [];
-    
+
     $defaultCurrency = app(\App\Services\MainCore\CurrencyService::class)->defaultCurrency();
     $defaultCurrencyId = $defaultCurrency?->id;
 @endphp
 
-<div 
+<div
     x-data="journalEntryCards({
         statePath: @js($statePath),
         rows: @js($rows ?? []),
@@ -58,7 +58,7 @@
             <label class="text-sm font-semibold text-gray-700 whitespace-nowrap">
                 {{ trans_dash('accounting.global_currency', 'Global Currency for All Entries') }}:
             </label>
-            <select 
+            <select
                 x-model="globalCurrencyId"
                 @change="applyGlobalCurrency()"
                 class="flex-1 max-w-xs rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm"
@@ -77,7 +77,7 @@
     <!-- Toolbar -->
     <div class="flex gap-2 mb-4 flex-wrap">
         @if($allowAddRows)
-            <button 
+            <button
                 type="button"
                 @click="addRow()"
                 class="filament-button filament-button-size-sm filament-button-color-primary inline-flex items-center justify-center gap-1"
@@ -88,7 +88,7 @@
         @endif
 
         @if($allowQuickAdd)
-            <button 
+            <button
                 type="button"
                 @click="addMultipleRows()"
                 class="filament-button filament-button-size-sm filament-button-color-success inline-flex items-center justify-center gap-1"
@@ -106,7 +106,7 @@
                 <div class="flex items-start justify-between mb-4">
                     <h3 class="text-lg font-semibold text-gray-700" x-text="`{{ trans_dash('accounting.entry_line', 'Entry Line') }} #${index + 1}`"></h3>
                     @if($allowDeleteRows)
-                        <button 
+                        <button
                             type="button"
                             @click="deleteRow(index)"
                             class="text-red-600 hover:text-red-800 p-1"
@@ -126,16 +126,16 @@
                             </label>
                             <span class="text-xs text-green-600" x-show="rows[index].debit > 0" x-text="formatMoney(rows[index].base_amount || rows[index].debit)"></span>
                         </div>
-                        
+
                         <div class="space-y-3">
                             <!-- Account -->
                             <div>
                                 <label class="block text-xs font-medium text-gray-700 mb-1">
                                     {{ trans_dash('accounting.account', 'Account') }} *
                                 </label>
-                                <select 
+                                <select
                                     x-model="rows[index].account_id"
-                                    @change="updateState()"
+                                    @change="syncToLivewire()"
                                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm"
                                     required
                                 >
@@ -151,11 +151,12 @@
                                 <label class="block text-xs font-medium text-gray-700 mb-1">
                                     {{ trans_dash('accounting.amount', 'Amount') }}
                                 </label>
-                                <input 
+                                <input
                                     type="number"
                                     step="0.01"
                                     x-model.number="rows[index].debit"
                                     @input="onDebitChange(index)"
+                                    @blur="syncToLivewire()"
                                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-sm font-mono text-right"
                                     placeholder="0.00"
                                     min="0"
@@ -168,7 +169,7 @@
                                     <label class="block text-xs font-medium text-gray-700 mb-1">
                                         {{ trans_dash('accounting.currency', 'Currency') }}
                                     </label>
-                                    <select 
+                                    <select
                                         x-model="rows[index].currency_id"
                                         @change="onCurrencyChange(index)"
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm"
@@ -183,11 +184,12 @@
                                     <label class="block text-xs font-medium text-gray-700 mb-1">
                                         {{ trans_dash('accounting.exchange_rate', 'Exchange Rate') }}
                                     </label>
-                                    <input 
+                                    <input
                                         type="number"
                                         step="0.000001"
                                         x-model.number="rows[index].exchange_rate"
                                         @input="onExchangeRateChange(index)"
+                                    @blur="syncToLivewire()"
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm font-mono text-right"
                                         placeholder="1.00"
                                         min="0"
@@ -200,7 +202,7 @@
                                 <label class="block text-xs font-medium text-gray-700 mb-1">
                                     {{ trans_dash('accounting.amount_in_base', 'Amount in Base Currency') }}
                                 </label>
-                                <input 
+                                <input
                                     type="number"
                                     x-model.number="rows[index].base_amount"
                                     readonly
@@ -214,10 +216,11 @@
                                 <label class="block text-xs font-medium text-gray-700 mb-1">
                                     {{ trans_dash('accounting.description', 'Description') }}
                                 </label>
-                                <input 
+                                <input
                                     type="text"
                                     x-model="rows[index].description"
-                                    @input="updateState()"
+                                    @blur="syncToLivewire()"
+                                    @input="validate()"
                                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm"
                                     placeholder="{{ trans_dash('accounting.description_placeholder', 'Enter description') }}"
                                 />
@@ -233,16 +236,16 @@
                             </label>
                             <span class="text-xs text-red-600" x-show="rows[index].credit > 0" x-text="formatMoney(rows[index].credit_base_amount || rows[index].credit)"></span>
                         </div>
-                        
+
                         <div class="space-y-3">
                             <!-- Account -->
                             <div>
                                 <label class="block text-xs font-medium text-gray-700 mb-1">
                                     {{ trans_dash('accounting.account', 'Account') }} *
                                 </label>
-                                <select 
+                                <select
                                     x-model="rows[index].credit_account_id"
-                                    @change="updateState()"
+                                    @change="syncToLivewire()"
                                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm"
                                 >
                                     <option value="">{{ trans_dash('accounting.select_account', 'Select Account') }}</option>
@@ -257,11 +260,12 @@
                                 <label class="block text-xs font-medium text-gray-700 mb-1">
                                     {{ trans_dash('accounting.amount', 'Amount') }}
                                 </label>
-                                <input 
+                                <input
                                     type="number"
                                     step="0.01"
                                     x-model.number="rows[index].credit"
                                     @input="onCreditChange(index)"
+                                    @blur="syncToLivewire()"
                                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 text-sm font-mono text-right"
                                     placeholder="0.00"
                                     min="0"
@@ -274,7 +278,7 @@
                                     <label class="block text-xs font-medium text-gray-700 mb-1">
                                         {{ trans_dash('accounting.currency', 'Currency') }}
                                     </label>
-                                    <select 
+                                    <select
                                         x-model="rows[index].credit_currency_id"
                                         @change="onCreditCurrencyChange(index)"
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm"
@@ -289,11 +293,12 @@
                                     <label class="block text-xs font-medium text-gray-700 mb-1">
                                         {{ trans_dash('accounting.exchange_rate', 'Exchange Rate') }}
                                     </label>
-                                    <input 
+                                    <input
                                         type="number"
                                         step="0.000001"
                                         x-model.number="rows[index].credit_exchange_rate"
                                         @input="onCreditExchangeRateChange(index)"
+                                    @blur="syncToLivewire()"
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm font-mono text-right"
                                         placeholder="1.00"
                                         min="0"
@@ -306,7 +311,7 @@
                                 <label class="block text-xs font-medium text-gray-700 mb-1">
                                     {{ trans_dash('accounting.amount_in_base', 'Amount in Base Currency') }}
                                 </label>
-                                <input 
+                                <input
                                     type="number"
                                     x-model.number="rows[index].credit_base_amount"
                                     readonly
@@ -320,10 +325,11 @@
                                 <label class="block text-xs font-medium text-gray-700 mb-1">
                                     {{ trans_dash('accounting.description', 'Description') }}
                                 </label>
-                                <input 
+                                <input
                                     type="text"
                                     x-model="rows[index].credit_description"
-                                    @input="updateState()"
+                                    @blur="syncToLivewire()"
+                                    @input="validate()"
                                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm"
                                     placeholder="{{ trans_dash('accounting.description_placeholder', 'Enter description') }}"
                                 />
@@ -339,7 +345,7 @@
                         <label class="block text-xs font-medium text-gray-700 mb-1">
                             {{ trans_dash('accounting.cost_center', 'Cost Center') }}
                         </label>
-                        <select 
+                        <select
                             x-model="rows[index].cost_center_id"
                             @change="updateState()"
                             class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm"
@@ -356,7 +362,7 @@
                         <label class="block text-xs font-medium text-gray-700 mb-1">
                             {{ trans_dash('accounting.project', 'Project') }}
                         </label>
-                        <select 
+                        <select
                             x-model="rows[index].project_id"
                             @change="updateState()"
                             class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm"
@@ -373,10 +379,11 @@
                         <label class="block text-xs font-medium text-gray-700 mb-1">
                             {{ trans_dash('accounting.reference', 'Reference') }}
                         </label>
-                        <input 
+                        <input
                             type="text"
                             x-model="rows[index].reference"
-                            @input="updateState()"
+                            @blur="syncToLivewire()"
+                            @input="validate()"
                             class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm"
                             placeholder="{{ trans_dash('accounting.reference_placeholder', 'Reference number') }}"
                         />
@@ -405,7 +412,7 @@
                 <div class="text-sm font-medium text-gray-600 mb-1">
                     {{ trans_dash('accounting.difference', 'Difference') }}
                 </div>
-                <div 
+                <div
                     class="text-2xl font-bold"
                     :class="Math.abs(difference) < 0.01 ? 'text-green-600' : 'text-red-600'"
                     x-text="formatMoney(difference)"
@@ -439,7 +446,7 @@ function journalEntryCards(config) {
             initialRows = [];
         }
     }
-    
+
     return {
         statePath: config.statePath,
         rows: initialRows,
@@ -447,6 +454,7 @@ function journalEntryCards(config) {
         errors: [],
         entryDate: null,
         globalCurrencyId: null,
+        updateTimer: null,
         accountOptions: config.accountOptions || [],
         currencyOptions: config.currencyOptions || [],
         costCenterOptions: config.costCenterOptions || [],
@@ -455,22 +463,36 @@ function journalEntryCards(config) {
 
         init() {
             this.ensureRowsIsArray();
-            
+
             // Start with 0 cards - don't auto-add row
             // User must click "Add Row" button
-            
+
             this.entryDate = this.getEntryDate();
             this.globalCurrencyId = this.defaultCurrencyId || '';
-            
-            this.$watch('rows', () => {
-                this.ensureRowsIsArray();
-                this.updateState();
-                this.validate();
-            }, { deep: true });
-            
-            this.updateState();
+
+            // Debounce timer for Livewire updates
+            this.updateTimer = null;
+
+            // Remove deep watch - only update on specific events
+            // This prevents real-time Livewire updates for better performance
+
+            // Sync on form submit (before form is submitted)
+            const form = this.$el.closest('form');
+            if (form) {
+                form.addEventListener('submit', () => {
+                    // Clear any pending debounced updates
+                    if (this.updateTimer) {
+                        clearTimeout(this.updateTimer);
+                    }
+                    // Immediate sync before submit
+                    this.syncToLivewire();
+                });
+            }
+
+            // Initial state sync (only once)
+            this.syncToLivewire();
         },
-        
+
         ensureRowsIsArray() {
             if (!Array.isArray(this.rows)) {
                 if (this.rows && typeof this.rows === 'object') {
@@ -480,19 +502,19 @@ function journalEntryCards(config) {
                 }
             }
         },
-        
+
         getEntryDate() {
             try {
                 const formData = this.$wire?.get?.('data');
                 if (formData?.entry_date) {
                     return formData.entry_date;
                 }
-                
+
                 const dateInput = document.querySelector('input[name="data.entry_date"]');
                 if (dateInput && dateInput.value) {
                     return dateInput.value;
                 }
-                
+
                 return new Date().toISOString().split('T')[0];
             } catch (e) {
                 return new Date().toISOString().split('T')[0];
@@ -519,28 +541,29 @@ function journalEntryCards(config) {
                 reference: '',
             };
             this.rows.push(newRow);
-            
+
             // Apply global currency if set
             if (this.globalCurrencyId) {
                 this.applyCurrencyToRow(this.rows.length - 1, this.globalCurrencyId);
+            } else {
+                // Only sync to Livewire, no debounce needed for add
+                this.syncToLivewire();
             }
-            
-            this.updateState();
         },
-        
+
         async applyGlobalCurrency() {
             if (!this.globalCurrencyId) return;
-            
+
             // Apply to all existing rows
             for (let i = 0; i < this.rows.length; i++) {
                 await this.applyCurrencyToRow(i, this.globalCurrencyId);
             }
         },
-        
+
         async applyCurrencyToRow(index, currencyId) {
             const row = this.rows[index];
             if (!row) return;
-            
+
             // Apply to debit side
             if (currencyId) {
                 row.currency_id = currencyId;
@@ -559,7 +582,7 @@ function journalEntryCards(config) {
                 }
                 this.calculateBaseAmount(index, 'debit');
             }
-            
+
             // Apply to credit side
             if (currencyId) {
                 row.credit_currency_id = currencyId;
@@ -578,7 +601,8 @@ function journalEntryCards(config) {
                 }
                 this.calculateBaseAmount(index, 'credit');
             }
-            
+
+            // Debounced update for currency changes
             this.updateState();
         },
 
@@ -592,7 +616,8 @@ function journalEntryCards(config) {
             this.ensureRowsIsArray();
             if (index >= 0 && index < this.rows.length) {
                 this.rows.splice(index, 1);
-                this.updateState();
+                // Immediate sync for delete
+                this.syncToLivewire();
             }
         },
 
@@ -601,16 +626,16 @@ function journalEntryCards(config) {
             if (!row.currency_id) {
                 row.exchange_rate = 1;
                 row.base_amount = row.debit || 0;
-                this.updateState();
+                this.updateState(); // Debounced
                 return;
             }
-            
+
             if (row.currency_id == this.defaultCurrencyId) {
                 row.exchange_rate = 1;
                 this.calculateBaseAmount(index, 'debit');
                 return;
             }
-            
+
             try {
                 const response = await fetch(`/api/exchange-rate?currency_id=${row.currency_id}&date=${this.entryDate}`);
                 const data = await response.json();
@@ -630,16 +655,16 @@ function journalEntryCards(config) {
             if (!row.credit_currency_id) {
                 row.credit_exchange_rate = 1;
                 row.credit_base_amount = row.credit || 0;
-                this.updateState();
+                this.updateState(); // Debounced
                 return;
             }
-            
+
             if (row.credit_currency_id == this.defaultCurrencyId) {
                 row.credit_exchange_rate = 1;
                 this.calculateBaseAmount(index, 'credit');
                 return;
             }
-            
+
             try {
                 const response = await fetch(`/api/exchange-rate?currency_id=${row.credit_currency_id}&date=${this.entryDate}`);
                 const data = await response.json();
@@ -680,11 +705,11 @@ function journalEntryCards(config) {
 
         calculateBaseAmount(index, type) {
             const row = this.rows[index];
-            
+
             if (type === 'debit') {
                 const amount = parseFloat(row.debit) || 0;
                 const exchangeRate = parseFloat(row.exchange_rate) || 1;
-                
+
                 if (amount > 0) {
                     if (row.currency_id && row.currency_id != this.defaultCurrencyId) {
                         row.base_amount = parseFloat((amount * exchangeRate).toFixed(2));
@@ -697,7 +722,7 @@ function journalEntryCards(config) {
             } else if (type === 'credit') {
                 const amount = parseFloat(row.credit) || 0;
                 const exchangeRate = parseFloat(row.credit_exchange_rate) || 1;
-                
+
                 if (amount > 0) {
                     if (row.credit_currency_id && row.credit_currency_id != this.defaultCurrencyId) {
                         row.credit_base_amount = parseFloat((amount * exchangeRate).toFixed(2));
@@ -708,8 +733,9 @@ function journalEntryCards(config) {
                     row.credit_base_amount = 0;
                 }
             }
-            
-            this.updateState();
+
+            // Only validate locally, don't sync to Livewire on every calculation
+            this.validate();
         },
 
         get totalDebits() {
@@ -747,13 +773,30 @@ function journalEntryCards(config) {
             }).format(amount || 0);
         },
 
+        // Debounced update - only syncs to Livewire after user stops typing
         updateState() {
+            this.ensureRowsIsArray();
+            this.validate(); // Local validation only
+
+            // Clear existing timer
+            if (this.updateTimer) {
+                clearTimeout(this.updateTimer);
+            }
+
+            // Debounce Livewire sync (500ms delay)
+            this.updateTimer = setTimeout(() => {
+                this.syncToLivewire();
+            }, 500);
+        },
+
+        // Immediate sync to Livewire (for critical events)
+        syncToLivewire() {
             this.ensureRowsIsArray();
             // Convert rows to format expected by backend
             const formattedRows = this.rows.map(row => {
                 // Create separate lines for debit and credit
                 const lines = [];
-                
+
                 if (row.debit > 0 && row.account_id) {
                     lines.push({
                         account_id: parseInt(row.account_id),
@@ -769,7 +812,7 @@ function journalEntryCards(config) {
                         reference: row.reference || '',
                     });
                 }
-                
+
                 if (row.credit > 0 && row.credit_account_id) {
                     lines.push({
                         account_id: parseInt(row.credit_account_id),
@@ -785,39 +828,38 @@ function journalEntryCards(config) {
                         reference: row.reference || '',
                     });
                 }
-                
+
                 return lines;
             }).flat().filter(line => line.account_id); // Remove empty lines
-            
+
             this.$wire.set(config.statePath, formattedRows);
-            this.validate();
         },
 
         validate() {
             this.ensureRowsIsArray();
             this.errors = [];
-            
+
             if (!Array.isArray(this.rows)) {
                 return;
             }
-            
+
             // Check balance
             if (Math.abs(this.difference) > 0.01) {
                 this.errors.push('{{ trans_dash("accounting.entries_not_balanced", "Entries are not balanced. Total Debit must equal Total Credit.") }}');
             }
-            
+
             // Validate each row
             this.rows.forEach((row, index) => {
                 if (!row) return;
-                
+
                 if (row.debit > 0 && !row.account_id) {
                     this.errors.push(`{{ trans_dash("accounting.row_required", "Row :row: Debit account is required", ["row" => ":row"]) }}`.replace(':row', index + 1));
                 }
-                
+
                 if (row.credit > 0 && !row.credit_account_id) {
                     this.errors.push(`{{ trans_dash("accounting.row_required", "Row :row: Credit account is required", ["row" => ":row"]) }}`.replace(':row', index + 1));
                 }
-                
+
                 if (row.debit > 0 && row.credit > 0) {
                     this.errors.push(`{{ trans_dash("accounting.row_error", "Row :row: Cannot have both debit and credit", ["row" => ":row"]) }}`.replace(':row', index + 1));
                 }
