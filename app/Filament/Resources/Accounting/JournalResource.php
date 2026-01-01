@@ -133,8 +133,8 @@ class JournalResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()
-    ->label(trans_dash('common.view', 'View'))
-    ->visible(fn () => auth()->user()?->can('journals.view') ?? true),
+                    ->label(trans_dash('common.view', 'View'))
+                    ->visible(fn () => auth()->user()?->can('journals.view') ?? false),
 
                 Tables\Actions\EditAction::make()
                     ->visible(fn () => auth()->user()?->can('journals.update') ?? false),
