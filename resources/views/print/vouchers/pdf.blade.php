@@ -144,7 +144,6 @@
             padding: 15px 10px;
             text-align: center;
             border: 1px solid #ddd;
-            width: {{ !empty($signatures) ? (100 / count($signatures)) : 100 }}%;
         }
 
         .signature-image {
