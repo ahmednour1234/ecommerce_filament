@@ -30,7 +30,7 @@ class ChangesInEquityReportPage extends Page implements HasTable, HasForms
         return tr('sidebar.reports', [], null, 'dashboard');
     }
     
-    public static function getTitle(): string
+    public function getTitle(): string
     {
         return tr('pages.reports.changes_in_equity.title', [], null, 'dashboard');
     }
