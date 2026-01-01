@@ -19,11 +19,37 @@ class VoucherSignatureResource extends Resource
     protected static ?string $model = VoucherSignature::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-pencil-square';
-    protected static ?string $navigationGroup = 'Accounting';
     protected static ?int $navigationSort = 16;
 
-    // Menu label translation key (DB)
+    /**
+     * Optional: if your TranslatableNavigation trait uses this key
+     * for navigation label, keep it.
+     */
     protected static ?string $navigationTranslationKey = 'menu.accounting.voucher_signatures';
+
+    // ✅ Group translation (Sidebar group)
+    public static function getNavigationGroup(): ?string
+    {
+        return trans_dash('menu.groups.accounting', 'Accounting');
+    }
+
+    // ✅ Sidebar item label
+    public static function getNavigationLabel(): string
+    {
+        return trans_dash('menu.accounting.voucher_signatures', 'Voucher Signatures');
+    }
+
+    // ✅ Resource singular label
+    public static function getLabel(): string
+    {
+        return trans_dash('menu.accounting.voucher_signature', 'Voucher Signature');
+    }
+
+    // ✅ Resource plural label
+    public static function getPluralLabel(): string
+    {
+        return trans_dash('menu.accounting.voucher_signatures', 'Voucher Signatures');
+    }
 
     public static function form(Form $form): Form
     {
@@ -57,10 +83,11 @@ class VoucherSignatureResource extends Resource
                             'receipt' => trans_dash('vouchers.signatures.type_receipt', 'Receipt Only'),
                             'payment' => trans_dash('vouchers.signatures.type_payment', 'Payment Only'),
                         ])
-                        ->nullable()
+                        ->default('both')
+                        ->required()
                         ->helperText(trans_dash(
                             'vouchers.signatures.type_helper',
-                            'Restrict signature to specific voucher types. Leave empty for both.'
+                            'Restrict signature to specific voucher types.'
                         )),
 
                     Forms\Components\TextInput::make('sort_order')
@@ -89,7 +116,7 @@ class VoucherSignatureResource extends Resource
                         ->directory('voucher-signatures')
                         ->disk('public')
                         ->visibility('public')
-                        ->maxSize(2048) // 2MB
+                        ->maxSize(2048)
                         ->imageEditor()
                         ->imageEditorAspectRatios([null, '16:9', '4:3', '1:1'])
                         ->nullable()
@@ -103,7 +130,6 @@ class VoucherSignatureResource extends Resource
                                 return;
                             }
 
-                            // If uploading a new image, delete old one
                             if ($record->image_path && $state && $state !== $record->image_path) {
                                 Storage::disk('public')->delete($record->image_path);
                             }
@@ -137,14 +163,12 @@ class VoucherSignatureResource extends Resource
                     ->formatStateUsing(fn (?string $state): string => match ($state) {
                         'receipt' => trans_dash('vouchers.signatures.type_receipt', 'Receipt'),
                         'payment' => trans_dash('vouchers.signatures.type_payment', 'Payment'),
-                        'both', null => trans_dash('vouchers.signatures.type_both', 'Both'),
-                        default => $state ?? '-',
+                        default   => trans_dash('vouchers.signatures.type_both', 'Both'),
                     })
                     ->colors([
                         'success' => 'both',
                         'warning' => 'receipt',
                         'danger'  => 'payment',
-                        'gray'    => null,
                     ])
                     ->sortable()
                     ->toggleable(),
@@ -213,7 +237,7 @@ class VoucherSignatureResource extends Resource
                         ->visible(fn () => auth()->user()?->can('voucher_signatures.delete') ?? false),
                 ]),
             ])
-            ->defaultSort('sort_order', 'asc'); // ✅ one default sort only
+            ->defaultSort('sort_order', 'asc');
     }
 
     public static function getPages(): array

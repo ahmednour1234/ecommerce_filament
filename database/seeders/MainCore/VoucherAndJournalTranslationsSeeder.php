@@ -169,6 +169,10 @@ class VoucherAndJournalTranslationsSeeder extends Seeder
 
 'common.edit'   => ['en' => 'Edit', 'ar' => 'تعديل'],
 'common.delete' => ['en' => 'Delete', 'ar' => 'حذف'],
+'menu.groups.accounting' => ['en' => 'Accounting', 'ar' => 'الحسابات'],
+
+'menu.accounting.voucher_signature'  => ['en' => 'Voucher Signature', 'ar' => 'توقيع السند'],
+'menu.accounting.voucher_signatures' => ['en' => 'Voucher Signatures', 'ar' => 'توقيعات السندات'],
 
             'vouchers.signatures.title_helper' => [
                 'en' => 'Role or title (e.g., "Accountant", "Manager")',
