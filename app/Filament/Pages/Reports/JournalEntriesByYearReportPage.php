@@ -109,7 +109,7 @@ class JournalEntriesByYearReportPage extends Page implements HasTable, HasForms
 
     public static function getNavigationLabel(): string
     {
-        return trans_dash('reports.journal_entries_by_year.navigation', 'Journal Entries by Year');
+        return tr('menu.reports.journal_entries_by_year', 'Journal Entries by Year');
     }
 }
 

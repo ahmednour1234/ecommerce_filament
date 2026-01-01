@@ -21,7 +21,8 @@ class PaymentProviderResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-credit-card';
 
-    protected static ?string $navigationGroup = 'MainCore';
+    protected static ?string $navigationGroup = 'Integrations';
+    protected static ?string $navigationTranslationKey = 'menu.integrations.payments.providers';
 
     public static function form(Form $form): Form
     {

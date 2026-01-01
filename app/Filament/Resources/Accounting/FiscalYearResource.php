@@ -20,6 +20,7 @@ class FiscalYearResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-calendar';
     protected static ?string $navigationGroup = 'Accounting';
     protected static ?int $navigationSort = 12;
+    protected static ?string $navigationTranslationKey = 'menu.accounting.fiscal_years';
 
     public static function form(Form $form): Form
     {

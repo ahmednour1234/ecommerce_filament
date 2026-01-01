@@ -140,7 +140,7 @@ class AccountStatementReportPage extends Page implements HasTable, HasForms
 
     public static function getNavigationLabel(): string
     {
-        return trans_dash('reports.account_statement.navigation', 'Account Statement');
+        return tr('menu.reports.account_statement', 'Account Statement');
     }
 }
 

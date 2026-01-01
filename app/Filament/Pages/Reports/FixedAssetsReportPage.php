@@ -109,7 +109,7 @@ class FixedAssetsReportPage extends Page implements HasTable, HasForms
 
     public static function getNavigationLabel(): string
     {
-        return trans_dash('reports.fixed_assets.navigation', 'Fixed Assets Report');
+        return tr('menu.reports.fixed_assets', 'Fixed Assets Report');
     }
 }
 

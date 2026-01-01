@@ -26,6 +26,7 @@ class VoucherResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-document';
     protected static ?string $navigationGroup = 'Accounting';
     protected static ?int $navigationSort = 5;
+    protected static ?string $navigationTranslationKey = 'menu.accounting.vouchers';
 
     public static function form(Form $form): Form
     {

@@ -106,7 +106,7 @@ class ChangesInEquityReportPage extends Page implements HasTable, HasForms
 
     public static function getNavigationLabel(): string
     {
-        return trans_dash('reports.changes_in_equity.navigation', 'Changes in Equity');
+        return tr('menu.reports.changes_in_equity', 'Changes in Equity');
     }
 }
 

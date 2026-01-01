@@ -74,7 +74,7 @@ class AccountsPayableAgingCurrentReportPage extends Page implements HasTable, Ha
 
     public static function getNavigationLabel(): string
     {
-        return trans_dash('reports.accounts_payable_aging_current.navigation', 'A/P Aging Current');
+        return tr('menu.reports.accounts_payable_aging', 'Accounts Payable Aging');
     }
 }
 

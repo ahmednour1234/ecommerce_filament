@@ -104,7 +104,7 @@ class AccountsReceivableReportPage extends Page implements HasTable, HasForms
 
     public static function getNavigationLabel(): string
     {
-        return trans_dash('reports.accounts_receivable.navigation', 'A/R Customers');
+        return tr('menu.reports.accounts_receivable', 'Accounts Receivable');
     }
 }
 

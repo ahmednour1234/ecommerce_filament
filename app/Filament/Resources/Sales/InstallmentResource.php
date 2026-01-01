@@ -20,6 +20,7 @@ class InstallmentResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
     protected static ?string $navigationGroup = 'Sales';
     protected static ?int $navigationSort = 4;
+    protected static ?string $navigationTranslationKey = 'menu.sales.installments';
 
     public static function form(Form $form): Form
     {

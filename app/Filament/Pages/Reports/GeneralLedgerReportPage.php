@@ -194,7 +194,7 @@ class GeneralLedgerReportPage extends Page implements HasTable, HasForms
 
     public static function getNavigationLabel(): string
     {
-        return trans_dash('reports.general_ledger.navigation', 'General Ledger');
+        return tr('menu.reports.general_ledger', 'General Ledger');
     }
 }
 

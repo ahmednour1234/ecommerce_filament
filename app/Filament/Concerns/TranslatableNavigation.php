@@ -2,28 +2,31 @@
 
 namespace App\Filament\Concerns;
 
-use App\Services\MainCore\TranslationService;
-
 trait TranslatableNavigation
 {
     /**
      * Get translated navigation label
+     * Uses tr() helper with menu group
      */
     public static function getNavigationLabel(): string
     {
-        $translationService = app(TranslationService::class);
         $defaultLabel = static::$navigationLabel ?? static::getModelLabel();
+        
+        // If a custom translation key is set, use it
+        if (isset(static::$navigationTranslationKey)) {
+            return tr(static::$navigationTranslationKey, $defaultLabel);
+        }
         
         // Try to get translation - use model name or navigation label
         $modelName = strtolower(class_basename(static::getModel()));
-        $translationKey = 'navigation.' . $modelName;
-        $translated = $translationService->get($translationKey, null, 'dashboard', $defaultLabel);
+        $translationKey = 'menu.' . $modelName;
         
-        return $translated !== $translationKey ? $translated : $defaultLabel;
+        return tr($translationKey, $defaultLabel);
     }
 
     /**
      * Get translated navigation group
+     * Uses tr() helper with menu group
      */
     public static function getNavigationGroup(): ?string
     {
@@ -33,11 +36,11 @@ trait TranslatableNavigation
             return null;
         }
         
-        $translationService = app(TranslationService::class);
-        $translationKey = 'navigation.' . strtolower(str_replace(' ', '_', $group));
-        $translated = $translationService->get($translationKey, null, 'dashboard', $group);
+        // Translate the group name
+        $groupKey = strtolower(str_replace(' ', '_', $group));
+        $translationKey = 'menu.' . $groupKey;
         
-        return $translated !== $translationKey ? $translated : $group;
+        return tr($translationKey, $group);
     }
 }
 

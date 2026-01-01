@@ -21,7 +21,8 @@ class NotificationChannelResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-bell';
 
-    protected static ?string $navigationGroup = 'MainCore';
+    protected static ?string $navigationGroup = 'Notifications';
+    protected static ?string $navigationTranslationKey = 'menu.notifications.channels';
 
     public static function form(Form $form): Form
     {

@@ -21,7 +21,8 @@ class ShipmentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-paper-airplane';
 
-    protected static ?string $navigationGroup = 'MainCore';
+    protected static ?string $navigationGroup = 'Integrations';
+    protected static ?string $navigationTranslationKey = 'menu.integrations.shipping.shipments';
 
     public static function form(Form $form): Form
     {

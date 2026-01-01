@@ -175,7 +175,7 @@ class TrialBalanceReportPage extends Page implements HasTable, HasForms
 
     public static function getNavigationLabel(): string
     {
-        return trans_dash('reports.trial_balance.navigation', 'Trial Balance');
+        return tr('menu.reports.trial_balance', 'Trial Balance');
     }
 }
 

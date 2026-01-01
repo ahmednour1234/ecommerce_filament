@@ -20,6 +20,7 @@ class CostCenterResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-chart-pie';
     protected static ?string $navigationGroup = 'Accounting';
     protected static ?int $navigationSort = 6;
+    protected static ?string $navigationTranslationKey = 'menu.accounting.cost_centers';
 
     public static function form(Form $form): Form
     {

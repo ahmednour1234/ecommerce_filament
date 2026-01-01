@@ -118,7 +118,7 @@ class ComparisonsReportPage extends Page implements HasTable, HasForms
 
     public static function getNavigationLabel(): string
     {
-        return trans_dash('reports.comparisons.navigation', 'Comparisons Report');
+        return tr('menu.reports.comparisons_report', 'Comparisons Report');
     }
 }
 

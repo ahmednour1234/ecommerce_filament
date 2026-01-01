@@ -21,6 +21,7 @@ class BankAccountResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-building-library';
     protected static ?string $navigationGroup = 'Accounting';
     protected static ?int $navigationSort = 15;
+    protected static ?string $navigationTranslationKey = 'menu.accounting.bank_accounts';
 
     public static function form(Form $form): Form
     {

@@ -21,7 +21,8 @@ class PaymentTransactionResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
 
-    protected static ?string $navigationGroup = 'MainCore';
+    protected static ?string $navigationGroup = 'Integrations';
+    protected static ?string $navigationTranslationKey = 'menu.integrations.payments.transactions';
 
     public static function form(Form $form): Form
     {

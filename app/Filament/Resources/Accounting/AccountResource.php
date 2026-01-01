@@ -20,6 +20,7 @@ class AccountResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-book-open';
     protected static ?string $navigationGroup = 'Accounting';
     protected static ?int $navigationSort = 1;
+    protected static ?string $navigationTranslationKey = 'menu.accounting.accounts_tree';
 
     public static function form(Form $form): Form
     {

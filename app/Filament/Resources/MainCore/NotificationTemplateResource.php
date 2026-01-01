@@ -21,7 +21,8 @@ class NotificationTemplateResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
-    protected static ?string $navigationGroup = 'MainCore';
+    protected static ?string $navigationGroup = 'Notifications';
+    protected static ?string $navigationTranslationKey = 'menu.notifications.templates';
 
     public static function form(Form $form): Form
     {

@@ -109,7 +109,7 @@ class VatReportPage extends Page implements HasTable, HasForms
 
     public static function getNavigationLabel(): string
     {
-        return trans_dash('reports.vat.navigation', 'VAT Report');
+        return tr('menu.reports.vat_report', 'VAT Report');
     }
 }
 

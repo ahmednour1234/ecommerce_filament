@@ -103,7 +103,7 @@ class FinancialPerformanceReportPage extends Page implements HasTable, HasForms
 
     public static function getNavigationLabel(): string
     {
-        return trans_dash('reports.financial_performance.navigation', 'Financial Performance');
+        return tr('menu.reports.financial_performance', 'Financial Performance');
     }
 }
 

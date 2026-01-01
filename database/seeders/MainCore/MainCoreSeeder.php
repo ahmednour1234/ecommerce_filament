@@ -10,6 +10,7 @@ class MainCoreSeeder extends Seeder
     {
         $this->call([
             LanguageSeeder::class,
+            MenuTranslationsSeeder::class, // Must be after LanguageSeeder
             CurrencySeeder::class,
             CurrencyRateSeeder::class, // Must be after CurrencySeeder
             ThemeSeeder::class,

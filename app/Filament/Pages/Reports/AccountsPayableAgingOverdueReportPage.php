@@ -70,7 +70,7 @@ class AccountsPayableAgingOverdueReportPage extends Page implements HasTable, Ha
 
     public static function getNavigationLabel(): string
     {
-        return trans_dash('reports.accounts_payable_aging_overdue.navigation', 'A/P Aging Overdue');
+        return tr('menu.reports.accounts_payable_aging', 'Accounts Payable Aging');
     }
 }
 

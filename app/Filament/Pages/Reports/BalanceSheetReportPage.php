@@ -107,7 +107,7 @@ class BalanceSheetReportPage extends Page implements HasTable, HasForms
 
     public static function getNavigationLabel(): string
     {
-        return trans_dash('reports.balance_sheet.navigation', 'Balance Sheet');
+        return tr('menu.reports.balance_sheet', 'Balance Sheet');
     }
 }
 

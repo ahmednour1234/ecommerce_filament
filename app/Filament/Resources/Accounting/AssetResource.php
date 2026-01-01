@@ -23,6 +23,7 @@ class AssetResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
     protected static ?string $navigationGroup = 'Accounting';
     protected static ?int $navigationSort = 7;
+    protected static ?string $navigationTranslationKey = 'menu.accounting.fixed_assets';
 
     public static function form(Form $form): Form
     {

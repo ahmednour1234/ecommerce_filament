@@ -169,7 +169,7 @@ class IncomeStatementReportPage extends Page implements HasTable, HasForms
 
     public static function getNavigationLabel(): string
     {
-        return trans_dash('reports.income_statement.navigation', 'Income Statement');
+        return tr('menu.reports.income_statement', 'Income Statement');
     }
 }
 

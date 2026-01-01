@@ -109,7 +109,7 @@ class CashFlowReportPage extends Page implements HasTable, HasForms
 
     public static function getNavigationLabel(): string
     {
-        return trans_dash('reports.cash_flow.navigation', 'Cash Flow');
+        return tr('menu.reports.cash_flow', 'Cash Flow');
     }
 }
 

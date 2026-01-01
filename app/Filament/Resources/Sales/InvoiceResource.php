@@ -23,6 +23,7 @@ class InvoiceResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationGroup = 'Sales';
     protected static ?int $navigationSort = 3;
+    protected static ?string $navigationTranslationKey = 'menu.sales.invoices';
 
     public static function form(Form $form): Form
     {

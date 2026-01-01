@@ -32,5 +32,10 @@ class Dashboard extends BaseDashboard
             \App\Filament\Widgets\SalesByStatusWidget::class,
         ];
     }
+
+    public static function getNavigationLabel(): string
+    {
+        return tr('menu.dashboard', 'Dashboard');
+    }
 }
 

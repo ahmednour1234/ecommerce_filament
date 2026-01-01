@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Cache;
 class TranslationService
 {
     /**
-     * Get translation by key and language
+     * Get translation by key and language with English fallback
      */
     public function get(string $key, ?string $languageCode = null, ?string $group = 'dashboard', ?string $default = null): string
     {
@@ -19,18 +19,38 @@ class TranslationService
         $cacheKey = "translation.{$group}.{$key}.{$languageCode}";
         
         return Cache::remember($cacheKey, 3600, function () use ($key, $languageCode, $group, $default) {
+            // Try current locale first
             $language = Language::where('code', $languageCode)->where('is_active', true)->first();
             
-            if (!$language) {
-                return $default ?? $key;
+            if ($language) {
+                $translation = Translation::where('key', $key)
+                    ->where('group', $group)
+                    ->where('language_id', $language->id)
+                    ->first();
+                
+                if ($translation) {
+                    return $translation->value;
+                }
             }
             
-            $translation = Translation::where('key', $key)
-                ->where('group', $group)
-                ->where('language_id', $language->id)
-                ->first();
+            // Fallback to English if current locale translation not found
+            if ($languageCode !== 'en') {
+                $englishLanguage = Language::where('code', 'en')->where('is_active', true)->first();
+                
+                if ($englishLanguage) {
+                    $englishTranslation = Translation::where('key', $key)
+                        ->where('group', $group)
+                        ->where('language_id', $englishLanguage->id)
+                        ->first();
+                    
+                    if ($englishTranslation) {
+                        return $englishTranslation->value;
+                    }
+                }
+            }
             
-            return $translation?->value ?? $default ?? $key;
+            // Final fallback: default or key
+            return $default ?? $key;
         });
     }
 

@@ -21,7 +21,8 @@ class ShippingProviderResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-truck';
 
-    protected static ?string $navigationGroup = 'MainCore';
+    protected static ?string $navigationGroup = 'Integrations';
+    protected static ?string $navigationTranslationKey = 'menu.integrations.shipping.providers';
 
     public static function form(Form $form): Form
     {

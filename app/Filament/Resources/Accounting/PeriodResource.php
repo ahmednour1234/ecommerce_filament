@@ -21,6 +21,7 @@ class PeriodResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
     protected static ?string $navigationGroup = 'Accounting';
     protected static ?int $navigationSort = 13;
+    protected static ?string $navigationTranslationKey = 'menu.accounting.periods';
 
     public static function form(Form $form): Form
     {

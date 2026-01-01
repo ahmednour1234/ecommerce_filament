@@ -24,6 +24,7 @@ class OrderResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
     protected static ?string $navigationGroup = 'Sales';
     protected static ?int $navigationSort = 2;
+    protected static ?string $navigationTranslationKey = 'menu.sales.orders';
 
     public static function form(Form $form): Form
     {

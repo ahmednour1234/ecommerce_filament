@@ -48,3 +48,18 @@ if (!function_exists('get_locale')) {
     }
 }
 
+if (!function_exists('tr')) {
+    /**
+     * Get menu translation with fallback: current locale → 'en' → default → key
+     * 
+     * @param string $key Translation key (e.g., 'menu.dashboard', 'menu.sales.customers')
+     * @param string|null $default Default value if translation not found
+     * @return string Translated text
+     */
+    function tr(string $key, ?string $default = null): string
+    {
+        return app(\App\Services\MainCore\TranslationService::class)
+            ->get($key, null, 'menu', $default ?? $key);
+    }
+}
+

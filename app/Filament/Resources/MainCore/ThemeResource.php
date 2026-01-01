@@ -22,7 +22,8 @@ class ThemeResource extends Resource
     protected static ?string $model = Theme::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-swatch';
-    protected static ?string $navigationGroup = 'MainCore';
+    protected static ?string $navigationGroup = 'Settings';
+    protected static ?string $navigationTranslationKey = 'menu.settings.app_settings';
     protected static ?int $navigationSort = 30;
 
     public static function form(Form $form): Form

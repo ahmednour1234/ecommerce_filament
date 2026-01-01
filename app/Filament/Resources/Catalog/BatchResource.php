@@ -18,8 +18,9 @@ class BatchResource extends Resource
     protected static ?string $model = Batch::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-queue-list';
-    protected static ?string $navigationGroup = 'Catalog';
+    protected static ?string $navigationGroup = 'Products & Inventory';
     protected static ?int $navigationSort = 4;
+    protected static ?string $navigationTranslationKey = 'menu.products.batches';
 
     public static function form(Form $form): Form
     {
