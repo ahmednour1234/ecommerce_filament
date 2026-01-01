@@ -20,6 +20,7 @@ class VoucherSignatureResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-pencil-square';
     protected static ?int $navigationSort = 16;
+    protected static ?string $navigationGroup = 'Accounting';
 
     /**
      * Optional: if your TranslatableNavigation trait uses this key
@@ -28,10 +29,7 @@ class VoucherSignatureResource extends Resource
     protected static ?string $navigationTranslationKey = 'menu.accounting.voucher_signatures';
 
     // ✅ Group translation (Sidebar group)
-    public static function getNavigationGroup(): ?string
-    {
-        return trans_dash('menu.groups.accounting', 'Accounting');
-    }
+
 
     // ✅ Sidebar item label
     public static function getNavigationLabel(): string
