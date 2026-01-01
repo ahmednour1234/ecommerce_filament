@@ -78,14 +78,18 @@ class BalanceSheetReportPage extends Page implements HasTable, HasForms
                 ->selectRaw('NULL as section, NULL as account_code, NULL as account_name, NULL as balance');
         }
 
-        // Use a simple query builder to avoid model's default ordering
-        $query = DB::table(DB::raw('(' . $unionQuery->toSql() . ') as balance_sheet_data'))
-            ->mergeBindings($unionQuery);
+        // Use Eloquent query builder like TrialBalanceReportPage
+        // Clear any default ordering and use fromSub to avoid model's default ordering
+        $query = \App\Models\Accounting\Account::query()
+            ->fromSub($unionQuery, 'balance_sheet_data')
+            ->select('balance_sheet_data.*')
+            ->withoutGlobalScopes(); // Remove any global scopes that might add ordering
 
         return $table
             ->query($query)
             ->columns([
-                Tables\Columns\TextColumn::make('account_code'),
+                Tables\Columns\TextColumn::make('account_code')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('account_name')
                     ->formatStateUsing(fn ($record) => $record->account_name === 'TOTAL' ? '<strong>' . $record->account_name . '</strong>' : $record->account_name)
                     ->html(),
