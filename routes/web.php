@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\VoucherPrintController;
 
 Route::get('/', function () {
     return redirect()->route('filament.admin.pages.dashboard');
@@ -31,7 +32,20 @@ Route::prefix('api')->middleware(['web'])->group(function () {
 Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/admin/exports/print', [App\Http\Controllers\ExportController::class, 'print'])
         ->name('filament.exports.print');
-    
+
     Route::get('/admin/reports/{report}/print', [App\Http\Controllers\ExportController::class, 'reportPrint'])
         ->name('reports.print');
 });
+
+Route::middleware(['web', 'auth'])
+    ->prefix('admin')
+    ->group(function () {
+        Route::get('print/vouchers/{voucher}', [VoucherPrintController::class, 'print'])
+            ->name('admin.vouchers.print');
+
+        Route::get('print/vouchers/{voucher}/pdf', [VoucherPrintController::class, 'pdf'])
+            ->name('admin.vouchers.pdf');
+
+        Route::get('print/vouchers/{voucher}/csv', [VoucherPrintController::class, 'csv'])
+            ->name('admin.vouchers.csv');
+    });
