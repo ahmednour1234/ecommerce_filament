@@ -8,9 +8,9 @@ use App\Models\Accounting\Voucher;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\Journal;
 use App\Models\Accounting\JournalEntry;
+use App\Models\Accounting\VoucherSignature;
 use App\Models\MainCore\Branch;
 use App\Models\MainCore\CostCenter;
-use App\Models\Accounting\VoucherSignature;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -29,16 +29,14 @@ class VoucherResource extends Resource
     protected static ?int $navigationSort = 5;
     protected static ?string $navigationTranslationKey = 'menu.accounting.vouchers';
 
-
-
     public static function getNavigationLabel(): string
     {
-        return trans_dash('menu.accounting.voucher', 'سندات');
+        return trans_dash('menu.accounting.vouchers', 'سندات');
     }
 
     public static function getLabel(): string
     {
-        return trans_dash('menu.accounting.vouchers', 'سندات');
+        return trans_dash('menu.accounting.vouchers', 'سند');
     }
 
     public static function getPluralLabel(): string
@@ -70,8 +68,7 @@ class VoucherResource extends Resource
                         ->label(trans_dash('vouchers.fields.number', 'Voucher Number'))
                         ->required()
                         ->maxLength(50)
-                        ->unique(ignoreRecord: true)
-                        ->helperText(trans_dash('vouchers.helpers.auto_number', 'Auto-generated voucher number')),
+                        ->unique(ignoreRecord: true),
 
                     Forms\Components\DatePicker::make('voucher_date')
                         ->label(trans_dash('vouchers.fields.date', 'Voucher Date'))
@@ -88,7 +85,12 @@ class VoucherResource extends Resource
 
                     Forms\Components\Select::make('account_id')
                         ->label(trans_dash('accounting.account', 'Account'))
-                        ->options(Account::active()->get()->mapWithKeys(fn ($a) => [$a->id => $a->code . ' - ' . $a->name])->toArray())
+                        ->options(
+                            Account::active()
+                                ->get()
+                                ->mapWithKeys(fn ($a) => [$a->id => $a->code . ' - ' . $a->name])
+                                ->toArray()
+                        )
                         ->required()
                         ->searchable()
                         ->preload(),
@@ -114,8 +116,7 @@ class VoucherResource extends Resource
 
                     Forms\Components\TextInput::make('reference')
                         ->label(trans_dash('vouchers.fields.reference', 'Reference'))
-                        ->maxLength(255)
-                        ->helperText(trans_dash('vouchers.helpers.reference', 'External reference number (optional)')),
+                        ->maxLength(255),
                 ])
                 ->columns(2),
         ]);
@@ -167,82 +168,53 @@ class VoucherResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('costCenter.name')
-                    ->label(trans_dash('accounting.cost_center', 'Cost Center'))
-                    ->searchable()
-                    ->toggleable(),
-
                 Tables\Columns\IconColumn::make('journal_entry_id')
                     ->label(trans_dash('vouchers.fields.journal_entry', 'Journal Entry'))
                     ->boolean()
-                    ->getStateUsing(fn (Voucher $record) => ! is_null($record->journal_entry_id))
+                    ->getStateUsing(fn (Voucher $record) => !is_null($record->journal_entry_id))
                     ->toggleable(),
             ])
-            ->filters([
-                Tables\Filters\SelectFilter::make('type')
-                    ->label(trans_dash('filters.type', 'Type'))
-                    ->options([
-                        'payment' => trans_dash('vouchers.types.payment_short', 'Payment'),
-                        'receipt' => trans_dash('vouchers.types.receipt_short', 'Receipt'),
-                    ]),
-
-                Tables\Filters\SelectFilter::make('branch_id')
-                    ->label(trans_dash('accounting.branch', 'Branch'))
-                    ->relationship('branch', 'name')
-                    ->searchable()
-                    ->preload(),
-
-                Tables\Filters\SelectFilter::make('account_id')
-                    ->label(trans_dash('accounting.account', 'Account'))
-                    ->relationship('account', 'name')
-                    ->searchable()
-                    ->preload(),
-            ])
             ->actions([
-                // ✅ View Page
                 Tables\Actions\ViewAction::make()
-                    ->label(trans_dash('common.view', 'View'))
-                    ->visible(fn () => auth()->user()?->can('vouchers.view') ?? true),
+                    ->label(trans_dash('common.view', 'View')),
 
-                // ✅ Print (stream)
+                // ✅ PRINT (stream) - by URL
                 Tables\Actions\Action::make('print_voucher')
                     ->label(trans_dash('vouchers.actions.print_voucher', 'Print Voucher'))
                     ->icon('heroicon-o-printer')
                     ->color('info')
                     ->modalHeading(trans_dash('vouchers.actions.print_voucher', 'Print Voucher'))
-                    ->modalSubmitActionLabel(trans_dash('vouchers.actions.print', 'Print'))
+                    ->modalSubmitActionLabel(trans_dash('vouchers.actions.continue', 'Continue'))
                     ->form(fn (Voucher $record) => static::signaturePickerForm($record))
                     ->action(function (Voucher $record, array $data) {
-                        $signatureIds = static::extractSignatureIdsOrFail($data);
+                        $ids = static::extractSignatureIdsOrFail($data);
+                        session()->put(static::sigSessionKey($record), $ids);
+                    })
+                    ->url(fn (Voucher $record) => route('admin.vouchers.print', $record))
+                    ->openUrlInNewTab(),
 
-                        $service = app(\App\Services\Accounting\VoucherPrintService::class);
-                        return $service->streamPdf($record, $signatureIds); // stream for print
-                    }),
-
-                // ✅ Export PDF (download)
+                // ✅ PDF DOWNLOAD - by URL
                 Tables\Actions\Action::make('export_pdf')
                     ->label(trans_dash('vouchers.actions.export_pdf', 'Export PDF'))
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('success')
                     ->modalHeading(trans_dash('vouchers.actions.export_pdf', 'Export PDF'))
-                    ->modalSubmitActionLabel(trans_dash('vouchers.actions.export', 'Export'))
+                    ->modalSubmitActionLabel(trans_dash('vouchers.actions.continue', 'Continue'))
                     ->form(fn (Voucher $record) => static::signaturePickerForm($record))
                     ->action(function (Voucher $record, array $data) {
-                        $signatureIds = static::extractSignatureIdsOrFail($data);
+                        $ids = static::extractSignatureIdsOrFail($data);
+                        session()->put(static::sigSessionKey($record), $ids);
+                    })
+                    ->url(fn (Voucher $record) => route('admin.vouchers.pdf', $record))
+                    ->openUrlInNewTab(),
 
-                        $service = app(\App\Services\Accounting\VoucherPrintService::class);
-                        return $service->downloadPdf($record, $signatureIds);
-                    }),
-
-                // ✅ Export Excel (CSV) (download)
+                // ✅ CSV DOWNLOAD - by URL
                 Tables\Actions\Action::make('export_excel')
                     ->label(trans_dash('vouchers.actions.export_excel', 'Export Excel'))
                     ->icon('heroicon-o-table-cells')
                     ->color('warning')
-                    ->action(function (Voucher $record) {
-                        $service = app(\App\Services\Accounting\VoucherPrintService::class);
-                        return $service->downloadCsv($record);
-                    }),
+                    ->url(fn (Voucher $record) => route('admin.vouchers.csv', $record))
+                    ->openUrlInNewTab(),
 
                 Tables\Actions\Action::make('create_journal_entry')
                     ->label(trans_dash('vouchers.actions.create_journal_entry', 'Create Journal Entry'))
@@ -250,44 +222,38 @@ class VoucherResource extends Resource
                     ->color('success')
                     ->requiresConfirmation()
                     ->action(fn (Voucher $record) => static::createJournalEntryForVoucher($record))
-                    ->visible(fn (Voucher $record) => is_null($record->journal_entry_id) && (auth()->user()?->can('vouchers.create_journal_entry') ?? false)),
+                    ->visible(fn (Voucher $record) => is_null($record->journal_entry_id)),
 
-                Tables\Actions\EditAction::make()
-                    ->visible(fn () => auth()->user()?->can('vouchers.update') ?? false),
-
-                Tables\Actions\DeleteAction::make()
-                    ->visible(fn () => auth()->user()?->can('vouchers.delete') ?? false),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
-                        ->visible(fn () => auth()->user()?->can('vouchers.delete') ?? false),
-                ]),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->defaultSort('voucher_date', 'desc');
     }
 
-    /**
-     * ✅ Dynamic signature form (0-6 selects) filtered by voucher type
-     */
+    // -------- Signatures helpers --------
+
+    protected static function sigSessionKey(Voucher $record): string
+    {
+        return "voucher_signatures_{$record->id}";
+    }
+
     protected static function signaturePickerForm(Voucher $record): array
     {
         $voucherType = $record->type;
 
         $signatureOptions = VoucherSignature::query()
             ->where('is_active', true)
-            ->when($voucherType, function ($q) use ($voucherType) {
-                // expected values: both|payment|receipt or null
-                $q->where(function ($qq) use ($voucherType) {
-                    $qq->whereNull('type')
-                        ->orWhere('type', 'both')
-                        ->orWhere('type', $voucherType);
-                });
+            ->where(function ($q) use ($voucherType) {
+                $q->whereNull('type')
+                    ->orWhere('type', 'both')
+                    ->orWhere('type', $voucherType);
             })
             ->orderBy('sort_order')
             ->orderBy('name')
             ->get()
-            ->mapWithKeys(fn ($sig) => [$sig->id => ($sig->name . ($sig->title ? " - {$sig->title}" : ''))])
+            ->mapWithKeys(fn ($sig) => [
+                $sig->id => ($sig->name . ($sig->title ? " - {$sig->title}" : '')),
+            ])
             ->toArray();
 
         $fields = [
@@ -296,8 +262,7 @@ class VoucherResource extends Resource
                 ->options(array_combine(range(0, 6), range(0, 6)))
                 ->default(0)
                 ->required()
-                ->live()
-                ->helperText(trans_dash('vouchers.signatures.choose_count_helper', 'Select how many signatures to include (0-6)')),
+                ->live(),
         ];
 
         for ($i = 1; $i <= 6; $i++) {
@@ -320,7 +285,7 @@ class VoucherResource extends Resource
 
         for ($i = 1; $i <= $count; $i++) {
             $key = "signature_{$i}";
-            if (! empty($data[$key])) {
+            if (!empty($data[$key])) {
                 $signatureIds[] = (int) $data[$key];
             }
         }
@@ -334,6 +299,8 @@ class VoucherResource extends Resource
         return $signatureIds;
     }
 
+    // -------- Journal entry creator --------
+
     protected static function createJournalEntryForVoucher(Voucher $record): void
     {
         if ($record->journal_entry_id) {
@@ -341,8 +308,7 @@ class VoucherResource extends Resource
         }
 
         $journal = Journal::where('type', 'cash')->first() ?? Journal::where('type', 'general')->first();
-
-        if (! $journal) {
+        if (!$journal) {
             throw new \Exception('No suitable journal found. Please create a cash or general journal first.');
         }
 
@@ -363,11 +329,8 @@ class VoucherResource extends Resource
             'is_posted' => false,
         ]);
 
-        $cashAccount = Account::where('code', '1000')
-            ->orWhere('name', 'like', '%cash%')
-            ->first();
-
-        if (! $cashAccount) {
+        $cashAccount = Account::where('code', '1000')->orWhere('name', 'like', '%cash%')->first();
+        if (!$cashAccount) {
             throw new \Exception('Cash account not found. Please create account with code 1000 or name containing "cash".');
         }
 
@@ -417,33 +380,8 @@ class VoucherResource extends Resource
         return [
             'index'  => Pages\ListVouchers::route('/'),
             'create' => Pages\CreateVoucher::route('/create'),
-            'view'   => Pages\ViewVoucher::route('/{record}'),        // ✅ new
+            'view'   => Pages\ViewVoucher::route('/{record}'),
             'edit'   => Pages\EditVoucher::route('/{record}/edit'),
         ];
-    }
-
-    public static function canViewAny(): bool
-    {
-        return auth()->user()?->can('vouchers.view_any') ?? true;
-    }
-
-    public static function canCreate(): bool
-    {
-        return auth()->user()?->can('vouchers.create') ?? false;
-    }
-
-    public static function canEdit(mixed $record): bool
-    {
-        return auth()->user()?->can('vouchers.update') ?? false;
-    }
-
-    public static function canDelete(mixed $record): bool
-    {
-        return auth()->user()?->can('vouchers.delete') ?? false;
-    }
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return static::canViewAny();
     }
 }
