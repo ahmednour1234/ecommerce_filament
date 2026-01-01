@@ -37,6 +37,8 @@ class RolePermissionSeeder extends Seeder
             'branches',
             'cost_centers',
             'warehouses',
+            'voucher_signatures', // ✅ ADD THIS
+
         ];
 
         // Catalog Resources
@@ -65,7 +67,13 @@ class RolePermissionSeeder extends Seeder
             'journal_entries',
             'journal_entry_lines',
             'vouchers',
+            'voucher_signatures', // ✅ ADD THIS
             'assets',
+            'journal_entries.post',
+            'vouchers.create_journal_entry',
+
+            'vouchers.print',              // ✅ optional
+            'vouchers.select_signatures',  // ✅ optional
         ];
 
         // Combine all resources
