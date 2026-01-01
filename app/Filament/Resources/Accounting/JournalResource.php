@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Accounting;
 
-use App\Filament\Resources\Accounting\JournalResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Filament\Resources\Accounting\JournalResource\Pages;
 use App\Models\Accounting\Journal;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -21,43 +21,47 @@ class JournalResource extends Resource
     protected static ?string $navigationGroup = 'Accounting';
     protected static ?int $navigationSort = 3;
 
+    // ✅ Fix: this resource is journals (not journal_entries)
+    protected static ?string $navigationTranslationKey = 'menu.accounting.journals';
+
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Basic Information')
-                    ->schema([
-                        Forms\Components\TextInput::make('code')
-                            ->label('Journal Code')
-                            ->required()
-                            ->maxLength(50)
-                            ->unique(ignoreRecord: true)
-                            ->helperText('Unique code for the journal'),
+        return $form->schema([
+            Forms\Components\Section::make(
+                trans_dash('sections.basic_information', 'Basic Information')
+            )
+                ->schema([
+                    Forms\Components\TextInput::make('code')
+                        ->label(trans_dash('forms.journals.code', 'Journal Code'))
+                        ->required()
+                        ->maxLength(50)
+                        ->unique(ignoreRecord: true)
+                        ->helperText(trans_dash('forms.journals.code_helper', 'Unique code for the journal')),
 
-                        Forms\Components\TextInput::make('name')
-                            ->label('Journal Name')
-                            ->required()
-                            ->maxLength(255),
+                    Forms\Components\TextInput::make('name')
+                        ->label(trans_dash('forms.journals.name', 'Journal Name'))
+                        ->required()
+                        ->maxLength(255),
 
-                        Forms\Components\Select::make('type')
-                            ->label('Journal Type')
-                            ->options([
-                                'general' => 'General Journal',
-                                'bank' => 'Bank Journal',
-                                'cash' => 'Cash Journal',
-                                'purchase' => 'Purchase Journal',
-                                'sales' => 'Sales Journal',
-                            ])
-                            ->required()
-                            ->default('general'),
+                    Forms\Components\Select::make('type')
+                        ->label(trans_dash('forms.journals.type', 'Journal Type'))
+                        ->options([
+                            'general'  => trans_dash('journals.types.general', 'General Journal'),
+                            'bank'     => trans_dash('journals.types.bank', 'Bank Journal'),
+                            'cash'     => trans_dash('journals.types.cash', 'Cash Journal'),
+                            'purchase' => trans_dash('journals.types.purchase', 'Purchase Journal'),
+                            'sales'    => trans_dash('journals.types.sales', 'Sales Journal'),
+                        ])
+                        ->required()
+                        ->default('general'),
 
-                        Forms\Components\Toggle::make('is_active')
-                            ->label('Active')
-                            ->default(true)
-                            ->required(),
-                    ])
-                    ->columns(2),
-            ]);
+                    Forms\Components\Toggle::make('is_active')
+                        ->label(trans_dash('common.active', 'Active'))
+                        ->default(true)
+                        ->required(),
+                ])
+                ->columns(2),
+        ]);
     }
 
     public static function table(Table $table): Table
@@ -65,60 +69,72 @@ class JournalResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
-                    ->label('Code')
+                    ->label(trans_dash('tables.journals.code', 'Code'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Name')
+                    ->label(trans_dash('tables.journals.name', 'Name'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\BadgeColumn::make('type')
-                    ->label('Type')
+                    ->label(trans_dash('tables.journals.type', 'Type'))
+                    ->formatStateUsing(fn (?string $state) => match ($state) {
+                        'general'  => trans_dash('journals.types.general', 'General'),
+                        'bank'     => trans_dash('journals.types.bank', 'Bank'),
+                        'cash'     => trans_dash('journals.types.cash', 'Cash'),
+                        'purchase' => trans_dash('journals.types.purchase', 'Purchase'),
+                        'sales'    => trans_dash('journals.types.sales', 'Sales'),
+                        default    => $state,
+                    })
                     ->colors([
                         'primary' => 'general',
                         'success' => 'bank',
                         'warning' => 'cash',
-                        'info' => 'purchase',
-                        'gray' => 'sales',
+                        'info'    => 'purchase',
+                        'gray'    => 'sales',
                     ])
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('is_active')
-                    ->label('Active')
+                    ->label(trans_dash('common.active', 'Active'))
                     ->boolean()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('journal_entries_count')
-                    ->label('Entries')
+                    ->label(trans_dash('tables.journals.entries', 'Entries'))
                     ->counts('journalEntries')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label(trans_dash('tables.common.created_at', 'Created At'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
+                    ->label(trans_dash('filters.type', 'Type'))
                     ->options([
-                        'general' => 'General Journal',
-                        'bank' => 'Bank Journal',
-                        'cash' => 'Cash Journal',
-                        'purchase' => 'Purchase Journal',
-                        'sales' => 'Sales Journal',
+                        'general'  => trans_dash('journals.types.general', 'General Journal'),
+                        'bank'     => trans_dash('journals.types.bank', 'Bank Journal'),
+                        'cash'     => trans_dash('journals.types.cash', 'Cash Journal'),
+                        'purchase' => trans_dash('journals.types.purchase', 'Purchase Journal'),
+                        'sales'    => trans_dash('journals.types.sales', 'Sales Journal'),
                     ]),
 
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Active')
-                    ->placeholder('All')
-                    ->trueLabel('Active only')
-                    ->falseLabel('Inactive only'),
+                    ->label(trans_dash('common.active', 'Active'))
+                    ->placeholder(trans_dash('common.all', 'All'))
+                    ->trueLabel(trans_dash('common.active_only', 'Active only'))
+                    ->falseLabel(trans_dash('common.inactive_only', 'Inactive only')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->visible(fn () => auth()->user()?->can('journals.update') ?? false),
+
                 Tables\Actions\DeleteAction::make()
                     ->visible(fn () => auth()->user()?->can('journals.delete') ?? false),
             ])
@@ -131,19 +147,12 @@ class JournalResource extends Resource
             ->defaultSort('code', 'asc');
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListJournals::route('/'),
+            'index'  => Pages\ListJournals::route('/'),
             'create' => Pages\CreateJournal::route('/create'),
-            'edit' => Pages\EditJournal::route('/{record}/edit'),
+            'edit'   => Pages\EditJournal::route('/{record}/edit'),
         ];
     }
 
@@ -177,4 +186,3 @@ class JournalResource extends Resource
         return static::canViewAny();
     }
 }
-

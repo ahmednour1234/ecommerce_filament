@@ -34,6 +34,7 @@ class SidebarTranslationsSeeder extends Seeder
             'sidebar.accounting.accounts_tree' => ['en' => 'Accounts Tree', 'ar' => 'شجرة الحسابات'],
             'sidebar.accounting.journal_entries' => ['en' => 'Journal Entries', 'ar' => 'قيود اليومية'],
             'sidebar.accounting.journals' => ['en' => 'Journals', 'ar' => 'اليوميات'],
+            'sidebar.accounting.journal' => ['en' => 'Journals', 'ar' => 'اليوميات'],
             'sidebar.accounting.vouchers' => ['en' => 'Vouchers', 'ar' => 'السندات'],
             'sidebar.accounting.accounts' => ['en' => 'Accounts', 'ar' => 'الحسابات'],
             'sidebar.accounting.bank_accounts' => ['en' => 'Bank Accounts', 'ar' => 'الحسابات البنكية'],
