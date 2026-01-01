@@ -47,7 +47,7 @@ class VoucherPrintService
         ];
 
         // view path must exist: resources/views/accounting/vouchers/pdf.blade.php
-        return Pdf::loadView('accounting.vouchers.pdf', $payload)
+        return Pdf::loadView('print.vouchers.pdf', $payload)
             ->setPaper('a4');
     }
 
