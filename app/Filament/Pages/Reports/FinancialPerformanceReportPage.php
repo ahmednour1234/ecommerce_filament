@@ -77,7 +77,7 @@ class FinancialPerformanceReportPage extends Page implements HasTable, HasForms
         }
 
         // Build the query from the union subquery using fromSub to avoid table reference issues
-        $query = DB::query()
+        $query = \App\Models\Accounting\Account::query()
             ->fromSub($unionQuery, 'financial_performance_data')
             ->select('financial_performance_data.*');
 
