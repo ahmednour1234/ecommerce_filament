@@ -208,7 +208,12 @@ class TrialBalancePage extends Page implements HasTable
 
     protected function getExportMetadata(): array
     {
-        $metadata = parent::getExportMetadata();
+        // Get base metadata from trait
+        $metadata = [
+            'exported_at' => now()->format('Y-m-d H:i:s'),
+            'exported_by' => auth()->user()?->name ?? 'System',
+        ];
+        
         $metadata['as_of_date'] = $this->data['as_of_date'] ?? '';
         
         if (isset($this->data['branch_id'])) {

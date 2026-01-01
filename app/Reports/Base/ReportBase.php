@@ -307,7 +307,7 @@ abstract class ReportBase
         $headers = $this->getExportHeaders();
         $rows = $this->prepareRowsForExport($data->rows);
 
-        $export = new TableExport($rows, $headers, $this->getReportTitle());
+        $export = new TableExport(collect($rows), $headers, $this->getReportTitle());
         
         return Excel::download($export, $filename);
     }

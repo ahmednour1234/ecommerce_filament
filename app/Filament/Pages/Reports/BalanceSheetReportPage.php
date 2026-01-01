@@ -78,9 +78,9 @@ class BalanceSheetReportPage extends Page implements HasTable, HasForms
                 ->selectRaw('NULL as section, NULL as account_code, NULL as account_name, NULL as balance');
         }
 
-        $query = \App\Models\Accounting\Account::query()
-            ->fromSub($unionQuery, 'balance_sheet_data')
-            ->select('balance_sheet_data.*');
+        // Use a simple query builder to avoid model's default ordering
+        $query = DB::table(DB::raw('(' . $unionQuery->toSql() . ') as balance_sheet_data'))
+            ->mergeBindings($unionQuery);
 
         return $table
             ->query($query)
@@ -93,6 +93,7 @@ class BalanceSheetReportPage extends Page implements HasTable, HasForms
                     ->money(\App\Support\Money::defaultCurrencyCode())
                     ->formatStateUsing(fn ($record) => $record->balance !== null ? $record->balance : ''),
             ])
+            ->defaultSort('account_code', 'asc')
             ->paginated(false);
     }
 
