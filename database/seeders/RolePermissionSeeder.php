@@ -71,7 +71,11 @@ class RolePermissionSeeder extends Seeder
             'assets',
             'journal_entries.post',
             'vouchers.create_journal_entry',
-
+            'journal_entries.post',
+            'vouchers.create_journal_entry',
+            'vouchers.print',
+            'vouchers.export_pdf',
+            'vouchers.export_excel',
             'vouchers.print',              // ✅ optional
             'vouchers.select_signatures',  // ✅ optional
         ];
