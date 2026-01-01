@@ -78,12 +78,13 @@ class FixedAssetsReportPage extends Page implements HasTable, HasForms
                 ->selectRaw('NULL as code, NULL as name, NULL as category, NULL as purchase_date, 0 as acquisition_cost, 0 as depreciation, 0 as net_book_value, NULL as status');
         }
 
-        $query = \App\Models\Accounting\Asset::query()
-            ->fromSub($unionQuery, 'fixed_assets_data')
-            ->select('fixed_assets_data.*');
-
+        // Filament Tables requires an Eloquent Builder, not a Query Builder.
+        // Wrap in closure to ensure Filament receives a proper Eloquent Builder instance.
         return $table
-            ->query($query)
+            ->query(fn () => \App\Models\Accounting\Asset::query()
+                ->fromSub($unionQuery, 'fixed_assets_data')
+                ->select('fixed_assets_data.*')
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('code'),
                 Tables\Columns\TextColumn::make('name'),

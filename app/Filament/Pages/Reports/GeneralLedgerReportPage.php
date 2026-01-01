@@ -93,12 +93,13 @@ class GeneralLedgerReportPage extends Page implements HasTable, HasForms
                 ->selectRaw('NULL as date, NULL as entry_number, NULL as reference, NULL as description, 0 as debit, 0 as credit, 0 as balance, NULL as branch, NULL as cost_center');
         }
 
-        $query = \App\Models\Accounting\GeneralLedgerEntry::query()
-            ->fromSub($unionQuery, 'general_ledger_data')
-            ->select('general_ledger_data.*');
-
+        // Filament Tables requires an Eloquent Builder, not a Query Builder.
+        // Wrap in closure to ensure Filament receives a proper Eloquent Builder instance.
         return $table
-            ->query($query)
+            ->query(fn () => \App\Models\Accounting\GeneralLedgerEntry::query()
+                ->fromSub($unionQuery, 'general_ledger_data')
+                ->select('general_ledger_data.*')
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('date')
                     ->label(trans_dash('reports.general_ledger.date', 'Date'))

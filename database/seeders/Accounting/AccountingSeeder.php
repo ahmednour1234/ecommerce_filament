@@ -10,6 +10,7 @@ class AccountingSeeder extends Seeder
     {
         $this->call([
             AccountSeeder::class,
+            Level5AccountsArabicSeeder::class, // Level 5 accounts with Arabic names (must be after AccountSeeder)
             JournalSeeder::class,
             FiscalYearSeeder::class, // Must be after AccountSeeder
             AccountingPermissionsSeeder::class, // Permissions for accounting module

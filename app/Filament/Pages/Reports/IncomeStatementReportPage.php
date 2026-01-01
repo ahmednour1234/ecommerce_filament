@@ -89,12 +89,13 @@ class IncomeStatementReportPage extends Page implements HasTable, HasForms
                 ->selectRaw('NULL as section, NULL as account_code, NULL as account_name, NULL as amount');
         }
 
-        $query = \App\Models\Accounting\Account::query()
-            ->fromSub($unionQuery, 'income_statement_data')
-            ->select('income_statement_data.*');
-
+        // Filament Tables requires an Eloquent Builder, not a Query Builder.
+        // Wrap in closure to ensure Filament receives a proper Eloquent Builder instance.
         return $table
-            ->query($query)
+            ->query(fn () => \App\Models\Accounting\Account::query()
+                ->fromSub($unionQuery, 'income_statement_data')
+                ->select('income_statement_data.*')
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('account_code')
                     ->label(trans_dash('reports.income_statement.account_code', 'Account Code'))

@@ -80,12 +80,13 @@ class VatReportPage extends Page implements HasTable, HasForms
                 ->selectRaw('NULL as date, NULL as account_code, NULL as account_name, NULL as entry_number, 0 as output_vat, 0 as input_vat');
         }
 
-        $query = \App\Models\Accounting\JournalEntryLine::query()
-            ->fromSub($unionQuery, 'vat_report_data')
-            ->select('vat_report_data.*');
-
+        // Filament Tables requires an Eloquent Builder, not a Query Builder.
+        // Wrap in closure to ensure Filament receives a proper Eloquent Builder instance.
         return $table
-            ->query($query)
+            ->query(fn () => \App\Models\Accounting\JournalEntryLine::query()
+                ->fromSub($unionQuery, 'vat_report_data')
+                ->select('vat_report_data.*')
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('date')->date(),
                 Tables\Columns\TextColumn::make('account_code'),

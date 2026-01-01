@@ -76,13 +76,13 @@ class FinancialPerformanceReportPage extends Page implements HasTable, HasForms
                 ->selectRaw('NULL as kpi, 0 as value, 0 as percentage');
         }
 
-        // Build the query from the union subquery using fromSub to avoid table reference issues
-        $query = \App\Models\Accounting\Account::query()
-            ->fromSub($unionQuery, 'financial_performance_data')
-            ->select('financial_performance_data.*');
-
+        // Filament Tables requires an Eloquent Builder, not a Query Builder.
+        // Wrap in closure to ensure Filament receives a proper Eloquent Builder instance.
         return $table
-            ->query($query)
+            ->query(fn () => \App\Models\Accounting\Account::query()
+                ->fromSub($unionQuery, 'financial_performance_data')
+                ->select('financial_performance_data.*')
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('kpi')->label('KPI')->sortable(),
                 Tables\Columns\TextColumn::make('value')->money(\App\Support\Money::defaultCurrencyCode())->sortable(),

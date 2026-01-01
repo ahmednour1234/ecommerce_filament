@@ -92,12 +92,13 @@ class ComparisonsReportPage extends Page implements HasTable, HasForms
                 ->selectRaw('NULL as period, NULL as from_date, NULL as to_date, 0 as amount');
         }
 
-        $query = \App\Models\Accounting\Account::query()
-            ->fromSub($unionQuery, 'comparisons_data')
-            ->select('comparisons_data.*');
-
+        // Filament Tables requires an Eloquent Builder, not a Query Builder.
+        // Wrap in closure to ensure Filament receives a proper Eloquent Builder instance.
         return $table
-            ->query($query)
+            ->query(fn () => \App\Models\Accounting\Account::query()
+                ->fromSub($unionQuery, 'comparisons_data')
+                ->select('comparisons_data.*')
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('period'),
                 Tables\Columns\TextColumn::make('from_date'),

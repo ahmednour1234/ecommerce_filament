@@ -54,12 +54,13 @@ class AccountStatementReportPage extends Page implements HasTable, HasForms
     {
         // Don't build the query if account_id is not set
         if (empty($this->data['account_id'])) {
-            $query = \App\Models\Accounting\GeneralLedgerEntry::query()
-                ->whereRaw('1 = 0')
-                ->selectRaw('NULL as date, NULL as entry_number, NULL as reference, NULL as description, 0 as debit, 0 as credit, 0 as balance');
-            
+            // Filament Tables requires an Eloquent Builder, not a Query Builder.
+            // Wrap in closure to ensure Filament receives a proper Eloquent Builder instance.
             return $table
-                ->query($query)
+                ->query(fn () => \App\Models\Accounting\GeneralLedgerEntry::query()
+                    ->whereRaw('1 = 0')
+                    ->selectRaw('NULL as date, NULL as entry_number, NULL as reference, NULL as description, 0 as debit, 0 as credit, 0 as balance')
+                )
                 ->columns([
                     Tables\Columns\TextColumn::make('date')->date(),
                     Tables\Columns\TextColumn::make('entry_number'),
@@ -105,12 +106,13 @@ class AccountStatementReportPage extends Page implements HasTable, HasForms
                 ->selectRaw('NULL as date, NULL as entry_number, NULL as reference, NULL as description, 0 as debit, 0 as credit, 0 as balance');
         }
 
-        $query = \App\Models\Accounting\GeneralLedgerEntry::query()
-            ->fromSub($unionQuery, 'account_statement_data')
-            ->select('account_statement_data.*');
-
+        // Filament Tables requires an Eloquent Builder, not a Query Builder.
+        // Wrap in closure to ensure Filament receives a proper Eloquent Builder instance.
         return $table
-            ->query($query)
+            ->query(fn () => \App\Models\Accounting\GeneralLedgerEntry::query()
+                ->fromSub($unionQuery, 'account_statement_data')
+                ->select('account_statement_data.*')
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('date')->date()->sortable(),
                 Tables\Columns\TextColumn::make('entry_number')->searchable(),

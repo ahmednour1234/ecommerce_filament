@@ -93,12 +93,13 @@ class ChangesInEquityReportPage extends Page implements HasTable, HasForms
                 ->selectRaw('NULL as date, NULL as account_code, NULL as account_name, NULL as description, 0 as movement');
         }
 
-        $query = \App\Models\Accounting\GeneralLedgerEntry::query()
-            ->fromSub($unionQuery, 'changes_in_equity_data')
-            ->select('changes_in_equity_data.*');
-
+        // Filament Tables requires an Eloquent Builder, not a Query Builder.
+        // Wrap in closure to ensure Filament receives a proper Eloquent Builder instance.
         return $table
-            ->query($query)
+            ->query(fn () => \App\Models\Accounting\GeneralLedgerEntry::query()
+                ->fromSub($unionQuery, 'changes_in_equity_data')
+                ->select('changes_in_equity_data.*')
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('date')
                     ->label(tr('reports.changes_in_equity.date', [], null, 'dashboard'))

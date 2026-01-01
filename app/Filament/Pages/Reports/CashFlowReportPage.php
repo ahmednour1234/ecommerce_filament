@@ -80,12 +80,13 @@ class CashFlowReportPage extends Page implements HasTable, HasForms
                 ->selectRaw('NULL as date, NULL as type, NULL as voucher_number, NULL as description, 0 as cash_in, 0 as cash_out');
         }
 
-        $query = \App\Models\Accounting\Voucher::query()
-            ->fromSub($unionQuery, 'cash_flow_data')
-            ->select('cash_flow_data.*');
-
+        // Filament Tables requires an Eloquent Builder, not a Query Builder.
+        // Wrap in closure to ensure Filament receives a proper Eloquent Builder instance.
         return $table
-            ->query($query)
+            ->query(fn () => \App\Models\Accounting\Voucher::query()
+                ->fromSub($unionQuery, 'cash_flow_data')
+                ->select('cash_flow_data.*')
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('date')->date(),
                 Tables\Columns\TextColumn::make('type'),

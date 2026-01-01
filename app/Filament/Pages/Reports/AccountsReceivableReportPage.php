@@ -77,12 +77,13 @@ class AccountsReceivableReportPage extends Page implements HasTable, HasForms
                 ->selectRaw('NULL as customer_code, NULL as customer_name, 0 as balance, 0 as credit_limit');
         }
 
-        $query = \App\Models\Sales\Customer::query()
-            ->fromSub($unionQuery, 'ar_report_data')
-            ->select('ar_report_data.*');
-
+        // Filament Tables requires an Eloquent Builder, not a Query Builder.
+        // Wrap in closure to ensure Filament receives a proper Eloquent Builder instance.
         return $table
-            ->query($query)
+            ->query(fn () => \App\Models\Sales\Customer::query()
+                ->fromSub($unionQuery, 'ar_report_data')
+                ->select('ar_report_data.*')
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('customer_code'),
                 Tables\Columns\TextColumn::make('customer_name'),

@@ -78,15 +78,17 @@ class BalanceSheetReportPage extends Page implements HasTable, HasForms
                 ->selectRaw('NULL as section, NULL as account_code, NULL as account_name, NULL as balance');
         }
 
-        // Use Eloquent query builder like TrialBalanceReportPage
-        // Clear any default ordering and use fromSub to avoid model's default ordering
-        $query = \App\Models\Accounting\Account::query()
-            ->fromSub($unionQuery, 'balance_sheet_data')
-            ->select('balance_sheet_data.*')
-            ->withoutGlobalScopes(); // Remove any global scopes that might add ordering
-
+        // Filament Tables requires an Eloquent Builder, not a Query Builder.
+        // Even though fromSub() accepts Query Builder, we wrap it in a closure
+        // to ensure Filament receives a proper Eloquent Builder instance.
+        // The fromSub() method allows us to use a union query built from DB::table()
+        // while maintaining the Eloquent Builder type that Filament expects.
         return $table
-            ->query($query)
+            ->query(fn () => \App\Models\Accounting\Account::query()
+                ->fromSub($unionQuery, 'balance_sheet_data')
+                ->select('balance_sheet_data.*')
+                ->withoutGlobalScopes() // Remove any global scopes that might add ordering
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('account_code')
                     ->sortable(),

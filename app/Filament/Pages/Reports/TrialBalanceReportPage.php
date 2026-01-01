@@ -91,12 +91,13 @@ class TrialBalanceReportPage extends Page implements HasTable, HasForms
                 ->selectRaw('NULL as account_code, NULL as account_name, NULL as account_type, 0 as debits, 0 as credits, 0 as balance');
         }
 
-        $query = \App\Models\Accounting\Account::query()
-            ->fromSub($unionQuery, 'trial_balance_data')
-            ->select('trial_balance_data.*');
-
+        // Filament Tables requires an Eloquent Builder, not a Query Builder.
+        // Wrap in closure to ensure Filament receives a proper Eloquent Builder instance.
         return $table
-            ->query($query)
+            ->query(fn () => \App\Models\Accounting\Account::query()
+                ->fromSub($unionQuery, 'trial_balance_data')
+                ->select('trial_balance_data.*')
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('account_code')
                     ->label(trans_dash('reports.trial_balance.account_code', 'Account Code'))

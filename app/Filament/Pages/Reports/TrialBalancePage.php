@@ -131,14 +131,13 @@ class TrialBalancePage extends Page implements HasTable
                 ->selectRaw('NULL as account_id, NULL as code, NULL as name, NULL as type, 0 as debits, 0 as credits, 0 as balance');
         }
 
-        // Use Account model as base and wrap the union query in a subquery
-        // This creates an Eloquent Builder that Filament can accept
-        $query = Account::query()
-            ->fromSub($unionQuery, 'trial_balance_data')
-            ->select('trial_balance_data.*');
-
+        // Filament Tables requires an Eloquent Builder, not a Query Builder.
+        // Wrap in closure to ensure Filament receives a proper Eloquent Builder instance.
         return $table
-            ->query($query)
+            ->query(fn () => Account::query()
+                ->fromSub($unionQuery, 'trial_balance_data')
+                ->select('trial_balance_data.*')
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('code')
                     ->label('Account Code')

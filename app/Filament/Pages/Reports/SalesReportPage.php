@@ -223,13 +223,13 @@ class SalesReportPage extends Page implements HasTable
             ->groupBy('date')
             ->orderBy('date', 'desc');
 
-        // Wrap Query Builder in Eloquent Builder using Invoice model
-        $query = Invoice::query()
-            ->fromSub($unionQuery, 'revenue_data')
-            ->select('revenue_data.*');
-
+        // Filament Tables requires an Eloquent Builder, not a Query Builder.
+        // Wrap in closure to ensure Filament receives a proper Eloquent Builder instance.
         return $table
-            ->query($query)
+            ->query(fn () => Invoice::query()
+                ->fromSub($unionQuery, 'revenue_data')
+                ->select('revenue_data.*')
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('date')
                     ->label('Date')
@@ -278,13 +278,13 @@ class SalesReportPage extends Page implements HasTable
             ->groupBy('customers.id', 'customers.name', 'customers.code')
             ->havingRaw('order_count > 0 OR invoice_count > 0');
 
-        // Wrap Query Builder in Eloquent Builder using Customer model
-        $query = Customer::query()
-            ->fromSub($unionQuery, 'customer_report_data')
-            ->select('customer_report_data.*');
-
+        // Filament Tables requires an Eloquent Builder, not a Query Builder.
+        // Wrap in closure to ensure Filament receives a proper Eloquent Builder instance.
         return $table
-            ->query($query)
+            ->query(fn () => Customer::query()
+                ->fromSub($unionQuery, 'customer_report_data')
+                ->select('customer_report_data.*')
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('code')
                     ->label('Code')
@@ -421,12 +421,13 @@ class SalesReportPage extends Page implements HasTable
                 ->selectRaw('NULL as type, NULL as account_code, NULL as account_name, 0 as amount');
         }
         
-        $query = Account::query()
-            ->fromSub($unionQuery, 'income_statement_data')
-            ->select('income_statement_data.*');
-        
+        // Filament Tables requires an Eloquent Builder, not a Query Builder.
+        // Wrap in closure to ensure Filament receives a proper Eloquent Builder instance.
         return $table
-            ->query($query)
+            ->query(fn () => Account::query()
+                ->fromSub($unionQuery, 'income_statement_data')
+                ->select('income_statement_data.*')
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('account_code')
                     ->label('Account Code')

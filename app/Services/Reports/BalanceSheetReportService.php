@@ -23,26 +23,48 @@ class BalanceSheetReportService extends ReportBase
 
     public function getData(): \App\Reports\DTOs\ReportDataDTO
     {
+        // Log filters for debugging
+        logger()->info('BalanceSheetReport filters', [
+            'to_date' => $this->filters->toDate,
+            'from_date' => $this->filters->fromDate,
+            'posted_only' => $this->filters->postedOnly,
+            'branch_id' => $this->filters->branchId,
+            'cost_center_id' => $this->filters->costCenterId,
+        ]);
+
         $query = $this->buildQuery();
         
-        // Balance sheet is as of a specific date
+        // Balance sheet is as of a specific date (inclusive - include entire day)
+        // Make toDate inclusive by using end of day
         if ($this->filters->toDate) {
-            $query->whereDate('entry_date', '<=', $this->filters->toDate);
+            $toDateEnd = \Carbon\Carbon::parse($this->filters->toDate)->endOfDay();
+            $query->where('entry_date', '<=', $toDateEnd);
         }
+        
+        // Note: GeneralLedgerEntry is only created when JournalEntry is posted (via PostingService),
+        // so all GeneralLedgerEntry records are implicitly from posted entries.
+        // If postedOnly is false, we would need to include JournalEntryLine data, but that's a larger change.
+        // For now, we only show GeneralLedgerEntry data (posted entries only).
+        // If the user wants to see unposted entries, they should set postedOnly to false,
+        // but this would require querying JournalEntryLine instead, which is not implemented yet.
         
         $this->applyBranch($query);
         $this->applyCostCenter($query);
 
+        // Log query for debugging
+        logger()->info('BalanceSheetReport SQL', [
+            'sql' => $query->toSql(),
+            'bindings' => $query->getBindings(),
+        ]);
+
+        // Get all entries up to the date, then get the latest balance per account
+        // The balance field in GeneralLedgerEntry is cumulative, so we need the latest entry per account
         $entries = $query->get();
+        
+        logger()->info('BalanceSheetReport entries count', ['count' => $entries->count()]);
 
-        // Group by account type and account
-        $assets = [];
-        $liabilities = [];
-        $equity = [];
-        $totalAssets = 0;
-        $totalLiabilities = 0;
-        $totalEquity = 0;
-
+        // Group by account and get the latest balance (highest entry_date, then highest id)
+        $accountBalances = [];
         foreach ($entries as $entry) {
             $account = $entry->account;
             if (!$account) {
@@ -50,37 +72,70 @@ class BalanceSheetReportService extends ReportBase
             }
 
             $accountId = $account->id;
-            $balance = (float) $entry->balance;
+            
+            // Keep only the latest entry per account (by entry_date, then by id)
+            if (!isset($accountBalances[$accountId])) {
+                $accountBalances[$accountId] = [
+                    'account' => $account,
+                    'balance' => (float) $entry->balance,
+                    'entry_date' => $entry->entry_date,
+                    'entry_id' => $entry->id,
+                ];
+            } else {
+                // Compare dates and IDs to get the latest
+                $currentDate = $accountBalances[$accountId]['entry_date'];
+                $currentId = $accountBalances[$accountId]['entry_id'];
+                
+                if ($entry->entry_date > $currentDate || 
+                    ($entry->entry_date == $currentDate && $entry->id > $currentId)) {
+                    $accountBalances[$accountId] = [
+                        'account' => $account,
+                        'balance' => (float) $entry->balance,
+                        'entry_date' => $entry->entry_date,
+                        'entry_id' => $entry->id,
+                    ];
+                }
+            }
+        }
+
+        // Group by account type
+        $assets = [];
+        $liabilities = [];
+        $equity = [];
+        $totalAssets = 0;
+        $totalLiabilities = 0;
+        $totalEquity = 0;
+
+        foreach ($accountBalances as $accountId => $data) {
+            $account = $data['account'];
+            $balance = $data['balance'];
 
             if ($account->type === 'asset') {
-                if (!isset($assets[$accountId])) {
-                    $assets[$accountId] = [
-                        'account' => $account,
-                        'balance' => 0,
-                    ];
-                }
-                $assets[$accountId]['balance'] += $balance;
+                $assets[$accountId] = [
+                    'account' => $account,
+                    'balance' => $balance,
+                ];
                 $totalAssets += $balance;
             } elseif ($account->type === 'liability') {
-                if (!isset($liabilities[$accountId])) {
-                    $liabilities[$accountId] = [
-                        'account' => $account,
-                        'balance' => 0,
-                    ];
-                }
-                $liabilities[$accountId]['balance'] += $balance;
+                $liabilities[$accountId] = [
+                    'account' => $account,
+                    'balance' => $balance,
+                ];
                 $totalLiabilities += $balance;
             } elseif ($account->type === 'equity') {
-                if (!isset($equity[$accountId])) {
-                    $equity[$accountId] = [
-                        'account' => $account,
-                        'balance' => 0,
-                    ];
-                }
-                $equity[$accountId]['balance'] += $balance;
+                $equity[$accountId] = [
+                    'account' => $account,
+                    'balance' => $balance,
+                ];
                 $totalEquity += $balance;
             }
         }
+        
+        logger()->info('BalanceSheetReport totals', [
+            'total_assets' => $totalAssets,
+            'total_liabilities' => $totalLiabilities,
+            'total_equity' => $totalEquity,
+        ]);
 
         // Build rows
         $rows = [];

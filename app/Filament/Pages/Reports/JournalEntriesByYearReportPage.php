@@ -80,12 +80,13 @@ class JournalEntriesByYearReportPage extends Page implements HasTable, HasForms
                 ->selectRaw('NULL as year, NULL as month, NULL as month_name, 0 as entry_count, 0 as total_debit, 0 as total_credit');
         }
 
-        $query = \App\Models\Accounting\JournalEntry::query()
-            ->fromSub($unionQuery, 'journal_entries_by_year_data')
-            ->select('journal_entries_by_year_data.*');
-
+        // Filament Tables requires an Eloquent Builder, not a Query Builder.
+        // Wrap in closure to ensure Filament receives a proper Eloquent Builder instance.
         return $table
-            ->query($query)
+            ->query(fn () => \App\Models\Accounting\JournalEntry::query()
+                ->fromSub($unionQuery, 'journal_entries_by_year_data')
+                ->select('journal_entries_by_year_data.*')
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('year'),
                 Tables\Columns\TextColumn::make('month_name')->label('Month'),

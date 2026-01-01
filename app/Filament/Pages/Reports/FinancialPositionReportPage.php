@@ -77,12 +77,13 @@ class FinancialPositionReportPage extends Page implements HasTable, HasForms
                 ->selectRaw('NULL as branch, NULL as cost_center, 0 as total_debit, 0 as total_credit, 0 as balance');
         }
 
-        $query = \App\Models\Accounting\GeneralLedgerEntry::query()
-            ->fromSub($unionQuery, 'financial_position_data')
-            ->select('financial_position_data.*');
-
+        // Filament Tables requires an Eloquent Builder, not a Query Builder.
+        // Wrap in closure to ensure Filament receives a proper Eloquent Builder instance.
         return $table
-            ->query($query)
+            ->query(fn () => \App\Models\Accounting\GeneralLedgerEntry::query()
+                ->fromSub($unionQuery, 'financial_position_data')
+                ->select('financial_position_data.*')
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('branch'),
                 Tables\Columns\TextColumn::make('cost_center'),
