@@ -50,16 +50,51 @@ if (!function_exists('get_locale')) {
 
 if (!function_exists('tr')) {
     /**
-     * Get menu translation with fallback: current locale → 'en' → default → key
+     * Get translation with fallback: current locale → 'en' → default → key
      * 
-     * @param string $key Translation key (e.g., 'menu.dashboard', 'menu.sales.customers')
-     * @param string|null $default Default value if translation not found
+     * Usage:
+     * - tr('key') - uses 'dashboard' group
+     * - tr('key', 'default') - old usage, uses 'menu' group for backward compatibility
+     * - tr('key', [], 'en', 'sidebar') - new usage with group support
+     * 
+     * @param string $key Translation key (e.g., 'sidebar.accounting', 'pages.reports.title')
+     * @param array|string|null $replace Replacements array or default string (for backward compatibility)
+     * @param string|null $locale Locale code (optional)
+     * @param string $group Translation group (default: 'dashboard')
      * @return string Translated text
      */
-    function tr(string $key, ?string $default = null): string
+    function tr(string $key, array|string|null $replace = [], ?string $locale = null, string $group = 'dashboard'): string
     {
-        return app(\App\Services\MainCore\TranslationService::class)
-            ->get($key, null, 'menu', $default ?? $key);
+        $default = null;
+        $replacements = [];
+        
+        // Backward compatibility: if second param is string and only 2 args, it's old usage
+        if (func_num_args() === 2 && is_string($replace)) {
+            // Old usage: tr($key, $default) - use 'menu' group for backward compatibility
+            $translation = app(\App\Services\MainCore\TranslationService::class)
+                ->get($key, null, 'menu', $replace ?? $key);
+            return $translation;
+        }
+        
+        // New usage: handle replace array or default
+        if (is_string($replace)) {
+            $default = $replace;
+        } elseif (is_array($replace)) {
+            $replacements = $replace;
+        }
+        
+        // Get translation
+        $translation = app(\App\Services\MainCore\TranslationService::class)
+            ->get($key, $locale, $group, $default ?? $key);
+        
+        // Apply replacements if provided
+        if (!empty($replacements)) {
+            foreach ($replacements as $placeholder => $value) {
+                $translation = str_replace(':' . $placeholder, (string) $value, $translation);
+            }
+        }
+        
+        return $translation;
     }
 }
 

@@ -26,9 +26,9 @@ class ReportExportActions
         callable $getExcelExport,
         array $options = []
     ): ActionGroup {
-        $printLabel = $options['printLabel'] ?? trans_dash('reports.export.print', 'Print');
-        $pdfLabel = $options['pdfLabel'] ?? trans_dash('reports.export.pdf', 'Export PDF');
-        $excelLabel = $options['excelLabel'] ?? trans_dash('reports.export.excel', 'Export Excel');
+        $printLabel = $options['printLabel'] ?? tr('actions.print', [], null, 'dashboard');
+        $pdfLabel = $options['pdfLabel'] ?? tr('actions.export_pdf', [], null, 'dashboard');
+        $excelLabel = $options['excelLabel'] ?? tr('actions.export_excel', [], null, 'dashboard');
 
         return ActionGroup::make([
             Action::make('print')
@@ -50,7 +50,7 @@ class ReportExportActions
                 ->action($getExcelExport)
                 ->color('success'),
         ])
-        ->label(trans_dash('reports.export.title', 'Export'))
+        ->label(tr('actions.export', [], null, 'dashboard'))
         ->icon('heroicon-o-arrow-down-tray')
         ->color('primary')
         ->button();
@@ -71,9 +71,9 @@ class ReportExportActions
         callable $getExcelExport,
         array $options = []
     ): array {
-        $printLabel = $options['printLabel'] ?? trans_dash('reports.export.print', 'Print');
-        $pdfLabel = $options['pdfLabel'] ?? trans_dash('reports.export.pdf', 'Export PDF');
-        $excelLabel = $options['excelLabel'] ?? trans_dash('reports.export.excel', 'Export Excel');
+        $printLabel = $options['printLabel'] ?? tr('actions.print', [], null, 'dashboard');
+        $pdfLabel = $options['pdfLabel'] ?? tr('actions.export_pdf', [], null, 'dashboard');
+        $excelLabel = $options['excelLabel'] ?? tr('actions.export_excel', [], null, 'dashboard');
 
         return [
             Action::make('print')

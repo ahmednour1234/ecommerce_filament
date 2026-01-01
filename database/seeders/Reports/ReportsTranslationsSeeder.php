@@ -72,6 +72,7 @@ class ReportsTranslationsSeeder extends Seeder
             // Trial Balance
             'reports.trial_balance.navigation' => ['en' => 'Trial Balance', 'ar' => 'ميزان المراجعة'],
             'reports.trial_balance.title' => ['en' => 'Trial Balance', 'ar' => 'ميزان المراجعة'],
+            'pages.reports.trial_balance.title' => ['en' => 'Trial Balance', 'ar' => 'ميزان المراجعة'],
             'reports.trial_balance.account_code' => ['en' => 'Account Code', 'ar' => 'رمز الحساب'],
             'reports.trial_balance.account_name' => ['en' => 'Account Name', 'ar' => 'اسم الحساب'],
             'reports.trial_balance.account_type' => ['en' => 'Type', 'ar' => 'النوع'],
@@ -83,6 +84,7 @@ class ReportsTranslationsSeeder extends Seeder
             // General Ledger
             'reports.general_ledger.navigation' => ['en' => 'General Ledger', 'ar' => 'دفتر الأستاذ العام'],
             'reports.general_ledger.title' => ['en' => 'General Ledger', 'ar' => 'دفتر الأستاذ العام'],
+            'pages.reports.general_ledger.title' => ['en' => 'General Ledger', 'ar' => 'دفتر الأستاذ العام'],
             'reports.general_ledger.date' => ['en' => 'Date', 'ar' => 'التاريخ'],
             'reports.general_ledger.entry_number' => ['en' => 'Entry #', 'ar' => 'رقم القيد'],
             'reports.general_ledger.reference' => ['en' => 'Reference', 'ar' => 'المرجع'],
@@ -98,6 +100,7 @@ class ReportsTranslationsSeeder extends Seeder
             // Income Statement
             'reports.income_statement.navigation' => ['en' => 'Income Statement', 'ar' => 'قائمة الدخل'],
             'reports.income_statement.title' => ['en' => 'Income Statement', 'ar' => 'قائمة الدخل'],
+            'pages.reports.income_statement.title' => ['en' => 'Income Statement', 'ar' => 'قائمة الدخل'],
             'reports.income_statement.account_code' => ['en' => 'Account Code', 'ar' => 'رمز الحساب'],
             'reports.income_statement.account_name' => ['en' => 'Account Name', 'ar' => 'اسم الحساب'],
             'reports.income_statement.amount' => ['en' => 'Amount', 'ar' => 'المبلغ'],
@@ -110,11 +113,13 @@ class ReportsTranslationsSeeder extends Seeder
             // Account Statement
             'reports.account_statement.navigation' => ['en' => 'Account Statement', 'ar' => 'كشف حساب'],
             'reports.account_statement.title' => ['en' => 'Account Statement', 'ar' => 'كشف حساب'],
+            'pages.reports.account_statement.title' => ['en' => 'Account Statement', 'ar' => 'كشف حساب'],
             'reports.account_statement.opening_balance' => ['en' => 'Opening Balance', 'ar' => 'الرصيد الافتتاحي'],
 
             // Balance Sheet
             'reports.balance_sheet.navigation' => ['en' => 'Balance Sheet', 'ar' => 'الميزانية العمومية'],
             'reports.balance_sheet.title' => ['en' => 'Balance Sheet', 'ar' => 'الميزانية العمومية'],
+            'pages.reports.balance_sheet.title' => ['en' => 'Balance Sheet', 'ar' => 'الميزانية العمومية'],
             'reports.balance_sheet.assets' => ['en' => 'ASSETS', 'ar' => 'الأصول'],
             'reports.balance_sheet.liabilities' => ['en' => 'LIABILITIES', 'ar' => 'الخصوم'],
             'reports.balance_sheet.equity' => ['en' => 'EQUITY', 'ar' => 'حقوق الملكية'],
@@ -130,6 +135,7 @@ class ReportsTranslationsSeeder extends Seeder
             // Cash Flow
             'reports.cash_flow.navigation' => ['en' => 'Cash Flow', 'ar' => 'تقرير التدفقات النقدية'],
             'reports.cash_flow.title' => ['en' => 'Cash Flow Statement', 'ar' => 'تقرير التدفقات النقدية'],
+            'pages.reports.cash_flow.title' => ['en' => 'Cash Flow Statement', 'ar' => 'تقرير التدفقات النقدية'],
             'reports.cash_flow.date' => ['en' => 'Date', 'ar' => 'التاريخ'],
             'reports.cash_flow.type' => ['en' => 'Type', 'ar' => 'النوع'],
             'reports.cash_flow.voucher_number' => ['en' => 'Voucher #', 'ar' => 'رقم السند'],
@@ -147,42 +153,52 @@ class ReportsTranslationsSeeder extends Seeder
             // VAT Report
             'reports.vat.navigation' => ['en' => 'VAT Report', 'ar' => 'تقرير القيمة المضافة'],
             'reports.vat.title' => ['en' => 'VAT Report', 'ar' => 'تقرير القيمة المضافة'],
+            'pages.reports.vat.title' => ['en' => 'VAT Report', 'ar' => 'تقرير القيمة المضافة'],
 
             // Fixed Assets
             'reports.fixed_assets.navigation' => ['en' => 'Fixed Assets Report', 'ar' => 'تقرير الأصول الثابتة'],
             'reports.fixed_assets.title' => ['en' => 'Fixed Assets Report', 'ar' => 'تقرير الأصول الثابتة'],
+            'pages.reports.fixed_assets.title' => ['en' => 'Fixed Assets Report', 'ar' => 'تقرير الأصول الثابتة'],
 
             // Journal Entries by Year
             'reports.journal_entries_by_year.navigation' => ['en' => 'Journal Entries by Year', 'ar' => 'تقرير القيود حسب السنة'],
             'reports.journal_entries_by_year.title' => ['en' => 'Journal Entries by Year', 'ar' => 'تقرير القيود حسب السنة'],
+            'pages.reports.journal_entries_by_year.title' => ['en' => 'Journal Entries by Year', 'ar' => 'تقرير القيود حسب السنة'],
 
             // A/R Customers
             'reports.accounts_receivable.navigation' => ['en' => 'A/R Customers', 'ar' => 'تقرير ديون العملاء'],
             'reports.accounts_receivable.title' => ['en' => 'Accounts Receivable Report', 'ar' => 'تقرير ديون العملاء'],
+            'pages.reports.accounts_receivable.title' => ['en' => 'Accounts Receivable Report', 'ar' => 'تقرير ديون العملاء'],
 
             // A/P Aging Current
             'reports.accounts_payable_aging_current.navigation' => ['en' => 'A/P Aging Current', 'ar' => 'أعمار الديون المدينة'],
             'reports.accounts_payable_aging_current.title' => ['en' => 'Accounts Payable Aging (Current)', 'ar' => 'أعمار الديون المدينة'],
+            'pages.reports.accounts_payable_aging_current.title' => ['en' => 'Accounts Payable Aging (Current)', 'ar' => 'أعمار الديون المدينة'],
 
             // A/P Aging Overdue
             'reports.accounts_payable_aging_overdue.navigation' => ['en' => 'A/P Aging Overdue', 'ar' => 'أعمار الديون الدائنة'],
             'reports.accounts_payable_aging_overdue.title' => ['en' => 'Accounts Payable Aging (Overdue)', 'ar' => 'أعمار الديون الدائنة'],
+            'pages.reports.accounts_payable_aging_overdue.title' => ['en' => 'Accounts Payable Aging (Overdue)', 'ar' => 'أعمار الديون الدائنة'],
 
             // Financial Position
             'reports.financial_position.navigation' => ['en' => 'Financial Position', 'ar' => 'تقرير المركز المالي'],
             'reports.financial_position.title' => ['en' => 'Financial Position Report', 'ar' => 'تقرير المركز المالي'],
+            'pages.reports.financial_position.title' => ['en' => 'Financial Position Report', 'ar' => 'تقرير المركز المالي'],
 
             // Changes in Equity
             'reports.changes_in_equity.navigation' => ['en' => 'Changes in Equity', 'ar' => 'التغيرات في حقوق الملكية'],
             'reports.changes_in_equity.title' => ['en' => 'Changes in Equity', 'ar' => 'التغيرات في حقوق الملكية'],
+            'pages.reports.changes_in_equity.title' => ['en' => 'Changes in Equity', 'ar' => 'التغيرات في حقوق الملكية'],
 
             // Financial Performance
             'reports.financial_performance.navigation' => ['en' => 'Financial Performance', 'ar' => 'الأداء المالي'],
             'reports.financial_performance.title' => ['en' => 'Financial Performance Report', 'ar' => 'تقرير الأداء المالي'],
+            'pages.reports.financial_performance.title' => ['en' => 'Financial Performance Report', 'ar' => 'تقرير الأداء المالي'],
 
             // Comparisons
             'reports.comparisons.navigation' => ['en' => 'Comparisons Report', 'ar' => 'تقرير المقارنات'],
             'reports.comparisons.title' => ['en' => 'Comparisons Report', 'ar' => 'تقرير المقارنات'],
+            'pages.reports.comparisons.title' => ['en' => 'Comparisons Report', 'ar' => 'تقرير المقارنات'],
             'reports.comparisons.period' => ['en' => 'Period', 'ar' => 'الفترة'],
             'reports.comparisons.period_a' => ['en' => 'Period A', 'ar' => 'الفترة أ'],
             'reports.comparisons.period_b' => ['en' => 'Period B', 'ar' => 'الفترة ب'],

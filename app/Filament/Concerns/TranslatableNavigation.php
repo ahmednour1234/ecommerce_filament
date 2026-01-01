@@ -6,7 +6,7 @@ trait TranslatableNavigation
 {
     /**
      * Get translated navigation label
-     * Uses tr() helper with menu group
+     * Uses tr() helper with sidebar.* keys
      */
     public static function getNavigationLabel(): string
     {
@@ -14,19 +14,33 @@ trait TranslatableNavigation
         
         // If a custom translation key is set, use it
         if (isset(static::$navigationTranslationKey)) {
-            return tr(static::$navigationTranslationKey, $defaultLabel);
+            // Support both sidebar.* and menu.* keys for backward compatibility
+            $key = static::$navigationTranslationKey;
+            if (str_starts_with($key, 'menu.')) {
+                // Old menu.* key - use menu group for backward compatibility
+                return tr($key, $defaultLabel, null, 'menu');
+            }
+            // New sidebar.* key - use dashboard group
+            return tr($key, [], null, 'dashboard');
         }
         
         // Try to get translation - use model name or navigation label
         $modelName = strtolower(class_basename(static::getModel()));
-        $translationKey = 'menu.' . $modelName;
+        $group = static::$navigationGroup ? strtolower(str_replace(' ', '_', static::$navigationGroup)) : '';
         
-        return tr($translationKey, $defaultLabel);
+        // Build sidebar key: sidebar.{group}.{item}
+        if ($group) {
+            $translationKey = "sidebar.{$group}.{$modelName}";
+        } else {
+            $translationKey = "sidebar.{$modelName}";
+        }
+        
+        return tr($translationKey, [], null, 'dashboard') ?: $defaultLabel;
     }
 
     /**
      * Get translated navigation group
-     * Uses tr() helper with menu group
+     * Uses tr() helper with sidebar.* keys
      */
     public static function getNavigationGroup(): ?string
     {
@@ -36,11 +50,11 @@ trait TranslatableNavigation
             return null;
         }
         
-        // Translate the group name
+        // Translate the group name using sidebar.* keys
         $groupKey = strtolower(str_replace(' ', '_', $group));
-        $translationKey = 'menu.' . $groupKey;
+        $translationKey = "sidebar.{$groupKey}";
         
-        return tr($translationKey, $group);
+        return tr($translationKey, [], null, 'dashboard') ?: $group;
     }
 }
 

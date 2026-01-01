@@ -24,6 +24,21 @@ class ChangesInEquityReportPage extends Page implements HasTable, HasForms
     protected static ?string $navigationGroup = 'Reports';
     protected static ?int $navigationSort = 14;
     protected static string $view = 'filament.pages.reports.changes-in-equity-report';
+    
+    public static function getNavigationGroup(): ?string
+    {
+        return tr('sidebar.reports', [], null, 'dashboard');
+    }
+    
+    public static function getTitle(): string
+    {
+        return tr('pages.reports.changes_in_equity.title', [], null, 'dashboard');
+    }
+    
+    public function getHeading(): string
+    {
+        return tr('pages.reports.changes_in_equity.title', [], null, 'dashboard');
+    }
 
     public ?array $data = [];
 
@@ -85,11 +100,18 @@ class ChangesInEquityReportPage extends Page implements HasTable, HasForms
         return $table
             ->query($query)
             ->columns([
-                Tables\Columns\TextColumn::make('date')->date(),
-                Tables\Columns\TextColumn::make('account_code'),
-                Tables\Columns\TextColumn::make('account_name'),
-                Tables\Columns\TextColumn::make('description'),
-                Tables\Columns\TextColumn::make('movement')->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('date')
+                    ->label(tr('reports.changes_in_equity.date', [], null, 'dashboard'))
+                    ->date(),
+                Tables\Columns\TextColumn::make('account_code')
+                    ->label(tr('reports.changes_in_equity.account_code', [], null, 'dashboard')),
+                Tables\Columns\TextColumn::make('account_name')
+                    ->label(tr('reports.changes_in_equity.account_name', [], null, 'dashboard')),
+                Tables\Columns\TextColumn::make('description')
+                    ->label(tr('reports.changes_in_equity.description', [], null, 'dashboard')),
+                Tables\Columns\TextColumn::make('movement')
+                    ->label(tr('reports.changes_in_equity.movement', [], null, 'dashboard'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
             ])
             ->defaultSort('date', 'asc')
             ->paginated([10, 25, 50, 100]);
@@ -106,7 +128,7 @@ class ChangesInEquityReportPage extends Page implements HasTable, HasForms
 
     public static function getNavigationLabel(): string
     {
-        return tr('menu.reports.changes_in_equity', 'Changes in Equity');
+        return tr('sidebar.reports.changes_in_equity', [], null, 'dashboard');
     }
 }
 
