@@ -24,6 +24,12 @@ class EditBankAccount extends EditRecord
         try {
             $this->record->loadMissing(['account', 'branch', 'currency']);
             
+            // Recalculate current balance to ensure it's up to date
+            $this->record->recalculateCurrentBalance();
+            
+            // Update data with recalculated balance
+            $data['current_balance'] = $this->record->current_balance;
+            
             // If account relationship is missing or invalid, handle gracefully
             if (!$this->record->account) {
                 // Try to find a default asset account
@@ -55,6 +61,34 @@ class EditBankAccount extends EditRecord
         }
         
         return $data;
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        // If opening balance changed, recalculate current balance
+        if (isset($data['opening_balance']) && $data['opening_balance'] != $this->record->opening_balance) {
+            // The model's boot method will handle this, but we can also do it here
+            $oldOpeningBalance = $this->record->opening_balance ?? 0;
+            $newOpeningBalance = $data['opening_balance'] ?? 0;
+            
+            // If current balance was equal to old opening balance, update it to new opening balance
+            if ($this->record->current_balance == $oldOpeningBalance) {
+                $data['current_balance'] = $newOpeningBalance;
+            } else {
+                // Recalculate based on transactions
+                $difference = $newOpeningBalance - $oldOpeningBalance;
+                $data['current_balance'] = ($this->record->current_balance ?? 0) + $difference;
+            }
+        }
+        
+        return $data;
+    }
+
+    protected function afterSave(): void
+    {
+        // Recalculate current balance after save to ensure accuracy
+        $this->record->refresh();
+        $this->record->recalculateCurrentBalance();
     }
 }
 

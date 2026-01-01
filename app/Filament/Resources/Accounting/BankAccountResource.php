@@ -108,7 +108,8 @@ class BankAccountResource extends Resource
                             ->numeric()
                             ->default(0)
                             ->prefix('$')
-                            ->disabled(),
+                            ->disabled()
+                            ->helperText('Calculated from opening balance + all posted transactions. Automatically updated when transactions are posted.'),
 
                         Forms\Components\Toggle::make('is_active')
                             ->label('Active')
