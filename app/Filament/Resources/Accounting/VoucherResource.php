@@ -48,7 +48,7 @@ class VoucherResource extends Resource
                                 $lastVoucher = Voucher::where('type', $state)
                                     ->orderBy('id', 'desc')
                                     ->first();
-                                
+
                                 $number = $lastVoucher ? ((int) substr($lastVoucher->voucher_number, -6)) + 1 : 1;
                                 $voucherNumber = $prefix . '-' . str_pad($number, 6, '0', STR_PAD_LEFT);
                                 $set('voucher_number', $voucherNumber);
@@ -77,7 +77,7 @@ class VoucherResource extends Resource
 
                         Forms\Components\Select::make('account_id')
                             ->label('Account')
-                            ->relationship('account', 'name', fn ($query) => 
+                            ->relationship('account', 'name', fn ($query) =>
                                 $query->where('is_active', true)
                             )
                             ->options(Account::active()->get()->mapWithKeys(function ($account) {
@@ -132,7 +132,7 @@ class VoucherResource extends Resource
                         'danger' => 'payment',
                         'success' => 'receipt',
                     ])
-                    ->formatStateUsing(fn (string $state): string => 
+                    ->formatStateUsing(fn (string $state): string =>
                         $state === 'payment' ? 'Payment' : 'Receipt'
                     )
                     ->sortable(),
@@ -283,7 +283,7 @@ class VoucherResource extends Resource
                     ->action(function (Voucher $record, array $data) {
                         $signatureIds = [];
                         $count = (int) ($data['number_of_signatures'] ?? 0);
-                        
+
                         for ($i = 1; $i <= $count; $i++) {
                             $key = "signature_{$i}";
                             if (!empty($data[$key])) {
@@ -346,7 +346,7 @@ class VoucherResource extends Resource
                     ->action(function (Voucher $record, array $data) {
                         $signatureIds = [];
                         $count = (int) ($data['number_of_signatures'] ?? 0);
-                        
+
                         for ($i = 1; $i <= $count; $i++) {
                             $key = "signature_{$i}";
                             if (!empty($data[$key])) {
@@ -392,7 +392,7 @@ class VoucherResource extends Resource
                         $lastEntry = JournalEntry::where('journal_id', $journal->id)
                             ->orderBy('id', 'desc')
                             ->first();
-                        
+
                         $number = $lastEntry ? ((int) substr($lastEntry->entry_number, -6)) + 1 : 1;
                         $entryNumber = $prefix . '-' . str_pad($number, 6, '0', STR_PAD_LEFT);
 
