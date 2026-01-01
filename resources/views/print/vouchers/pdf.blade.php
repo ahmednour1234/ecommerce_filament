@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}" dir="{{ $is_rtl ? 'rtl' : 'ltr' }}">
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $voucher->type === 'payment' ? trans_dash('vouchers.payment_voucher', 'Payment Voucher') : trans_dash('vouchers.receipt_voucher', 'Receipt Voucher') }} - {{ $voucher->voucher_number }}</title>
     <style>
