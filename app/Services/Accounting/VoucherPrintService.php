@@ -66,7 +66,7 @@ class VoucherPrintService
 
         $amountInWords = $this->amountInWords($voucher->amount);
 
-        return app('dompdf.wrapper')->loadView('accounting.vouchers.pdf', [
+        return app('dompdf.wrapper')->loadView('print.vouchers.pdf', [
             'voucher' => $voucher,
             'signatures' => $signatures,
             'is_rtl' => $isRtl,
