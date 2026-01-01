@@ -132,6 +132,10 @@ class JournalResource extends Resource
                     ->falseLabel(trans_dash('common.inactive_only', 'Inactive only')),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make()
+    ->label(trans_dash('common.view', 'View'))
+    ->visible(fn () => auth()->user()?->can('journals.view') ?? true),
+
                 Tables\Actions\EditAction::make()
                     ->visible(fn () => auth()->user()?->can('journals.update') ?? false),
 
