@@ -9,6 +9,8 @@ use App\Traits\HasBranch;
 use App\Traits\HasCostCenter;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Voucher extends Model
 {
@@ -87,6 +89,24 @@ class Voucher extends Model
     public function isReceipt(): bool
     {
         return $this->type === 'receipt';
+    }
+
+    /**
+     * Get signatures used for this voucher
+     */
+    public function signatures(): BelongsToMany
+    {
+        return $this->belongsToMany(VoucherSignature::class, 'voucher_signature_usage')
+            ->withPivot('position', 'created_by', 'created_at')
+            ->orderByPivot('position');
+    }
+
+    /**
+     * Get signature usage records
+     */
+    public function signatureUsages(): HasMany
+    {
+        return $this->hasMany(VoucherSignatureUsage::class);
     }
 }
 

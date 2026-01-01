@@ -242,6 +242,132 @@ class VoucherResource extends Resource
                     ),
             ])
             ->actions([
+                Tables\Actions\Action::make('print_voucher')
+                    ->label(trans_dash('vouchers.actions.print_voucher', 'Print Voucher'))
+                    ->icon('heroicon-o-printer')
+                    ->color('info')
+                    ->modalHeading(trans_dash('vouchers.actions.print_voucher', 'Print Voucher'))
+                    ->modalSubmitActionLabel(trans_dash('vouchers.actions.print', 'Print'))
+                    ->form(function (Voucher $record) {
+                        $voucherType = $record->type;
+                        $signatureOptions = \App\Models\Accounting\VoucherSignature::active()
+                            ->forType($voucherType)
+                            ->ordered()
+                            ->get()
+                            ->mapWithKeys(fn ($sig) => [$sig->id => $sig->display_name])
+                            ->toArray();
+
+                        $formFields = [
+                            Forms\Components\Select::make('number_of_signatures')
+                                ->label(trans_dash('vouchers.signatures.choose_count', 'Number of Signatures'))
+                                ->options(array_combine(range(0, 6), range(0, 6)))
+                                ->default(0)
+                                ->required()
+                                ->live()
+                                ->helperText(trans_dash('vouchers.signatures.choose_count_helper', 'Select how many signatures to include (0-6)')),
+                        ];
+
+                        // Add dynamic signature selects based on number
+                        for ($i = 1; $i <= 6; $i++) {
+                            $formFields[] = Forms\Components\Select::make("signature_{$i}")
+                                ->label(trans_dash("vouchers.signatures.signature_{$i}", "Signature {$i}"))
+                                ->options($signatureOptions)
+                                ->searchable()
+                                ->preload()
+                                ->visible(fn ($get) => (int) $get('number_of_signatures') >= $i)
+                                ->required(fn ($get) => (int) $get('number_of_signatures') >= $i);
+                        }
+
+                        return $formFields;
+                    })
+                    ->action(function (Voucher $record, array $data) {
+                        $signatureIds = [];
+                        $count = (int) ($data['number_of_signatures'] ?? 0);
+                        
+                        for ($i = 1; $i <= $count; $i++) {
+                            $key = "signature_{$i}";
+                            if (!empty($data[$key])) {
+                                $signatureIds[] = $data[$key];
+                            }
+                        }
+
+                        // Validate no duplicates
+                        if (count($signatureIds) !== count(array_unique($signatureIds))) {
+                            throw new \Illuminate\Validation\ValidationException(
+                                \Illuminate\Support\Facades\Validator::make([], [])
+                                    ->errors()
+                                    ->add('signatures', trans_dash('vouchers.signatures.no_duplicates', 'Duplicate signatures are not allowed'))
+                            );
+                        }
+
+                        $service = app(\App\Services\Accounting\VoucherPrintService::class);
+                        return $service->generatePdf($record, $signatureIds);
+                    })
+                    ->visible(fn () => auth()->user()?->can('vouchers.print') ?? true),
+
+                Tables\Actions\Action::make('export_pdf')
+                    ->label(trans_dash('vouchers.actions.export_pdf', 'Export PDF'))
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+                    ->modalHeading(trans_dash('vouchers.actions.export_pdf', 'Export PDF'))
+                    ->modalSubmitActionLabel(trans_dash('vouchers.actions.export', 'Export'))
+                    ->form(function (Voucher $record) {
+                        $voucherType = $record->type;
+                        $signatureOptions = \App\Models\Accounting\VoucherSignature::active()
+                            ->forType($voucherType)
+                            ->ordered()
+                            ->get()
+                            ->mapWithKeys(fn ($sig) => [$sig->id => $sig->display_name])
+                            ->toArray();
+
+                        $formFields = [
+                            Forms\Components\Select::make('number_of_signatures')
+                                ->label(trans_dash('vouchers.signatures.choose_count', 'Number of Signatures'))
+                                ->options(array_combine(range(0, 6), range(0, 6)))
+                                ->default(0)
+                                ->required()
+                                ->live()
+                                ->helperText(trans_dash('vouchers.signatures.choose_count_helper', 'Select how many signatures to include (0-6)')),
+                        ];
+
+                        // Add dynamic signature selects based on number
+                        for ($i = 1; $i <= 6; $i++) {
+                            $formFields[] = Forms\Components\Select::make("signature_{$i}")
+                                ->label(trans_dash("vouchers.signatures.signature_{$i}", "Signature {$i}"))
+                                ->options($signatureOptions)
+                                ->searchable()
+                                ->preload()
+                                ->visible(fn ($get) => (int) $get('number_of_signatures') >= $i)
+                                ->required(fn ($get) => (int) $get('number_of_signatures') >= $i);
+                        }
+
+                        return $formFields;
+                    })
+                    ->action(function (Voucher $record, array $data) {
+                        $signatureIds = [];
+                        $count = (int) ($data['number_of_signatures'] ?? 0);
+                        
+                        for ($i = 1; $i <= $count; $i++) {
+                            $key = "signature_{$i}";
+                            if (!empty($data[$key])) {
+                                $signatureIds[] = $data[$key];
+                            }
+                        }
+
+                        // Validate no duplicates
+                        if (count($signatureIds) !== count(array_unique($signatureIds))) {
+                            throw new \Illuminate\Validation\ValidationException(
+                                \Illuminate\Support\Facades\Validator::make([], [])
+                                    ->errors()
+                                    ->add('signatures', trans_dash('vouchers.signatures.no_duplicates', 'Duplicate signatures are not allowed'))
+                            );
+                        }
+
+                        $service = app(\App\Services\Accounting\VoucherPrintService::class);
+                        return $service->generatePdf($record, $signatureIds);
+                    })
+                    ->visible(fn () => auth()->user()?->can('vouchers.export_pdf') ?? true),
+
                 Tables\Actions\Action::make('create_journal_entry')
                     ->label('Create Journal Entry')
                     ->icon('heroicon-o-plus-circle')

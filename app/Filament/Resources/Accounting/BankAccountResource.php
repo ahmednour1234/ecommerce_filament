@@ -82,7 +82,7 @@ class BankAccountResource extends Resource
                         Forms\Components\Select::make('branch_id')
                             ->label(trans_dash('accounting.branch', 'Branch'))
                             ->relationship('branch', 'name', fn ($query) => 
-                                $query->where('is_active', true)
+                                $query->where('status', 'active')
                             )
                             ->searchable()
                             ->preload()
@@ -170,7 +170,9 @@ class BankAccountResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('branch_id')
-                    ->relationship('branch', 'name')
+                    ->relationship('branch', 'name', fn ($query) => 
+                        $query->where('status', 'active')
+                    )
                     ->searchable()
                     ->preload(),
 

@@ -1,0 +1,31 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration {
+    public function up(): void
+    {
+        Schema::create('voucher_signatures', function (Blueprint $table) {
+            $table->id();
+            $table->string('name'); // Display name (e.g., "Ahmed Nour")
+            $table->string('title')->nullable(); // Role/title (e.g., "Accountant", "Manager")
+            $table->enum('type', ['receipt', 'payment', 'both'])->nullable(); // null = both
+            $table->string('image_path')->nullable(); // Path to signature image/stamp
+            $table->boolean('is_active')->default(true);
+            $table->integer('sort_order')->default(0);
+            $table->timestamps();
+
+            $table->index('is_active');
+            $table->index('type');
+            $table->index('sort_order');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('voucher_signatures');
+    }
+};
+
