@@ -4,83 +4,143 @@ namespace App\Services\Accounting;
 
 use App\Models\Accounting\Voucher;
 use App\Models\Accounting\VoucherSignature;
-use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Collection;
 
 class VoucherPrintService
 {
+    /**
+     * Generate PDF stream/preview for voucher with selected signatures.
+     */
     public function streamPdf(Voucher $voucher, array $signatureIds = [])
     {
-        return $this->makePdf($voucher, $signatureIds)->stream($this->fileName($voucher));
+        return $this->buildPdf($voucher, $signatureIds)
+            ->stream($this->fileName($voucher));
     }
 
+    /**
+     * Download PDF for voucher with selected signatures.
+     */
     public function downloadPdf(Voucher $voucher, array $signatureIds = [])
     {
-        return $this->makePdf($voucher, $signatureIds)->download($this->fileName($voucher));
+        return $this->buildPdf($voucher, $signatureIds)
+            ->download($this->fileName($voucher));
     }
 
-    public function downloadCsv(Voucher $voucher): StreamedResponse
-    {
-        $fileName = "voucher-{$voucher->voucher_number}.csv";
-
-        return response()->streamDownload(function () use ($voucher) {
-            $voucher->loadMissing(['account', 'branch', 'costCenter', 'creator']);
-
-            $rows = [
-                ['Voucher Number', $voucher->voucher_number],
-                ['Type', $voucher->type],
-                ['Date', optional($voucher->voucher_date)->format('Y-m-d')],
-                ['Amount', $voucher->amount],
-                ['Account', ($voucher->account?->code ?? '') . ' - ' . ($voucher->account?->name ?? '')],
-                ['Branch', $voucher->branch?->name ?? ''],
-                ['Cost Center', $voucher->costCenter?->name ?? ''],
-                ['Reference', $voucher->reference ?? ''],
-                ['Description', $voucher->description ?? ''],
-            ];
-
-            $out = fopen('php://output', 'w');
-            foreach ($rows as $row) fputcsv($out, $row);
-            fclose($out);
-        }, $fileName, ['Content-Type' => 'text/csv; charset=UTF-8']);
-    }
-
-    protected function makePdf(Voucher $voucher, array $signatureIds = [])
+    /**
+     * Core: build dompdf instance.
+     */
+    protected function buildPdf(Voucher $voucher, array $signatureIds = [])
     {
         $voucher->loadMissing(['account', 'branch', 'costCenter', 'creator']);
 
-        $isRtl = in_array(app()->getLocale(), ['ar', 'fa', 'ur']);
+        $isRtl = app()->getLocale() === 'ar';
 
-        $signatures = collect();
-        if (!empty($signatureIds)) {
-            $signatures = VoucherSignature::whereIn('id', $signatureIds)
-                ->where('is_active', true)
-                ->orderBy('sort_order')
-                ->get()
-                ->map(function ($sig) {
-                    $sig->image_url = $sig->image_path
-                        ? Storage::disk('public')->url($sig->image_path)
-                        : null;
-                    return $sig;
-                });
-        }
+        $signatures = $this->getSignatures($voucher, $signatureIds);
 
-        $amountInWords = $this->amountInWords($voucher->amount);
+        // IMPORTANT: sanitize everything to valid UTF-8
+        $payload = [
+            'voucher'         => $this->sanitizeVoucher($voucher),
+            'is_rtl'          => $isRtl,
+            'amount_in_words' => $this->cleanUtf8($this->amountToWords($voucher->amount, $isRtl)),
+            'signatures'      => $this->sanitizeSignatures($signatures),
+        ];
 
-        return app('dompdf.wrapper')->loadView('print.vouchers.pdf', [
-            'voucher' => $voucher,
-            'signatures' => $signatures,
-            'is_rtl' => $isRtl,
-            'amount_in_words' => $amountInWords,
-        ]);
+        // view path must exist: resources/views/accounting/vouchers/pdf.blade.php
+        return Pdf::loadView('accounting.vouchers.pdf', $payload)
+            ->setPaper('a4');
     }
 
     protected function fileName(Voucher $voucher): string
     {
-        return "voucher-{$voucher->voucher_number}.pdf";
+        $type = $voucher->type === 'payment' ? 'payment' : 'receipt';
+        return "voucher_{$type}_{$voucher->voucher_number}.pdf";
     }
 
-    protected function amountInWords($amount): string
+    protected function getSignatures(Voucher $voucher, array $signatureIds): Collection
     {
-        return (string) $amount; // استبدلها بتحويل رقم لحروف لو عندك
+        if (empty($signatureIds)) {
+            return collect();
+        }
+
+        // you can also validate type here if you want
+        return VoucherSignature::query()
+            ->whereIn('id', $signatureIds)
+            ->get();
+    }
+
+    protected function sanitizeVoucher(Voucher $voucher): Voucher
+    {
+        // Clone-like sanitize fields used in view to avoid bad bytes from DB
+        $voucher->voucher_number = $this->cleanUtf8($voucher->voucher_number);
+        $voucher->description    = $this->cleanUtf8($voucher->description);
+        $voucher->reference      = $this->cleanUtf8($voucher->reference);
+
+        if ($voucher->relationLoaded('account') && $voucher->account) {
+            $voucher->account->code = $this->cleanUtf8($voucher->account->code);
+            $voucher->account->name = $this->cleanUtf8($voucher->account->name);
+        }
+
+        if ($voucher->relationLoaded('branch') && $voucher->branch) {
+            $voucher->branch->name = $this->cleanUtf8($voucher->branch->name);
+        }
+
+        if ($voucher->relationLoaded('costCenter') && $voucher->costCenter) {
+            $voucher->costCenter->name = $this->cleanUtf8($voucher->costCenter->name);
+        }
+
+        if ($voucher->relationLoaded('creator') && $voucher->creator) {
+            $voucher->creator->name = $this->cleanUtf8($voucher->creator->name);
+        }
+
+        return $voucher;
+    }
+
+    protected function sanitizeSignatures(Collection $signatures): Collection
+    {
+        return $signatures->map(function ($sig) {
+            $sig->name  = $this->cleanUtf8($sig->name);
+            $sig->title = $this->cleanUtf8($sig->title);
+
+            // IMPORTANT: dompdf prefers local absolute path
+            $sig->image_url = $sig->image_path
+                ? public_path('storage/' . ltrim($sig->image_path, '/'))
+                : null;
+
+            return $sig;
+        });
+    }
+
+    /**
+     * Convert amount to words.
+     * Replace this with your existing helper if you have one.
+     */
+    protected function amountToWords($amount, bool $isRtl): string
+    {
+        // Simple fallback (you can plug your own converter)
+        $amount = number_format((float) $amount, 2, '.', '');
+        return $isRtl
+            ? "فقط {$amount} رقمًا"
+            : "Only {$amount}";
+    }
+
+    /**
+     * The main UTF-8 cleaner.
+     */
+    protected function cleanUtf8($value): string
+    {
+        if ($value === null) {
+            return '';
+        }
+
+        $value = (string) $value;
+
+        // If not valid UTF-8, convert
+        if (!mb_check_encoding($value, 'UTF-8')) {
+            $value = mb_convert_encoding($value, 'UTF-8', 'auto');
+        }
+
+        // Remove invalid bytes
+        return iconv('UTF-8', 'UTF-8//IGNORE', $value) ?: '';
     }
 }
