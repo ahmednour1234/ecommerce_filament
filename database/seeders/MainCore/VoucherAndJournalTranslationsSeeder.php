@@ -165,6 +165,11 @@ class VoucherAndJournalTranslationsSeeder extends Seeder
                 'en' => 'Display name for the signature (e.g., "Ahmed Nour")',
                 'ar' => 'اسم يظهر في التوقيعات (مثال: "أحمد نور")',
             ],
+            'vouchers.signatures.edit_title' => ['en' => 'Edit Voucher Signature', 'ar' => 'تعديل توقيع السند'],
+
+'common.edit'   => ['en' => 'Edit', 'ar' => 'تعديل'],
+'common.delete' => ['en' => 'Delete', 'ar' => 'حذف'],
+
             'vouchers.signatures.title_helper' => [
                 'en' => 'Role or title (e.g., "Accountant", "Manager")',
                 'ar' => 'المسمى الوظيفي (مثال: "محاسب", "مدير")',
