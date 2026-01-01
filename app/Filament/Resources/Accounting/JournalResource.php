@@ -152,9 +152,11 @@ class JournalResource extends Resource
         return [
             'index'  => Pages\ListJournals::route('/'),
             'create' => Pages\CreateJournal::route('/create'),
+            'view'   => Pages\ViewJournal::route('/{record}'),
             'edit'   => Pages\EditJournal::route('/{record}/edit'),
         ];
     }
+
 
     public static function canViewAny(): bool
     {
