@@ -31,11 +31,33 @@ class BankAccountResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('account_id')
                             ->label(trans_dash('accounting.account', 'Account'))
-                            ->relationship('account', 'name', fn ($query) => $query->where('type', 'asset'))
+                            ->relationship('account', 'name', fn ($query) => 
+                                $query->where('type', 'asset')->where('is_active', true)
+                            )
                             ->required()
                             ->searchable()
                             ->preload()
-                            ->helperText('Select the account associated with this bank account'),
+                            ->helperText('Select the account associated with this bank account')
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('code')
+                                    ->required()
+                                    ->maxLength(50)
+                                    ->unique('accounts', 'code'),
+                                Forms\Components\TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255),
+                            ])
+                            ->createOptionUsing(function (array $data): int {
+                                $account = \App\Models\Accounting\Account::create([
+                                    'code' => $data['code'],
+                                    'name' => $data['name'],
+                                    'type' => 'asset',
+                                    'level' => 1,
+                                    'is_active' => true,
+                                    'allow_manual_entry' => true,
+                                ]);
+                                return $account->id;
+                            }),
 
                         Forms\Components\TextInput::make('bank_name')
                             ->label('Bank Name')
@@ -59,14 +81,18 @@ class BankAccountResource extends Resource
 
                         Forms\Components\Select::make('branch_id')
                             ->label(trans_dash('accounting.branch', 'Branch'))
-                            ->relationship('branch', 'name')
+                            ->relationship('branch', 'name', fn ($query) => 
+                                $query->where('is_active', true)
+                            )
                             ->searchable()
                             ->preload()
                             ->nullable(),
 
                         Forms\Components\Select::make('currency_id')
                             ->label(trans_dash('accounting.currency', 'Currency'))
-                            ->relationship('currency', 'name')
+                            ->relationship('currency', 'name', fn ($query) => 
+                                $query->where('is_active', true)
+                            )
                             ->searchable()
                             ->preload()
                             ->nullable(),
