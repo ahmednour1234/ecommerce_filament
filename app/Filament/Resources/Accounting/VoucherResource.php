@@ -33,17 +33,17 @@ class VoucherResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return trans_dash('menu.accounting.vouchers', 'Vouchers');
+        return trans_dash('menu.accounting.voucher', 'سندات');
     }
 
     public static function getLabel(): string
     {
-        return trans_dash('menu.accounting.voucher', 'Voucher');
+        return trans_dash('menu.accounting.vouchers', 'سندات');
     }
 
     public static function getPluralLabel(): string
     {
-        return trans_dash('menu.accounting.vouchers', 'Vouchers');
+        return trans_dash('menu.accounting.vouchers', 'سندات');
     }
 
     public static function form(Form $form): Form
