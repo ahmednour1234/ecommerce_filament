@@ -29,10 +29,7 @@ class VoucherResource extends Resource
     protected static ?int $navigationSort = 5;
     protected static ?string $navigationTranslationKey = 'menu.accounting.vouchers';
 
-    public static function getNavigationGroup(): ?string
-    {
-        return trans_dash('menu.groups.accounting', 'Accounting');
-    }
+
 
     public static function getNavigationLabel(): string
     {
