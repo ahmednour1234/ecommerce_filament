@@ -66,7 +66,7 @@ class MonthlyAttendanceReportPage extends Page implements HasForms, HasTable
         ];
     }
 
-    protected function form(Forms\Form $form): Forms\Form
+    public function form(Forms\Form $form): Forms\Form
     {
         return $form
             ->schema([

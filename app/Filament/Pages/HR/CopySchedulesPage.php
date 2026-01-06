@@ -63,7 +63,7 @@ class CopySchedulesPage extends Page implements HasForms
         ];
     }
 
-    protected function form(Forms\Form $form): Forms\Form
+    public function form(Forms\Form $form): Forms\Form
     {
         return $form
             ->schema([
