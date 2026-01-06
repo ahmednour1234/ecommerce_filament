@@ -80,13 +80,23 @@ class RolePermissionSeeder extends Seeder
             'vouchers.select_signatures',  // ✅ optional
         ];
 
+        // HR Attendance Resources
+        $hrAttendanceResources = [
+            'hr_work_places',
+            'hr_employee_groups',
+            'hr_work_schedules',
+            'hr_excuse_requests',
+            'hr_devices',
+        ];
+
         // Combine all resources
         $allResources = array_merge(
             $systemResources,
             $mainCoreResources,
             $catalogResources,
             $salesResources,
-            $accountingResources
+            $accountingResources,
+            $hrAttendanceResources
         );
 
         $permNames = [];

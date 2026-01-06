@@ -37,6 +37,13 @@ class SuperAdminSeeder extends Seeder
                 \Database\Seeders\Accounting\AccountingPermissionsSeeder::class,
                 \Database\Seeders\Accounting\BankGuaranteePermissionsSeeder::class,
             ]);
+
+            // Always run HR permissions seeders as they may have new permissions
+            $this->command->info('Creating HR permissions...');
+            $this->call([
+                \Database\Seeders\HR\HrPermissionsSeeder::class,
+                \Database\Seeders\HR\HrAttendancePermissionsSeeder::class,
+            ]);
         } catch (\Exception $e) {
             $this->command->warn("Warning: Could not run permission seeders: {$e->getMessage()}");
             $this->command->info('Continuing with existing permissions...');
