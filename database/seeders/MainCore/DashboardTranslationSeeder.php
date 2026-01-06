@@ -2252,6 +2252,48 @@ class DashboardTranslationSeeder extends Seeder
                 'en' => 'Total Credits',
                 'ar' => 'إجمالي الدائن',
             ],
+
+            // Vouchers Resource - Tables
+            'tables.vouchers.voucher_number' => [
+                'en' => 'Voucher Number',
+                'ar' => 'رقم السند',
+            ],
+            'tables.vouchers.type' => [
+                'en' => 'Type',
+                'ar' => 'النوع',
+            ],
+            'tables.vouchers.types.payment' => [
+                'en' => 'Payment',
+                'ar' => 'صرف',
+            ],
+            'tables.vouchers.types.receipt' => [
+                'en' => 'Receipt',
+                'ar' => 'قبض',
+            ],
+            'tables.vouchers.date' => [
+                'en' => 'Date',
+                'ar' => 'التاريخ',
+            ],
+            'tables.vouchers.amount' => [
+                'en' => 'Amount',
+                'ar' => 'المبلغ',
+            ],
+            'tables.vouchers.account_code' => [
+                'en' => 'Account Code',
+                'ar' => 'رمز الحساب',
+            ],
+            'tables.vouchers.account' => [
+                'en' => 'Account',
+                'ar' => 'الحساب',
+            ],
+            'tables.vouchers.branch' => [
+                'en' => 'Branch',
+                'ar' => 'الفرع',
+            ],
+            'tables.vouchers.journal_entry' => [
+                'en' => 'Journal Entry',
+                'ar' => 'قيد اليومية',
+            ],
         ];
 
         // Get all active languages

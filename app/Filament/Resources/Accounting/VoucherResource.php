@@ -27,22 +27,7 @@ class VoucherResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-document';
     protected static ?string $navigationGroup = 'Accounting';
     protected static ?int $navigationSort = 5;
-    protected static ?string $navigationTranslationKey = 'menu.accounting.vouchers';
-
-    public static function getNavigationLabel(): string
-    {
-        return trans_dash('menu.accounting.vouchers', 'سندات');
-    }
-
-    public static function getLabel(): string
-    {
-        return trans_dash('menu.accounting.vouchers', 'سند');
-    }
-
-    public static function getPluralLabel(): string
-    {
-        return trans_dash('menu.accounting.vouchers', 'سندات');
-    }
+    protected static ?string $navigationTranslationKey = 'sidebar.accounting.vouchers';
 
     public static function form(Form $form): Form
     {
@@ -127,49 +112,50 @@ class VoucherResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('voucher_number')
-                    ->label(trans_dash('vouchers.fields.number', 'Voucher Number'))
+                    ->label(tr('tables.vouchers.voucher_number', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\BadgeColumn::make('type')
-                    ->label(trans_dash('vouchers.fields.type', 'Type'))
+                    ->label(tr('tables.vouchers.type', [], null, 'dashboard'))
                     ->colors([
                         'danger' => 'payment',
                         'success' => 'receipt',
                     ])
                     ->formatStateUsing(fn (string $state): string =>
                         $state === 'payment'
-                            ? trans_dash('vouchers.types.payment_short', 'Payment')
-                            : trans_dash('vouchers.types.receipt_short', 'Receipt')
+                            ? tr('tables.vouchers.types.payment', [], null, 'dashboard')
+                            : tr('tables.vouchers.types.receipt', [], null, 'dashboard')
                     )
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('voucher_date')
-                    ->label(trans_dash('vouchers.fields.date', 'Date'))
+                    ->label(tr('tables.vouchers.date', [], null, 'dashboard'))
                     ->date()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('amount')
-                    ->label(trans_dash('vouchers.fields.amount', 'Amount'))
+                    ->label(tr('tables.vouchers.amount', [], null, 'dashboard'))
+                    ->money(\App\Support\Money::defaultCurrencyCode())
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('account.code')
-                    ->label(trans_dash('tables.account.code', 'Account Code'))
+                    ->label(tr('tables.vouchers.account_code', [], null, 'dashboard'))
                     ->searchable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('account.name')
-                    ->label(trans_dash('accounting.account', 'Account'))
+                    ->label(tr('tables.vouchers.account', [], null, 'dashboard'))
                     ->searchable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('branch.name')
-                    ->label(trans_dash('accounting.branch', 'Branch'))
+                    ->label(tr('tables.vouchers.branch', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('journal_entry_id')
-                    ->label(trans_dash('vouchers.fields.journal_entry', 'Journal Entry'))
+                    ->label(tr('tables.vouchers.journal_entry', [], null, 'dashboard'))
                     ->boolean()
                     ->getStateUsing(fn (Voucher $record) => !is_null($record->journal_entry_id))
                     ->toggleable(),

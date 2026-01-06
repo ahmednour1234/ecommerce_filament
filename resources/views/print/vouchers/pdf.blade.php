@@ -11,8 +11,23 @@
             box-sizing: border-box;
         }
 
+        @font-face {
+            font-family: 'DejaVu Sans';
+            src: url('{{ public_path('fonts/DejaVuSans.ttf') }}') format('truetype');
+        }
+        @font-face {
+            font-family: 'Tajawal';
+            src: url('{{ public_path('fonts/Tajawal-Regular.ttf') }}') format('truetype');
+            font-weight: normal;
+        }
+        @font-face {
+            font-family: 'Tajawal';
+            src: url('{{ public_path('fonts/Tajawal-Bold.ttf') }}') format('truetype');
+            font-weight: bold;
+        }
+
         body {
-            font-family: 'DejaVu Sans', Arial, sans-serif;
+            font-family: {{ $is_rtl ? "'Tajawal', 'DejaVu Sans', Arial, sans-serif" : "'DejaVu Sans', Arial, sans-serif" }};
             font-size: 12px;
             line-height: 1.6;
             color: #333;
@@ -26,6 +41,22 @@
             background: white;
             border: 2px solid #333;
             padding: 30px;
+            font-family: {{ $is_rtl ? "'Tajawal', 'DejaVu Sans', Arial, sans-serif" : "'DejaVu Sans', Arial, sans-serif" }};
+        }
+
+        table, th, td {
+            font-family: {{ $is_rtl ? "'Tajawal', 'DejaVu Sans', Arial, sans-serif" : "'DejaVu Sans', Arial, sans-serif" }};
+        }
+
+        .amount-value {
+            white-space: nowrap;
+        }
+
+        .amount-in-words {
+            white-space: normal;
+            line-height: 1.8;
+            word-wrap: break-word;
+            word-break: keep-all;
         }
 
         .header {
@@ -84,10 +115,23 @@
         .details-label {
             font-weight: bold;
             min-width: 150px;
+            {{ $is_rtl ? 'text-align: right;' : 'text-align: left;' }}
+            flex-shrink: 0;
         }
 
         .details-value {
             flex: 1;
+            word-wrap: break-word;
+            word-break: keep-all;
+            {{ $is_rtl ? 'text-align: right;' : 'text-align: left;' }}
+        }
+
+        .details-row {
+            display: flex;
+            margin: 15px 0;
+            padding: 10px;
+            border-bottom: 1px dotted #ccc;
+            align-items: flex-start;
         }
 
         .amount-section {
@@ -212,9 +256,9 @@
             </div>
             <div class="voucher-type-arabic">
                 @if($voucher->type === 'payment')
-                    سند صرف
+                    {{ trans_dash('vouchers.types.payment', 'Payment Voucher') }}
                 @else
-                    سند قبض
+                    {{ trans_dash('vouchers.types.receipt', 'Receipt Voucher') }}
                 @endif
             </div>
             <div class="voucher-info">
@@ -280,7 +324,7 @@
         @if(!empty($signatures) && count($signatures) > 0)
         <div class="signatures-section">
             <div class="signatures-title">
-                {{ trans_dash('vouchers.signatures.section_title', 'Signatures') }} / التوقيعات
+                {{ trans_dash('vouchers.signatures.section_title', 'Signatures') }}
             </div>
             <table class="signatures-table">
                 <tr>

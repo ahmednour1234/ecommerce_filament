@@ -46,9 +46,17 @@ class VoucherPrintService
             'signatures'      => $this->sanitizeSignatures($signatures),
         ];
 
-        // view path must exist: resources/views/accounting/vouchers/pdf.blade.php
+        // view path must exist: resources/views/print/vouchers/pdf.blade.php
         return Pdf::loadView('print.vouchers.pdf', $payload)
-            ->setPaper('a4');
+            ->setPaper('a4')
+            ->setOption('enable-local-file-access', true)
+            ->setOption('isHtml5ParserEnabled', true)
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('defaultFont', $isRtl ? 'Tajawal' : 'DejaVu Sans')
+            ->setOption('fontDir', [
+                public_path('fonts'),
+                resource_path('fonts'),
+            ]);
     }
 
     protected function fileName(Voucher $voucher): string
