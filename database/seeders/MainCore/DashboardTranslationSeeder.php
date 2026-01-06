@@ -4212,6 +4212,68 @@ class DashboardTranslationSeeder extends Seeder
                 'en' => 'No',
                 'ar' => 'لا',
             ],
+
+            // User Profile Page
+            'pages.user_profile.title' => [
+                'en' => 'My Profile',
+                'ar' => 'ملفي الشخصي',
+            ],
+            'pages.user_profile.sections.language_theme' => [
+                'en' => 'Language & Theme',
+                'ar' => 'اللغة والمظهر',
+            ],
+            'pages.user_profile.sections.language_theme_description' => [
+                'en' => 'Configure your preferred language and visual theme',
+                'ar' => 'قم بتكوين لغتك المفضلة والمظهر المرئي',
+            ],
+            'pages.user_profile.sections.date_time_preferences' => [
+                'en' => 'Date & Time Preferences',
+                'ar' => 'تفضيلات التاريخ والوقت',
+            ],
+            'pages.user_profile.sections.date_time_preferences_description' => [
+                'en' => 'Customize how dates and times are displayed',
+                'ar' => 'قم بتخصيص طريقة عرض التواريخ والأوقات',
+            ],
+            'pages.user_profile.fields.language' => [
+                'en' => 'Language',
+                'ar' => 'اللغة',
+            ],
+            'pages.user_profile.fields.theme' => [
+                'en' => 'Theme',
+                'ar' => 'المظهر',
+            ],
+            'pages.user_profile.fields.timezone' => [
+                'en' => 'Timezone',
+                'ar' => 'المنطقة الزمنية',
+            ],
+            'pages.user_profile.fields.date_format' => [
+                'en' => 'Date Format',
+                'ar' => 'تنسيق التاريخ',
+            ],
+            'pages.user_profile.fields.time_format' => [
+                'en' => 'Time Format',
+                'ar' => 'تنسيق الوقت',
+            ],
+            'pages.user_profile.helpers.language' => [
+                'en' => 'Select your preferred language for the dashboard',
+                'ar' => 'اختر لغتك المفضلة للوحة التحكم',
+            ],
+            'pages.user_profile.helpers.theme' => [
+                'en' => 'Choose a visual theme for your dashboard',
+                'ar' => 'اختر مظهرًا مرئيًا للوحة التحكم',
+            ],
+            'pages.user_profile.helpers.timezone' => [
+                'en' => 'Select your timezone',
+                'ar' => 'اختر منطقتك الزمنية',
+            ],
+            'pages.user_profile.helpers.date_format' => [
+                'en' => 'Choose how dates are displayed',
+                'ar' => 'اختر طريقة عرض التواريخ',
+            ],
+            'pages.user_profile.helpers.time_format' => [
+                'en' => 'Choose how times are displayed',
+                'ar' => 'اختر طريقة عرض الأوقات',
+            ],
         ];
 
         // Get all active languages

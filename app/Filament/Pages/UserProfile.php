@@ -22,6 +22,16 @@ class UserProfile extends Page implements HasForms
     protected static ?string $title = 'My Profile';
     protected static ?string $navigationLabel = 'My Profile';
 
+    public static function getNavigationLabel(): string
+    {
+        return tr('pages.user_profile.title', [], null, 'dashboard') ?: 'My Profile';
+    }
+
+    public function getTitle(): string
+    {
+        return tr('pages.user_profile.title', [], null, 'dashboard') ?: 'My Profile';
+    }
+
     protected static string $view = 'filament.pages.user-profile';
 
     public ?array $data = [];
@@ -79,12 +89,12 @@ class UserProfile extends Page implements HasForms
 
         return $form
             ->schema([
-                Forms\Components\Section::make('Language & Theme')
-                    ->description('Configure your preferred language and visual theme')
+                Forms\Components\Section::make(tr('pages.user_profile.sections.language_theme', [], null, 'dashboard') ?: 'Language & Theme')
+                    ->description(tr('pages.user_profile.sections.language_theme_description', [], null, 'dashboard') ?: 'Configure your preferred language and visual theme')
                     ->icon('heroicon-o-language')
                     ->schema([
                         Forms\Components\Select::make('language_id')
-                            ->label('Language')
+                            ->label(tr('pages.user_profile.fields.language', [], null, 'dashboard') ?: 'Language')
                             ->options(
                                 \App\Models\MainCore\Language::where('is_active', true)
                                     ->pluck('name', 'id')
@@ -92,41 +102,41 @@ class UserProfile extends Page implements HasForms
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->helperText('Select your preferred language for the dashboard'),
+                            ->helperText(tr('pages.user_profile.helpers.language', [], null, 'dashboard') ?: 'Select your preferred language for the dashboard'),
                         Forms\Components\Select::make('theme_id')
-                            ->label('Theme')
+                            ->label(tr('pages.user_profile.fields.theme', [], null, 'dashboard') ?: 'Theme')
                             ->options(
                                 \App\Models\MainCore\Theme::pluck('name', 'id')
                             )
                             ->searchable()
                             ->preload()
-                            ->helperText('Choose a visual theme for your dashboard'),
+                            ->helperText(tr('pages.user_profile.helpers.theme', [], null, 'dashboard') ?: 'Choose a visual theme for your dashboard'),
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make('Date & Time Preferences')
-                    ->description('Customize how dates and times are displayed')
+                Forms\Components\Section::make(tr('pages.user_profile.sections.date_time_preferences', [], null, 'dashboard') ?: 'Date & Time Preferences')
+                    ->description(tr('pages.user_profile.sections.date_time_preferences_description', [], null, 'dashboard') ?: 'Customize how dates and times are displayed')
                     ->icon('heroicon-o-clock')
                     ->schema([
                         Forms\Components\Select::make('timezone')
-                            ->label('Timezone')
+                            ->label(tr('pages.user_profile.fields.timezone', [], null, 'dashboard') ?: 'Timezone')
                             ->options($timezones)
                             ->searchable()
                             ->default('UTC')
                             ->required()
-                            ->helperText('Select your timezone'),
+                            ->helperText(tr('pages.user_profile.helpers.timezone', [], null, 'dashboard') ?: 'Select your timezone'),
                         Forms\Components\Select::make('date_format')
-                            ->label('Date Format')
+                            ->label(tr('pages.user_profile.fields.date_format', [], null, 'dashboard') ?: 'Date Format')
                             ->options($dateFormats)
                             ->default('Y-m-d')
                             ->required()
-                            ->helperText('Choose how dates are displayed'),
+                            ->helperText(tr('pages.user_profile.helpers.date_format', [], null, 'dashboard') ?: 'Choose how dates are displayed'),
                         Forms\Components\Select::make('time_format')
-                            ->label('Time Format')
+                            ->label(tr('pages.user_profile.fields.time_format', [], null, 'dashboard') ?: 'Time Format')
                             ->options($timeFormats)
                             ->default('H:i')
                             ->required()
-                            ->helperText('Choose how times are displayed'),
+                            ->helperText(tr('pages.user_profile.helpers.time_format', [], null, 'dashboard') ?: 'Choose how times are displayed'),
                     ])
                     ->columns(3),
             ])
