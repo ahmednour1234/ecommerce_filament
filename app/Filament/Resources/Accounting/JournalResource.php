@@ -22,7 +22,7 @@ class JournalResource extends Resource
     protected static ?int $navigationSort = 3;
 
     // ✅ Fix: this resource is journals (not journal_entries)
-    protected static ?string $navigationTranslationKey = 'menu.accounting.journals';
+    protected static ?string $navigationTranslationKey = 'sidebar.accounting.journals';
 
     public static function form(Form $form): Form
     {
