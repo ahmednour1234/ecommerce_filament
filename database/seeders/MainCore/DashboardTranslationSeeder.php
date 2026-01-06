@@ -1436,6 +1436,418 @@ class DashboardTranslationSeeder extends Seeder
                 'en' => 'Edit Shipping Provider',
                 'ar' => 'تعديل مزود شحن',
             ],
+
+            // Translations - Forms
+            'forms.translations.key.label' => [
+                'en' => 'Translation Key',
+                'ar' => 'مفتاح الترجمة',
+            ],
+            'forms.translations.key.helper' => [
+                'en' => 'e.g., dashboard.welcome, auth.login',
+                'ar' => 'مثال: dashboard.welcome, auth.login',
+            ],
+            'forms.translations.group.label' => [
+                'en' => 'Group',
+                'ar' => 'المجموعة',
+            ],
+            'forms.translations.group.helper' => [
+                'en' => 'Group name like: dashboard, auth, validation, etc.',
+                'ar' => 'اسم المجموعة مثل: dashboard, auth, validation, إلخ',
+            ],
+            'forms.translations.language_id.label' => [
+                'en' => 'Language',
+                'ar' => 'اللغة',
+            ],
+            'forms.translations.value.label' => [
+                'en' => 'Translation Value',
+                'ar' => 'قيمة الترجمة',
+            ],
+
+            // Translations - Tables
+            'tables.translations.key' => [
+                'en' => 'Key',
+                'ar' => 'المفتاح',
+            ],
+            'tables.translations.group' => [
+                'en' => 'Group',
+                'ar' => 'المجموعة',
+            ],
+            'tables.translations.language' => [
+                'en' => 'Language',
+                'ar' => 'اللغة',
+            ],
+            'tables.translations.value' => [
+                'en' => 'Value',
+                'ar' => 'القيمة',
+            ],
+            'tables.translations.created_at' => [
+                'en' => 'Created At',
+                'ar' => 'تاريخ الإنشاء',
+            ],
+            'tables.translations.updated_at' => [
+                'en' => 'Updated At',
+                'ar' => 'تاريخ التحديث',
+            ],
+            'tables.translations.filters.group' => [
+                'en' => 'Group',
+                'ar' => 'المجموعة',
+            ],
+            'tables.translations.filters.group_options.dashboard' => [
+                'en' => 'Dashboard',
+                'ar' => 'لوحة التحكم',
+            ],
+            'tables.translations.filters.group_options.auth' => [
+                'en' => 'Authentication',
+                'ar' => 'المصادقة',
+            ],
+            'tables.translations.filters.group_options.validation' => [
+                'en' => 'Validation',
+                'ar' => 'التحقق',
+            ],
+            'tables.translations.filters.group_options.common' => [
+                'en' => 'Common',
+                'ar' => 'عام',
+            ],
+            'tables.translations.filters.language' => [
+                'en' => 'Language',
+                'ar' => 'اللغة',
+            ],
+
+            // Branches - Forms
+            'forms.branches.code.label' => [
+                'en' => 'Code',
+                'ar' => 'الرمز',
+            ],
+            'forms.branches.code.helper' => [
+                'en' => 'Unique code for the branch',
+                'ar' => 'رمز فريد للفرع',
+            ],
+            'forms.branches.name.label' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'forms.branches.parent_id.label' => [
+                'en' => 'Parent Branch',
+                'ar' => 'الفرع الرئيسي',
+            ],
+            'forms.branches.parent_id.helper' => [
+                'en' => 'Optional: Select a parent branch if this is a sub-branch',
+                'ar' => 'اختياري: اختر فرعًا رئيسيًا إذا كان هذا فرعًا فرعيًا',
+            ],
+            'forms.branches.status.label' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'forms.branches.status.options.active' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'forms.branches.status.options.inactive' => [
+                'en' => 'Inactive',
+                'ar' => 'غير نشط',
+            ],
+            'forms.branches.address.label' => [
+                'en' => 'Address',
+                'ar' => 'العنوان',
+            ],
+            'forms.branches.phone.label' => [
+                'en' => 'Phone',
+                'ar' => 'الهاتف',
+            ],
+            'forms.branches.email.label' => [
+                'en' => 'Email',
+                'ar' => 'البريد الإلكتروني',
+            ],
+            'forms.branches.metadata.label' => [
+                'en' => 'Metadata',
+                'ar' => 'البيانات الوصفية',
+            ],
+            'forms.branches.metadata.key_label' => [
+                'en' => 'Key',
+                'ar' => 'المفتاح',
+            ],
+            'forms.branches.metadata.value_label' => [
+                'en' => 'Value',
+                'ar' => 'القيمة',
+            ],
+            'forms.branches.metadata.helper' => [
+                'en' => 'Additional flexible data (optional)',
+                'ar' => 'بيانات إضافية مرنة (اختياري)',
+            ],
+
+            // Branches - Tables
+            'tables.branches.code' => [
+                'en' => 'Code',
+                'ar' => 'الرمز',
+            ],
+            'tables.branches.name' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'tables.branches.parent_branch' => [
+                'en' => 'Parent Branch',
+                'ar' => 'الفرع الرئيسي',
+            ],
+            'tables.branches.phone' => [
+                'en' => 'Phone',
+                'ar' => 'الهاتف',
+            ],
+            'tables.branches.email' => [
+                'en' => 'Email',
+                'ar' => 'البريد الإلكتروني',
+            ],
+            'tables.branches.status' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'tables.branches.users' => [
+                'en' => 'Users',
+                'ar' => 'المستخدمون',
+            ],
+            'tables.branches.filters.status' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'tables.branches.filters.parent_branch' => [
+                'en' => 'Parent Branch',
+                'ar' => 'الفرع الرئيسي',
+            ],
+
+            // Languages - Forms
+            'forms.languages.code.label' => [
+                'en' => 'Code',
+                'ar' => 'الرمز',
+            ],
+            'forms.languages.name.label' => [
+                'en' => 'Name (EN)',
+                'ar' => 'الاسم (إنجليزي)',
+            ],
+            'forms.languages.native_name.label' => [
+                'en' => 'Native Name',
+                'ar' => 'الاسم الأصلي',
+            ],
+            'forms.languages.is_default.label' => [
+                'en' => 'Default',
+                'ar' => 'افتراضي',
+            ],
+            'forms.languages.is_default.helper' => [
+                'en' => 'Only one language should be default.',
+                'ar' => 'يجب أن تكون لغة واحدة فقط هي الافتراضية.',
+            ],
+            'forms.languages.is_active.label' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'forms.languages.direction.label' => [
+                'en' => 'Direction',
+                'ar' => 'الاتجاه',
+            ],
+            'forms.languages.direction.options.ltr' => [
+                'en' => 'Left to Right',
+                'ar' => 'من اليسار إلى اليمين',
+            ],
+            'forms.languages.direction.options.rtl' => [
+                'en' => 'Right to Left',
+                'ar' => 'من اليمين إلى اليسار',
+            ],
+
+            // Languages - Tables
+            'tables.languages.code' => [
+                'en' => 'Code',
+                'ar' => 'الرمز',
+            ],
+            'tables.languages.name' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'tables.languages.native_name' => [
+                'en' => 'Native Name',
+                'ar' => 'الاسم الأصلي',
+            ],
+            'tables.languages.is_default' => [
+                'en' => 'Default',
+                'ar' => 'افتراضي',
+            ],
+            'tables.languages.is_active' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'tables.languages.direction' => [
+                'en' => 'Dir',
+                'ar' => 'الاتجاه',
+            ],
+
+            // Currency Rates - Forms
+            'forms.currency_rates.base_currency_id.label' => [
+                'en' => 'Base Currency',
+                'ar' => 'العملة الأساسية',
+            ],
+            'forms.currency_rates.target_currency_id.label' => [
+                'en' => 'Target Currency',
+                'ar' => 'العملة المستهدفة',
+            ],
+            'forms.currency_rates.rate.label' => [
+                'en' => 'Rate',
+                'ar' => 'السعر',
+            ],
+            'forms.currency_rates.valid_from.label' => [
+                'en' => 'Valid From',
+                'ar' => 'صالح من',
+            ],
+
+            // Currency Rates - Tables
+            'tables.currency_rates.base' => [
+                'en' => 'Base',
+                'ar' => 'الأساسية',
+            ],
+            'tables.currency_rates.target' => [
+                'en' => 'Target',
+                'ar' => 'المستهدفة',
+            ],
+            'tables.currency_rates.rate' => [
+                'en' => 'Rate',
+                'ar' => 'السعر',
+            ],
+            'tables.currency_rates.valid_from' => [
+                'en' => 'Valid From',
+                'ar' => 'صالح من',
+            ],
+
+            // Settings - Forms
+            'forms.settings.key.label' => [
+                'en' => 'Setting Key',
+                'ar' => 'مفتاح الإعداد',
+            ],
+            'forms.settings.key.helper' => [
+                'en' => 'Select a setting key. Common keys: app.name, app.url, etc.',
+                'ar' => 'اختر مفتاح إعداد. المفاتيح الشائعة: app.name, app.url, إلخ',
+            ],
+            'forms.settings.group.label' => [
+                'en' => 'Group',
+                'ar' => 'المجموعة',
+            ],
+            'forms.settings.group.helper' => [
+                'en' => 'Example: app, mail, payment, ui',
+                'ar' => 'مثال: app, mail, payment, ui',
+            ],
+            'forms.settings.type.label' => [
+                'en' => 'Type',
+                'ar' => 'النوع',
+            ],
+            'forms.settings.type.options.string' => [
+                'en' => 'String',
+                'ar' => 'نص',
+            ],
+            'forms.settings.type.options.int' => [
+                'en' => 'Integer',
+                'ar' => 'عدد صحيح',
+            ],
+            'forms.settings.type.options.bool' => [
+                'en' => 'Boolean',
+                'ar' => 'منطقي',
+            ],
+            'forms.settings.type.options.array' => [
+                'en' => 'Array/JSON',
+                'ar' => 'مصفوفة/JSON',
+            ],
+            'forms.settings.value.label' => [
+                'en' => 'Value',
+                'ar' => 'القيمة',
+            ],
+            'forms.settings.value.helper' => [
+                'en' => 'For JSON/array, use valid JSON.',
+                'ar' => 'لـ JSON/مصفوفة، استخدم JSON صالح.',
+            ],
+            'forms.settings.is_public.label' => [
+                'en' => 'Public',
+                'ar' => 'عام',
+            ],
+            'forms.settings.autoload.label' => [
+                'en' => 'Autoload',
+                'ar' => 'تحميل تلقائي',
+            ],
+
+            // Settings - Tables
+            'tables.settings.key' => [
+                'en' => 'Key',
+                'ar' => 'المفتاح',
+            ],
+            'tables.settings.group' => [
+                'en' => 'Group',
+                'ar' => 'المجموعة',
+            ],
+            'tables.settings.type' => [
+                'en' => 'Type',
+                'ar' => 'النوع',
+            ],
+            'tables.settings.is_public' => [
+                'en' => 'Public',
+                'ar' => 'عام',
+            ],
+            'tables.settings.autoload' => [
+                'en' => 'Autoload',
+                'ar' => 'تحميل تلقائي',
+            ],
+
+            // Warehouses - Forms
+            'forms.warehouses.code.label' => [
+                'en' => 'Warehouse Code',
+                'ar' => 'رمز المستودع',
+            ],
+            'forms.warehouses.code.helper' => [
+                'en' => 'Unique code for the warehouse (e.g., WH-MAIN)',
+                'ar' => 'رمز فريد للمستودع (مثل: WH-MAIN)',
+            ],
+            'forms.warehouses.name.label' => [
+                'en' => 'Warehouse Name',
+                'ar' => 'اسم المستودع',
+            ],
+            'forms.warehouses.branch_id.label' => [
+                'en' => 'Branch',
+                'ar' => 'الفرع',
+            ],
+            'forms.warehouses.is_active.label' => [
+                'en' => 'Is Active',
+                'ar' => 'نشط',
+            ],
+
+            // Warehouses - Tables
+            'tables.warehouses.code' => [
+                'en' => 'Code',
+                'ar' => 'الرمز',
+            ],
+            'tables.warehouses.name' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'tables.warehouses.branch' => [
+                'en' => 'Branch',
+                'ar' => 'الفرع',
+            ],
+            'tables.warehouses.is_active' => [
+                'en' => 'Is Active',
+                'ar' => 'نشط',
+            ],
+            'tables.warehouses.products' => [
+                'en' => 'Products',
+                'ar' => 'المنتجات',
+            ],
+            'tables.warehouses.filters.branch' => [
+                'en' => 'Branch',
+                'ar' => 'الفرع',
+            ],
+            'tables.warehouses.filters.is_active' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'tables.warehouses.filters.active_only' => [
+                'en' => 'Active only',
+                'ar' => 'النشطة فقط',
+            ],
+            'tables.warehouses.filters.inactive_only' => [
+                'en' => 'Inactive only',
+                'ar' => 'غير النشطة فقط',
+            ],
         ];
 
         // Get all active languages

@@ -28,34 +28,34 @@ class LanguageResource extends Resource
     {
         return $form->schema([
             Forms\Components\TextInput::make('code')
-                ->label('Code')
+                ->label(tr('forms.languages.code.label', [], null, 'dashboard'))
                 ->required()
                 ->maxLength(10)
                 ->unique(ignoreRecord: true),
 
             Forms\Components\TextInput::make('name')
-                ->label('Name (EN)')
+                ->label(tr('forms.languages.name.label', [], null, 'dashboard'))
                 ->required()
                 ->maxLength(100),
 
             Forms\Components\TextInput::make('native_name')
-                ->label('Native Name')
+                ->label(tr('forms.languages.native_name.label', [], null, 'dashboard'))
                 ->required()
                 ->maxLength(100),
 
             Forms\Components\Toggle::make('is_default')
-                ->label('Default')
-                ->helperText('Only one language should be default.'),
+                ->label(tr('forms.languages.is_default.label', [], null, 'dashboard'))
+                ->helperText(tr('forms.languages.is_default.helper', [], null, 'dashboard')),
 
             Forms\Components\Toggle::make('is_active')
-                ->label('Active')
+                ->label(tr('forms.languages.is_active.label', [], null, 'dashboard'))
                 ->default(true),
 
             Forms\Components\Select::make('direction')
-                ->label('Direction')
+                ->label(tr('forms.languages.direction.label', [], null, 'dashboard'))
                 ->options([
-                    'ltr' => 'Left to Right',
-                    'rtl' => 'Right to Left',
+                    'ltr' => tr('forms.languages.direction.options.ltr', [], null, 'dashboard'),
+                    'rtl' => tr('forms.languages.direction.options.rtl', [], null, 'dashboard'),
                 ])
                 ->default('ltr')
                 ->required(),
@@ -66,12 +66,12 @@ class LanguageResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('code')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('name')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('native_name')->sortable()->searchable(),
-                Tables\Columns\IconColumn::make('is_default')->boolean()->label('Default'),
-                Tables\Columns\IconColumn::make('is_active')->boolean()->label('Active'),
-                Tables\Columns\TextColumn::make('direction')->label('Dir'),
+                Tables\Columns\TextColumn::make('code')->label(tr('tables.languages.code', [], null, 'dashboard'))->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('name')->label(tr('tables.languages.name', [], null, 'dashboard'))->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('native_name')->label(tr('tables.languages.native_name', [], null, 'dashboard'))->sortable()->searchable(),
+                Tables\Columns\IconColumn::make('is_default')->boolean()->label(tr('tables.languages.is_default', [], null, 'dashboard')),
+                Tables\Columns\IconColumn::make('is_active')->boolean()->label(tr('tables.languages.is_active', [], null, 'dashboard')),
+                Tables\Columns\TextColumn::make('direction')->label(tr('tables.languages.direction', [], null, 'dashboard')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

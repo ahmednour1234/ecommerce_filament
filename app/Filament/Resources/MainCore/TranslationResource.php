@@ -33,25 +33,25 @@ class TranslationResource extends Resource
                 Forms\Components\TextInput::make('key')
                     ->required()
                     ->maxLength(255)
-                    ->label('Translation Key')
-                    ->helperText('e.g., dashboard.welcome, auth.login'),
+                    ->label(tr('forms.translations.key.label', [], null, 'dashboard'))
+                    ->helperText(tr('forms.translations.key.helper', [], null, 'dashboard')),
                 Forms\Components\TextInput::make('group')
                     ->required()
                     ->maxLength(255)
                     ->default('dashboard')
-                    ->label('Group')
-                    ->helperText('Group name like: dashboard, auth, validation, etc.'),
+                    ->label(tr('forms.translations.group.label', [], null, 'dashboard'))
+                    ->helperText(tr('forms.translations.group.helper', [], null, 'dashboard')),
                 Forms\Components\Select::make('language_id')
                     ->relationship('language', 'name')
                     ->required()
                     ->searchable()
                     ->preload()
-                    ->label('Language'),
+                    ->label(tr('forms.translations.language_id.label', [], null, 'dashboard')),
                 Forms\Components\Textarea::make('value')
                     ->required()
                     ->rows(4)
                     ->columnSpanFull()
-                    ->label('Translation Value'),
+                    ->label(tr('forms.translations.value.label', [], null, 'dashboard')),
             ]);
     }
 
@@ -60,39 +60,47 @@ class TranslationResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('key')
+                    ->label(tr('tables.translations.key', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('group')
+                    ->label(tr('tables.translations.group', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable()
                     ->badge(),
                 Tables\Columns\TextColumn::make('language.name')
+                    ->label(tr('tables.translations.language', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable()
                     ->badge()
                     ->color('info'),
                 Tables\Columns\TextColumn::make('value')
+                    ->label(tr('tables.translations.value', [], null, 'dashboard'))
                     ->searchable()
                     ->limit(50)
                     ->wrap(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label(tr('tables.translations.created_at', [], null, 'dashboard'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label(tr('tables.translations.updated_at', [], null, 'dashboard'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('group')
+                    ->label(tr('tables.translations.filters.group', [], null, 'dashboard'))
                     ->options([
-                        'dashboard' => 'Dashboard',
-                        'auth' => 'Authentication',
-                        'validation' => 'Validation',
-                        'common' => 'Common',
+                        'dashboard' => tr('tables.translations.filters.group_options.dashboard', [], null, 'dashboard'),
+                        'auth' => tr('tables.translations.filters.group_options.auth', [], null, 'dashboard'),
+                        'validation' => tr('tables.translations.filters.group_options.validation', [], null, 'dashboard'),
+                        'common' => tr('tables.translations.filters.group_options.common', [], null, 'dashboard'),
                     ]),
                 Tables\Filters\SelectFilter::make('language_id')
+                    ->label(tr('tables.translations.filters.language', [], null, 'dashboard'))
                     ->relationship('language', 'name'),
             ])
             ->actions([

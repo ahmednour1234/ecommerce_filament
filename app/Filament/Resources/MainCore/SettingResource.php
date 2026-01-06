@@ -40,33 +40,35 @@ class SettingResource extends Resource
 
         return $form->schema([
             Forms\Components\Select::make('key')
-                ->label('Setting Key')
+                ->label(tr('forms.settings.key.label', [], null, 'dashboard'))
                 ->options($availableKeys)
                 ->searchable()
                 ->required()
                 ->reactive()
                 ->afterStateUpdated(fn ($state, callable $set) => $set('value', null))
                 ->unique(ignoreRecord: true)
-                ->helperText('Select a setting key. Common keys: ' . implode(', ', array_keys($availableKeys))),
+                ->helperText(tr('forms.settings.key.helper', [], null, 'dashboard')),
 
             Forms\Components\TextInput::make('group')
+                ->label(tr('forms.settings.group.label', [], null, 'dashboard'))
                 ->maxLength(50)
                 ->default('app')
-                ->helperText('Example: app, mail, payment, ui'),
+                ->helperText(tr('forms.settings.group.helper', [], null, 'dashboard')),
 
             Forms\Components\Select::make('type')
+                ->label(tr('forms.settings.type.label', [], null, 'dashboard'))
                 ->options([
-                    'string' => 'String',
-                    'int'    => 'Integer',
-                    'bool'   => 'Boolean',
-                    'array'  => 'Array/JSON',
+                    'string' => tr('forms.settings.type.options.string', [], null, 'dashboard'),
+                    'int'    => tr('forms.settings.type.options.int', [], null, 'dashboard'),
+                    'bool'   => tr('forms.settings.type.options.bool', [], null, 'dashboard'),
+                    'array'  => tr('forms.settings.type.options.array', [], null, 'dashboard'),
                 ])
                 ->default('string')
                 ->reactive(),
 
             // Dynamic value field based on key
             Forms\Components\TextInput::make('value')
-                ->label('Value')
+                ->label(tr('forms.settings.value.label', [], null, 'dashboard'))
                 ->required()
                 ->visible(fn (Forms\Get $get) =>
                     $get('key') !== 'app.languages' &&
@@ -75,7 +77,7 @@ class SettingResource extends Resource
                 ->maxLength(255),
 
             Forms\Components\Select::make('value')
-                ->label('Value')
+                ->label(tr('forms.settings.value.label', [], null, 'dashboard'))
                 ->required()
                 ->visible(fn (Forms\Get $get) => $get('key') === 'app.languages')
                 ->multiple()
@@ -88,19 +90,19 @@ class SettingResource extends Resource
                 ->dehydrateStateUsing(fn ($state) => is_array($state) ? json_encode($state) : $state),
 
             Forms\Components\Textarea::make('value')
-                ->label('Value')
+                ->label(tr('forms.settings.value.label', [], null, 'dashboard'))
                 ->required()
                 ->visible(fn (Forms\Get $get) => $get('type') === 'array')
                 ->rows(4)
-                ->helperText('For JSON/array, use valid JSON.'),
+                ->helperText(tr('forms.settings.value.helper', [], null, 'dashboard')),
 
             Forms\Components\Toggle::make('value')
-                ->label('Value')
+                ->label(tr('forms.settings.value.label', [], null, 'dashboard'))
                 ->required()
                 ->visible(fn (Forms\Get $get) => $get('type') === 'bool'),
 
-            Forms\Components\Toggle::make('is_public')->label('Public'),
-            Forms\Components\Toggle::make('autoload')->label('Autoload'),
+            Forms\Components\Toggle::make('is_public')->label(tr('forms.settings.is_public.label', [], null, 'dashboard')),
+            Forms\Components\Toggle::make('autoload')->label(tr('forms.settings.autoload.label', [], null, 'dashboard')),
         ]);
     }
 
@@ -108,11 +110,11 @@ class SettingResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('key')->searchable(),
-                Tables\Columns\TextColumn::make('group'),
-                Tables\Columns\TextColumn::make('type'),
-                Tables\Columns\IconColumn::make('is_public')->boolean()->label('Public'),
-                Tables\Columns\IconColumn::make('autoload')->boolean()->label('Autoload'),
+                Tables\Columns\TextColumn::make('key')->label(tr('tables.settings.key', [], null, 'dashboard'))->searchable(),
+                Tables\Columns\TextColumn::make('group')->label(tr('tables.settings.group', [], null, 'dashboard')),
+                Tables\Columns\TextColumn::make('type')->label(tr('tables.settings.type', [], null, 'dashboard')),
+                Tables\Columns\IconColumn::make('is_public')->boolean()->label(tr('tables.settings.is_public', [], null, 'dashboard')),
+                Tables\Columns\IconColumn::make('autoload')->boolean()->label(tr('tables.settings.autoload', [], null, 'dashboard')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

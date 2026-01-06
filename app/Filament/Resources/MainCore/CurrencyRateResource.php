@@ -29,7 +29,7 @@ class CurrencyRateResource extends Resource
     {
         return $form->schema([
             Forms\Components\Select::make('base_currency_id')
-                ->label('Base Currency')
+                ->label(tr('forms.currency_rates.base_currency_id.label', [], null, 'dashboard'))
                 ->relationship('baseCurrency', 'code')
                 ->options(Currency::pluck('code', 'id'))
                 ->required()
@@ -37,7 +37,7 @@ class CurrencyRateResource extends Resource
                 ->preload(),
 
             Forms\Components\Select::make('target_currency_id')
-                ->label('Target Currency')
+                ->label(tr('forms.currency_rates.target_currency_id.label', [], null, 'dashboard'))
                 ->relationship('targetCurrency', 'code')
                 ->options(Currency::pluck('code', 'id'))
                 ->required()
@@ -45,12 +45,13 @@ class CurrencyRateResource extends Resource
                 ->preload(),
 
             Forms\Components\TextInput::make('rate')
+                ->label(tr('forms.currency_rates.rate.label', [], null, 'dashboard'))
                 ->numeric()
                 ->required()
                 ->minValue(0.000001),
 
             Forms\Components\DateTimePicker::make('valid_from')
-                ->label('Valid From')
+                ->label(tr('forms.currency_rates.valid_from.label', [], null, 'dashboard'))
                 ->default(now())
                 ->required(),
         ]);
@@ -60,10 +61,10 @@ class CurrencyRateResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('baseCurrency.code')->label('Base'),
-                Tables\Columns\TextColumn::make('targetCurrency.code')->label('Target'),
-                Tables\Columns\TextColumn::make('rate'),
-                Tables\Columns\TextColumn::make('valid_from')->dateTime(),
+                Tables\Columns\TextColumn::make('baseCurrency.code')->label(tr('tables.currency_rates.base', [], null, 'dashboard')),
+                Tables\Columns\TextColumn::make('targetCurrency.code')->label(tr('tables.currency_rates.target', [], null, 'dashboard')),
+                Tables\Columns\TextColumn::make('rate')->label(tr('tables.currency_rates.rate', [], null, 'dashboard')),
+                Tables\Columns\TextColumn::make('valid_from')->label(tr('tables.currency_rates.valid_from', [], null, 'dashboard'))->dateTime(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

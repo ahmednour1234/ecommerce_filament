@@ -30,30 +30,30 @@ class BranchResource extends Resource
                 Forms\Components\Section::make('Basic Information')
                     ->schema([
                         Forms\Components\TextInput::make('code')
-                            ->label('Code')
+                            ->label(tr('forms.branches.code.label', [], null, 'dashboard'))
                             ->required()
                             ->maxLength(50)
                             ->unique(ignoreRecord: true)
-                            ->helperText('Unique code for the branch'),
+                            ->helperText(tr('forms.branches.code.helper', [], null, 'dashboard')),
 
                         Forms\Components\TextInput::make('name')
-                            ->label('Name')
+                            ->label(tr('forms.branches.name.label', [], null, 'dashboard'))
                             ->required()
                             ->maxLength(255),
 
                         Forms\Components\Select::make('parent_id')
-                            ->label('Parent Branch')
+                            ->label(tr('forms.branches.parent_id.label', [], null, 'dashboard'))
                             ->relationship('parent', 'name')
                             ->searchable()
                             ->preload()
                             ->nullable()
-                            ->helperText('Optional: Select a parent branch if this is a sub-branch'),
+                            ->helperText(tr('forms.branches.parent_id.helper', [], null, 'dashboard')),
 
                         Forms\Components\Select::make('status')
-                            ->label('Status')
+                            ->label(tr('forms.branches.status.label', [], null, 'dashboard'))
                             ->options([
-                                'active' => 'Active',
-                                'inactive' => 'Inactive',
+                                'active' => tr('forms.branches.status.options.active', [], null, 'dashboard'),
+                                'inactive' => tr('forms.branches.status.options.inactive', [], null, 'dashboard'),
                             ])
                             ->default('active')
                             ->required(),
@@ -63,17 +63,17 @@ class BranchResource extends Resource
                 Forms\Components\Section::make('Contact Information')
                     ->schema([
                         Forms\Components\Textarea::make('address')
-                            ->label('Address')
+                            ->label(tr('forms.branches.address.label', [], null, 'dashboard'))
                             ->rows(3)
                             ->columnSpanFull(),
 
                         Forms\Components\TextInput::make('phone')
-                            ->label('Phone')
+                            ->label(tr('forms.branches.phone.label', [], null, 'dashboard'))
                             ->tel()
                             ->maxLength(50),
 
                         Forms\Components\TextInput::make('email')
-                            ->label('Email')
+                            ->label(tr('forms.branches.email.label', [], null, 'dashboard'))
                             ->email()
                             ->maxLength(255),
                     ])
@@ -82,10 +82,10 @@ class BranchResource extends Resource
                 Forms\Components\Section::make('Additional Information')
                     ->schema([
                         Forms\Components\KeyValue::make('metadata')
-                            ->label('Metadata')
-                            ->keyLabel('Key')
-                            ->valueLabel('Value')
-                            ->helperText('Additional flexible data (optional)'),
+                            ->label(tr('forms.branches.metadata.label', [], null, 'dashboard'))
+                            ->keyLabel(tr('forms.branches.metadata.key_label', [], null, 'dashboard'))
+                            ->valueLabel(tr('forms.branches.metadata.value_label', [], null, 'dashboard'))
+                            ->helperText(tr('forms.branches.metadata.helper', [], null, 'dashboard')),
                     ])
                     ->collapsible()
                     ->collapsed(),
@@ -97,32 +97,33 @@ class BranchResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
-                    ->label('Code')
+                    ->label(tr('tables.branches.code', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Name')
+                    ->label(tr('tables.branches.name', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('parent.name')
-                    ->label('Parent Branch')
+                    ->label(tr('tables.branches.parent_branch', [], null, 'dashboard'))
                     ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('phone')
-                    ->label('Phone')
+                    ->label(tr('tables.branches.phone', [], null, 'dashboard'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('email')
-                    ->label('Email')
+                    ->label(tr('tables.branches.email', [], null, 'dashboard'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\BadgeColumn::make('status')
-                    ->label('Status')
+                    ->label(tr('tables.branches.status', [], null, 'dashboard'))
+                    ->formatStateUsing(fn (string $state): string => tr('forms.branches.status.options.' . $state, [], null, 'dashboard'))
                     ->colors([
                         'success' => 'active',
                         'danger' => 'inactive',
@@ -130,7 +131,7 @@ class BranchResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('users_count')
-                    ->label('Users')
+                    ->label(tr('tables.branches.users', [], null, 'dashboard'))
                     ->counts('users')
                     ->sortable(),
 
@@ -141,13 +142,14 @@ class BranchResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
+                    ->label(tr('tables.branches.filters.status', [], null, 'dashboard'))
                     ->options([
-                        'active' => 'Active',
-                        'inactive' => 'Inactive',
+                        'active' => tr('forms.branches.status.options.active', [], null, 'dashboard'),
+                        'inactive' => tr('forms.branches.status.options.inactive', [], null, 'dashboard'),
                     ]),
 
                 Tables\Filters\SelectFilter::make('parent_id')
-                    ->label('Parent Branch')
+                    ->label(tr('tables.branches.filters.parent_branch', [], null, 'dashboard'))
                     ->relationship('parent', 'name')
                     ->searchable()
                     ->preload(),

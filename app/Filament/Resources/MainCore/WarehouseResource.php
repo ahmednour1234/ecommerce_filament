@@ -27,24 +27,26 @@ class WarehouseResource extends Resource
             Forms\Components\Section::make('Basic Information')
                 ->schema([
                     Forms\Components\TextInput::make('code')
-                        ->label('Warehouse Code')
+                        ->label(tr('forms.warehouses.code.label', [], null, 'dashboard'))
                         ->required()
                         ->unique(ignoreRecord: true)
                         ->maxLength(50)
-                        ->helperText('Unique code for the warehouse (e.g., WH-MAIN)'),
+                        ->helperText(tr('forms.warehouses.code.helper', [], null, 'dashboard')),
 
                     Forms\Components\TextInput::make('name')
-                        ->label('Warehouse Name')
+                        ->label(tr('forms.warehouses.name.label', [], null, 'dashboard'))
                         ->required()
                         ->maxLength(255),
 
                     Forms\Components\Select::make('branch_id')
+                        ->label(tr('forms.warehouses.branch_id.label', [], null, 'dashboard'))
                         ->relationship('branch', 'name')
                         ->searchable()
                         ->preload()
                         ->nullable(),
 
                     Forms\Components\Toggle::make('is_active')
+                        ->label(tr('forms.warehouses.is_active.label', [], null, 'dashboard'))
                         ->default(true)
                         ->required(),
                 ])
@@ -76,37 +78,42 @@ class WarehouseResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
+                    ->label(tr('tables.warehouses.code', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('name')
+                    ->label(tr('tables.warehouses.name', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('branch.name')
+                    ->label(tr('tables.warehouses.branch', [], null, 'dashboard'))
                     ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\IconColumn::make('is_active')
+                    ->label(tr('tables.warehouses.is_active', [], null, 'dashboard'))
                     ->boolean()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('products_count')
                     ->counts('products')
-                    ->label('Products')
+                    ->label(tr('tables.warehouses.products', [], null, 'dashboard'))
                     ->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('branch_id')
+                    ->label(tr('tables.warehouses.filters.branch', [], null, 'dashboard'))
                     ->relationship('branch', 'name')
                     ->searchable()
                     ->preload(),
 
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Active')
-                    ->placeholder('All')
-                    ->trueLabel('Active only')
-                    ->falseLabel('Inactive only'),
+                    ->label(tr('tables.warehouses.filters.is_active', [], null, 'dashboard'))
+                    ->placeholder(tr('common.all', [], null, 'dashboard'))
+                    ->trueLabel(tr('tables.warehouses.filters.active_only', [], null, 'dashboard'))
+                    ->falseLabel(tr('tables.warehouses.filters.inactive_only', [], null, 'dashboard')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
