@@ -1016,6 +1016,426 @@ class DashboardTranslationSeeder extends Seeder
                 'en' => 'Edit Payment Method',
                 'ar' => 'تعديل طريقة دفع',
             ],
+
+            // Payment Providers - Forms
+            'forms.payment_providers.name.label' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'forms.payment_providers.code.label' => [
+                'en' => 'Code',
+                'ar' => 'الرمز',
+            ],
+            'forms.payment_providers.driver.label' => [
+                'en' => 'Driver',
+                'ar' => 'السائق',
+            ],
+            'forms.payment_providers.config.label' => [
+                'en' => 'Configuration',
+                'ar' => 'الإعدادات',
+            ],
+            'forms.payment_providers.is_active.label' => [
+                'en' => 'Is Active',
+                'ar' => 'نشط',
+            ],
+
+            // Payment Providers - Tables
+            'tables.payment_providers.name' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'tables.payment_providers.code' => [
+                'en' => 'Code',
+                'ar' => 'الرمز',
+            ],
+            'tables.payment_providers.driver' => [
+                'en' => 'Driver',
+                'ar' => 'السائق',
+            ],
+            'tables.payment_providers.is_active' => [
+                'en' => 'Is Active',
+                'ar' => 'نشط',
+            ],
+            'tables.payment_providers.created_at' => [
+                'en' => 'Created At',
+                'ar' => 'تاريخ الإنشاء',
+            ],
+            'tables.payment_providers.updated_at' => [
+                'en' => 'Updated At',
+                'ar' => 'تاريخ التحديث',
+            ],
+            'tables.payment_providers.filters.is_active' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'tables.payment_providers.filters.active_only' => [
+                'en' => 'Active only',
+                'ar' => 'النشطة فقط',
+            ],
+            'tables.payment_providers.filters.inactive_only' => [
+                'en' => 'Inactive only',
+                'ar' => 'غير النشطة فقط',
+            ],
+
+            // Payment Providers - Pages
+            'pages.integrations.payment_providers.title' => [
+                'en' => 'Payment Providers',
+                'ar' => 'مزودو الدفع',
+            ],
+            'pages.integrations.payment_providers.create.title' => [
+                'en' => 'Create Payment Provider',
+                'ar' => 'إضافة مزود دفع',
+            ],
+            'pages.integrations.payment_providers.edit.title' => [
+                'en' => 'Edit Payment Provider',
+                'ar' => 'تعديل مزود دفع',
+            ],
+
+            // Payment Transactions - Forms
+            'forms.payment_transactions.payable_type.label' => [
+                'en' => 'Payable Type',
+                'ar' => 'نوع المستحقات',
+            ],
+            'forms.payment_transactions.payable_type.options.order' => [
+                'en' => 'Order',
+                'ar' => 'طلب',
+            ],
+            'forms.payment_transactions.payable_type.options.invoice' => [
+                'en' => 'Invoice',
+                'ar' => 'فاتورة',
+            ],
+            'forms.payment_transactions.payable_id.label' => [
+                'en' => 'Payable ID',
+                'ar' => 'معرف المستحقات',
+            ],
+            'forms.payment_transactions.user_id.label' => [
+                'en' => 'User',
+                'ar' => 'المستخدم',
+            ],
+            'forms.payment_transactions.payment_method_id.label' => [
+                'en' => 'Method',
+                'ar' => 'الطريقة',
+            ],
+            'forms.payment_transactions.provider_id.label' => [
+                'en' => 'Provider',
+                'ar' => 'المزود',
+            ],
+            'forms.payment_transactions.currency_id.label' => [
+                'en' => 'Currency',
+                'ar' => 'العملة',
+            ],
+            'forms.payment_transactions.amount.label' => [
+                'en' => 'Amount',
+                'ar' => 'المبلغ',
+            ],
+            'forms.payment_transactions.status.label' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'forms.payment_transactions.status.options.pending' => [
+                'en' => 'Pending',
+                'ar' => 'معلق',
+            ],
+            'forms.payment_transactions.status.options.processing' => [
+                'en' => 'Processing',
+                'ar' => 'قيد المعالجة',
+            ],
+            'forms.payment_transactions.status.options.completed' => [
+                'en' => 'Completed',
+                'ar' => 'مكتمل',
+            ],
+            'forms.payment_transactions.status.options.failed' => [
+                'en' => 'Failed',
+                'ar' => 'فشل',
+            ],
+            'forms.payment_transactions.status.options.cancelled' => [
+                'en' => 'Cancelled',
+                'ar' => 'ملغي',
+            ],
+            'forms.payment_transactions.status.options.refunded' => [
+                'en' => 'Refunded',
+                'ar' => 'مسترد',
+            ],
+            'forms.payment_transactions.provider_reference.label' => [
+                'en' => 'Provider Reference',
+                'ar' => 'مرجع المزود',
+            ],
+            'forms.payment_transactions.meta.label' => [
+                'en' => 'Meta',
+                'ar' => 'بيانات إضافية',
+            ],
+            'forms.payment_transactions.paid_at.label' => [
+                'en' => 'Paid At',
+                'ar' => 'تاريخ الدفع',
+            ],
+
+            // Payment Transactions - Tables
+            'tables.payment_transactions.payable_type' => [
+                'en' => 'Payable Type',
+                'ar' => 'نوع المستحقات',
+            ],
+            'tables.payment_transactions.payable_id' => [
+                'en' => 'Payable ID',
+                'ar' => 'معرف المستحقات',
+            ],
+            'tables.payment_transactions.user' => [
+                'en' => 'User',
+                'ar' => 'المستخدم',
+            ],
+            'tables.payment_transactions.method' => [
+                'en' => 'Method',
+                'ar' => 'الطريقة',
+            ],
+            'tables.payment_transactions.provider' => [
+                'en' => 'Provider',
+                'ar' => 'المزود',
+            ],
+            'tables.payment_transactions.currency' => [
+                'en' => 'Currency',
+                'ar' => 'العملة',
+            ],
+            'tables.payment_transactions.amount' => [
+                'en' => 'Amount',
+                'ar' => 'المبلغ',
+            ],
+            'tables.payment_transactions.status' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'tables.payment_transactions.provider_reference' => [
+                'en' => 'Provider Reference',
+                'ar' => 'مرجع المزود',
+            ],
+            'tables.payment_transactions.paid_at' => [
+                'en' => 'Paid At',
+                'ar' => 'تاريخ الدفع',
+            ],
+            'tables.payment_transactions.created_at' => [
+                'en' => 'Created At',
+                'ar' => 'تاريخ الإنشاء',
+            ],
+            'tables.payment_transactions.updated_at' => [
+                'en' => 'Updated At',
+                'ar' => 'تاريخ التحديث',
+            ],
+            'tables.payment_transactions.filters.status' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'tables.payment_transactions.filters.method' => [
+                'en' => 'Method',
+                'ar' => 'الطريقة',
+            ],
+            'tables.payment_transactions.filters.provider' => [
+                'en' => 'Provider',
+                'ar' => 'المزود',
+            ],
+            'tables.payment_transactions.filters.user' => [
+                'en' => 'User',
+                'ar' => 'المستخدم',
+            ],
+
+            // Payment Transactions - Pages
+            'pages.integrations.payment_transactions.title' => [
+                'en' => 'Payment Transactions',
+                'ar' => 'معاملات الدفع',
+            ],
+            'pages.integrations.payment_transactions.create.title' => [
+                'en' => 'Create Payment Transaction',
+                'ar' => 'إضافة معاملة دفع',
+            ],
+            'pages.integrations.payment_transactions.edit.title' => [
+                'en' => 'Edit Payment Transaction',
+                'ar' => 'تعديل معاملة دفع',
+            ],
+
+            // Shipments - Forms
+            'forms.shipments.shippable_type.label' => [
+                'en' => 'Shippable Type',
+                'ar' => 'نوع الشحنة',
+            ],
+            'forms.shipments.shippable_type.options.order' => [
+                'en' => 'Order',
+                'ar' => 'طلب',
+            ],
+            'forms.shipments.shippable_type.options.product' => [
+                'en' => 'Product',
+                'ar' => 'منتج',
+            ],
+            'forms.shipments.shippable_id.label' => [
+                'en' => 'Shippable ID',
+                'ar' => 'معرف الشحنة',
+            ],
+            'forms.shipments.shipping_provider_id.label' => [
+                'en' => 'Provider',
+                'ar' => 'المزود',
+            ],
+            'forms.shipments.tracking_number.label' => [
+                'en' => 'Tracking Number',
+                'ar' => 'رقم التتبع',
+            ],
+            'forms.shipments.status.label' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'forms.shipments.status.options.pending' => [
+                'en' => 'Pending',
+                'ar' => 'معلق',
+            ],
+            'forms.shipments.status.options.processing' => [
+                'en' => 'Processing',
+                'ar' => 'قيد المعالجة',
+            ],
+            'forms.shipments.status.options.shipped' => [
+                'en' => 'Shipped',
+                'ar' => 'تم الشحن',
+            ],
+            'forms.shipments.status.options.delivered' => [
+                'en' => 'Delivered',
+                'ar' => 'تم التسليم',
+            ],
+            'forms.shipments.status.options.cancelled' => [
+                'en' => 'Cancelled',
+                'ar' => 'ملغي',
+            ],
+            'forms.shipments.currency_id.label' => [
+                'en' => 'Currency',
+                'ar' => 'العملة',
+            ],
+            'forms.shipments.price.label' => [
+                'en' => 'Price',
+                'ar' => 'السعر',
+            ],
+            'forms.shipments.meta.label' => [
+                'en' => 'Meta',
+                'ar' => 'بيانات إضافية',
+            ],
+
+            // Shipments - Tables
+            'tables.shipments.shippable_type' => [
+                'en' => 'Shippable Type',
+                'ar' => 'نوع الشحنة',
+            ],
+            'tables.shipments.shippable_id' => [
+                'en' => 'Shippable ID',
+                'ar' => 'معرف الشحنة',
+            ],
+            'tables.shipments.provider' => [
+                'en' => 'Provider',
+                'ar' => 'المزود',
+            ],
+            'tables.shipments.tracking_number' => [
+                'en' => 'Tracking Number',
+                'ar' => 'رقم التتبع',
+            ],
+            'tables.shipments.status' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'tables.shipments.currency' => [
+                'en' => 'Currency',
+                'ar' => 'العملة',
+            ],
+            'tables.shipments.price' => [
+                'en' => 'Price',
+                'ar' => 'السعر',
+            ],
+            'tables.shipments.created_at' => [
+                'en' => 'Created At',
+                'ar' => 'تاريخ الإنشاء',
+            ],
+            'tables.shipments.updated_at' => [
+                'en' => 'Updated At',
+                'ar' => 'تاريخ التحديث',
+            ],
+            'tables.shipments.filters.status' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'tables.shipments.filters.provider' => [
+                'en' => 'Provider',
+                'ar' => 'المزود',
+            ],
+
+            // Shipments - Pages
+            'pages.integrations.shipments.title' => [
+                'en' => 'Shipments',
+                'ar' => 'الشحنات',
+            ],
+            'pages.integrations.shipments.create.title' => [
+                'en' => 'Create Shipment',
+                'ar' => 'إضافة شحنة',
+            ],
+            'pages.integrations.shipments.edit.title' => [
+                'en' => 'Edit Shipment',
+                'ar' => 'تعديل شحنة',
+            ],
+
+            // Shipping Providers - Forms
+            'forms.shipping_providers.name.label' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'forms.shipping_providers.code.label' => [
+                'en' => 'Code',
+                'ar' => 'الرمز',
+            ],
+            'forms.shipping_providers.config.label' => [
+                'en' => 'Configuration',
+                'ar' => 'الإعدادات',
+            ],
+            'forms.shipping_providers.is_active.label' => [
+                'en' => 'Is Active',
+                'ar' => 'نشط',
+            ],
+
+            // Shipping Providers - Tables
+            'tables.shipping_providers.name' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'tables.shipping_providers.code' => [
+                'en' => 'Code',
+                'ar' => 'الرمز',
+            ],
+            'tables.shipping_providers.is_active' => [
+                'en' => 'Is Active',
+                'ar' => 'نشط',
+            ],
+            'tables.shipping_providers.created_at' => [
+                'en' => 'Created At',
+                'ar' => 'تاريخ الإنشاء',
+            ],
+            'tables.shipping_providers.updated_at' => [
+                'en' => 'Updated At',
+                'ar' => 'تاريخ التحديث',
+            ],
+            'tables.shipping_providers.filters.is_active' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'tables.shipping_providers.filters.active_only' => [
+                'en' => 'Active only',
+                'ar' => 'النشطة فقط',
+            ],
+            'tables.shipping_providers.filters.inactive_only' => [
+                'en' => 'Inactive only',
+                'ar' => 'غير النشطة فقط',
+            ],
+
+            // Shipping Providers - Pages
+            'pages.integrations.shipping_providers.title' => [
+                'en' => 'Shipping Providers',
+                'ar' => 'مزودو الشحن',
+            ],
+            'pages.integrations.shipping_providers.create.title' => [
+                'en' => 'Create Shipping Provider',
+                'ar' => 'إضافة مزود شحن',
+            ],
+            'pages.integrations.shipping_providers.edit.title' => [
+                'en' => 'Edit Shipping Provider',
+                'ar' => 'تعديل مزود شحن',
+            ],
         ];
 
         // Get all active languages

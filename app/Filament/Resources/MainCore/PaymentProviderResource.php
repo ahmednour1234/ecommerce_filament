@@ -29,17 +29,22 @@ class PaymentProviderResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label(tr('forms.payment_providers.name.label', [], null, 'dashboard'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('code')
+                    ->label(tr('forms.payment_providers.code.label', [], null, 'dashboard'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('driver')
+                    ->label(tr('forms.payment_providers.driver.label', [], null, 'dashboard'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\KeyValue::make('config')
+                    ->label(tr('forms.payment_providers.config.label', [], null, 'dashboard'))
                     ->columnSpanFull(),
                 Forms\Components\Toggle::make('is_active')
+                    ->label(tr('forms.payment_providers.is_active.label', [], null, 'dashboard'))
                     ->required()
                     ->default(true),
             ]);
@@ -50,32 +55,38 @@ class PaymentProviderResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label(tr('tables.payment_providers.name', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('code')
+                    ->label(tr('tables.payment_providers.code', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('driver')
+                    ->label(tr('tables.payment_providers.driver', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_active')
+                    ->label(tr('tables.payment_providers.is_active', [], null, 'dashboard'))
                     ->boolean()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label(tr('tables.payment_providers.created_at', [], null, 'dashboard'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label(tr('tables.payment_providers.updated_at', [], null, 'dashboard'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Active')
-                    ->placeholder('All')
-                    ->trueLabel('Active only')
-                    ->falseLabel('Inactive only'),
+                    ->label(tr('tables.payment_providers.filters.is_active', [], null, 'dashboard'))
+                    ->placeholder(tr('common.all', [], null, 'dashboard'))
+                    ->trueLabel(tr('tables.payment_providers.filters.active_only', [], null, 'dashboard'))
+                    ->falseLabel(tr('tables.payment_providers.filters.inactive_only', [], null, 'dashboard')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
