@@ -146,9 +146,11 @@ class MonthlyAttendanceReportPage extends Page implements HasForms, HasTable
     {
         // Build union query from collection data
         $unionQuery = null;
+        $index = 0;
         foreach ($this->reportData as $row) {
             $rowQuery = DB::query()
-                ->selectRaw('? as employee_id, ? as employee_number, ? as employee_name, ? as department, ? as position, ? as present_days, ? as absent_days, ? as leave_days, ? as holiday_days, ? as late_days, ? as total_worked_minutes, ? as total_overtime_minutes, ? as total_late_minutes', [
+                ->selectRaw('? as id, ? as employee_id, ? as employee_number, ? as employee_name, ? as department, ? as position, ? as present_days, ? as absent_days, ? as leave_days, ? as holiday_days, ? as late_days, ? as total_worked_minutes, ? as total_overtime_minutes, ? as total_late_minutes', [
+                    $index++,
                     $row['employee_id'] ?? null,
                     $row['employee_number'] ?? '',
                     $row['employee_name'] ?? '',
@@ -174,7 +176,7 @@ class MonthlyAttendanceReportPage extends Page implements HasForms, HasTable
         // If no data, create an empty query
         if ($unionQuery === null) {
             $unionQuery = DB::query()
-                ->selectRaw('null as employee_id, null as employee_number, null as employee_name, null as department, null as position, null as present_days, null as absent_days, null as leave_days, null as holiday_days, null as late_days, null as total_worked_minutes, null as total_overtime_minutes, null as total_late_minutes');
+                ->selectRaw('0 as id, null as employee_id, null as employee_number, null as employee_name, null as department, null as position, null as present_days, null as absent_days, null as leave_days, null as holiday_days, null as late_days, null as total_worked_minutes, null as total_overtime_minutes, null as total_late_minutes');
         }
         
         // Filament Tables requires an Eloquent Builder, not a Query Builder.
@@ -238,7 +240,13 @@ class MonthlyAttendanceReportPage extends Page implements HasForms, HasTable
                     ->sortable(),
             ])
             ->filters([])
-            ->defaultSort('employee_number');
+            ->defaultSort('employee_number')
+            ->recordKey('id');
+    }
+    
+    public function getTableRecordKey($record): string
+    {
+        return (string) ($record->id ?? $record->employee_id ?? uniqid());
     }
 
     protected function getHeaderActions(): array
