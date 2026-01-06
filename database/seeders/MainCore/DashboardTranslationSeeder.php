@@ -2882,6 +2882,1014 @@ class DashboardTranslationSeeder extends Seeder
                 'en' => 'Reconcile',
                 'ar' => 'التسوية',
             ],
+
+            // Categories Resource - Forms
+            'forms.categories.sections.basic_information' => [
+                'en' => 'Basic Information',
+                'ar' => 'المعلومات الأساسية',
+            ],
+            'forms.categories.name.label' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'forms.categories.slug.label' => [
+                'en' => 'Slug',
+                'ar' => 'الرابط',
+            ],
+            'forms.categories.slug.helper_text' => [
+                'en' => 'Auto-generated from name',
+                'ar' => 'يتم إنشاؤه تلقائيًا من الاسم',
+            ],
+            'forms.categories.parent_id.label' => [
+                'en' => 'Parent Category',
+                'ar' => 'الفئة الأب',
+            ],
+            'forms.categories.description.label' => [
+                'en' => 'Description',
+                'ar' => 'الوصف',
+            ],
+            'forms.categories.image.label' => [
+                'en' => 'Image',
+                'ar' => 'الصورة',
+            ],
+            'forms.categories.sort_order.label' => [
+                'en' => 'Sort Order',
+                'ar' => 'ترتيب العرض',
+            ],
+            'forms.categories.is_active.label' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            // Categories Resource - Tables
+            'tables.categories.name' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'tables.categories.parent' => [
+                'en' => 'Parent',
+                'ar' => 'الأب',
+            ],
+            'tables.categories.image' => [
+                'en' => 'Image',
+                'ar' => 'الصورة',
+            ],
+            'tables.categories.products' => [
+                'en' => 'Products',
+                'ar' => 'المنتجات',
+            ],
+            'tables.categories.is_active' => [
+                'en' => 'Is Active',
+                'ar' => 'نشط',
+            ],
+            // Categories Resource - Filters
+            'filters.categories.is_active.label' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'filters.categories.is_active.placeholder' => [
+                'en' => 'All',
+                'ar' => 'الكل',
+            ],
+            'filters.categories.is_active.true_label' => [
+                'en' => 'Active only',
+                'ar' => 'النشطة فقط',
+            ],
+            'filters.categories.is_active.false_label' => [
+                'en' => 'Inactive only',
+                'ar' => 'غير النشطة فقط',
+            ],
+
+            // Brands Resource - Forms
+            'forms.brands.sections.basic_information' => [
+                'en' => 'Basic Information',
+                'ar' => 'المعلومات الأساسية',
+            ],
+            'forms.brands.name.label' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'forms.brands.slug.label' => [
+                'en' => 'Slug',
+                'ar' => 'الرابط',
+            ],
+            'forms.brands.slug.helper_text' => [
+                'en' => 'Auto-generated from name',
+                'ar' => 'يتم إنشاؤه تلقائيًا من الاسم',
+            ],
+            'forms.brands.logo.label' => [
+                'en' => 'Logo',
+                'ar' => 'الشعار',
+            ],
+            'forms.brands.description.label' => [
+                'en' => 'Description',
+                'ar' => 'الوصف',
+            ],
+            'forms.brands.is_active.label' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            // Brands Resource - Tables
+            'tables.brands.name' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'tables.brands.logo' => [
+                'en' => 'Logo',
+                'ar' => 'الشعار',
+            ],
+            'tables.brands.products' => [
+                'en' => 'Products',
+                'ar' => 'المنتجات',
+            ],
+            'tables.brands.is_active' => [
+                'en' => 'Is Active',
+                'ar' => 'نشط',
+            ],
+            // Brands Resource - Filters
+            'filters.brands.is_active.label' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'filters.brands.is_active.placeholder' => [
+                'en' => 'All',
+                'ar' => 'الكل',
+            ],
+            'filters.brands.is_active.true_label' => [
+                'en' => 'Active only',
+                'ar' => 'النشطة فقط',
+            ],
+            'filters.brands.is_active.false_label' => [
+                'en' => 'Inactive only',
+                'ar' => 'غير النشطة فقط',
+            ],
+
+            // Products Resource - Forms
+            'forms.products.sections.basic_information' => [
+                'en' => 'Basic Information',
+                'ar' => 'المعلومات الأساسية',
+            ],
+            'forms.products.sku.label' => [
+                'en' => 'SKU',
+                'ar' => 'رمز المنتج',
+            ],
+            'forms.products.sku.helper_text' => [
+                'en' => 'Stock Keeping Unit - unique identifier',
+                'ar' => 'وحدة حفظ المخزون - معرف فريد',
+            ],
+            'forms.products.name.label' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'forms.products.slug.label' => [
+                'en' => 'Slug',
+                'ar' => 'الرابط',
+            ],
+            'forms.products.slug.helper_text' => [
+                'en' => 'Auto-generated from name',
+                'ar' => 'يتم إنشاؤه تلقائيًا من الاسم',
+            ],
+            'forms.products.type.label' => [
+                'en' => 'Type',
+                'ar' => 'النوع',
+            ],
+            'forms.products.type.options.product' => [
+                'en' => 'Product',
+                'ar' => 'منتج',
+            ],
+            'forms.products.type.options.service' => [
+                'en' => 'Service',
+                'ar' => 'خدمة',
+            ],
+            'forms.products.category_id.label' => [
+                'en' => 'Category',
+                'ar' => 'الفئة',
+            ],
+            'forms.products.brand_id.label' => [
+                'en' => 'Brand',
+                'ar' => 'العلامة التجارية',
+            ],
+            'forms.products.description.label' => [
+                'en' => 'Description',
+                'ar' => 'الوصف',
+            ],
+            'forms.products.sections.pricing_inventory' => [
+                'en' => 'Pricing & Inventory',
+                'ar' => 'التسعير والمخزون',
+            ],
+            'forms.products.price.label' => [
+                'en' => 'Price',
+                'ar' => 'السعر',
+            ],
+            'forms.products.cost.label' => [
+                'en' => 'Cost',
+                'ar' => 'التكلفة',
+            ],
+            'forms.products.cost.helper_text' => [
+                'en' => 'Cost price for profit calculation',
+                'ar' => 'سعر التكلفة لحساب الربح',
+            ],
+            'forms.products.currency_id.label' => [
+                'en' => 'Currency',
+                'ar' => 'العملة',
+            ],
+            'forms.products.stock_quantity.label' => [
+                'en' => 'Stock Quantity',
+                'ar' => 'كمية المخزون',
+            ],
+            'forms.products.track_inventory.label' => [
+                'en' => 'Track Inventory',
+                'ar' => 'تتبع المخزون',
+            ],
+            'forms.products.is_active.label' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'forms.products.sections.warehouses' => [
+                'en' => 'Warehouses',
+                'ar' => 'المستودعات',
+            ],
+            'forms.products.sections.batches' => [
+                'en' => 'Batches',
+                'ar' => 'الدفعات',
+            ],
+            'forms.products.sections.additional_information' => [
+                'en' => 'Additional Information',
+                'ar' => 'معلومات إضافية',
+            ],
+            // Products Resource - Tables
+            'tables.products.sku' => [
+                'en' => 'Sku',
+                'ar' => 'رمز المنتج',
+            ],
+            'tables.products.name' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'tables.products.type' => [
+                'en' => 'Type',
+                'ar' => 'النوع',
+            ],
+            'tables.products.category' => [
+                'en' => 'Category',
+                'ar' => 'الفئة',
+            ],
+            'tables.products.brand' => [
+                'en' => 'Brand',
+                'ar' => 'العلامة التجارية',
+            ],
+            'tables.products.price' => [
+                'en' => 'Price',
+                'ar' => 'السعر',
+            ],
+            'tables.products.stock' => [
+                'en' => 'Stock',
+                'ar' => 'المخزون',
+            ],
+            'tables.products.is_active' => [
+                'en' => 'Is Active',
+                'ar' => 'نشط',
+            ],
+            // Products Resource - Filters
+            'filters.products.type.label' => [
+                'en' => 'Type',
+                'ar' => 'النوع',
+            ],
+            'filters.products.type.options.product' => [
+                'en' => 'Product',
+                'ar' => 'منتج',
+            ],
+            'filters.products.type.options.service' => [
+                'en' => 'Service',
+                'ar' => 'خدمة',
+            ],
+            'filters.products.category_id.label' => [
+                'en' => 'Category',
+                'ar' => 'الفئة',
+            ],
+            'filters.products.brand_id.label' => [
+                'en' => 'Brand',
+                'ar' => 'العلامة التجارية',
+            ],
+            'filters.products.is_active.label' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'filters.products.is_active.placeholder' => [
+                'en' => 'All',
+                'ar' => 'الكل',
+            ],
+            'filters.products.is_active.true_label' => [
+                'en' => 'Active only',
+                'ar' => 'النشطة فقط',
+            ],
+            'filters.products.is_active.false_label' => [
+                'en' => 'Inactive only',
+                'ar' => 'غير النشطة فقط',
+            ],
+            'filters.products.stock_quantity.label' => [
+                'en' => 'Stock Quantity',
+                'ar' => 'كمية المخزون',
+            ],
+            'filters.products.stock_from.label' => [
+                'en' => 'Stock From',
+                'ar' => 'المخزون من',
+            ],
+            'filters.products.stock_to.label' => [
+                'en' => 'Stock To',
+                'ar' => 'المخزون إلى',
+            ],
+
+            // Batches Resource - Forms
+            'forms.batches.sections.batch_information' => [
+                'en' => 'Batch Information',
+                'ar' => 'معلومات الدفعة',
+            ],
+            'forms.batches.product_id.label' => [
+                'en' => 'Product',
+                'ar' => 'المنتج',
+            ],
+            'forms.batches.warehouse_id.label' => [
+                'en' => 'Warehouse',
+                'ar' => 'المستودع',
+            ],
+            'forms.batches.batch_number.label' => [
+                'en' => 'Batch Number',
+                'ar' => 'رقم الدفعة',
+            ],
+            'forms.batches.manufacturing_date.label' => [
+                'en' => 'Manufacturing Date',
+                'ar' => 'تاريخ التصنيع',
+            ],
+            'forms.batches.expiry_date.label' => [
+                'en' => 'Expiry Date',
+                'ar' => 'تاريخ الانتهاء',
+            ],
+            'forms.batches.quantity.label' => [
+                'en' => 'Quantity',
+                'ar' => 'الكمية',
+            ],
+            'forms.batches.cost.label' => [
+                'en' => 'Cost',
+                'ar' => 'التكلفة',
+            ],
+            'forms.batches.supplier_reference.label' => [
+                'en' => 'Supplier Reference',
+                'ar' => 'مرجع المورد',
+            ],
+            'forms.batches.notes.label' => [
+                'en' => 'Notes',
+                'ar' => 'ملاحظات',
+            ],
+            // Batches Resource - Tables
+            'tables.batches.batch_number' => [
+                'en' => 'Batch Number',
+                'ar' => 'رقم الدفعة',
+            ],
+            'tables.batches.product' => [
+                'en' => 'Product',
+                'ar' => 'المنتج',
+            ],
+            'tables.batches.warehouse' => [
+                'en' => 'Warehouse',
+                'ar' => 'المستودع',
+            ],
+            'tables.batches.manufacturing_date' => [
+                'en' => 'Manufacturing Date',
+                'ar' => 'تاريخ التصنيع',
+            ],
+            'tables.batches.expiry_date' => [
+                'en' => 'Expiry Date',
+                'ar' => 'تاريخ الانتهاء',
+            ],
+            'tables.batches.quantity' => [
+                'en' => 'Quantity',
+                'ar' => 'الكمية',
+            ],
+            'tables.batches.cost' => [
+                'en' => 'Cost',
+                'ar' => 'التكلفة',
+            ],
+            'tables.batches.created_at' => [
+                'en' => 'Created At',
+                'ar' => 'تاريخ الإنشاء',
+            ],
+            // Batches Resource - Filters
+            'filters.batches.product_id.label' => [
+                'en' => 'Product',
+                'ar' => 'المنتج',
+            ],
+            'filters.batches.warehouse_id.label' => [
+                'en' => 'Warehouse',
+                'ar' => 'المستودع',
+            ],
+            'filters.batches.expired.label' => [
+                'en' => 'Expired',
+                'ar' => 'منتهي الصلاحية',
+            ],
+            'filters.batches.expiring_soon.label' => [
+                'en' => 'Expiring Soon',
+                'ar' => 'ينتهي قريبًا',
+            ],
+
+            // Customers Resource - Forms
+            'forms.customers.sections.basic_information' => [
+                'en' => 'Basic Information',
+                'ar' => 'المعلومات الأساسية',
+            ],
+            'forms.customers.code.label' => [
+                'en' => 'Code',
+                'ar' => 'الرمز',
+            ],
+            'forms.customers.code.helper_text' => [
+                'en' => 'Unique customer code',
+                'ar' => 'رمز العميل الفريد',
+            ],
+            'forms.customers.name.label' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'forms.customers.email.label' => [
+                'en' => 'Email',
+                'ar' => 'البريد الإلكتروني',
+            ],
+            'forms.customers.phone.label' => [
+                'en' => 'Phone',
+                'ar' => 'الهاتف',
+            ],
+            'forms.customers.sections.address' => [
+                'en' => 'Address',
+                'ar' => 'العنوان',
+            ],
+            'forms.customers.address.label' => [
+                'en' => 'Address',
+                'ar' => 'العنوان',
+            ],
+            'forms.customers.city.label' => [
+                'en' => 'City',
+                'ar' => 'المدينة',
+            ],
+            'forms.customers.state.label' => [
+                'en' => 'State',
+                'ar' => 'الولاية',
+            ],
+            'forms.customers.country.label' => [
+                'en' => 'Country',
+                'ar' => 'الدولة',
+            ],
+            'forms.customers.postal_code.label' => [
+                'en' => 'Postal Code',
+                'ar' => 'الرمز البريدي',
+            ],
+            'forms.customers.sections.financial' => [
+                'en' => 'Financial',
+                'ar' => 'المالية',
+            ],
+            'forms.customers.currency_id.label' => [
+                'en' => 'Currency',
+                'ar' => 'العملة',
+            ],
+            'forms.customers.credit_limit.label' => [
+                'en' => 'Credit Limit',
+                'ar' => 'حد الائتمان',
+            ],
+            'forms.customers.is_active.label' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            // Customers Resource - Tables
+            'tables.customers.code' => [
+                'en' => 'Code',
+                'ar' => 'الرمز',
+            ],
+            'tables.customers.name' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'tables.customers.email' => [
+                'en' => 'Email',
+                'ar' => 'البريد الإلكتروني',
+            ],
+            'tables.customers.phone' => [
+                'en' => 'Phone',
+                'ar' => 'الهاتف',
+            ],
+            'tables.customers.credit_limit' => [
+                'en' => 'Credit Limit',
+                'ar' => 'حد الائتمان',
+            ],
+            'tables.customers.orders' => [
+                'en' => 'Orders',
+                'ar' => 'الطلبات',
+            ],
+            'tables.customers.is_active' => [
+                'en' => 'Is Active',
+                'ar' => 'نشط',
+            ],
+            // Customers Resource - Filters
+            'filters.customers.is_active.label' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'filters.customers.is_active.placeholder' => [
+                'en' => 'All',
+                'ar' => 'الكل',
+            ],
+            'filters.customers.is_active.true_label' => [
+                'en' => 'Active only',
+                'ar' => 'النشطة فقط',
+            ],
+            'filters.customers.is_active.false_label' => [
+                'en' => 'Inactive only',
+                'ar' => 'غير النشطة فقط',
+            ],
+
+            // Orders Resource - Forms
+            'forms.orders.sections.order_information' => [
+                'en' => 'Order Information',
+                'ar' => 'معلومات الطلب',
+            ],
+            'forms.orders.order_number.label' => [
+                'en' => 'Order Number',
+                'ar' => 'رقم الطلب',
+            ],
+            'forms.orders.order_date.label' => [
+                'en' => 'Order Date',
+                'ar' => 'تاريخ الطلب',
+            ],
+            'forms.orders.customer_id.label' => [
+                'en' => 'Customer',
+                'ar' => 'العميل',
+            ],
+            'forms.orders.status.label' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'forms.orders.status.options.pending' => [
+                'en' => 'Pending',
+                'ar' => 'قيد الانتظار',
+            ],
+            'forms.orders.status.options.processing' => [
+                'en' => 'Processing',
+                'ar' => 'قيد المعالجة',
+            ],
+            'forms.orders.status.options.completed' => [
+                'en' => 'Completed',
+                'ar' => 'مكتمل',
+            ],
+            'forms.orders.status.options.cancelled' => [
+                'en' => 'Cancelled',
+                'ar' => 'ملغي',
+            ],
+            'forms.orders.status.options.refunded' => [
+                'en' => 'Refunded',
+                'ar' => 'مسترد',
+            ],
+            'forms.orders.sections.financial_information' => [
+                'en' => 'Financial Information',
+                'ar' => 'المعلومات المالية',
+            ],
+            'forms.orders.branch_id.label' => [
+                'en' => 'Branch',
+                'ar' => 'الفرع',
+            ],
+            'forms.orders.cost_center_id.label' => [
+                'en' => 'Cost Center',
+                'ar' => 'مركز التكلفة',
+            ],
+            'forms.orders.currency_id.label' => [
+                'en' => 'Currency',
+                'ar' => 'العملة',
+            ],
+            'forms.orders.subtotal.label' => [
+                'en' => 'Subtotal',
+                'ar' => 'المجموع الفرعي',
+            ],
+            'forms.orders.tax_amount.label' => [
+                'en' => 'Tax Amount',
+                'ar' => 'مبلغ الضريبة',
+            ],
+            'forms.orders.discount_amount.label' => [
+                'en' => 'Discount Amount',
+                'ar' => 'مبلغ الخصم',
+            ],
+            'forms.orders.total.label' => [
+                'en' => 'Total',
+                'ar' => 'الإجمالي',
+            ],
+            'forms.orders.sections.order_items' => [
+                'en' => 'Order Items',
+                'ar' => 'عناصر الطلب',
+            ],
+            'forms.orders.items.product_id.label' => [
+                'en' => 'Product',
+                'ar' => 'المنتج',
+            ],
+            'forms.orders.items.quantity.label' => [
+                'en' => 'Quantity',
+                'ar' => 'الكمية',
+            ],
+            'forms.orders.items.unit_price.label' => [
+                'en' => 'Unit Price',
+                'ar' => 'سعر الوحدة',
+            ],
+            'forms.orders.items.discount.label' => [
+                'en' => 'Discount',
+                'ar' => 'الخصم',
+            ],
+            'forms.orders.items.total.label' => [
+                'en' => 'Total',
+                'ar' => 'الإجمالي',
+            ],
+            'forms.orders.sections.notes' => [
+                'en' => 'Notes',
+                'ar' => 'ملاحظات',
+            ],
+            'forms.orders.notes.label' => [
+                'en' => 'Notes',
+                'ar' => 'ملاحظات',
+            ],
+            // Orders Resource - Tables
+            'tables.orders.order_number' => [
+                'en' => 'Order #',
+                'ar' => 'رقم الطلب',
+            ],
+            'tables.orders.date' => [
+                'en' => 'Date',
+                'ar' => 'التاريخ',
+            ],
+            'tables.orders.customer' => [
+                'en' => 'Customer',
+                'ar' => 'العميل',
+            ],
+            'tables.orders.status' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'tables.orders.total' => [
+                'en' => 'Total',
+                'ar' => 'الإجمالي',
+            ],
+            'tables.orders.currency' => [
+                'en' => 'Currency',
+                'ar' => 'العملة',
+            ],
+            // Orders Resource - Filters
+            'filters.orders.status.label' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'filters.orders.status.options.pending' => [
+                'en' => 'Pending',
+                'ar' => 'قيد الانتظار',
+            ],
+            'filters.orders.status.options.processing' => [
+                'en' => 'Processing',
+                'ar' => 'قيد المعالجة',
+            ],
+            'filters.orders.status.options.completed' => [
+                'en' => 'Completed',
+                'ar' => 'مكتمل',
+            ],
+            'filters.orders.status.options.cancelled' => [
+                'en' => 'Cancelled',
+                'ar' => 'ملغي',
+            ],
+            'filters.orders.status.options.refunded' => [
+                'en' => 'Refunded',
+                'ar' => 'مسترد',
+            ],
+            'filters.orders.customer_id.label' => [
+                'en' => 'Customer',
+                'ar' => 'العميل',
+            ],
+            'filters.orders.order_date.label' => [
+                'en' => 'Order Date',
+                'ar' => 'تاريخ الطلب',
+            ],
+            'filters.orders.created_from.label' => [
+                'en' => 'From',
+                'ar' => 'من',
+            ],
+            'filters.orders.created_until.label' => [
+                'en' => 'Until',
+                'ar' => 'إلى',
+            ],
+
+            // Invoices Resource - Forms
+            'forms.invoices.sections.invoice_information' => [
+                'en' => 'Invoice Information',
+                'ar' => 'معلومات الفاتورة',
+            ],
+            'forms.invoices.invoice_number.label' => [
+                'en' => 'Invoice Number',
+                'ar' => 'رقم الفاتورة',
+            ],
+            'forms.invoices.invoice_date.label' => [
+                'en' => 'Invoice Date',
+                'ar' => 'تاريخ الفاتورة',
+            ],
+            'forms.invoices.order_id.label' => [
+                'en' => 'Order',
+                'ar' => 'الطلب',
+            ],
+            'forms.invoices.customer_id.label' => [
+                'en' => 'Customer',
+                'ar' => 'العميل',
+            ],
+            'forms.invoices.status.label' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'forms.invoices.status.options.draft' => [
+                'en' => 'Draft',
+                'ar' => 'مسودة',
+            ],
+            'forms.invoices.status.options.sent' => [
+                'en' => 'Sent',
+                'ar' => 'مرسلة',
+            ],
+            'forms.invoices.status.options.paid' => [
+                'en' => 'Paid',
+                'ar' => 'مدفوعة',
+            ],
+            'forms.invoices.status.options.partial' => [
+                'en' => 'Partial',
+                'ar' => 'جزئية',
+            ],
+            'forms.invoices.status.options.overdue' => [
+                'en' => 'Overdue',
+                'ar' => 'متأخرة',
+            ],
+            'forms.invoices.status.options.cancelled' => [
+                'en' => 'Cancelled',
+                'ar' => 'ملغية',
+            ],
+            'forms.invoices.due_date.label' => [
+                'en' => 'Due Date',
+                'ar' => 'تاريخ الاستحقاق',
+            ],
+            'forms.invoices.paid_at.label' => [
+                'en' => 'Paid At',
+                'ar' => 'تاريخ الدفع',
+            ],
+            'forms.invoices.sections.financial_information' => [
+                'en' => 'Financial Information',
+                'ar' => 'المعلومات المالية',
+            ],
+            'forms.invoices.currency_id.label' => [
+                'en' => 'Currency',
+                'ar' => 'العملة',
+            ],
+            'forms.invoices.subtotal.label' => [
+                'en' => 'Subtotal',
+                'ar' => 'المجموع الفرعي',
+            ],
+            'forms.invoices.tax_amount.label' => [
+                'en' => 'Tax Amount',
+                'ar' => 'مبلغ الضريبة',
+            ],
+            'forms.invoices.discount_amount.label' => [
+                'en' => 'Discount Amount',
+                'ar' => 'مبلغ الخصم',
+            ],
+            'forms.invoices.total.label' => [
+                'en' => 'Total',
+                'ar' => 'الإجمالي',
+            ],
+            'forms.invoices.sections.invoice_items' => [
+                'en' => 'Invoice Items',
+                'ar' => 'عناصر الفاتورة',
+            ],
+            'forms.invoices.items.product_id.label' => [
+                'en' => 'Product',
+                'ar' => 'المنتج',
+            ],
+            'forms.invoices.items.description.label' => [
+                'en' => 'Description',
+                'ar' => 'الوصف',
+            ],
+            'forms.invoices.items.quantity.label' => [
+                'en' => 'Quantity',
+                'ar' => 'الكمية',
+            ],
+            'forms.invoices.items.unit_price.label' => [
+                'en' => 'Unit Price',
+                'ar' => 'سعر الوحدة',
+            ],
+            'forms.invoices.items.discount.label' => [
+                'en' => 'Discount',
+                'ar' => 'الخصم',
+            ],
+            'forms.invoices.items.total.label' => [
+                'en' => 'Total',
+                'ar' => 'الإجمالي',
+            ],
+            // Invoices Resource - Tables
+            'tables.invoices.invoice_number' => [
+                'en' => 'Invoice #',
+                'ar' => 'رقم الفاتورة',
+            ],
+            'tables.invoices.date' => [
+                'en' => 'Date',
+                'ar' => 'التاريخ',
+            ],
+            'tables.invoices.customer' => [
+                'en' => 'Customer',
+                'ar' => 'العميل',
+            ],
+            'tables.invoices.order' => [
+                'en' => 'Order',
+                'ar' => 'الطلب',
+            ],
+            'tables.invoices.status' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'tables.invoices.total' => [
+                'en' => 'Total',
+                'ar' => 'الإجمالي',
+            ],
+            'tables.invoices.due_date' => [
+                'en' => 'Due Date',
+                'ar' => 'تاريخ الاستحقاق',
+            ],
+            'tables.invoices.paid_at' => [
+                'en' => 'Paid At',
+                'ar' => 'تاريخ الدفع',
+            ],
+            // Invoices Resource - Filters
+            'filters.invoices.status.label' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'filters.invoices.status.options.draft' => [
+                'en' => 'Draft',
+                'ar' => 'مسودة',
+            ],
+            'filters.invoices.status.options.sent' => [
+                'en' => 'Sent',
+                'ar' => 'مرسلة',
+            ],
+            'filters.invoices.status.options.paid' => [
+                'en' => 'Paid',
+                'ar' => 'مدفوعة',
+            ],
+            'filters.invoices.status.options.partial' => [
+                'en' => 'Partial',
+                'ar' => 'جزئية',
+            ],
+            'filters.invoices.status.options.overdue' => [
+                'en' => 'Overdue',
+                'ar' => 'متأخرة',
+            ],
+            'filters.invoices.status.options.cancelled' => [
+                'en' => 'Cancelled',
+                'ar' => 'ملغية',
+            ],
+            'filters.invoices.customer_id.label' => [
+                'en' => 'Customer',
+                'ar' => 'العميل',
+            ],
+            'filters.invoices.overdue.label' => [
+                'en' => 'Overdue Invoices',
+                'ar' => 'الفواتير المتأخرة',
+            ],
+
+            // Installments Resource - Forms
+            'forms.installments.sections.installment_information' => [
+                'en' => 'Installment Information',
+                'ar' => 'معلومات القسط',
+            ],
+            'forms.installments.installment_number.label' => [
+                'en' => 'Installment Number',
+                'ar' => 'رقم القسط',
+            ],
+            'forms.installments.installmentable_type.label' => [
+                'en' => 'Type',
+                'ar' => 'النوع',
+            ],
+            'forms.installments.installmentable_type.options.order' => [
+                'en' => 'Order',
+                'ar' => 'الطلب',
+            ],
+            'forms.installments.installmentable_type.options.invoice' => [
+                'en' => 'Invoice',
+                'ar' => 'الفاتورة',
+            ],
+            'forms.installments.installmentable_id.label' => [
+                'en' => 'Order/Invoice',
+                'ar' => 'الطلب/الفاتورة',
+            ],
+            'forms.installments.amount.label' => [
+                'en' => 'Amount',
+                'ar' => 'المبلغ',
+            ],
+            'forms.installments.due_date.label' => [
+                'en' => 'Due Date',
+                'ar' => 'تاريخ الاستحقاق',
+            ],
+            'forms.installments.paid_date.label' => [
+                'en' => 'Paid Date',
+                'ar' => 'تاريخ الدفع',
+            ],
+            'forms.installments.status.label' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'forms.installments.status.options.pending' => [
+                'en' => 'Pending',
+                'ar' => 'قيد الانتظار',
+            ],
+            'forms.installments.status.options.paid' => [
+                'en' => 'Paid',
+                'ar' => 'مدفوع',
+            ],
+            'forms.installments.status.options.overdue' => [
+                'en' => 'Overdue',
+                'ar' => 'متأخر',
+            ],
+            'forms.installments.status.options.cancelled' => [
+                'en' => 'Cancelled',
+                'ar' => 'ملغي',
+            ],
+            'forms.installments.payment_method_id.label' => [
+                'en' => 'Payment Method',
+                'ar' => 'طريقة الدفع',
+            ],
+            'forms.installments.payment_reference.label' => [
+                'en' => 'Payment Reference',
+                'ar' => 'مرجع الدفع',
+            ],
+            'forms.installments.notes.label' => [
+                'en' => 'Notes',
+                'ar' => 'ملاحظات',
+            ],
+            // Installments Resource - Tables
+            'tables.installments.installment_number' => [
+                'en' => 'Installment #',
+                'ar' => 'رقم القسط',
+            ],
+            'tables.installments.type' => [
+                'en' => 'Type',
+                'ar' => 'النوع',
+            ],
+            'tables.installments.order_invoice' => [
+                'en' => 'Order/Invoice',
+                'ar' => 'الطلب/الفاتورة',
+            ],
+            'tables.installments.amount' => [
+                'en' => 'Amount',
+                'ar' => 'المبلغ',
+            ],
+            'tables.installments.due_date' => [
+                'en' => 'Due Date',
+                'ar' => 'تاريخ الاستحقاق',
+            ],
+            'tables.installments.paid_date' => [
+                'en' => 'Paid Date',
+                'ar' => 'تاريخ الدفع',
+            ],
+            'tables.installments.remaining' => [
+                'en' => 'Remaining',
+                'ar' => 'المتبقي',
+            ],
+            'tables.installments.payment_method' => [
+                'en' => 'Payment Method',
+                'ar' => 'طريقة الدفع',
+            ],
+            'tables.installments.reference' => [
+                'en' => 'Reference',
+                'ar' => 'المرجع',
+            ],
+            'tables.installments.status' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            // Installments Resource - Filters
+            'filters.installments.status.label' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'filters.installments.status.options.pending' => [
+                'en' => 'Pending',
+                'ar' => 'قيد الانتظار',
+            ],
+            'filters.installments.status.options.paid' => [
+                'en' => 'Paid',
+                'ar' => 'مدفوع',
+            ],
+            'filters.installments.status.options.overdue' => [
+                'en' => 'Overdue',
+                'ar' => 'متأخر',
+            ],
+            'filters.installments.status.options.cancelled' => [
+                'en' => 'Cancelled',
+                'ar' => 'ملغي',
+            ],
+            'filters.installments.overdue.label' => [
+                'en' => 'Overdue Installments',
+                'ar' => 'الأقساط المتأخرة',
+            ],
         ];
 
         // Get all active languages

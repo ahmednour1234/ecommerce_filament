@@ -26,50 +26,50 @@ class BatchResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Batch Information')
+                Forms\Components\Section::make(trans_dash('forms.batches.sections.batch_information'))
                     ->schema([
                         Forms\Components\Select::make('product_id')
-                            ->label('Product')
+                            ->label(trans_dash('forms.batches.product_id.label'))
                             ->relationship('product', 'name')
                             ->required()
                             ->searchable()
                             ->preload(),
 
                         Forms\Components\Select::make('warehouse_id')
-                            ->label('Warehouse')
+                            ->label(trans_dash('forms.batches.warehouse_id.label'))
                             ->relationship('warehouse', 'name')
                             ->searchable()
                             ->preload()
                             ->nullable(),
 
                         Forms\Components\TextInput::make('batch_number')
-                            ->label('Batch Number')
+                            ->label(trans_dash('forms.batches.batch_number.label'))
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
 
                         Forms\Components\DatePicker::make('manufacturing_date')
-                            ->label('Manufacturing Date')
+                            ->label(trans_dash('forms.batches.manufacturing_date.label'))
                             ->native(false)
                             ->displayFormat('Y-m-d')
                             ->nullable(),
 
                         Forms\Components\DatePicker::make('expiry_date')
-                            ->label('Expiry Date')
+                            ->label(trans_dash('forms.batches.expiry_date.label'))
                             ->native(false)
                             ->displayFormat('Y-m-d')
                             ->nullable()
                             ->after('manufacturing_date'),
 
                         Forms\Components\TextInput::make('quantity')
-                            ->label('Quantity')
+                            ->label(trans_dash('forms.batches.quantity.label'))
                             ->numeric()
                             ->required()
                             ->default(0)
                             ->minValue(0),
 
                         Forms\Components\TextInput::make('cost')
-                            ->label('Cost')
+                            ->label(trans_dash('forms.batches.cost.label'))
                             ->numeric()
                             ->required()
                             ->default(0)
@@ -77,12 +77,12 @@ class BatchResource extends Resource
                             ->minValue(0),
 
                         Forms\Components\TextInput::make('supplier_reference')
-                            ->label('Supplier Reference')
+                            ->label(trans_dash('forms.batches.supplier_reference.label'))
                             ->maxLength(255)
                             ->nullable(),
 
                         Forms\Components\Textarea::make('notes')
-                            ->label('Notes')
+                            ->label(trans_dash('forms.batches.notes.label'))
                             ->rows(3)
                             ->columnSpanFull(),
                     ])
@@ -95,66 +95,68 @@ class BatchResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('batch_number')
-                    ->label('Batch Number')
+                    ->label(trans_dash('tables.batches.batch_number'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('product.name')
-                    ->label('Product')
+                    ->label(trans_dash('tables.batches.product'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('warehouse.name')
-                    ->label('Warehouse')
+                    ->label(trans_dash('tables.batches.warehouse'))
                     ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('manufacturing_date')
-                    ->label('Manufacturing Date')
+                    ->label(trans_dash('tables.batches.manufacturing_date'))
                     ->date()
                     ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('expiry_date')
-                    ->label('Expiry Date')
+                    ->label(trans_dash('tables.batches.expiry_date'))
                     ->date()
                     ->sortable()
                     ->color(fn ($record) => $record->isExpired() ? 'danger' : ($record->isExpiringSoon() ? 'warning' : null))
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('quantity')
-                    ->label('Quantity')
+                    ->label(trans_dash('tables.batches.quantity'))
                     ->numeric()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('cost')
-                    ->label('Cost')
+                    ->label(trans_dash('tables.batches.cost'))
                     ->money('USD')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Created At')
+                    ->label(trans_dash('tables.batches.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('product_id')
+                    ->label(trans_dash('filters.batches.product_id.label'))
                     ->relationship('product', 'name')
                     ->searchable()
                     ->preload(),
 
                 Tables\Filters\SelectFilter::make('warehouse_id')
+                    ->label(trans_dash('filters.batches.warehouse_id.label'))
                     ->relationship('warehouse', 'name')
                     ->searchable()
                     ->preload(),
 
                 Tables\Filters\Filter::make('expired')
-                    ->label('Expired')
+                    ->label(trans_dash('filters.batches.expired.label'))
                     ->query(fn ($query) => $query->where('expiry_date', '<', now())),
 
                 Tables\Filters\Filter::make('expiring_soon')
-                    ->label('Expiring Soon')
+                    ->label(trans_dash('filters.batches.expiring_soon.label'))
                     ->query(fn ($query) => $query->whereBetween('expiry_date', [now(), now()->addDays(30)])),
             ])
             ->actions([

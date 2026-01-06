@@ -30,56 +30,63 @@ class ProductResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Basic Information')
+                Forms\Components\Section::make(trans_dash('forms.products.sections.basic_information'))
                     ->schema([
                         Forms\Components\TextInput::make('sku')
-                            ->label('SKU')
+                            ->label(trans_dash('forms.products.sku.label'))
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true)
-                            ->helperText('Stock Keeping Unit - unique identifier'),
+                            ->helperText(trans_dash('forms.products.sku.helper_text')),
 
                         Forms\Components\TextInput::make('name')
+                            ->label(trans_dash('forms.products.name.label'))
                             ->required()
                             ->maxLength(255)
                             ->reactive()
                             ->afterStateUpdated(fn ($state, callable $set) => $set('slug', \Illuminate\Support\Str::slug($state))),
 
                         Forms\Components\TextInput::make('slug')
+                            ->label(trans_dash('forms.products.slug.label'))
                             ->maxLength(255)
                             ->unique(ignoreRecord: true)
-                            ->helperText('Auto-generated from name'),
+                            ->helperText(trans_dash('forms.products.slug.helper_text')),
 
                         Forms\Components\Select::make('type')
+                            ->label(trans_dash('forms.products.type.label'))
                             ->options([
-                                'product' => 'Product',
-                                'service' => 'Service',
+                                'product' => trans_dash('forms.products.type.options.product'),
+                                'service' => trans_dash('forms.products.type.options.service'),
                             ])
                             ->required()
                             ->default('product')
                             ->reactive(),
 
                         Forms\Components\Select::make('category_id')
+                            ->label(trans_dash('forms.products.category_id.label'))
                             ->relationship('category', 'name')
                             ->searchable()
                             ->preload()
                             ->nullable(),
 
                         Forms\Components\Select::make('brand_id')
+                            ->label(trans_dash('forms.products.brand_id.label'))
                             ->relationship('brand', 'name')
                             ->searchable()
                             ->preload()
                             ->nullable(),
 
                         Forms\Components\Textarea::make('description')
+                            ->label(trans_dash('forms.products.description.label'))
                             ->rows(3)
                             ->columnSpanFull(),
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make('Pricing & Inventory')
+                Forms\Components\Section::make(trans_dash('forms.products.sections.pricing_inventory'))
                     ->schema([
                         Forms\Components\TextInput::make('price')
+                            ->label(trans_dash('forms.products.price.label'))
                             ->numeric()
                             ->required()
                             ->default(0)
@@ -88,14 +95,16 @@ class ProductResource extends Resource
                             ->prefix('$'),
 
                         Forms\Components\TextInput::make('cost')
+                            ->label(trans_dash('forms.products.cost.label'))
                             ->numeric()
                             ->default(0)
                             ->minValue(0)
                             ->step(0.01)
                             ->prefix('$')
-                            ->helperText('Cost price for profit calculation'),
+                            ->helperText(trans_dash('forms.products.cost.helper_text')),
 
                         Forms\Components\Select::make('currency_id')
+                            ->label(trans_dash('forms.products.currency_id.label'))
                             ->relationship('currency', 'name')
                             ->options(Currency::active()->pluck('name', 'id'))
                             ->searchable()
@@ -103,24 +112,25 @@ class ProductResource extends Resource
                             ->nullable(),
 
                         Forms\Components\TextInput::make('stock_quantity')
+                            ->label(trans_dash('forms.products.stock_quantity.label'))
                             ->numeric()
                             ->default(0)
                             ->minValue(0)
                             ->visible(fn ($get) => $get('type') === 'product'),
 
                         Forms\Components\Toggle::make('track_inventory')
-                            ->label('Track Inventory')
+                            ->label(trans_dash('forms.products.track_inventory.label'))
                             ->default(true)
                             ->visible(fn ($get) => $get('type') === 'product'),
 
                         Forms\Components\Toggle::make('is_active')
-                            ->label('Active')
+                            ->label(trans_dash('forms.products.is_active.label'))
                             ->default(true)
                             ->required(),
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make('Warehouses')
+                Forms\Components\Section::make(trans_dash('forms.products.sections.warehouses'))
                     ->schema([
                         Forms\Components\Repeater::make('warehouses')
                             ->relationship('warehouses')
@@ -152,7 +162,7 @@ class ProductResource extends Resource
                     ->collapsed()
                     ->visible(fn ($get) => $get('type') === 'product'),
 
-                Forms\Components\Section::make('Batches')
+                Forms\Components\Section::make(trans_dash('forms.products.sections.batches'))
                     ->schema([
                         Forms\Components\Repeater::make('batches')
                             ->relationship('batches')
@@ -190,7 +200,7 @@ class ProductResource extends Resource
                     ->collapsed()
                     ->visible(fn ($get) => $get('type') === 'product'),
 
-                Forms\Components\Section::make('Additional Information')
+                Forms\Components\Section::make(trans_dash('forms.products.sections.additional_information'))
                     ->schema([
                         Forms\Components\KeyValue::make('meta')
                             ->label('Metadata')
@@ -208,14 +218,17 @@ class ProductResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('sku')
+                    ->label(trans_dash('tables.products.sku'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('name')
+                    ->label(trans_dash('tables.products.name'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\BadgeColumn::make('type')
+                    ->label(trans_dash('tables.products.type'))
                     ->colors([
                         'primary' => 'product',
                         'success' => 'service',
@@ -223,28 +236,30 @@ class ProductResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('category.name')
-                    ->label('Category')
+                    ->label(trans_dash('tables.products.category'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('brand.name')
-                    ->label('Brand')
+                    ->label(trans_dash('tables.products.brand'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('price')
+                    ->label(trans_dash('tables.products.price'))
                     ->money('USD')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('stock_quantity')
-                    ->label('Stock')
+                    ->label(trans_dash('tables.products.stock'))
                     ->sortable()
                     ->visible(fn () => true)
                     ->color(fn ($record) => $record->stock_quantity <= 0 ? 'danger' : 'success'),
 
                 Tables\Columns\IconColumn::make('is_active')
+                    ->label(trans_dash('tables.products.is_active'))
                     ->boolean()
                     ->sortable(),
 
@@ -255,36 +270,38 @@ class ProductResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
+                    ->label(trans_dash('filters.products.type.label'))
                     ->options([
-                        'product' => 'Product',
-                        'service' => 'Service',
+                        'product' => trans_dash('filters.products.type.options.product'),
+                        'service' => trans_dash('filters.products.type.options.service'),
                     ]),
 
                 Tables\Filters\SelectFilter::make('category_id')
-                    ->label('Category')
+                    ->label(trans_dash('filters.products.category_id.label'))
                     ->relationship('category', 'name')
                     ->searchable()
                     ->preload(),
 
                 Tables\Filters\SelectFilter::make('brand_id')
-                    ->label('Brand')
+                    ->label(trans_dash('filters.products.brand_id.label'))
                     ->relationship('brand', 'name')
                     ->searchable()
                     ->preload(),
 
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Active')
-                    ->placeholder('All')
-                    ->trueLabel('Active only')
-                    ->falseLabel('Inactive only'),
+                    ->label(trans_dash('filters.products.is_active.label'))
+                    ->placeholder(trans_dash('filters.products.is_active.placeholder'))
+                    ->trueLabel(trans_dash('filters.products.is_active.true_label'))
+                    ->falseLabel(trans_dash('filters.products.is_active.false_label')),
 
                 Tables\Filters\Filter::make('stock_quantity')
+                    ->label(trans_dash('filters.products.stock_quantity.label'))
                     ->form([
                         Forms\Components\TextInput::make('stock_from')
-                            ->label('Stock From')
+                            ->label(trans_dash('filters.products.stock_from.label'))
                             ->numeric(),
                         Forms\Components\TextInput::make('stock_to')
-                            ->label('Stock To')
+                            ->label(trans_dash('filters.products.stock_to.label'))
                             ->numeric(),
                     ])
                     ->query(function ($query, array $data) {

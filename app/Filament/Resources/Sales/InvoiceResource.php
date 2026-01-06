@@ -195,26 +195,27 @@ class InvoiceResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('invoice_number')
-                    ->label('Invoice #')
+                    ->label(trans_dash('tables.invoices.invoice_number'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('invoice_date')
-                    ->label('Date')
+                    ->label(trans_dash('tables.invoices.date'))
                     ->date()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('customer.name')
-                    ->label('Customer')
+                    ->label(trans_dash('tables.invoices.customer'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('order.order_number')
-                    ->label('Order')
+                    ->label(trans_dash('tables.invoices.order'))
                     ->searchable()
                     ->toggleable(),
 
                 Tables\Columns\BadgeColumn::make('status')
+                    ->label(trans_dash('tables.invoices.status'))
                     ->colors([
                         'gray' => 'draft',
                         'info' => 'sent',
@@ -225,41 +226,42 @@ class InvoiceResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('total')
-                    ->label('Total')
+                    ->label(trans_dash('tables.invoices.total'))
                     ->money('USD')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('due_date')
-                    ->label('Due Date')
+                    ->label(trans_dash('tables.invoices.due_date'))
                     ->date()
                     ->sortable()
                     ->color(fn ($record) => $record->due_date && $record->due_date->isPast() && $record->status !== 'paid' ? 'danger' : null),
 
                 Tables\Columns\TextColumn::make('paid_at')
-                    ->label('Paid At')
+                    ->label(trans_dash('tables.invoices.paid_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
+                    ->label(trans_dash('filters.invoices.status.label'))
                     ->options([
-                        'draft' => 'Draft',
-                        'sent' => 'Sent',
-                        'paid' => 'Paid',
-                        'partial' => 'Partial',
-                        'overdue' => 'Overdue',
-                        'cancelled' => 'Cancelled',
+                        'draft' => trans_dash('filters.invoices.status.options.draft'),
+                        'sent' => trans_dash('filters.invoices.status.options.sent'),
+                        'paid' => trans_dash('filters.invoices.status.options.paid'),
+                        'partial' => trans_dash('filters.invoices.status.options.partial'),
+                        'overdue' => trans_dash('filters.invoices.status.options.overdue'),
+                        'cancelled' => trans_dash('filters.invoices.status.options.cancelled'),
                     ]),
 
                 Tables\Filters\SelectFilter::make('customer_id')
-                    ->label('Customer')
+                    ->label(trans_dash('filters.invoices.customer_id.label'))
                     ->relationship('customer', 'name')
                     ->searchable()
                     ->preload(),
 
                 Tables\Filters\Filter::make('overdue')
-                    ->label('Overdue Invoices')
+                    ->label(trans_dash('filters.invoices.overdue.label'))
                     ->query(fn ($query) => $query->where('due_date', '<', now())
                         ->whereNotIn('status', ['paid', 'cancelled'])),
             ])

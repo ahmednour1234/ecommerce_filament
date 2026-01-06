@@ -117,17 +117,17 @@ class InstallmentResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('installment_number')
-                    ->label('Installment #')
+                    ->label(trans_dash('tables.installments.installment_number'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('installmentable_type')
-                    ->label('Type')
+                    ->label(trans_dash('tables.installments.type'))
                     ->formatStateUsing(fn ($state) => class_basename($state))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('installmentable_id')
-                    ->label('Order/Invoice')
+                    ->label(trans_dash('tables.installments.order_invoice'))
                     ->getStateUsing(function ($record) {
                         if (!$record->installmentable) {
                             return '-';
@@ -140,39 +140,40 @@ class InstallmentResource extends Resource
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('amount')
-                    ->label('Amount')
+                    ->label(trans_dash('tables.installments.amount'))
                     ->money('USD')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('due_date')
-                    ->label('Due Date')
+                    ->label(trans_dash('tables.installments.due_date'))
                     ->date()
                     ->sortable()
                     ->color(fn ($record) => $record->isOverdue() ? 'danger' : null),
 
                 Tables\Columns\TextColumn::make('paid_date')
-                    ->label('Paid Date')
+                    ->label(trans_dash('tables.installments.paid_date'))
                     ->date()
                     ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('remaining_amount')
-                    ->label('Remaining')
+                    ->label(trans_dash('tables.installments.remaining'))
                     ->money('USD')
                     ->getStateUsing(fn ($record) => $record->remaining_amount)
                     ->color('danger')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('paymentMethod.name')
-                    ->label('Payment Method')
+                    ->label(trans_dash('tables.installments.payment_method'))
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('payment_reference')
-                    ->label('Reference')
+                    ->label(trans_dash('tables.installments.reference'))
                     ->searchable()
                     ->toggleable(),
 
                 Tables\Columns\BadgeColumn::make('status')
+                    ->label(trans_dash('tables.installments.status'))
                     ->colors([
                         'warning' => 'pending',
                         'success' => 'paid',
@@ -183,14 +184,15 @@ class InstallmentResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
+                    ->label(trans_dash('filters.installments.status.label'))
                     ->options([
-                        'pending' => 'Pending',
-                        'paid' => 'Paid',
-                        'overdue' => 'Overdue',
-                        'cancelled' => 'Cancelled',
+                        'pending' => trans_dash('filters.installments.status.options.pending'),
+                        'paid' => trans_dash('filters.installments.status.options.paid'),
+                        'overdue' => trans_dash('filters.installments.status.options.overdue'),
+                        'cancelled' => trans_dash('filters.installments.status.options.cancelled'),
                     ]),
                 Tables\Filters\Filter::make('overdue')
-                    ->label('Overdue Installments')
+                    ->label(trans_dash('filters.installments.overdue.label'))
                     ->query(fn ($query) => $query->where('status', 'pending')
                         ->where('due_date', '<', now())),
             ])

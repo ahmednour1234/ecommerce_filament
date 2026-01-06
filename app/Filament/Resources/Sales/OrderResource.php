@@ -235,21 +235,22 @@ class OrderResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('order_number')
-                    ->label('Order #')
+                    ->label(trans_dash('tables.orders.order_number'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('order_date')
-                    ->label('Date')
+                    ->label(trans_dash('tables.orders.date'))
                     ->date()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('customer.name')
-                    ->label('Customer')
+                    ->label(trans_dash('tables.orders.customer'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\BadgeColumn::make('status')
+                    ->label(trans_dash('tables.orders.status'))
                     ->colors([
                         'warning' => 'pending',
                         'info' => 'processing',
@@ -260,12 +261,12 @@ class OrderResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('total')
-                    ->label('Total')
+                    ->label(trans_dash('tables.orders.total'))
                     ->money('USD')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('currency.symbol')
-                    ->label('Currency')
+                    ->label(trans_dash('tables.orders.currency'))
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('created_at')
@@ -275,26 +276,28 @@ class OrderResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
+                    ->label(trans_dash('filters.orders.status.label'))
                     ->options([
-                        'pending' => 'Pending',
-                        'processing' => 'Processing',
-                        'completed' => 'Completed',
-                        'cancelled' => 'Cancelled',
-                        'refunded' => 'Refunded',
+                        'pending' => trans_dash('filters.orders.status.options.pending'),
+                        'processing' => trans_dash('filters.orders.status.options.processing'),
+                        'completed' => trans_dash('filters.orders.status.options.completed'),
+                        'cancelled' => trans_dash('filters.orders.status.options.cancelled'),
+                        'refunded' => trans_dash('filters.orders.status.options.refunded'),
                     ]),
 
                 Tables\Filters\SelectFilter::make('customer_id')
-                    ->label('Customer')
+                    ->label(trans_dash('filters.orders.customer_id.label'))
                     ->relationship('customer', 'name')
                     ->searchable()
                     ->preload(),
 
                 Tables\Filters\Filter::make('order_date')
+                    ->label(trans_dash('filters.orders.order_date.label'))
                     ->form([
                         Forms\Components\DatePicker::make('created_from')
-                            ->label('From'),
+                            ->label(trans_dash('filters.orders.created_from.label')),
                         Forms\Components\DatePicker::make('created_until')
-                            ->label('Until'),
+                            ->label(trans_dash('filters.orders.created_until.label')),
                     ])
                     ->query(function ($query, array $data) {
                         return $query

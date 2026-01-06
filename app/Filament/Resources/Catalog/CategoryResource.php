@@ -26,42 +26,47 @@ class CategoryResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Basic Information')
+                Forms\Components\Section::make(trans_dash('forms.categories.sections.basic_information'))
                     ->schema([
                         Forms\Components\TextInput::make('name')
+                            ->label(trans_dash('forms.categories.name.label'))
                             ->required()
                             ->maxLength(255)
                             ->reactive()
                             ->afterStateUpdated(fn ($state, callable $set) => $set('slug', \Illuminate\Support\Str::slug($state))),
 
                         Forms\Components\TextInput::make('slug')
+                            ->label(trans_dash('forms.categories.slug.label'))
                             ->maxLength(255)
                             ->unique(ignoreRecord: true)
-                            ->helperText('Auto-generated from name'),
+                            ->helperText(trans_dash('forms.categories.slug.helper_text')),
 
                         Forms\Components\Select::make('parent_id')
-                            ->label('Parent Category')
+                            ->label(trans_dash('forms.categories.parent_id.label'))
                             ->relationship('parent', 'name')
                             ->searchable()
                             ->preload()
                             ->nullable(),
 
                         Forms\Components\Textarea::make('description')
+                            ->label(trans_dash('forms.categories.description.label'))
                             ->rows(3)
                             ->columnSpanFull(),
 
                         Forms\Components\FileUpload::make('image')
+                            ->label(trans_dash('forms.categories.image.label'))
                             ->image()
                             ->directory('categories')
                             ->columnSpanFull(),
 
                         Forms\Components\TextInput::make('sort_order')
+                            ->label(trans_dash('forms.categories.sort_order.label'))
                             ->numeric()
                             ->default(0)
                             ->required(),
 
                         Forms\Components\Toggle::make('is_active')
-                            ->label('Active')
+                            ->label(trans_dash('forms.categories.is_active.label'))
                             ->default(true)
                             ->required(),
                     ])
@@ -74,23 +79,26 @@ class CategoryResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label(trans_dash('tables.categories.name'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('parent.name')
-                    ->label('Parent')
+                    ->label(trans_dash('tables.categories.parent'))
                     ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\ImageColumn::make('image')
+                    ->label(trans_dash('tables.categories.image'))
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('products_count')
-                    ->label('Products')
+                    ->label(trans_dash('tables.categories.products'))
                     ->counts('products')
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('is_active')
+                    ->label(trans_dash('tables.categories.is_active'))
                     ->boolean()
                     ->sortable(),
 
@@ -101,10 +109,10 @@ class CategoryResource extends Resource
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Active')
-                    ->placeholder('All')
-                    ->trueLabel('Active only')
-                    ->falseLabel('Inactive only'),
+                    ->label(trans_dash('filters.categories.is_active.label'))
+                    ->placeholder(trans_dash('filters.categories.is_active.placeholder'))
+                    ->trueLabel(trans_dash('filters.categories.is_active.true_label'))
+                    ->falseLabel(trans_dash('filters.categories.is_active.false_label')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

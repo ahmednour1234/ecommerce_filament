@@ -27,51 +27,61 @@ class CustomerResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Basic Information')
+                Forms\Components\Section::make(trans_dash('forms.customers.sections.basic_information'))
                     ->schema([
                         Forms\Components\TextInput::make('code')
+                            ->label(trans_dash('forms.customers.code.label'))
                             ->required()
                             ->maxLength(50)
                             ->unique(ignoreRecord: true)
-                            ->helperText('Unique customer code'),
+                            ->helperText(trans_dash('forms.customers.code.helper_text')),
 
                         Forms\Components\TextInput::make('name')
+                            ->label(trans_dash('forms.customers.name.label'))
                             ->required()
                             ->maxLength(255),
 
                         Forms\Components\TextInput::make('email')
+                            ->label(trans_dash('forms.customers.email.label'))
                             ->email()
                             ->maxLength(255),
 
                         Forms\Components\TextInput::make('phone')
+                            ->label(trans_dash('forms.customers.phone.label'))
                             ->tel()
                             ->maxLength(50),
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make('Address')
+                Forms\Components\Section::make(trans_dash('forms.customers.sections.address'))
                     ->schema([
                         Forms\Components\Textarea::make('address')
+                            ->label(trans_dash('forms.customers.address.label'))
                             ->rows(2)
                             ->columnSpanFull(),
 
                         Forms\Components\TextInput::make('city')
+                            ->label(trans_dash('forms.customers.city.label'))
                             ->maxLength(100),
 
                         Forms\Components\TextInput::make('state')
+                            ->label(trans_dash('forms.customers.state.label'))
                             ->maxLength(100),
 
                         Forms\Components\TextInput::make('country')
+                            ->label(trans_dash('forms.customers.country.label'))
                             ->maxLength(100),
 
                         Forms\Components\TextInput::make('postal_code')
+                            ->label(trans_dash('forms.customers.postal_code.label'))
                             ->maxLength(20),
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make('Financial')
+                Forms\Components\Section::make(trans_dash('forms.customers.sections.financial'))
                     ->schema([
                         Forms\Components\Select::make('currency_id')
+                            ->label(trans_dash('forms.customers.currency_id.label'))
                             ->relationship('currency', 'name')
                             ->options(Currency::active()->pluck('name', 'id'))
                             ->searchable()
@@ -79,6 +89,7 @@ class CustomerResource extends Resource
                             ->nullable(),
 
                         Forms\Components\TextInput::make('credit_limit')
+                            ->label(trans_dash('forms.customers.credit_limit.label'))
                             ->numeric()
                             ->default(0)
                             ->minValue(0)
@@ -86,7 +97,7 @@ class CustomerResource extends Resource
                             ->prefix('$'),
 
                         Forms\Components\Toggle::make('is_active')
-                            ->label('Active')
+                            ->label(trans_dash('forms.customers.is_active.label'))
                             ->default(true)
                             ->required(),
                     ])
@@ -99,32 +110,38 @@ class CustomerResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
+                    ->label(trans_dash('tables.customers.code'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('name')
+                    ->label(trans_dash('tables.customers.name'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('email')
+                    ->label(trans_dash('tables.customers.email'))
                     ->searchable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('phone')
+                    ->label(trans_dash('tables.customers.phone'))
                     ->searchable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('credit_limit')
+                    ->label(trans_dash('tables.customers.credit_limit'))
                     ->money('USD')
                     ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('orders_count')
-                    ->label('Orders')
+                    ->label(trans_dash('tables.customers.orders'))
                     ->counts('orders')
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('is_active')
+                    ->label(trans_dash('tables.customers.is_active'))
                     ->boolean()
                     ->sortable(),
 
@@ -135,10 +152,10 @@ class CustomerResource extends Resource
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Active')
-                    ->placeholder('All')
-                    ->trueLabel('Active only')
-                    ->falseLabel('Inactive only'),
+                    ->label(trans_dash('filters.customers.is_active.label'))
+                    ->placeholder(trans_dash('filters.customers.is_active.placeholder'))
+                    ->trueLabel(trans_dash('filters.customers.is_active.true_label'))
+                    ->falseLabel(trans_dash('filters.customers.is_active.false_label')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

@@ -26,30 +26,34 @@ class BrandResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Basic Information')
+                Forms\Components\Section::make(trans_dash('forms.brands.sections.basic_information'))
                     ->schema([
                         Forms\Components\TextInput::make('name')
+                            ->label(trans_dash('forms.brands.name.label'))
                             ->required()
                             ->maxLength(255)
                             ->reactive()
                             ->afterStateUpdated(fn ($state, callable $set) => $set('slug', \Illuminate\Support\Str::slug($state))),
 
                         Forms\Components\TextInput::make('slug')
+                            ->label(trans_dash('forms.brands.slug.label'))
                             ->maxLength(255)
                             ->unique(ignoreRecord: true)
-                            ->helperText('Auto-generated from name'),
+                            ->helperText(trans_dash('forms.brands.slug.helper_text')),
 
                         Forms\Components\FileUpload::make('logo')
+                            ->label(trans_dash('forms.brands.logo.label'))
                             ->image()
                             ->directory('brands')
                             ->columnSpanFull(),
 
                         Forms\Components\Textarea::make('description')
+                            ->label(trans_dash('forms.brands.description.label'))
                             ->rows(3)
                             ->columnSpanFull(),
 
                         Forms\Components\Toggle::make('is_active')
-                            ->label('Active')
+                            ->label(trans_dash('forms.brands.is_active.label'))
                             ->default(true)
                             ->required(),
                     ])
@@ -62,18 +66,21 @@ class BrandResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label(trans_dash('tables.brands.name'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\ImageColumn::make('logo')
+                    ->label(trans_dash('tables.brands.logo'))
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('products_count')
-                    ->label('Products')
+                    ->label(trans_dash('tables.brands.products'))
                     ->counts('products')
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('is_active')
+                    ->label(trans_dash('tables.brands.is_active'))
                     ->boolean()
                     ->sortable(),
 
@@ -84,10 +91,10 @@ class BrandResource extends Resource
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Active')
-                    ->placeholder('All')
-                    ->trueLabel('Active only')
-                    ->falseLabel('Inactive only'),
+                    ->label(trans_dash('filters.brands.is_active.label'))
+                    ->placeholder(trans_dash('filters.brands.is_active.placeholder'))
+                    ->trueLabel(trans_dash('filters.brands.is_active.true_label'))
+                    ->falseLabel(trans_dash('filters.brands.is_active.false_label')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
