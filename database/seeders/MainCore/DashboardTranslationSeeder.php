@@ -4426,9 +4426,41 @@ class DashboardTranslationSeeder extends Seeder
                 'en' => 'The new end date must be after the current end date',
                 'ar' => 'يجب أن يكون تاريخ الانتهاء الجديد بعد تاريخ الانتهاء الحالي',
             ],
+            'forms.bank_guarantees.fields.currency' => [
+                'en' => 'Currency',
+                'ar' => 'العملة',
+            ],
+            'forms.bank_guarantees.fields.exchange_rate' => [
+                'en' => 'Exchange Rate',
+                'ar' => 'سعر الصرف',
+            ],
+            'forms.bank_guarantees.fields.exchange_rate_helper' => [
+                'en' => 'Automatically fetched from currency rates based on issue date',
+                'ar' => 'يتم جلبها تلقائياً من أسعار العملات بناءً على تاريخ الإصدار',
+            ],
+            'forms.bank_guarantees.fields.base_amount' => [
+                'en' => 'Base Amount',
+                'ar' => 'المبلغ الأساسي',
+            ],
             'forms.bank_guarantees.fields.amount' => [
                 'en' => 'Amount',
                 'ar' => 'المبلغ',
+            ],
+            'forms.bank_guarantees.fields.currency' => [
+                'en' => 'Currency',
+                'ar' => 'العملة',
+            ],
+            'forms.bank_guarantees.fields.exchange_rate' => [
+                'en' => 'Exchange Rate',
+                'ar' => 'سعر الصرف',
+            ],
+            'forms.bank_guarantees.fields.exchange_rate_helper' => [
+                'en' => 'Automatically fetched from currency rates based on issue date',
+                'ar' => 'يتم جلبها تلقائياً من أسعار العملات بناءً على تاريخ الإصدار',
+            ],
+            'forms.bank_guarantees.fields.base_amount' => [
+                'en' => 'Base Amount (in default currency)',
+                'ar' => 'المبلغ الأساسي (بالعملة الافتراضية)',
             ],
             'forms.bank_guarantees.fields.bank_fees' => [
                 'en' => 'Bank Fees',
@@ -4495,6 +4527,10 @@ class DashboardTranslationSeeder extends Seeder
             'tables.bank_guarantees.amount' => [
                 'en' => 'Amount',
                 'ar' => 'المبلغ',
+            ],
+            'tables.bank_guarantees.currency' => [
+                'en' => 'Currency',
+                'ar' => 'العملة',
             ],
             'tables.bank_guarantees.end_date' => [
                 'en' => 'End Date',

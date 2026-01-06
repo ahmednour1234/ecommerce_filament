@@ -61,10 +61,14 @@ class BankGuaranteeService
             $journalEntryService = app(JournalEntryService::class);
             $lines = [];
 
+            // Use base_amount if available, otherwise use amount
+            $amount = $guarantee->base_amount ?? $guarantee->amount;
+            $bankFees = $guarantee->base_bank_fees ?? $guarantee->bank_fees;
+
             // Line 1: Debit original guarantee account
             $lines[] = [
                 'account_id' => $guarantee->original_guarantee_account_id,
-                'debit' => $guarantee->amount,
+                'debit' => $amount,
                 'credit' => 0,
                 'description' => 'Bank Guarantee: ' . $guarantee->beneficiary_name,
                 'branch_id' => $guarantee->branch_id,
@@ -74,17 +78,17 @@ class BankGuaranteeService
             $lines[] = [
                 'account_id' => $guarantee->bank_account_id,
                 'debit' => 0,
-                'credit' => $guarantee->amount,
+                'credit' => $amount,
                 'description' => 'Bank Guarantee: ' . $guarantee->beneficiary_name,
                 'branch_id' => $guarantee->branch_id,
             ];
 
             // If bank fees > 0, add fees entries
-            if ($guarantee->bank_fees > 0 && $guarantee->bank_fees_account_id) {
+            if ($bankFees > 0 && $guarantee->bank_fees_account_id) {
                 // Line 3: Debit bank fees account
                 $lines[] = [
                     'account_id' => $guarantee->bank_fees_account_id,
-                    'debit' => $guarantee->bank_fees,
+                    'debit' => $bankFees,
                     'credit' => 0,
                     'description' => 'Bank Fees for Guarantee: ' . $guarantee->guarantee_number,
                     'branch_id' => $guarantee->branch_id,
@@ -95,7 +99,7 @@ class BankGuaranteeService
                 $lines[] = [
                     'account_id' => $feesCreditAccountId,
                     'debit' => 0,
-                    'credit' => $guarantee->bank_fees,
+                    'credit' => $bankFees,
                     'description' => 'Bank Fees for Guarantee: ' . $guarantee->guarantee_number,
                     'branch_id' => $guarantee->branch_id,
                 ];

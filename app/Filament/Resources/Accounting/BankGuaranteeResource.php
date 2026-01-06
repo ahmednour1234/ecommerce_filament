@@ -8,6 +8,9 @@ use App\Filament\Resources\Accounting\BankGuaranteeResource\Pages;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\BankGuarantee;
 use App\Models\MainCore\Branch;
+use App\Models\MainCore\Currency;
+use App\Services\Accounting\CurrencyConversionService;
+use App\Services\MainCore\CurrencyService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -33,6 +36,15 @@ class BankGuaranteeResource extends Resource
             return [$account->id => $account->code . ' - ' . $account->name];
         })->toArray();
 
+        $currencies = Currency::active()->get();
+        $currencyOptions = $currencies->mapWithKeys(function ($currency) {
+            return [$currency->id => $currency->code . ' - ' . $currency->name];
+        })->toArray();
+
+        $currencyService = app(CurrencyService::class);
+        $defaultCurrency = $currencyService->defaultCurrency();
+        $defaultCurrencyId = $defaultCurrency?->id;
+
         return $form
             ->schema([
                 Forms\Components\Section::make(tr('forms.bank_guarantees.sections.basic_information', [], null, 'dashboard'))
@@ -53,7 +65,22 @@ class BankGuaranteeResource extends Resource
                             ->label(tr('forms.bank_guarantees.fields.issue_date', [], null, 'dashboard'))
                             ->required()
                             ->default(now())
-                            ->displayFormat('Y-m-d'),
+                            ->displayFormat('Y-m-d')
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set, callable $get) use ($defaultCurrencyId) {
+                                // Recalculate exchange rate when issue date changes
+                                $currencyId = $get('currency_id');
+                                if ($currencyId && $currencyId != $defaultCurrencyId) {
+                                    try {
+                                        $issueDate = is_string($state) ? new \DateTime($state) : $state;
+                                        $conversionService = app(CurrencyConversionService::class);
+                                        $rate = $conversionService->getExchangeRate((int) $currencyId, $issueDate);
+                                        $set('exchange_rate', $rate);
+                                    } catch (\Exception $e) {
+                                        $set('exchange_rate', 1);
+                                    }
+                                }
+                            }),
 
                         Forms\Components\DatePicker::make('start_date')
                             ->label(tr('forms.bank_guarantees.fields.start_date', [], null, 'dashboard'))
@@ -88,13 +115,72 @@ class BankGuaranteeResource extends Resource
 
                 Forms\Components\Section::make(tr('forms.bank_guarantees.sections.financial_information', [], null, 'dashboard'))
                     ->schema([
+                        Forms\Components\Select::make('currency_id')
+                            ->label(tr('forms.bank_guarantees.fields.currency', [], null, 'dashboard'))
+                            ->options($currencyOptions)
+                            ->default($defaultCurrencyId)
+                            ->searchable()
+                            ->preload()
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set, callable $get) use ($defaultCurrencyId) {
+                                if ($state == $defaultCurrencyId || empty($state)) {
+                                    $set('exchange_rate', 1);
+                                } else {
+                                    // Fetch exchange rate using CurrencyConversionService
+                                    try {
+                                        $issueDate = $get('issue_date') ?? now();
+                                        if (is_string($issueDate)) {
+                                            $issueDate = new \DateTime($issueDate);
+                                        }
+                                        
+                                        $conversionService = app(CurrencyConversionService::class);
+                                        $rate = $conversionService->getExchangeRate((int) $state, $issueDate);
+                                        $set('exchange_rate', $rate);
+                                    } catch (\Exception $e) {
+                                        $set('exchange_rate', 1);
+                                    }
+                                }
+                            }),
+
+                        Forms\Components\TextInput::make('exchange_rate')
+                            ->label(tr('forms.bank_guarantees.fields.exchange_rate', [], null, 'dashboard'))
+                            ->numeric()
+                            ->default(1)
+                            ->required()
+                            ->step(0.00000001)
+                            ->disabled()
+                            ->dehydrated()
+                            ->helperText(tr('forms.bank_guarantees.fields.exchange_rate_helper', [], null, 'dashboard')),
+
                         Forms\Components\TextInput::make('amount')
                             ->label(tr('forms.bank_guarantees.fields.amount', [], null, 'dashboard'))
                             ->numeric()
                             ->required()
                             ->minValue(0.01)
                             ->step(0.01)
-                            ->prefix(tr('forms.bank_guarantees.currency_symbol', [], null, 'dashboard')),
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                $amount = (float) ($state ?? 0);
+                                $exchangeRate = (float) ($get('exchange_rate') ?? 1);
+                                $baseAmount = round($amount * $exchangeRate, 2);
+                                $set('base_amount', $baseAmount);
+                            }),
+
+                        Forms\Components\Placeholder::make('base_amount_display')
+                            ->label(tr('forms.bank_guarantees.fields.base_amount', [], null, 'dashboard'))
+                            ->content(function (callable $get) {
+                                $amount = (float) ($get('amount') ?? 0);
+                                $exchangeRate = (float) ($get('exchange_rate') ?? 1);
+                                $baseAmount = round($amount * $exchangeRate, 2);
+                                $defaultCurrency = app(CurrencyService::class)->defaultCurrency();
+                                $symbol = $defaultCurrency?->symbol ?? '';
+                                return $symbol . ' ' . number_format($baseAmount, 2);
+                            })
+                            ->visible(fn (callable $get) => (float) ($get('exchange_rate') ?? 1) != 1),
+
+                        Forms\Components\Hidden::make('base_amount')
+                            ->default(0)
+                            ->dehydrated(),
 
                         Forms\Components\TextInput::make('bank_fees')
                             ->label(tr('forms.bank_guarantees.fields.bank_fees', [], null, 'dashboard'))
@@ -102,9 +188,17 @@ class BankGuaranteeResource extends Resource
                             ->default(0)
                             ->minValue(0)
                             ->step(0.01)
-                            ->prefix(tr('forms.bank_guarantees.currency_symbol', [], null, 'dashboard'))
-                            ->helperText(tr('helpers.fees_zero_if_none', [], null, 'dashboard'))
-                            ->reactive(),
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                $fees = (float) ($state ?? 0);
+                                $exchangeRate = (float) ($get('exchange_rate') ?? 1);
+                                $baseFees = round($fees * $exchangeRate, 2);
+                                $set('base_bank_fees', $baseFees);
+                            }),
+
+                        Forms\Components\Hidden::make('base_bank_fees')
+                            ->default(0)
+                            ->dehydrated(),
 
                         Forms\Components\Select::make('original_guarantee_account_id')
                             ->label(tr('forms.bank_guarantees.fields.original_guarantee_account', [], null, 'dashboard'))
@@ -183,8 +277,17 @@ class BankGuaranteeResource extends Resource
 
                 Tables\Columns\TextColumn::make('amount')
                     ->label(tr('tables.bank_guarantees.amount', [], null, 'dashboard'))
-                    ->money(\App\Support\Money::defaultCurrencyCode())
+                    ->formatStateUsing(function ($record) {
+                        $amount = number_format((float) $record->amount, 2);
+                        $currency = $record->currency?->code ?? '';
+                        return $currency ? "{$currency} {$amount}" : $amount;
+                    })
                     ->sortable(),
+
+                Tables\Columns\TextColumn::make('currency.code')
+                    ->label(tr('tables.bank_guarantees.currency', [], null, 'dashboard'))
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('end_date')
                     ->label(tr('tables.bank_guarantees.end_date', [], null, 'dashboard'))

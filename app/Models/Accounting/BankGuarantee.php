@@ -3,7 +3,10 @@
 namespace App\Models\Accounting;
 
 use App\Models\MainCore\Branch;
+use App\Models\MainCore\Currency;
 use App\Models\User;
+use App\Services\Accounting\CurrencyConversionService;
+use App\Services\MainCore\CurrencyService;
 use App\Traits\HasBranch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,7 +25,11 @@ class BankGuarantee extends Model
         'end_date',
         'beneficiary_name',
         'amount',
+        'currency_id',
+        'exchange_rate',
+        'base_amount',
         'bank_fees',
+        'base_bank_fees',
         'original_guarantee_account_id',
         'bank_account_id',
         'bank_fees_account_id',
@@ -39,7 +46,10 @@ class BankGuarantee extends Model
         'start_date' => 'date',
         'end_date' => 'date',
         'amount' => 'decimal:2',
+        'exchange_rate' => 'decimal:8',
+        'base_amount' => 'decimal:2',
         'bank_fees' => 'decimal:2',
+        'base_bank_fees' => 'decimal:2',
     ];
 
     /**
@@ -59,12 +69,20 @@ class BankGuarantee extends Model
             if (empty($guarantee->created_by) && auth()->check()) {
                 $guarantee->created_by = auth()->id();
             }
+
+            // Calculate base amounts if currency is set
+            static::calculateBaseAmounts($guarantee);
         });
 
         static::updating(function ($guarantee) {
             // Set updated_by if not set
             if (empty($guarantee->updated_by) && auth()->check()) {
                 $guarantee->updated_by = auth()->id();
+            }
+
+            // Recalculate base amounts if currency or amount changed
+            if ($guarantee->isDirty(['currency_id', 'exchange_rate', 'amount', 'bank_fees'])) {
+                static::calculateBaseAmounts($guarantee);
             }
         });
     }
@@ -133,6 +151,69 @@ class BankGuarantee extends Model
     public function bankFeesDebitAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'bank_fees_debit_account_id');
+    }
+
+    /**
+     * Get the currency
+     */
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class);
+    }
+
+    /**
+     * Calculate base amounts from currency and exchange rate
+     */
+    protected static function calculateBaseAmounts($guarantee): void
+    {
+        $currencyService = app(CurrencyService::class);
+        $defaultCurrency = $currencyService->defaultCurrency();
+
+        // If no currency set, use default currency
+        if (empty($guarantee->currency_id)) {
+            if ($defaultCurrency) {
+                $guarantee->currency_id = $defaultCurrency->id;
+                $guarantee->exchange_rate = 1.0;
+            } else {
+                $guarantee->exchange_rate = 1.0;
+            }
+        } else {
+            // If currency is default currency, set rate to 1
+            if ($defaultCurrency && $guarantee->currency_id == $defaultCurrency->id) {
+                $guarantee->exchange_rate = 1.0;
+            } elseif (empty($guarantee->exchange_rate) || $guarantee->exchange_rate == 0) {
+                // If exchange rate not set, try to fetch it
+                try {
+                    $conversionService = app(CurrencyConversionService::class);
+                    $issueDate = $guarantee->issue_date ?? now();
+                    if (is_string($issueDate)) {
+                        $issueDate = new \DateTime($issueDate);
+                    }
+                    $guarantee->exchange_rate = $conversionService->getExchangeRate((int) $guarantee->currency_id, $issueDate);
+                } catch (\Exception $e) {
+                    $guarantee->exchange_rate = 1.0;
+                }
+            }
+        }
+
+        // Ensure exchange_rate is set
+        if (empty($guarantee->exchange_rate) || $guarantee->exchange_rate == 0) {
+            $guarantee->exchange_rate = 1.0;
+        }
+
+        // Calculate base amount
+        if ($guarantee->amount) {
+            $guarantee->base_amount = round((float) $guarantee->amount * (float) $guarantee->exchange_rate, 2);
+        } else {
+            $guarantee->base_amount = 0;
+        }
+
+        // Calculate base bank fees
+        if ($guarantee->bank_fees) {
+            $guarantee->base_bank_fees = round((float) $guarantee->bank_fees * (float) $guarantee->exchange_rate, 2);
+        } else {
+            $guarantee->base_bank_fees = 0;
+        }
     }
 
     /**
