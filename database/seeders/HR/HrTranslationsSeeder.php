@@ -28,6 +28,8 @@ class HrTranslationsSeeder extends Seeder
             // Navigation Group
             'navigation.groups.hr' => ['en' => 'HR', 'ar' => 'الموارد البشرية'],
             'sidebar.hr' => ['en' => 'HR', 'ar' => 'الموارد البشرية'],
+            'navigation.groups.hr_attendance' => ['en' => 'HR > Attendance', 'ar' => 'الموارد البشرية > الحضور'],
+            'sidebar.hr_attendance' => ['en' => 'Attendance', 'ar' => 'الحضور'],
 
             // Navigation Items
             'navigation.hr_departments' => ['en' => 'Departments', 'ar' => 'الإدارات'],

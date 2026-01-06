@@ -28,8 +28,9 @@ class HrAttendanceTranslationsSeeder extends Seeder
             // Navigation
             'navigation.groups.hr' => ['en' => 'HR', 'ar' => 'الموارد البشرية'],
             'sidebar.hr' => ['en' => 'HR', 'ar' => 'الموارد البشرية'],
-            'navigation.hr_attendance' => ['en' => 'Attendance', 'ar' => 'الحضور'],
+            'navigation.groups.hr_attendance' => ['en' => 'HR > Attendance', 'ar' => 'الموارد البشرية > الحضور'],
             'sidebar.hr_attendance' => ['en' => 'Attendance', 'ar' => 'الحضور'],
+            'navigation.hr_attendance' => ['en' => 'Attendance', 'ar' => 'الحضور'],
             'navigation.hr_work_places' => ['en' => 'Work Places', 'ar' => 'أماكن العمل'],
             'sidebar.hr_work_places' => ['en' => 'Work Places', 'ar' => 'أماكن العمل'],
             'navigation.hr_employee_groups' => ['en' => 'Employee Groups', 'ar' => 'مجموعات الموظفين'],

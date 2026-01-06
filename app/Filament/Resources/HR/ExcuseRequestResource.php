@@ -20,8 +20,8 @@ class ExcuseRequestResource extends Resource
     protected static ?string $model = ExcuseRequest::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clock';
-    protected static ?string $navigationGroup = 'HR';
-    protected static ?int $navigationSort = 73;
+    protected static ?string $navigationGroup = 'HR > Attendance';
+    protected static ?int $navigationSort = 4;
     protected static ?string $navigationTranslationKey = 'navigation.hr_excuse_requests';
 
     public static function form(Form $form): Form
