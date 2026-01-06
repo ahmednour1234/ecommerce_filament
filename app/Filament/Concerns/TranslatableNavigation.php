@@ -10,7 +10,11 @@ trait TranslatableNavigation
      */
     public static function getNavigationLabel(): string
     {
-        $defaultLabel = static::$navigationLabel ?? static::getModelLabel();
+        // Get default label - check for navigationLabel, then title, then modelLabel (if exists), then class name
+        $defaultLabel = static::$navigationLabel 
+            ?? (property_exists(static::class, 'title') ? static::$title : null)
+            ?? (method_exists(static::class, 'getModelLabel') ? static::getModelLabel() : null)
+            ?? class_basename(static::class);
         
         // If a custom translation key is set, use it
         if (isset(static::$navigationTranslationKey)) {
@@ -25,7 +29,22 @@ trait TranslatableNavigation
         }
         
         // Try to get translation - use model name or navigation label
-        $modelName = strtolower(class_basename(static::getModel()));
+        // Only try to get model if the method exists (for Resources)
+        $itemName = null;
+        if (method_exists(static::class, 'getModel')) {
+            try {
+                $model = static::getModel();
+                $itemName = strtolower(class_basename($model));
+            } catch (\Exception $e) {
+                // If getModel fails, use class name
+                $itemName = strtolower(class_basename(static::class));
+            }
+        } else {
+            // For Pages, use class name
+            $itemName = strtolower(class_basename(static::class));
+            // Remove 'Page' suffix if present
+            $itemName = str_replace('page', '', $itemName);
+        }
         
         // Normalize group name: remove special characters, replace spaces and & with underscore
         $group = '';
@@ -40,9 +59,9 @@ trait TranslatableNavigation
         
         // Build sidebar key: sidebar.{group}.{item}
         if ($group) {
-            $translationKey = "sidebar.{$group}.{$modelName}";
+            $translationKey = "sidebar.{$group}.{$itemName}";
         } else {
-            $translationKey = "sidebar.{$modelName}";
+            $translationKey = "sidebar.{$itemName}";
         }
         
         return tr($translationKey, [], null, 'dashboard') ?: $defaultLabel;
