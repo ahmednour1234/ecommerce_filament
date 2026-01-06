@@ -28,6 +28,16 @@ class TrialBalancePage extends Page implements HasTable
 
     public ?array $data = [];
 
+    public function getTitle(): string
+    {
+        return tr('pages.reports.trial_balance.title', [], null, 'dashboard');
+    }
+
+    public function getHeading(): string
+    {
+        return tr('pages.reports.trial_balance.title', [], null, 'dashboard');
+    }
+
     public function mount(): void
     {
         $this->form->fill([
@@ -39,17 +49,17 @@ class TrialBalancePage extends Page implements HasTable
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Filters')
+                Forms\Components\Section::make(tr('pages.reports.trial_balance.filters.section', [], null, 'dashboard'))
                     ->schema([
                         Forms\Components\DatePicker::make('as_of_date')
-                            ->label('As Of Date')
+                            ->label(tr('pages.reports.trial_balance.filters.as_of_date', [], null, 'dashboard'))
                             ->required()
                             ->default(now())
                             ->reactive()
                             ->afterStateUpdated(fn () => $this->resetTable()),
 
                         Forms\Components\Select::make('branch_id')
-                            ->label('Branch')
+                            ->label(tr('pages.reports.trial_balance.filters.branch', [], null, 'dashboard'))
                             ->options(Branch::active()->pluck('name', 'id'))
                             ->searchable()
                             ->preload()
@@ -58,7 +68,7 @@ class TrialBalancePage extends Page implements HasTable
                             ->afterStateUpdated(fn () => $this->resetTable()),
 
                         Forms\Components\Select::make('cost_center_id')
-                            ->label('Cost Center')
+                            ->label(tr('pages.reports.trial_balance.filters.cost_center', [], null, 'dashboard'))
                             ->options(CostCenter::active()->pluck('name', 'id'))
                             ->searchable()
                             ->preload()
@@ -140,32 +150,32 @@ class TrialBalancePage extends Page implements HasTable
             )
             ->columns([
                 Tables\Columns\TextColumn::make('code')
-                    ->label('Account Code')
+                    ->label(tr('pages.reports.trial_balance.columns.account_code', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Account Name')
+                    ->label(tr('pages.reports.trial_balance.columns.account_name', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('type')
-                    ->label('Type')
+                    ->label(tr('pages.reports.trial_balance.columns.type', [], null, 'dashboard'))
                     ->badge()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('debits')
-                    ->label('Debits')
+                    ->label(tr('pages.reports.trial_balance.columns.debits', [], null, 'dashboard'))
                     ->money('USD')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('credits')
-                    ->label('Credits')
+                    ->label(tr('pages.reports.trial_balance.columns.credits', [], null, 'dashboard'))
                     ->money('USD')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('balance')
-                    ->label('Balance')
+                    ->label(tr('pages.reports.trial_balance.columns.balance', [], null, 'dashboard'))
                     ->money('USD')
                     ->sortable()
                     ->color(fn ($record) => $record->balance < 0 ? 'danger' : 'success'),
@@ -178,21 +188,21 @@ class TrialBalancePage extends Page implements HasTable
     {
         return [
             \Filament\Actions\Action::make('export_excel')
-                ->label('Export to Excel')
+                ->label(tr('actions.export_excel', [], null, 'dashboard'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->action(function () {
                     return $this->exportToExcel(null, $this->getExportFilename('xlsx'));
                 }),
 
             \Filament\Actions\Action::make('export_pdf')
-                ->label('Export to PDF')
+                ->label(tr('actions.export_pdf', [], null, 'dashboard'))
                 ->icon('heroicon-o-document-arrow-down')
                 ->action(function () {
                     return $this->exportToPdf(null, $this->getExportFilename('pdf'));
                 }),
 
             \Filament\Actions\Action::make('print')
-                ->label('Print')
+                ->label(tr('actions.print', [], null, 'dashboard'))
                 ->icon('heroicon-o-printer')
                 ->url(fn () => $this->getPrintUrl())
                 ->openUrlInNewTab(),
@@ -202,7 +212,8 @@ class TrialBalancePage extends Page implements HasTable
     protected function getExportTitle(): ?string
     {
         $asOfDate = $this->data['as_of_date'] ?? now();
-        return 'Trial Balance as of ' . \Carbon\Carbon::parse($asOfDate)->format('Y-m-d');
+        $dateFormatted = \Carbon\Carbon::parse($asOfDate)->format('Y-m-d');
+        return tr('pages.reports.trial_balance.export_title', ['date' => $dateFormatted], null, 'dashboard');
     }
 
     protected function getExportMetadata(): array

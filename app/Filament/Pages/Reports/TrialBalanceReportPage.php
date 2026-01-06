@@ -31,6 +31,21 @@ class TrialBalanceReportPage extends Page implements HasTable, HasForms
     public ?array $data = [];
     protected ?TrialBalanceReportService $reportService = null;
 
+    public static function getNavigationGroup(): ?string
+    {
+        return tr('sidebar.reports', [], null, 'dashboard');
+    }
+
+    public function getTitle(): string
+    {
+        return tr('pages.reports.trial_balance.title', [], null, 'dashboard');
+    }
+
+    public function getHeading(): string
+    {
+        return tr('pages.reports.trial_balance.title', [], null, 'dashboard');
+    }
+
     public function mount(): void
     {
         $this->form->fill([

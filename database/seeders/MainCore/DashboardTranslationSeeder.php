@@ -1910,6 +1910,56 @@ class DashboardTranslationSeeder extends Seeder
                 'en' => 'Save Settings',
                 'ar' => 'حفظ الإعدادات',
             ],
+
+            // Trial Balance Report Page
+            'pages.reports.trial_balance.title' => [
+                'en' => 'Trial Balance Report',
+                'ar' => 'تقرير ميزان المراجعة',
+            ],
+            'pages.reports.trial_balance.filters.section' => [
+                'en' => 'Filters',
+                'ar' => 'التصفية',
+            ],
+            'pages.reports.trial_balance.filters.as_of_date' => [
+                'en' => 'As Of Date',
+                'ar' => 'حتى تاريخ',
+            ],
+            'pages.reports.trial_balance.filters.branch' => [
+                'en' => 'Branch',
+                'ar' => 'الفرع',
+            ],
+            'pages.reports.trial_balance.filters.cost_center' => [
+                'en' => 'Cost Center',
+                'ar' => 'مركز التكلفة',
+            ],
+            'pages.reports.trial_balance.columns.account_code' => [
+                'en' => 'Account Code',
+                'ar' => 'رمز الحساب',
+            ],
+            'pages.reports.trial_balance.columns.account_name' => [
+                'en' => 'Account Name',
+                'ar' => 'اسم الحساب',
+            ],
+            'pages.reports.trial_balance.columns.type' => [
+                'en' => 'Type',
+                'ar' => 'النوع',
+            ],
+            'pages.reports.trial_balance.columns.debits' => [
+                'en' => 'Debits',
+                'ar' => 'مدين',
+            ],
+            'pages.reports.trial_balance.columns.credits' => [
+                'en' => 'Credits',
+                'ar' => 'دائن',
+            ],
+            'pages.reports.trial_balance.columns.balance' => [
+                'en' => 'Balance',
+                'ar' => 'الرصيد',
+            ],
+            'pages.reports.trial_balance.export_title' => [
+                'en' => 'Trial Balance as of :date',
+                'ar' => 'ميزان المراجعة حتى تاريخ :date',
+            ],
         ];
 
         // Get all active languages
