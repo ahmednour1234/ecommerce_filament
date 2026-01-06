@@ -240,8 +240,7 @@ class MonthlyAttendanceReportPage extends Page implements HasForms, HasTable
                     ->sortable(),
             ])
             ->filters([])
-            ->defaultSort('employee_number')
-            ->recordKey('id');
+            ->defaultSort('employee_number');
     }
     
     public function getTableRecordKey($record): string
