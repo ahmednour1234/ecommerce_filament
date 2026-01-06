@@ -1960,6 +1960,136 @@ class DashboardTranslationSeeder extends Seeder
                 'en' => 'Trial Balance as of :date',
                 'ar' => 'ميزان المراجعة حتى تاريخ :date',
             ],
+
+            // General Ledger Report Page
+            'pages.reports.general_ledger.title' => [
+                'en' => 'General Ledger Report',
+                'ar' => 'تقرير دفتر الأستاذ العام',
+            ],
+
+            // Income Statement Report Page
+            'pages.reports.income_statement.title' => [
+                'en' => 'Income Statement Report',
+                'ar' => 'تقرير قائمة الدخل',
+            ],
+
+            // Account Statement Report Page
+            'pages.reports.account_statement.title' => [
+                'en' => 'Account Statement Report',
+                'ar' => 'تقرير كشف الحساب',
+            ],
+            'pages.reports.account_statement.select_account' => [
+                'en' => 'Please select an account to view the statement',
+                'ar' => 'يرجى اختيار حساب لعرض الكشف',
+            ],
+            'pages.reports.account_statement.select_account_description' => [
+                'en' => 'Choose an account from the filters above to generate the account statement.',
+                'ar' => 'اختر حسابًا من عوامل التصفية أعلاه لإنشاء كشف الحساب.',
+            ],
+
+            // Balance Sheet Report Page
+            'pages.reports.balance_sheet.title' => [
+                'en' => 'Balance Sheet Report',
+                'ar' => 'تقرير الميزانية العمومية',
+            ],
+
+            // Cash Flow Report Page
+            'pages.reports.cash_flow.title' => [
+                'en' => 'Cash Flow Report',
+                'ar' => 'تقرير التدفقات النقدية',
+            ],
+
+            // VAT Report Page
+            'pages.reports.vat_report.title' => [
+                'en' => 'VAT Report',
+                'ar' => 'تقرير ضريبة القيمة المضافة',
+            ],
+            'pages.reports.vat_report.empty_state' => [
+                'en' => 'No journal entry lines',
+                'ar' => 'لا توجد سطور قيود اليومية',
+            ],
+
+            // Fixed Assets Report Page
+            'pages.reports.fixed_assets.title' => [
+                'en' => 'Fixed Assets Report',
+                'ar' => 'تقرير الأصول الثابتة',
+            ],
+            'pages.reports.fixed_assets.empty_state' => [
+                'en' => 'No assets',
+                'ar' => 'لا توجد أصول',
+            ],
+
+            // Journal Entries By Year Report Page
+            'pages.reports.journal_entries_by_year.title' => [
+                'en' => 'Journal Entries By Year Report',
+                'ar' => 'تقرير قيود اليومية حسب السنة',
+            ],
+            'pages.reports.journal_entries_by_year.empty_state' => [
+                'en' => 'No journal entries',
+                'ar' => 'لا توجد قيود يومية',
+            ],
+
+            // Accounts Receivable Report Page
+            'pages.reports.accounts_receivable.title' => [
+                'en' => 'Accounts Receivable Report',
+                'ar' => 'تقرير الذمم المدينة',
+            ],
+            'pages.reports.accounts_receivable.empty_state' => [
+                'en' => 'No customers',
+                'ar' => 'لا توجد عملاء',
+            ],
+
+            // Accounts Payable Aging Overdue Report Page
+            'pages.reports.accounts_payable_aging_overdue.title' => [
+                'en' => 'Accounts Payable Aging Overdue Report',
+                'ar' => 'تقرير أعمار الديون الدائنة المتأخرة',
+            ],
+            'pages.reports.accounts_payable_aging_overdue.empty_state' => [
+                'en' => 'No accounts',
+                'ar' => 'لا توجد حسابات',
+            ],
+
+            // Financial Position Report Page
+            'pages.reports.financial_position.title' => [
+                'en' => 'Financial Position Report',
+                'ar' => 'تقرير المركز المالي',
+            ],
+            'pages.reports.financial_position.empty_state' => [
+                'en' => 'No general ledger entries',
+                'ar' => 'لا توجد قيود دفتر الأستاذ العام',
+            ],
+
+            // Financial Performance Report Page
+            'pages.reports.financial_performance.title' => [
+                'en' => 'Financial Performance Report',
+                'ar' => 'تقرير الأداء المالي',
+            ],
+            'pages.reports.financial_performance.empty_state' => [
+                'en' => 'No accounts',
+                'ar' => 'لا توجد حسابات',
+            ],
+
+            // Comparisons Report Page
+            'pages.reports.comparisons.title' => [
+                'en' => 'Comparisons Report',
+                'ar' => 'تقرير المقارنات',
+            ],
+            'pages.reports.comparisons.period_b' => [
+                'en' => 'Period B',
+                'ar' => 'الفترة ب',
+            ],
+            'pages.reports.comparisons.period_b_from' => [
+                'en' => 'Period B From Date',
+                'ar' => 'تاريخ بداية الفترة ب',
+            ],
+            'pages.reports.comparisons.period_b_to' => [
+                'en' => 'Period B To Date',
+                'ar' => 'تاريخ نهاية الفترة ب',
+            ],
+            'pages.reports.comparisons.error_both_periods_required' => [
+                'en' => 'Both periods must be specified for comparison report.',
+                'ar' => 'يجب تحديد كلا الفترتين لتقرير المقارنة.',
+            ],
         ];
 
         // Get all active languages

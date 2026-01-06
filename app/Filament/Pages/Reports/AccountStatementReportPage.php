@@ -27,6 +27,21 @@ class AccountStatementReportPage extends Page implements HasTable, HasForms
 
     public ?array $data = [];
 
+    public static function getNavigationGroup(): ?string
+    {
+        return tr('sidebar.reports', [], null, 'dashboard');
+    }
+
+    public function getTitle(): string
+    {
+        return tr('pages.reports.account_statement.title', [], null, 'dashboard');
+    }
+
+    public function getHeading(): string
+    {
+        return tr('pages.reports.account_statement.title', [], null, 'dashboard');
+    }
+
     public function mount(): void
     {
         $this->form->fill([

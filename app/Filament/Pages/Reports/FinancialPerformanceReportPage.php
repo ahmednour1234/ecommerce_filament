@@ -27,6 +27,21 @@ class FinancialPerformanceReportPage extends Page implements HasTable, HasForms
 
     public ?array $data = [];
 
+    public static function getNavigationGroup(): ?string
+    {
+        return tr('sidebar.reports', [], null, 'dashboard');
+    }
+
+    public function getTitle(): string
+    {
+        return tr('pages.reports.financial_performance.title', [], null, 'dashboard');
+    }
+
+    public function getHeading(): string
+    {
+        return tr('pages.reports.financial_performance.title', [], null, 'dashboard');
+    }
+
     public function mount(): void
     {
         $this->form->fill([
@@ -88,6 +103,7 @@ class FinancialPerformanceReportPage extends Page implements HasTable, HasForms
                 Tables\Columns\TextColumn::make('value')->money(\App\Support\Money::defaultCurrencyCode())->sortable(),
                 Tables\Columns\TextColumn::make('percentage')->formatStateUsing(fn ($state) => number_format($state, 2) . '%')->sortable(),
             ])
+            ->emptyStateHeading(tr('pages.reports.financial_performance.empty_state', [], null, 'dashboard'))
             ->defaultSort('kpi', 'asc')
             ->paginated(false);
     }

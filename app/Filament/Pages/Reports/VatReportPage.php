@@ -27,6 +27,21 @@ class VatReportPage extends Page implements HasTable, HasForms
 
     public ?array $data = [];
 
+    public static function getNavigationGroup(): ?string
+    {
+        return tr('sidebar.reports', [], null, 'dashboard');
+    }
+
+    public function getTitle(): string
+    {
+        return tr('pages.reports.vat_report.title', [], null, 'dashboard');
+    }
+
+    public function getHeading(): string
+    {
+        return tr('pages.reports.vat_report.title', [], null, 'dashboard');
+    }
+
     public function mount(): void
     {
         $this->form->fill([
@@ -95,6 +110,7 @@ class VatReportPage extends Page implements HasTable, HasForms
                 Tables\Columns\TextColumn::make('output_vat')->money(\App\Support\Money::defaultCurrencyCode()),
                 Tables\Columns\TextColumn::make('input_vat')->money(\App\Support\Money::defaultCurrencyCode()),
             ])
+            ->emptyStateHeading(tr('pages.reports.vat_report.empty_state', [], null, 'dashboard'))
             ->defaultSort('date', 'asc')
             ->paginated([10, 25, 50, 100]);
     }

@@ -27,6 +27,21 @@ class JournalEntriesByYearReportPage extends Page implements HasTable, HasForms
 
     public ?array $data = [];
 
+    public static function getNavigationGroup(): ?string
+    {
+        return tr('sidebar.reports', [], null, 'dashboard');
+    }
+
+    public function getTitle(): string
+    {
+        return tr('pages.reports.journal_entries_by_year.title', [], null, 'dashboard');
+    }
+
+    public function getHeading(): string
+    {
+        return tr('pages.reports.journal_entries_by_year.title', [], null, 'dashboard');
+    }
+
     public function mount(): void
     {
         $this->form->fill([
@@ -94,6 +109,7 @@ class JournalEntriesByYearReportPage extends Page implements HasTable, HasForms
                 Tables\Columns\TextColumn::make('total_debit')->money(\App\Support\Money::defaultCurrencyCode()),
                 Tables\Columns\TextColumn::make('total_credit')->money(\App\Support\Money::defaultCurrencyCode()),
             ])
+            ->emptyStateHeading(tr('pages.reports.journal_entries_by_year.empty_state', [], null, 'dashboard'))
             ->defaultSort('year', 'desc')
             ->defaultSort('month', 'desc')
             ->paginated([10, 25, 50, 100]);

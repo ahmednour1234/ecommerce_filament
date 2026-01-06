@@ -27,6 +27,21 @@ class FinancialPositionReportPage extends Page implements HasTable, HasForms
 
     public ?array $data = [];
 
+    public static function getNavigationGroup(): ?string
+    {
+        return tr('sidebar.reports', [], null, 'dashboard');
+    }
+
+    public function getTitle(): string
+    {
+        return tr('pages.reports.financial_position.title', [], null, 'dashboard');
+    }
+
+    public function getHeading(): string
+    {
+        return tr('pages.reports.financial_position.title', [], null, 'dashboard');
+    }
+
     public function mount(): void
     {
         $this->form->fill([
@@ -91,6 +106,7 @@ class FinancialPositionReportPage extends Page implements HasTable, HasForms
                 Tables\Columns\TextColumn::make('total_credit')->money(\App\Support\Money::defaultCurrencyCode()),
                 Tables\Columns\TextColumn::make('balance')->money(\App\Support\Money::defaultCurrencyCode()),
             ])
+            ->emptyStateHeading(tr('pages.reports.financial_position.empty_state', [], null, 'dashboard'))
             ->defaultSort('branch', 'asc')
             ->paginated([10, 25, 50, 100]);
     }

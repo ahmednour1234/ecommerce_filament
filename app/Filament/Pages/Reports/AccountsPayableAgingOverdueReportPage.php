@@ -26,6 +26,21 @@ class AccountsPayableAgingOverdueReportPage extends Page implements HasTable, Ha
 
     public ?array $data = [];
 
+    public static function getNavigationGroup(): ?string
+    {
+        return tr('sidebar.reports', [], null, 'dashboard');
+    }
+
+    public function getTitle(): string
+    {
+        return tr('pages.reports.accounts_payable_aging_overdue.title', [], null, 'dashboard');
+    }
+
+    public function getHeading(): string
+    {
+        return tr('pages.reports.accounts_payable_aging_overdue.title', [], null, 'dashboard');
+    }
+
     public function mount(): void
     {
         $this->form->fill([]);
@@ -56,6 +71,7 @@ class AccountsPayableAgingOverdueReportPage extends Page implements HasTable, Ha
                 Tables\Columns\TextColumn::make('overdue_amount')->label('Overdue Amount')->money(\App\Support\Money::defaultCurrencyCode()),
                 Tables\Columns\TextColumn::make('days_overdue')->label('Days Overdue'),
             ])
+            ->emptyStateHeading(tr('pages.reports.accounts_payable_aging_overdue.empty_state', [], null, 'dashboard'))
             ->paginated([10, 25, 50, 100]);
     }
 

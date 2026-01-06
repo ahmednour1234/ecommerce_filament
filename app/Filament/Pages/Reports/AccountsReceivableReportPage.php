@@ -27,6 +27,21 @@ class AccountsReceivableReportPage extends Page implements HasTable, HasForms
 
     public ?array $data = [];
 
+    public static function getNavigationGroup(): ?string
+    {
+        return tr('sidebar.reports', [], null, 'dashboard');
+    }
+
+    public function getTitle(): string
+    {
+        return tr('pages.reports.accounts_receivable.title', [], null, 'dashboard');
+    }
+
+    public function getHeading(): string
+    {
+        return tr('pages.reports.accounts_receivable.title', [], null, 'dashboard');
+    }
+
     public function mount(): void
     {
         $this->form->fill([
@@ -90,6 +105,7 @@ class AccountsReceivableReportPage extends Page implements HasTable, HasForms
                 Tables\Columns\TextColumn::make('balance')->money(\App\Support\Money::defaultCurrencyCode()),
                 Tables\Columns\TextColumn::make('credit_limit')->money(\App\Support\Money::defaultCurrencyCode()),
             ])
+            ->emptyStateHeading(tr('pages.reports.accounts_receivable.empty_state', [], null, 'dashboard'))
             ->defaultSort('balance', 'desc')
             ->paginated([10, 25, 50, 100]);
     }

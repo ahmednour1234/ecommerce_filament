@@ -27,6 +27,21 @@ class FixedAssetsReportPage extends Page implements HasTable, HasForms
 
     public ?array $data = [];
 
+    public static function getNavigationGroup(): ?string
+    {
+        return tr('sidebar.reports', [], null, 'dashboard');
+    }
+
+    public function getTitle(): string
+    {
+        return tr('pages.reports.fixed_assets.title', [], null, 'dashboard');
+    }
+
+    public function getHeading(): string
+    {
+        return tr('pages.reports.fixed_assets.title', [], null, 'dashboard');
+    }
+
     public function mount(): void
     {
         $this->form->fill([]);
@@ -95,6 +110,7 @@ class FixedAssetsReportPage extends Page implements HasTable, HasForms
                 Tables\Columns\TextColumn::make('net_book_value')->money(\App\Support\Money::defaultCurrencyCode()),
                 Tables\Columns\TextColumn::make('status')->badge(),
             ])
+            ->emptyStateHeading(tr('pages.reports.fixed_assets.empty_state', [], null, 'dashboard'))
             ->defaultSort('code', 'asc')
             ->paginated([10, 25, 50, 100]);
     }

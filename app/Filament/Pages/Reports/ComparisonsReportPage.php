@@ -27,6 +27,21 @@ class ComparisonsReportPage extends Page implements HasTable, HasForms
 
     public ?array $data = [];
 
+    public static function getNavigationGroup(): ?string
+    {
+        return tr('sidebar.reports', [], null, 'dashboard');
+    }
+
+    public function getTitle(): string
+    {
+        return tr('pages.reports.comparisons.title', [], null, 'dashboard');
+    }
+
+    public function getHeading(): string
+    {
+        return tr('pages.reports.comparisons.title', [], null, 'dashboard');
+    }
+
     public function mount(): void
     {
         $this->form->fill([
@@ -43,13 +58,13 @@ class ComparisonsReportPage extends Page implements HasTable, HasForms
                     'requireDateRange' => true,
                     'showAccount' => false,
                 ]),
-                \Filament\Forms\Components\Section::make('Period B')
+                \Filament\Forms\Components\Section::make(tr('pages.reports.comparisons.period_b', [], null, 'dashboard'))
                     ->schema([
                         \Filament\Forms\Components\DatePicker::make('period_b_from')
-                            ->label('Period B From Date')
+                            ->label(tr('pages.reports.comparisons.period_b_from', [], null, 'dashboard'))
                             ->required(),
                         \Filament\Forms\Components\DatePicker::make('period_b_to')
-                            ->label('Period B To Date')
+                            ->label(tr('pages.reports.comparisons.period_b_to', [], null, 'dashboard'))
                             ->required(),
                     ])
                     ->columns(2),
