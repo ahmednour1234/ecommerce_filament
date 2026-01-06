@@ -710,6 +710,96 @@ class DashboardTranslationSeeder extends Seeder
                 'en' => 'pending',
                 'ar' => 'معلقة',
             ],
+
+            // Notification Channels - Forms
+            'forms.notification_channels.type.label' => [
+                'en' => 'Type',
+                'ar' => 'النوع',
+            ],
+            'forms.notification_channels.type.options.email' => [
+                'en' => 'Email',
+                'ar' => 'البريد الإلكتروني',
+            ],
+            'forms.notification_channels.type.options.sms' => [
+                'en' => 'SMS',
+                'ar' => 'رسالة نصية',
+            ],
+            'forms.notification_channels.type.options.push' => [
+                'en' => 'Push Notification',
+                'ar' => 'إشعار فوري',
+            ],
+            'forms.notification_channels.type.options.slack' => [
+                'en' => 'Slack',
+                'ar' => 'Slack',
+            ],
+            'forms.notification_channels.type.options.webhook' => [
+                'en' => 'Webhook',
+                'ar' => 'Webhook',
+            ],
+            'forms.notification_channels.name.label' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'forms.notification_channels.config.label' => [
+                'en' => 'Configuration',
+                'ar' => 'الإعدادات',
+            ],
+            'forms.notification_channels.is_active.label' => [
+                'en' => 'Is Active',
+                'ar' => 'نشط',
+            ],
+
+            // Notification Channels - Tables
+            'tables.notification_channels.type' => [
+                'en' => 'Type',
+                'ar' => 'النوع',
+            ],
+            'tables.notification_channels.name' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'tables.notification_channels.is_active' => [
+                'en' => 'Is Active',
+                'ar' => 'نشط',
+            ],
+            'tables.notification_channels.created_at' => [
+                'en' => 'Created At',
+                'ar' => 'تاريخ الإنشاء',
+            ],
+            'tables.notification_channels.updated_at' => [
+                'en' => 'Updated At',
+                'ar' => 'تاريخ التحديث',
+            ],
+            'tables.notification_channels.filters.type' => [
+                'en' => 'Type',
+                'ar' => 'النوع',
+            ],
+            'tables.notification_channels.filters.is_active' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'tables.notification_channels.filters.active_only' => [
+                'en' => 'Active only',
+                'ar' => 'النشطة فقط',
+            ],
+            'tables.notification_channels.filters.inactive_only' => [
+                'en' => 'Inactive only',
+                'ar' => 'غير النشطة فقط',
+            ],
+
+            // Notification Channels - Pages
+            'pages.notifications.channels.title' => [
+                'en' => 'Notification Channels',
+                'ar' => 'قنوات الإشعارات',
+            ],
+            'pages.notifications.channels.create.title' => [
+                'en' => 'Create Notification Channel',
+                'ar' => 'إضافة قناة إشعار',
+            ],
+            'pages.notifications.channels.edit.title' => [
+                'en' => 'Edit Notification Channel',
+                'ar' => 'تعديل قناة إشعار',
+            ],
         ];
 
         // Get all active languages
