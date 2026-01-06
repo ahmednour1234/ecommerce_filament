@@ -4436,31 +4436,15 @@ class DashboardTranslationSeeder extends Seeder
             ],
             'forms.bank_guarantees.fields.exchange_rate_helper' => [
                 'en' => 'Automatically fetched from currency rates based on issue date',
-                'ar' => 'يتم جلبها تلقائياً من أسعار العملات بناءً على تاريخ الإصدار',
-            ],
-            'forms.bank_guarantees.fields.base_amount' => [
-                'en' => 'Base Amount',
-                'ar' => 'المبلغ الأساسي',
-            ],
-            'forms.bank_guarantees.fields.amount' => [
-                'en' => 'Amount',
-                'ar' => 'المبلغ',
-            ],
-            'forms.bank_guarantees.fields.currency' => [
-                'en' => 'Currency',
-                'ar' => 'العملة',
-            ],
-            'forms.bank_guarantees.fields.exchange_rate' => [
-                'en' => 'Exchange Rate',
-                'ar' => 'سعر الصرف',
-            ],
-            'forms.bank_guarantees.fields.exchange_rate_helper' => [
-                'en' => 'Automatically fetched from currency rates based on issue date',
-                'ar' => 'يتم جلبها تلقائياً من أسعار العملات بناءً على تاريخ الإصدار',
+                'ar' => 'يتم جلب سعر الصرف تلقائياً من جدول أسعار العملات بناءً على تاريخ الإصدار',
             ],
             'forms.bank_guarantees.fields.base_amount' => [
                 'en' => 'Base Amount (in default currency)',
                 'ar' => 'المبلغ الأساسي (بالعملة الافتراضية)',
+            ],
+            'forms.bank_guarantees.fields.amount' => [
+                'en' => 'Amount',
+                'ar' => 'المبلغ',
             ],
             'forms.bank_guarantees.fields.bank_fees' => [
                 'en' => 'Bank Fees',
