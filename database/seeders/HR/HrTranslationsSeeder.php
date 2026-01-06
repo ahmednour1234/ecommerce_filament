@@ -35,12 +35,46 @@ class HrTranslationsSeeder extends Seeder
             'navigation.hr_blood_types' => ['en' => 'Blood Types', 'ar' => 'فصائل الدم'],
             'navigation.hr_identity_types' => ['en' => 'Identity Types', 'ar' => 'نوع الهوية'],
             'navigation.hr_banks' => ['en' => 'Banks', 'ar' => 'البنوك'],
+            'navigation.hr_employees' => ['en' => 'Employees', 'ar' => 'الموظفين'],
 
             // Common Fields
             'fields.name' => ['en' => 'Name', 'ar' => 'الاسم'],
             'fields.title' => ['en' => 'Title', 'ar' => 'العنوان'],
             'fields.description' => ['en' => 'Description', 'ar' => 'الوصف'],
             'fields.active' => ['en' => 'Active', 'ar' => 'نشط'],
+            'fields.employee_number' => ['en' => 'Employee Number', 'ar' => 'رقم الموظف'],
+            'fields.first_name' => ['en' => 'First Name', 'ar' => 'الاسم الأول'],
+            'fields.last_name' => ['en' => 'Last Name', 'ar' => 'اسم العائلة'],
+            'fields.email' => ['en' => 'Email', 'ar' => 'البريد الإلكتروني'],
+            'fields.phone' => ['en' => 'Phone', 'ar' => 'الهاتف'],
+            'fields.gender' => ['en' => 'Gender', 'ar' => 'الجنس'],
+            'fields.birth_date' => ['en' => 'Birth Date', 'ar' => 'تاريخ الميلاد'],
+            'fields.fingerprint_device_id' => ['en' => 'Fingerprint Device ID', 'ar' => 'رقم الموظف بجهاز البصمة'],
+            'fields.profile_image' => ['en' => 'Profile Image', 'ar' => 'صورة الملف الشخصي'],
+            'fields.hire_date' => ['en' => 'Hire Date', 'ar' => 'تاريخ التوظيف'],
+            'fields.branch' => ['en' => 'Branch', 'ar' => 'الفرع'],
+            'fields.department' => ['en' => 'Department', 'ar' => 'القسم'],
+            'fields.position' => ['en' => 'Position', 'ar' => 'المنصب'],
+            'fields.location' => ['en' => 'Location', 'ar' => 'الموقع'],
+            'fields.basic_salary' => ['en' => 'Basic Salary', 'ar' => 'الراتب الأساسي'],
+            'fields.cv_file' => ['en' => 'CV File', 'ar' => 'السيرة الذاتية'],
+            'fields.cv_file.helper' => ['en' => 'Upload CV/Resume file', 'ar' => 'رفع ملف السيرة الذاتية'],
+            'fields.address' => ['en' => 'Address', 'ar' => 'العنوان'],
+            'fields.city' => ['en' => 'City', 'ar' => 'المدينة'],
+            'fields.country' => ['en' => 'Country', 'ar' => 'الدولة'],
+            'fields.identity_type' => ['en' => 'Identity Type', 'ar' => 'نوع الهوية'],
+            'fields.identity_number' => ['en' => 'Identity Number', 'ar' => 'رقم الهوية'],
+            'fields.identity_expiry_date' => ['en' => 'Identity Expiry Date', 'ar' => 'تاريخ انتهاء الهوية'],
+            'fields.blood_type' => ['en' => 'Blood Type', 'ar' => 'فصيلة الدم'],
+            'fields.emergency_contact_name' => ['en' => 'Emergency Contact Name', 'ar' => 'اسم جهة الاتصال للطوارئ'],
+            'fields.emergency_contact_phone' => ['en' => 'Emergency Contact Phone', 'ar' => 'هاتف جهة الاتصال للطوارئ'],
+            'fields.bank' => ['en' => 'Bank', 'ar' => 'البنك'],
+            'fields.bank_name_text' => ['en' => 'Bank Name (if not in list)', 'ar' => 'اسم البنك (إذا لم يكن في القائمة)'],
+            'fields.bank_account_number' => ['en' => 'Bank Account Number', 'ar' => 'رقم الحساب'],
+            'fields.iban' => ['en' => 'IBAN', 'ar' => 'رقم الايبان'],
+            'fields.status' => ['en' => 'Status', 'ar' => 'الحالة'],
+            'fields.status_active' => ['en' => 'Active', 'ar' => 'نشط'],
+            'fields.status_inactive' => ['en' => 'Inactive', 'ar' => 'غير نشط'],
 
             // Actions
             'actions.add' => ['en' => 'Add', 'ar' => 'إضافة'],
@@ -52,6 +86,18 @@ class HrTranslationsSeeder extends Seeder
 
             // Messages
             'messages.saved_successfully' => ['en' => 'Saved successfully', 'ar' => 'تم الحفظ بنجاح'],
+            'messages.employee_created' => ['en' => 'Employee created successfully', 'ar' => 'تم إنشاء الموظف بنجاح'],
+            'messages.employee_updated' => ['en' => 'Employee updated successfully', 'ar' => 'تم تحديث الموظف بنجاح'],
+
+            // Tabs
+            'tabs.basic_info' => ['en' => 'Basic Info', 'ar' => 'المعلومات الأساسية'],
+            'tabs.job_info' => ['en' => 'Job Info', 'ar' => 'معلومات الوظيفة'],
+            'tabs.personal_info' => ['en' => 'Personal Info', 'ar' => 'المعلومات الشخصية'],
+            'tabs.bank_info' => ['en' => 'Bank Info', 'ar' => 'معلومات البنك'],
+
+            // Gender
+            'gender.male' => ['en' => 'Male', 'ar' => 'ذكر'],
+            'gender.female' => ['en' => 'Female', 'ar' => 'أنثى'],
 
             // Departments Forms
             'forms.hr_departments.name.label' => ['en' => 'Name', 'ar' => 'الاسم'],
@@ -118,6 +164,21 @@ class HrTranslationsSeeder extends Seeder
             'tables.hr_banks.created_at' => ['en' => 'Created At', 'ar' => 'تم الإنشاء في'],
             'tables.hr_banks.updated_at' => ['en' => 'Updated At', 'ar' => 'تم التحديث في'],
             'tables.hr_banks.filters.active' => ['en' => 'Active', 'ar' => 'نشط'],
+
+            // Employees Tables
+            'tables.hr_employees.employee_number' => ['en' => 'Employee Number', 'ar' => 'رقم الموظف'],
+            'tables.hr_employees.name' => ['en' => 'Name', 'ar' => 'الاسم'],
+            'tables.hr_employees.branch' => ['en' => 'Branch', 'ar' => 'الفرع'],
+            'tables.hr_employees.department' => ['en' => 'Department', 'ar' => 'القسم'],
+            'tables.hr_employees.position' => ['en' => 'Position', 'ar' => 'المنصب'],
+            'tables.hr_employees.status' => ['en' => 'Status', 'ar' => 'الحالة'],
+            'tables.hr_employees.hire_date' => ['en' => 'Hire Date', 'ar' => 'تاريخ التوظيف'],
+            'tables.hr_employees.created_at' => ['en' => 'Created At', 'ar' => 'تم الإنشاء في'],
+            'tables.hr_employees.updated_at' => ['en' => 'Updated At', 'ar' => 'تم التحديث في'],
+            'tables.hr_employees.filters.status' => ['en' => 'Status', 'ar' => 'الحالة'],
+            'tables.hr_employees.filters.branch' => ['en' => 'Branch', 'ar' => 'الفرع'],
+            'tables.hr_employees.filters.department' => ['en' => 'Department', 'ar' => 'القسم'],
+            'tables.hr_employees.filters.position' => ['en' => 'Position', 'ar' => 'المنصب'],
         ];
 
         $created = 0;

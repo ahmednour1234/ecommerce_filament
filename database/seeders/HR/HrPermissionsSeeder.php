@@ -22,6 +22,7 @@ class HrPermissionsSeeder extends Seeder
             'hr_blood_types',
             'hr_identity_types',
             'hr_banks',
+            'hr_employees',
         ];
 
         $permissions = [];
