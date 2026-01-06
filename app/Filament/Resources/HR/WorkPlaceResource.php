@@ -18,8 +18,8 @@ class WorkPlaceResource extends Resource
     protected static ?string $model = WorkPlace::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-map-pin';
-    protected static ?string $navigationGroup = 'HR > Attendance';
-    protected static ?int $navigationSort = 1;
+    protected static ?string $navigationGroup = 'HR';
+    protected static ?int $navigationSort = 70;
     protected static ?string $navigationTranslationKey = 'navigation.hr_work_places';
 
     public static function form(Form $form): Form

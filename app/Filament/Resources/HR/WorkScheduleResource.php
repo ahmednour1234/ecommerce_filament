@@ -18,8 +18,8 @@ class WorkScheduleResource extends Resource
     protected static ?string $model = WorkSchedule::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clock';
-    protected static ?string $navigationGroup = 'HR > Attendance';
-    protected static ?int $navigationSort = 3;
+    protected static ?string $navigationGroup = 'HR';
+    protected static ?int $navigationSort = 72;
     protected static ?string $navigationTranslationKey = 'navigation.hr_work_schedules';
 
     public static function form(Form $form): Form

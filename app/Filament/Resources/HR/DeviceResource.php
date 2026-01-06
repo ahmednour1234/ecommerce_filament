@@ -18,8 +18,8 @@ class DeviceResource extends Resource
     protected static ?string $model = Device::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-finger-print';
-    protected static ?string $navigationGroup = 'HR > Attendance';
-    protected static ?int $navigationSort = 5;
+    protected static ?string $navigationGroup = 'HR';
+    protected static ?int $navigationSort = 74;
     protected static ?string $navigationTranslationKey = 'navigation.hr_devices';
 
     public static function form(Form $form): Form
