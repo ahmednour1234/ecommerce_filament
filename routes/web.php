@@ -48,4 +48,7 @@ Route::middleware(['web', 'auth'])
 
         Route::get('print/vouchers/{voucher}/csv', [VoucherPrintController::class, 'csv'])
             ->name('admin.vouchers.csv');
+
+        Route::get('hr/holidays-calendar/json', [App\Http\Controllers\HR\HolidaysCalendarController::class, 'getHolidaysJson'])
+            ->name('filament.admin.pages.hr.holidays-calendar.json');
     });

@@ -36,6 +36,8 @@ class HrTranslationsSeeder extends Seeder
             'navigation.hr_identity_types' => ['en' => 'Identity Types', 'ar' => 'نوع الهوية'],
             'navigation.hr_banks' => ['en' => 'Banks', 'ar' => 'البنوك'],
             'navigation.hr_employees' => ['en' => 'Employees', 'ar' => 'الموظفين'],
+            'navigation.hr_holidays' => ['en' => 'Official Holidays', 'ar' => 'العطلات الرسمية'],
+            'navigation.hr_holidays_calendar' => ['en' => 'Holidays Calendar', 'ar' => 'تقويم العطلات'],
 
             // Common Fields
             'fields.name' => ['en' => 'Name', 'ar' => 'الاسم'],
@@ -75,6 +77,11 @@ class HrTranslationsSeeder extends Seeder
             'fields.status' => ['en' => 'Status', 'ar' => 'الحالة'],
             'fields.status_active' => ['en' => 'Active', 'ar' => 'نشط'],
             'fields.status_inactive' => ['en' => 'Inactive', 'ar' => 'غير نشط'],
+            'fields.holiday_name' => ['en' => 'Holiday Name', 'ar' => 'اسم العطلة'],
+            'fields.start_date' => ['en' => 'Start Date', 'ar' => 'تاريخ بداية العطلة'],
+            'fields.days_count' => ['en' => 'Days Count', 'ar' => 'عدد الأيام'],
+            'fields.days_count.helper' => ['en' => 'Number of days for this holiday', 'ar' => 'عدد الأيام (>=1)'],
+            'fields.end_date' => ['en' => 'End Date', 'ar' => 'تاريخ نهاية العطلة'],
 
             // Actions
             'actions.add' => ['en' => 'Add', 'ar' => 'إضافة'],
@@ -83,11 +90,16 @@ class HrTranslationsSeeder extends Seeder
             'actions.export_excel' => ['en' => 'Export to Excel', 'ar' => 'تصدير إلى Excel'],
             'actions.export_pdf' => ['en' => 'Export to PDF', 'ar' => 'تصدير إلى PDF'],
             'actions.print' => ['en' => 'Print', 'ar' => 'طباعة'],
+            'actions.add_new_holiday' => ['en' => 'Add New Holiday', 'ar' => 'إضافة عطلة جديدة'],
+            'actions.show_calendar' => ['en' => 'Show Calendar', 'ar' => 'عرض التقويم'],
+            'actions.holiday_list' => ['en' => 'Holiday List', 'ar' => 'قائمة العطلات'],
 
             // Messages
             'messages.saved_successfully' => ['en' => 'Saved successfully', 'ar' => 'تم الحفظ بنجاح'],
             'messages.employee_created' => ['en' => 'Employee created successfully', 'ar' => 'تم إنشاء الموظف بنجاح'],
             'messages.employee_updated' => ['en' => 'Employee updated successfully', 'ar' => 'تم تحديث الموظف بنجاح'],
+            'messages.no_holidays' => ['en' => 'No holidays found. Please add holidays to view them on the calendar.', 'ar' => 'لا توجد عطلات. يرجى إضافة العطلات لعرضها في التقويم.'],
+            'messages.no_holidays.info' => ['en' => 'Click "Add New Holiday" button to create your first holiday.', 'ar' => 'انقر على زر "إضافة عطلة جديدة" لإنشاء أول عطلة.'],
 
             // Tabs
             'tabs.basic_info' => ['en' => 'Basic Info', 'ar' => 'المعلومات الأساسية'],
@@ -179,6 +191,23 @@ class HrTranslationsSeeder extends Seeder
             'tables.hr_employees.filters.branch' => ['en' => 'Branch', 'ar' => 'الفرع'],
             'tables.hr_employees.filters.department' => ['en' => 'Department', 'ar' => 'القسم'],
             'tables.hr_employees.filters.position' => ['en' => 'Position', 'ar' => 'المنصب'],
+
+            // Holidays Forms
+            'forms.hr_holidays.name.label' => ['en' => 'Holiday Name', 'ar' => 'اسم العطلة'],
+            'forms.hr_holidays.start_date.label' => ['en' => 'Start Date', 'ar' => 'تاريخ بداية العطلة'],
+            'forms.hr_holidays.days_count.label' => ['en' => 'Days Count', 'ar' => 'عدد الأيام'],
+            'forms.hr_holidays.days_count.helper' => ['en' => 'Number of days for this holiday', 'ar' => 'عدد الأيام (>=1)'],
+            'forms.hr_holidays.description.label' => ['en' => 'Description', 'ar' => 'الوصف'],
+
+            // Holidays Tables
+            'tables.hr_holidays.name' => ['en' => 'Holiday Name', 'ar' => 'اسم العطلة'],
+            'tables.hr_holidays.start_date' => ['en' => 'Start Date', 'ar' => 'تاريخ البداية'],
+            'tables.hr_holidays.end_date' => ['en' => 'End Date', 'ar' => 'تاريخ النهاية'],
+            'tables.hr_holidays.days_count' => ['en' => 'Days', 'ar' => 'الأيام'],
+            'tables.hr_holidays.description' => ['en' => 'Description', 'ar' => 'الوصف'],
+            'tables.hr_holidays.created_by' => ['en' => 'Created By', 'ar' => 'تم الإنشاء بواسطة'],
+            'tables.hr_holidays.created_at' => ['en' => 'Created At', 'ar' => 'تم الإنشاء في'],
+            'tables.hr_holidays.updated_at' => ['en' => 'Updated At', 'ar' => 'تم التحديث في'],
         ];
 
         $created = 0;

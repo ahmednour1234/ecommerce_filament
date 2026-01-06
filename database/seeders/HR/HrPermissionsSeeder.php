@@ -23,6 +23,7 @@ class HrPermissionsSeeder extends Seeder
             'hr_identity_types',
             'hr_banks',
             'hr_employees',
+            'hr_holidays',
         ];
 
         $permissions = [];
@@ -39,6 +40,12 @@ class HrPermissionsSeeder extends Seeder
                 $permissions[] = $permission;
             }
         }
+
+        // Add custom calendar permission for holidays
+        $calendarPermission = Permission::firstOrCreate(
+            ['name' => 'hr_holidays.calendar', 'guard_name' => 'web']
+        );
+        $permissions[] = $calendarPermission;
 
         $this->command->info('✓ HR permissions created: ' . count($permissions));
         
