@@ -800,6 +800,104 @@ class DashboardTranslationSeeder extends Seeder
                 'en' => 'Edit Notification Channel',
                 'ar' => 'تعديل قناة إشعار',
             ],
+
+            // Notification Templates - Forms
+            'forms.notification_templates.key.label' => [
+                'en' => 'Key',
+                'ar' => 'المفتاح',
+            ],
+            'forms.notification_templates.channel_id.label' => [
+                'en' => 'Channel',
+                'ar' => 'القناة',
+            ],
+            'forms.notification_templates.language_id.label' => [
+                'en' => 'Language',
+                'ar' => 'اللغة',
+            ],
+            'forms.notification_templates.subject.label' => [
+                'en' => 'Subject',
+                'ar' => 'الموضوع',
+            ],
+            'forms.notification_templates.body_text.label' => [
+                'en' => 'Body Text',
+                'ar' => 'نص الرسالة',
+            ],
+            'forms.notification_templates.body_html.label' => [
+                'en' => 'Body HTML',
+                'ar' => 'محتوى HTML',
+            ],
+            'forms.notification_templates.variables.label' => [
+                'en' => 'Variables',
+                'ar' => 'المتغيرات',
+            ],
+            'forms.notification_templates.is_active.label' => [
+                'en' => 'Is Active',
+                'ar' => 'نشط',
+            ],
+
+            // Notification Templates - Tables
+            'tables.notification_templates.key' => [
+                'en' => 'Key',
+                'ar' => 'المفتاح',
+            ],
+            'tables.notification_templates.channel' => [
+                'en' => 'Channel',
+                'ar' => 'القناة',
+            ],
+            'tables.notification_templates.language' => [
+                'en' => 'Language',
+                'ar' => 'اللغة',
+            ],
+            'tables.notification_templates.subject' => [
+                'en' => 'Subject',
+                'ar' => 'الموضوع',
+            ],
+            'tables.notification_templates.is_active' => [
+                'en' => 'Is Active',
+                'ar' => 'نشط',
+            ],
+            'tables.notification_templates.created_at' => [
+                'en' => 'Created At',
+                'ar' => 'تاريخ الإنشاء',
+            ],
+            'tables.notification_templates.updated_at' => [
+                'en' => 'Updated At',
+                'ar' => 'تاريخ التحديث',
+            ],
+            'tables.notification_templates.filters.channel' => [
+                'en' => 'Channel',
+                'ar' => 'القناة',
+            ],
+            'tables.notification_templates.filters.language' => [
+                'en' => 'Language',
+                'ar' => 'اللغة',
+            ],
+            'tables.notification_templates.filters.is_active' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'tables.notification_templates.filters.active_only' => [
+                'en' => 'Active only',
+                'ar' => 'النشطة فقط',
+            ],
+            'tables.notification_templates.filters.inactive_only' => [
+                'en' => 'Inactive only',
+                'ar' => 'غير النشطة فقط',
+            ],
+
+            // Notification Templates - Pages
+            'pages.notifications.templates.title' => [
+                'en' => 'Notification Templates',
+                'ar' => 'قوالب الإشعارات',
+            ],
+            'pages.notifications.templates.create.title' => [
+                'en' => 'Create Notification Template',
+                'ar' => 'إضافة قالب إشعار',
+            ],
+            'pages.notifications.templates.edit.title' => [
+                'en' => 'Edit Notification Template',
+                'ar' => 'تعديل قالب إشعار',
+            ],
         ];
 
         // Get all active languages
