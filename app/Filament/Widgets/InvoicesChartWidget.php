@@ -8,8 +8,12 @@ use Illuminate\Support\Carbon;
 
 class InvoicesChartWidget extends ChartWidget
 {
-    protected static ?string $heading = 'Invoices & Payments';
     protected static ?int $sort = 4;
+    
+    protected function getHeading(): string
+    {
+        return tr('dashboard.stats.invoices_payments');
+    }
 
     protected function getData(): array
     {

@@ -33,38 +33,38 @@ class OrderStatsWidget extends BaseWidget
             ->avg('total') ?? 0;
 
         return [
-            Stat::make('Today\'s Orders', Number::format($todayOrders))
-                ->description('Orders placed today')
+            Stat::make(tr('dashboard.stats.todays_orders'), Number::format($todayOrders))
+                ->description(tr('dashboard.stats.todays_orders_description'))
                 ->descriptionIcon('heroicon-o-calendar')
                 ->color('info')
                 ->icon('heroicon-o-shopping-bag'),
 
-            Stat::make('This Month Orders', Number::format($thisMonthOrders))
-                ->description('Orders this month')
+            Stat::make(tr('dashboard.stats.this_month_orders'), Number::format($thisMonthOrders))
+                ->description(tr('dashboard.stats.this_month_orders_description'))
                 ->descriptionIcon('heroicon-o-calendar-days')
                 ->color('primary')
                 ->icon('heroicon-o-chart-bar'),
 
-            Stat::make('Pending Orders', Number::format($pendingOrders))
-                ->description("{$completedOrders} completed, {$cancelledOrders} cancelled")
+            Stat::make(tr('dashboard.stats.pending_orders'), Number::format($pendingOrders))
+                ->description("{$completedOrders} " . tr('dashboard.stats.status.completed') . ", {$cancelledOrders} " . tr('dashboard.stats.status.cancelled'))
                 ->descriptionIcon('heroicon-o-clock')
                 ->color($pendingOrders > 0 ? 'warning' : 'success')
                 ->icon('heroicon-o-exclamation-triangle'),
 
-            Stat::make('Today\'s Revenue', Number::currency($todayRevenue))
-                ->description('From completed orders')
+            Stat::make(tr('dashboard.stats.todays_revenue'), Number::currency($todayRevenue))
+                ->description(tr('dashboard.stats.todays_revenue_description'))
                 ->descriptionIcon('heroicon-o-currency-dollar')
                 ->color('success')
                 ->icon('heroicon-o-banknotes'),
 
-            Stat::make('Monthly Revenue', Number::currency($thisMonthRevenue))
-                ->description('This month\'s total')
+            Stat::make(tr('dashboard.stats.monthly_revenue'), Number::currency($thisMonthRevenue))
+                ->description(tr('dashboard.stats.monthly_revenue_description'))
                 ->descriptionIcon('heroicon-o-chart-bar')
                 ->color('success')
                 ->icon('heroicon-o-chart-pie'),
 
-            Stat::make('Average Order Value', Number::currency($avgOrderValue))
-                ->description('From completed orders')
+            Stat::make(tr('dashboard.stats.average_order_value'), Number::currency($avgOrderValue))
+                ->description(tr('dashboard.stats.average_order_value_description'))
                 ->descriptionIcon('heroicon-o-calculator')
                 ->color('info')
                 ->icon('heroicon-o-chart-bar'),

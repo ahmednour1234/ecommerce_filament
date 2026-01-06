@@ -8,8 +8,12 @@ use Illuminate\Support\Carbon;
 
 class OrdersChartWidget extends ChartWidget
 {
-    protected static ?string $heading = 'Orders Over Time';
     protected static ?int $sort = 3;
+    
+    protected function getHeading(): string
+    {
+        return tr('dashboard.stats.orders_over_time');
+    }
 
     protected function getData(): array
     {

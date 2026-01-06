@@ -25,26 +25,26 @@ class SalesStatsWidget extends BaseWidget
         $completedOrders = Order::where('status', 'completed')->count();
 
         return [
-            Stat::make('Total Customers', Number::format($totalCustomers))
-                ->description('Active customers')
+            Stat::make(tr('dashboard.stats.total_customers'), Number::format($totalCustomers))
+                ->description(tr('dashboard.stats.total_customers_description'))
                 ->descriptionIcon('heroicon-o-users')
                 ->color('success')
                 ->icon('heroicon-o-user-group'),
 
-            Stat::make('Total Orders', Number::format($totalOrders))
-                ->description("{$pendingOrders} pending, {$completedOrders} completed")
+            Stat::make(tr('dashboard.stats.total_orders'), Number::format($totalOrders))
+                ->description("{$pendingOrders} " . tr('dashboard.stats.status.pending') . ", {$completedOrders} " . tr('dashboard.stats.status.completed'))
                 ->descriptionIcon('heroicon-o-shopping-cart')
                 ->color('info')
                 ->icon('heroicon-o-shopping-bag'),
 
-            Stat::make('Total Revenue', Number::currency($totalRevenue))
-                ->description('From paid invoices')
+            Stat::make(tr('dashboard.stats.total_revenue'), Number::currency($totalRevenue))
+                ->description(tr('dashboard.stats.total_revenue_description'))
                 ->descriptionIcon('heroicon-o-currency-dollar')
                 ->color('success')
                 ->icon('heroicon-o-banknotes'),
 
-            Stat::make('Total Invoices', Number::format($totalInvoices))
-                ->description('All invoices')
+            Stat::make(tr('dashboard.stats.total_invoices'), Number::format($totalInvoices))
+                ->description(tr('dashboard.stats.total_invoices_description'))
                 ->descriptionIcon('heroicon-o-document-text')
                 ->color('primary')
                 ->icon('heroicon-o-document-duplicate'),

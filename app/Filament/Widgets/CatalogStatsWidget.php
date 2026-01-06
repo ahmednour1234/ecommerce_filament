@@ -32,32 +32,32 @@ class CatalogStatsWidget extends BaseWidget
             ->sum(fn ($product) => $product->price * $product->stock_quantity);
 
         return [
-            Stat::make('Total Products', Number::format($totalProducts))
-                ->description("{$activeProducts} active products")
+            Stat::make(tr('dashboard.stats.total_products'), Number::format($totalProducts))
+                ->description("{$activeProducts} " . tr('dashboard.stats.total_products_description'))
                 ->descriptionIcon('heroicon-o-cube')
                 ->color('success')
                 ->icon('heroicon-o-archive-box'),
 
-            Stat::make('Total Categories', Number::format($totalCategories))
-                ->description('Active categories')
+            Stat::make(tr('dashboard.stats.total_categories'), Number::format($totalCategories))
+                ->description(tr('dashboard.stats.total_categories_description'))
                 ->descriptionIcon('heroicon-o-folder')
                 ->color('info')
                 ->icon('heroicon-o-squares-2x2'),
 
-            Stat::make('Total Brands', Number::format($totalBrands))
-                ->description('Active brands')
+            Stat::make(tr('dashboard.stats.total_brands'), Number::format($totalBrands))
+                ->description(tr('dashboard.stats.total_brands_description'))
                 ->descriptionIcon('heroicon-o-tag')
                 ->color('primary')
                 ->icon('heroicon-o-building-storefront'),
 
-            Stat::make('Low Stock Alert', Number::format($lowStockProducts))
-                ->description('Products with stock ≤ 10')
+            Stat::make(tr('dashboard.stats.low_stock_alert'), Number::format($lowStockProducts))
+                ->description(tr('dashboard.stats.low_stock_alert_description'))
                 ->descriptionIcon('heroicon-o-exclamation-triangle')
                 ->color($lowStockProducts > 0 ? 'warning' : 'success')
                 ->icon('heroicon-o-exclamation-circle'),
 
-            Stat::make('Inventory Value', Number::currency($totalProductValue))
-                ->description('Total product inventory value')
+            Stat::make(tr('dashboard.stats.inventory_value'), Number::currency($totalProductValue))
+                ->description(tr('dashboard.stats.inventory_value_description'))
                 ->descriptionIcon('heroicon-o-currency-dollar')
                 ->color('success')
                 ->icon('heroicon-o-banknotes'),

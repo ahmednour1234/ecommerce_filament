@@ -696,6 +696,20 @@ class DashboardTranslationSeeder extends Seeder
                 'en' => 'Orders by Status',
                 'ar' => 'الطلبات حسب الحالة',
             ],
+            
+            // Status words
+            'dashboard.stats.status.completed' => [
+                'en' => 'completed',
+                'ar' => 'مكتملة',
+            ],
+            'dashboard.stats.status.cancelled' => [
+                'en' => 'cancelled',
+                'ar' => 'ملغاة',
+            ],
+            'dashboard.stats.status.pending' => [
+                'en' => 'pending',
+                'ar' => 'معلقة',
+            ],
         ];
 
         // Get all active languages

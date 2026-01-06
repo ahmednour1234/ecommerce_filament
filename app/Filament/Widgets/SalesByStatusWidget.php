@@ -8,8 +8,12 @@ use Illuminate\Support\Facades\DB;
 
 class SalesByStatusWidget extends ChartWidget
 {
-    protected static ?string $heading = 'Orders by Status';
     protected static ?int $sort = 5;
+    
+    protected function getHeading(): string
+    {
+        return tr('dashboard.stats.orders_by_status');
+    }
 
     protected function getData(): array
     {
