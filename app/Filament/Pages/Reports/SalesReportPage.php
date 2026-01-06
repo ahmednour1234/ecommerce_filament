@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\Reports;
 
 use App\Filament\Concerns\ExportsTable;
+use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\Sales\Invoice;
 use App\Models\Sales\Order;
 use App\Models\Sales\Customer;
@@ -22,9 +23,11 @@ class SalesReportPage extends Page implements HasTable
 {
     use InteractsWithTable;
     use ExportsTable;
+    use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
     protected static ?string $navigationGroup = 'Accounting';
+    protected static ?string $navigationTranslationKey = 'sidebar.accounting.sales_report';
     protected static ?int $navigationSort = 9;
     protected static string $view = 'filament.pages.reports.sales-report';
 

@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\Reports;
 
 use App\Filament\Concerns\ExportsTable;
+use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\Sales\Order;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -16,9 +17,11 @@ class OrdersReportPage extends Page implements HasTable
 {
     use InteractsWithTable;
     use ExportsTable;
+    use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
     protected static ?string $navigationGroup = 'Accounting';
+    protected static ?string $navigationTranslationKey = 'sidebar.accounting.orders_report';
     protected static ?int $navigationSort = 10;
     protected static string $view = 'filament.pages.reports.orders-report';
 

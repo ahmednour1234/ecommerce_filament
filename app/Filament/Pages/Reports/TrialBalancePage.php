@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\Reports;
 
 use App\Filament\Concerns\ExportsTable;
+use App\Filament\Concerns\TranslatableNavigation;
 use App\Services\Accounting\AccountingService;
 use App\Models\Accounting\Account;
 use App\Models\MainCore\Branch;
@@ -20,9 +21,11 @@ class TrialBalancePage extends Page implements HasTable
 {
     use InteractsWithTable;
     use ExportsTable;
+    use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-calculator';
     protected static ?string $navigationGroup = 'Accounting';
+    protected static ?string $navigationTranslationKey = 'sidebar.accounting.trial_balance';
     protected static ?int $navigationSort = 8;
     protected static string $view = 'filament.pages.reports.trial-balance';
 

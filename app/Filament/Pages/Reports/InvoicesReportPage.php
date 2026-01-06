@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\Reports;
 
 use App\Filament\Concerns\ExportsTable;
+use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\Sales\Invoice;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -16,9 +17,11 @@ class InvoicesReportPage extends Page implements HasTable
 {
     use InteractsWithTable;
     use ExportsTable;
+    use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationGroup = 'Accounting';
+    protected static ?string $navigationTranslationKey = 'sidebar.accounting.invoices_report';
     protected static ?int $navigationSort = 11;
     protected static string $view = 'filament.pages.reports.invoices-report';
 

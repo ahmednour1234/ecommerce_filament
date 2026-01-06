@@ -2,14 +2,18 @@
 
 namespace App\Filament\Pages\Accounting;
 
+use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\Accounting\Account;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Response;
 
 class AccountsTreePage extends Page
 {
+    use TranslatableNavigation;
+
     protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
     protected static ?string $navigationGroup = 'Accounting';
+    protected static ?string $navigationTranslationKey = 'sidebar.accounting.accounts_tree';
     protected static ?int $navigationSort = 2;
     protected static string $view = 'filament.pages.accounting.accounts-tree';
 
