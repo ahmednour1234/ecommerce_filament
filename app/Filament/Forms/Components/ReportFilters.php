@@ -168,9 +168,7 @@ class ReportFilters
                 ->color('primary')
                 ->action(fn ($livewire) => $livewire->resetTable())
                 ->keyBindings(['mod+s']),
-        ])
-        ->align('end')
-        ->fullWidth(false);
+        ]);
 
         return \Filament\Forms\Components\Section::make($label)
             ->schema($schema)

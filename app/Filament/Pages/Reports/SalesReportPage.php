@@ -87,9 +87,7 @@ class SalesReportPage extends Page implements HasTable
                                 ->color('primary')
                                 ->action(fn () => $this->resetTable())
                                 ->keyBindings(['mod+s']),
-                        ])
-                        ->align('end')
-                        ->fullWidth(false),
+                        ]),
                     ])
                     ->columns(3),
             ])
