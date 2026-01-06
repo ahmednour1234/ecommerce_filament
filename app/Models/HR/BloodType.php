@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class BloodType extends Model
 {
+    protected $table = 'hr_blood_types';
+
     protected $fillable = [
         'name',
         'code',

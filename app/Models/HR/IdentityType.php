@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class IdentityType extends Model
 {
+    protected $table = 'hr_identity_types';
+
     protected $fillable = [
         'name',
         'active',

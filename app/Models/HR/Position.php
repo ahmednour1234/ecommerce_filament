@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Position extends Model
 {
+    protected $table = 'hr_positions';
+
     protected $fillable = [
         'title',
         'department_id',

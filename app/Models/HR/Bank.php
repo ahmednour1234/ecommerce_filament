@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Bank extends Model
 {
+    protected $table = 'hr_banks';
+
     protected $fillable = [
         'name',
         'iban_prefix',
