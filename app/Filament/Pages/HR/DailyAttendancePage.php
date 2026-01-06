@@ -6,6 +6,7 @@ use App\Models\HR\AttendanceDay;
 use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Table;
 use Filament\Pages\Page;
 
 class DailyAttendancePage extends Page implements HasTable
@@ -44,7 +45,7 @@ class DailyAttendancePage extends Page implements HasTable
         $this->selectedDate = now()->format('Y-m-d');
     }
 
-    public function table(Table $table): Table
+    public function table(\Filament\Tables\Table $table): \Filament\Tables\Table
     {
         return $table
             ->query(

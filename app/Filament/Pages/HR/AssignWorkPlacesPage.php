@@ -100,7 +100,7 @@ class AssignWorkPlacesPage extends Page implements HasForms, HasTable
         }
     }
 
-    public function table(Table $table): Table
+    public function table(\Filament\Tables\Table $table): \Filament\Tables\Table
     {
         return $table
             ->query(

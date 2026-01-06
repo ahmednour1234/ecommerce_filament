@@ -12,6 +12,7 @@ use Filament\Pages\Page;
 use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Table;
 use Illuminate\Support\Collection;
 
 class MonthlyAttendanceReportPage extends Page implements HasForms, HasTable
@@ -139,7 +140,7 @@ class MonthlyAttendanceReportPage extends Page implements HasForms, HasTable
             ->send();
     }
 
-    public function table(Table $table): Table
+    public function table(\Filament\Tables\Table $table): \Filament\Tables\Table
     {
         return $table
             ->query(
