@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\HR;
 
 use App\Models\HR\Department;
+use App\Models\HR\Employee;
 use App\Models\HR\WorkPlace;
 use App\Services\HR\AttendanceService;
 use Filament\Forms;
@@ -144,9 +145,9 @@ class MonthlyAttendanceReportPage extends Page implements HasForms, HasTable
     public function table(\Filament\Tables\Table $table): \Filament\Tables\Table
     {
         // Build union query from collection data
-        $query = null;
+        $unionQuery = null;
         foreach ($this->reportData as $row) {
-            $rowQuery = DB::table('hr_employees')
+            $rowQuery = DB::query()
                 ->selectRaw('? as employee_id, ? as employee_number, ? as employee_name, ? as department, ? as position, ? as present_days, ? as absent_days, ? as leave_days, ? as holiday_days, ? as late_days, ? as total_worked_minutes, ? as total_overtime_minutes, ? as total_late_minutes', [
                     $row['employee_id'] ?? null,
                     $row['employee_number'] ?? '',
@@ -161,25 +162,28 @@ class MonthlyAttendanceReportPage extends Page implements HasForms, HasTable
                     $row['total_worked_minutes'] ?? 0,
                     $row['total_overtime_minutes'] ?? 0,
                     $row['total_late_minutes'] ?? 0,
-                ])
-                ->whereRaw('1 = 0'); // Empty result set, just for structure
+                ]);
             
-            if ($query === null) {
-                $query = $rowQuery;
+            if ($unionQuery === null) {
+                $unionQuery = $rowQuery;
             } else {
-                $query->union($rowQuery);
+                $unionQuery->unionAll($rowQuery);
             }
         }
         
         // If no data, create an empty query
-        if ($query === null) {
-            $query = DB::table('hr_employees')
-                ->selectRaw('null as employee_id, null as employee_number, null as employee_name, null as department, null as position, null as present_days, null as absent_days, null as leave_days, null as holiday_days, null as late_days, null as total_worked_minutes, null as total_overtime_minutes, null as total_late_minutes')
-                ->whereRaw('1 = 0');
+        if ($unionQuery === null) {
+            $unionQuery = DB::query()
+                ->selectRaw('null as employee_id, null as employee_number, null as employee_name, null as department, null as position, null as present_days, null as absent_days, null as leave_days, null as holiday_days, null as late_days, null as total_worked_minutes, null as total_overtime_minutes, null as total_late_minutes');
         }
         
+        // Filament Tables requires an Eloquent Builder, not a Query Builder.
+        // Wrap in closure to ensure Filament receives a proper Eloquent Builder instance.
         return $table
-            ->query($query)
+            ->query(fn () => Employee::query()
+                ->fromSub($unionQuery, 'attendance_report')
+                ->select('attendance_report.*')
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('employee_number')
                     ->label(tr('fields.employee_number', [], null, 'dashboard') ?: 'Employee Number')
