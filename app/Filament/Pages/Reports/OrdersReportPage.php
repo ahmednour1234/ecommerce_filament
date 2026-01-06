@@ -187,7 +187,10 @@ class OrdersReportPage extends Page implements HasTable
 
     protected function getExportMetadata(): array
     {
-        $metadata = parent::getExportMetadata();
+        $metadata = [
+            'exported_at' => now()->format('Y-m-d H:i:s'),
+            'exported_by' => auth()->user()?->name ?? 'System',
+        ];
         $metadata['date_from'] = $this->data['date_from'] ?? '';
         $metadata['date_to'] = $this->data['date_to'] ?? '';
         $metadata['status'] = $this->data['status'] ?? 'All';
