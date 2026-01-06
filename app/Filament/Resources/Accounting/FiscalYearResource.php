@@ -20,7 +20,7 @@ class FiscalYearResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-calendar';
     protected static ?string $navigationGroup = 'Accounting';
     protected static ?int $navigationSort = 12;
-    protected static ?string $navigationTranslationKey = 'menu.accounting.fiscal_years';
+    protected static ?string $navigationTranslationKey = 'sidebar.accounting.fiscal_years';
 
     public static function form(Form $form): Form
     {
@@ -67,52 +67,51 @@ class FiscalYearResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label(trans_dash('accounting.fiscal_year', 'Fiscal Year'))
+                    ->label(tr('tables.fiscal_years.fiscal_year', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('start_date')
-                    ->label(trans_dash('accounting.start_date', 'Start Date'))
+                    ->label(tr('tables.fiscal_years.start_date', [], null, 'dashboard'))
                     ->date()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('end_date')
-                    ->label(trans_dash('accounting.end_date', 'End Date'))
+                    ->label(tr('tables.fiscal_years.end_date', [], null, 'dashboard'))
                     ->date()
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('is_active')
-                    ->label(trans_dash('accounting.active', 'Active'))
+                    ->label(tr('tables.fiscal_years.active', [], null, 'dashboard'))
                     ->boolean(),
 
                 Tables\Columns\IconColumn::make('is_closed')
-                    ->label(trans_dash('accounting.closed', 'Closed'))
+                    ->label(tr('tables.fiscal_years.closed', [], null, 'dashboard'))
                     ->boolean()
                     ->color(fn ($record) => $record->is_closed ? 'danger' : 'success'),
 
                 Tables\Columns\TextColumn::make('periods_count')
-                    ->label(trans_dash('accounting.periods', 'Periods'))
+                    ->label(tr('tables.fiscal_years.periods', [], null, 'dashboard'))
                     ->counts('periods')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label(trans_dash('accounting.created_at', 'Created At'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label(trans_dash('accounting.active', 'Active'))
-                    ->placeholder('All')
-                    ->trueLabel('Active only')
-                    ->falseLabel('Inactive only'),
+                    ->label(tr('tables.fiscal_years.filters.active', [], null, 'dashboard'))
+                    ->placeholder(tr('tables.fiscal_years.filters.all', [], null, 'dashboard'))
+                    ->trueLabel(tr('tables.fiscal_years.filters.active_only', [], null, 'dashboard'))
+                    ->falseLabel(tr('tables.fiscal_years.filters.inactive_only', [], null, 'dashboard')),
 
                 Tables\Filters\TernaryFilter::make('is_closed')
-                    ->label(trans_dash('accounting.closed', 'Closed'))
-                    ->placeholder('All')
-                    ->trueLabel('Closed only')
-                    ->falseLabel('Open only'),
+                    ->label(tr('tables.fiscal_years.filters.closed', [], null, 'dashboard'))
+                    ->placeholder(tr('tables.fiscal_years.filters.all', [], null, 'dashboard'))
+                    ->trueLabel(tr('tables.fiscal_years.filters.closed_only', [], null, 'dashboard'))
+                    ->falseLabel(tr('tables.fiscal_years.filters.open_only', [], null, 'dashboard')),
             ])
             ->actions([
                 Tables\Actions\Action::make('close')

@@ -20,53 +20,53 @@ class CostCenterResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-chart-pie';
     protected static ?string $navigationGroup = 'Accounting';
     protected static ?int $navigationSort = 6;
-    protected static ?string $navigationTranslationKey = 'menu.accounting.cost_centers';
+    protected static ?string $navigationTranslationKey = 'sidebar.accounting.cost_centers';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Basic Information')
+                Forms\Components\Section::make(tr('forms.cost_centers.sections.basic_information', [], null, 'dashboard'))
                     ->schema([
                         Forms\Components\TextInput::make('code')
-                            ->label('Code')
+                            ->label(tr('forms.cost_centers.code.label', [], null, 'dashboard'))
                             ->required()
                             ->maxLength(50)
                             ->unique(ignoreRecord: true)
-                            ->helperText('Unique code for the cost center'),
+                            ->helperText(tr('forms.cost_centers.code.helper', [], null, 'dashboard')),
 
                         Forms\Components\TextInput::make('name')
-                            ->label('Name')
+                            ->label(tr('forms.cost_centers.name.label', [], null, 'dashboard'))
                             ->required()
                             ->maxLength(255),
 
                         Forms\Components\Select::make('type')
-                            ->label('Type')
+                            ->label(tr('forms.cost_centers.type.label', [], null, 'dashboard'))
                             ->options([
-                                'department' => 'Department',
-                                'project' => 'Project',
-                                'location' => 'Location',
-                                'other' => 'Other',
+                                'department' => tr('forms.cost_centers.type.options.department', [], null, 'dashboard'),
+                                'project' => tr('forms.cost_centers.type.options.project', [], null, 'dashboard'),
+                                'location' => tr('forms.cost_centers.type.options.location', [], null, 'dashboard'),
+                                'other' => tr('forms.cost_centers.type.options.other', [], null, 'dashboard'),
                             ])
                             ->searchable()
                             ->nullable()
-                            ->helperText('Type of cost center (e.g., department, project, location)'),
+                            ->helperText(tr('forms.cost_centers.type.helper', [], null, 'dashboard')),
 
                         Forms\Components\Select::make('parent_id')
-                            ->label('Parent Cost Center')
+                            ->label(tr('forms.cost_centers.parent_id.label', [], null, 'dashboard'))
                             ->relationship('parent', 'name')
                             ->searchable()
                             ->preload()
                             ->nullable()
-                            ->helperText('Optional: Select a parent cost center if this is a sub-cost center'),
+                            ->helperText(tr('forms.cost_centers.parent_id.helper', [], null, 'dashboard')),
 
                         Forms\Components\Textarea::make('description')
-                            ->label('Description')
+                            ->label(tr('forms.cost_centers.description.label', [], null, 'dashboard'))
                             ->rows(3)
                             ->columnSpanFull(),
 
                         Forms\Components\Toggle::make('is_active')
-                            ->label('Active')
+                            ->label(tr('forms.cost_centers.is_active.label', [], null, 'dashboard'))
                             ->default(true)
                             ->required(),
                     ])
@@ -79,17 +79,18 @@ class CostCenterResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
-                    ->label('Code')
+                    ->label(tr('tables.cost_centers.code', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Name')
+                    ->label(tr('tables.cost_centers.name', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('type')
-                    ->label('Type')
+                    ->label(tr('tables.cost_centers.type', [], null, 'dashboard'))
+                    ->formatStateUsing(fn ($state) => $state ? tr('forms.cost_centers.type.options.' . $state, [], null, 'dashboard') : '')
                     ->badge()
                     ->colors([
                         'primary' => 'department',
@@ -101,12 +102,12 @@ class CostCenterResource extends Resource
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('parent.name')
-                    ->label('Parent')
+                    ->label(tr('tables.cost_centers.parent', [], null, 'dashboard'))
                     ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\IconColumn::make('is_active')
-                    ->label('Active')
+                    ->label(tr('tables.cost_centers.active', [], null, 'dashboard'))
                     ->boolean()
                     ->sortable(),
 
@@ -117,21 +118,22 @@ class CostCenterResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
+                    ->label(tr('tables.cost_centers.filters.type', [], null, 'dashboard'))
                     ->options([
-                        'department' => 'Department',
-                        'project' => 'Project',
-                        'location' => 'Location',
-                        'other' => 'Other',
+                        'department' => tr('forms.cost_centers.type.options.department', [], null, 'dashboard'),
+                        'project' => tr('forms.cost_centers.type.options.project', [], null, 'dashboard'),
+                        'location' => tr('forms.cost_centers.type.options.location', [], null, 'dashboard'),
+                        'other' => tr('forms.cost_centers.type.options.other', [], null, 'dashboard'),
                     ]),
 
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Active')
-                    ->placeholder('All')
-                    ->trueLabel('Active only')
-                    ->falseLabel('Inactive only'),
+                    ->label(tr('tables.cost_centers.filters.active', [], null, 'dashboard'))
+                    ->placeholder(tr('tables.cost_centers.filters.all', [], null, 'dashboard'))
+                    ->trueLabel(tr('tables.cost_centers.filters.active_only', [], null, 'dashboard'))
+                    ->falseLabel(tr('tables.cost_centers.filters.inactive_only', [], null, 'dashboard')),
 
                 Tables\Filters\SelectFilter::make('parent_id')
-                    ->label('Parent Cost Center')
+                    ->label(tr('tables.cost_centers.filters.parent_cost_center', [], null, 'dashboard'))
                     ->relationship('parent', 'name')
                     ->searchable()
                     ->preload(),

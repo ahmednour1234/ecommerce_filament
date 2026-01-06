@@ -21,23 +21,23 @@ class BankAccountResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-building-library';
     protected static ?string $navigationGroup = 'Accounting';
     protected static ?int $navigationSort = 15;
-    protected static ?string $navigationTranslationKey = 'menu.accounting.bank_accounts';
+    protected static ?string $navigationTranslationKey = 'sidebar.accounting.bank_accounts';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Bank Account Information')
+                Forms\Components\Section::make(tr('forms.bank_accounts.sections.bank_account_information', [], null, 'dashboard'))
                     ->schema([
                         Forms\Components\Select::make('account_id')
-                            ->label(trans_dash('accounting.account', 'Account'))
+                            ->label(tr('forms.bank_accounts.account_id.label', [], null, 'dashboard'))
                             ->relationship('account', 'name', fn ($query) => 
                                 $query->where('type', 'asset')->where('is_active', true)
                             )
                             ->required()
                             ->searchable()
                             ->preload()
-                            ->helperText('Select the account associated with this bank account')
+                            ->helperText(tr('forms.bank_accounts.account_id.helper', [], null, 'dashboard'))
                             ->createOptionForm([
                                 Forms\Components\TextInput::make('code')
                                     ->required()
@@ -60,27 +60,27 @@ class BankAccountResource extends Resource
                             }),
 
                         Forms\Components\TextInput::make('bank_name')
-                            ->label('Bank Name')
+                            ->label(tr('forms.bank_accounts.bank_name.label', [], null, 'dashboard'))
                             ->required()
                             ->maxLength(255),
 
                         Forms\Components\TextInput::make('account_number')
-                            ->label('Account Number')
+                            ->label(tr('forms.bank_accounts.account_number.label', [], null, 'dashboard'))
                             ->required()
                             ->maxLength(255),
 
                         Forms\Components\TextInput::make('iban')
-                            ->label('IBAN')
+                            ->label(tr('forms.bank_accounts.iban.label', [], null, 'dashboard'))
                             ->maxLength(255)
                             ->nullable(),
 
                         Forms\Components\TextInput::make('swift_code')
-                            ->label('SWIFT Code')
+                            ->label(tr('forms.bank_accounts.swift_code.label', [], null, 'dashboard'))
                             ->maxLength(50)
                             ->nullable(),
 
                         Forms\Components\Select::make('branch_id')
-                            ->label(trans_dash('accounting.branch', 'Branch'))
+                            ->label(tr('forms.bank_accounts.branch_id.label', [], null, 'dashboard'))
                             ->relationship('branch', 'name', fn ($query) => 
                                 $query->where('status', 'active')
                             )
@@ -89,7 +89,7 @@ class BankAccountResource extends Resource
                             ->nullable(),
 
                         Forms\Components\Select::make('currency_id')
-                            ->label(trans_dash('accounting.currency', 'Currency'))
+                            ->label(tr('forms.bank_accounts.currency_id.label', [], null, 'dashboard'))
                             ->relationship('currency', 'name', fn ($query) => 
                                 $query->where('is_active', true)
                             )
@@ -98,26 +98,26 @@ class BankAccountResource extends Resource
                             ->nullable(),
 
                         Forms\Components\TextInput::make('opening_balance')
-                            ->label('Opening Balance')
+                            ->label(tr('forms.bank_accounts.opening_balance.label', [], null, 'dashboard'))
                             ->numeric()
                             ->default(0)
                             ->prefix('$'),
 
                         Forms\Components\TextInput::make('current_balance')
-                            ->label('Current Balance')
+                            ->label(tr('forms.bank_accounts.current_balance.label', [], null, 'dashboard'))
                             ->numeric()
                             ->default(0)
                             ->prefix('$')
                             ->disabled()
-                            ->helperText('Calculated from opening balance + all posted transactions. Automatically updated when transactions are posted.'),
+                            ->helperText(tr('forms.bank_accounts.current_balance.helper', [], null, 'dashboard')),
 
                         Forms\Components\Toggle::make('is_active')
-                            ->label('Active')
+                            ->label(tr('forms.bank_accounts.is_active.label', [], null, 'dashboard'))
                             ->default(true)
                             ->required(),
 
                         Forms\Components\Textarea::make('notes')
-                            ->label(trans_dash('accounting.notes', 'Notes'))
+                            ->label(tr('forms.bank_accounts.notes.label', [], null, 'dashboard'))
                             ->rows(3)
                             ->columnSpanFull(),
                     ])
@@ -130,46 +130,47 @@ class BankAccountResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('account.code')
-                    ->label('Account Code')
+                    ->label(tr('tables.bank_accounts.account_code', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('account.name')
-                    ->label('Account Name')
+                    ->label(tr('tables.bank_accounts.account_name', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('bank_name')
-                    ->label('Bank Name')
+                    ->label(tr('tables.bank_accounts.bank_name', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('account_number')
-                    ->label('Account Number')
+                    ->label(tr('tables.bank_accounts.account_number', [], null, 'dashboard'))
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('branch.name')
-                    ->label('Branch')
+                    ->label(tr('tables.bank_accounts.branch', [], null, 'dashboard'))
                     ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('currency.code')
-                    ->label('Currency')
+                    ->label(tr('tables.bank_accounts.currency', [], null, 'dashboard'))
                     ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('current_balance')
-                    ->label('Current Balance')
+                    ->label(tr('tables.bank_accounts.current_balance', [], null, 'dashboard'))
                     ->money('USD')
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('is_active')
-                    ->label('Active')
+                    ->label(tr('tables.bank_accounts.active', [], null, 'dashboard'))
                     ->boolean()
                     ->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('branch_id')
+                    ->label(tr('tables.bank_accounts.filters.branch', [], null, 'dashboard'))
                     ->relationship('branch', 'name', fn ($query) => 
                         $query->where('status', 'active')
                     )
@@ -177,19 +178,20 @@ class BankAccountResource extends Resource
                     ->preload(),
 
                 Tables\Filters\SelectFilter::make('currency_id')
+                    ->label(tr('tables.bank_accounts.filters.currency', [], null, 'dashboard'))
                     ->relationship('currency', 'name')
                     ->searchable()
                     ->preload(),
 
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Active')
-                    ->placeholder('All')
-                    ->trueLabel('Active only')
-                    ->falseLabel('Inactive only'),
+                    ->label(tr('tables.bank_accounts.filters.active', [], null, 'dashboard'))
+                    ->placeholder(tr('tables.bank_accounts.filters.all', [], null, 'dashboard'))
+                    ->trueLabel(tr('tables.bank_accounts.filters.active_only', [], null, 'dashboard'))
+                    ->falseLabel(tr('tables.bank_accounts.filters.inactive_only', [], null, 'dashboard')),
             ])
             ->actions([
                 Tables\Actions\Action::make('reconcile')
-                    ->label('Reconcile')
+                    ->label(tr('tables.bank_accounts.actions.reconcile', [], null, 'dashboard'))
                     ->icon('heroicon-o-arrow-path')
                     ->visible(fn () => auth()->user()?->can('bank_accounts.reconcile') ?? false)
                     ->action(function ($record) {

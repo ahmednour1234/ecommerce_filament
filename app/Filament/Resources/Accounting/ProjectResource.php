@@ -20,7 +20,7 @@ class ProjectResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-folder';
     protected static ?string $navigationGroup = 'Accounting';
     protected static ?int $navigationSort = 14;
-    protected static ?string $navigationTranslationKey = 'menu.accounting.projects';
+    protected static ?string $navigationTranslationKey = 'sidebar.accounting.projects';
 
     public static function form(Form $form): Form
     {
@@ -70,41 +70,40 @@ class ProjectResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
-                    ->label(trans_dash('accounting.project_code', 'Code'))
+                    ->label(tr('tables.projects.code', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('name')
-                    ->label(trans_dash('accounting.project_name', 'Project Name'))
+                    ->label(tr('tables.projects.name', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('start_date')
-                    ->label(trans_dash('accounting.start_date', 'Start Date'))
+                    ->label(tr('tables.projects.start_date', [], null, 'dashboard'))
                     ->date()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('end_date')
-                    ->label(trans_dash('accounting.end_date', 'End Date'))
+                    ->label(tr('tables.projects.end_date', [], null, 'dashboard'))
                     ->date()
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('is_active')
-                    ->label(trans_dash('accounting.active', 'Active'))
+                    ->label(tr('tables.projects.active', [], null, 'dashboard'))
                     ->boolean(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label(trans_dash('accounting.created_at', 'Created At'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label(trans_dash('accounting.active', 'Active'))
-                    ->placeholder('All')
-                    ->trueLabel('Active only')
-                    ->falseLabel('Inactive only'),
+                    ->label(tr('tables.projects.filters.active', [], null, 'dashboard'))
+                    ->placeholder(tr('tables.projects.filters.all', [], null, 'dashboard'))
+                    ->trueLabel(tr('tables.projects.filters.active_only', [], null, 'dashboard'))
+                    ->falseLabel(tr('tables.projects.filters.inactive_only', [], null, 'dashboard')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

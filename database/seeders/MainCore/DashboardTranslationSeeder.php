@@ -2294,6 +2294,560 @@ class DashboardTranslationSeeder extends Seeder
                 'en' => 'Journal Entry',
                 'ar' => 'قيد اليومية',
             ],
+
+            // Cost Centers Resource - Forms
+            'forms.cost_centers.sections.basic_information' => [
+                'en' => 'Basic Information',
+                'ar' => 'المعلومات الأساسية',
+            ],
+            'forms.cost_centers.code.label' => [
+                'en' => 'Code',
+                'ar' => 'الرمز',
+            ],
+            'forms.cost_centers.code.helper' => [
+                'en' => 'Unique code for the cost center',
+                'ar' => 'رمز فريد لمركز التكلفة',
+            ],
+            'forms.cost_centers.name.label' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'forms.cost_centers.type.label' => [
+                'en' => 'Type',
+                'ar' => 'النوع',
+            ],
+            'forms.cost_centers.type.options.department' => [
+                'en' => 'Department',
+                'ar' => 'قسم',
+            ],
+            'forms.cost_centers.type.options.project' => [
+                'en' => 'Project',
+                'ar' => 'مشروع',
+            ],
+            'forms.cost_centers.type.options.location' => [
+                'en' => 'Location',
+                'ar' => 'موقع',
+            ],
+            'forms.cost_centers.type.options.other' => [
+                'en' => 'Other',
+                'ar' => 'أخرى',
+            ],
+            'forms.cost_centers.type.helper' => [
+                'en' => 'Type of cost center (e.g., department, project, location)',
+                'ar' => 'نوع مركز التكلفة (مثل: قسم، مشروع، موقع)',
+            ],
+            'forms.cost_centers.parent_id.label' => [
+                'en' => 'Parent Cost Center',
+                'ar' => 'مركز التكلفة الأب',
+            ],
+            'forms.cost_centers.parent_id.helper' => [
+                'en' => 'Optional: Select a parent cost center if this is a sub-cost center',
+                'ar' => 'اختياري: اختر مركز تكلفة أب إذا كان هذا مركز تكلفة فرعي',
+            ],
+            'forms.cost_centers.description.label' => [
+                'en' => 'Description',
+                'ar' => 'الوصف',
+            ],
+            'forms.cost_centers.is_active.label' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+
+            // Cost Centers Resource - Tables
+            'tables.cost_centers.code' => [
+                'en' => 'Code',
+                'ar' => 'الرمز',
+            ],
+            'tables.cost_centers.name' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'tables.cost_centers.type' => [
+                'en' => 'Type',
+                'ar' => 'النوع',
+            ],
+            'tables.cost_centers.parent' => [
+                'en' => 'Parent',
+                'ar' => 'الأب',
+            ],
+            'tables.cost_centers.active' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'tables.cost_centers.filters.type' => [
+                'en' => 'Type',
+                'ar' => 'النوع',
+            ],
+            'tables.cost_centers.filters.active' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'tables.cost_centers.filters.all' => [
+                'en' => 'All',
+                'ar' => 'الكل',
+            ],
+            'tables.cost_centers.filters.active_only' => [
+                'en' => 'Active only',
+                'ar' => 'النشطة فقط',
+            ],
+            'tables.cost_centers.filters.inactive_only' => [
+                'en' => 'Inactive only',
+                'ar' => 'غير النشطة فقط',
+            ],
+            'tables.cost_centers.filters.parent_cost_center' => [
+                'en' => 'Parent Cost Center',
+                'ar' => 'مركز التكلفة الأب',
+            ],
+
+            // Assets Resource - Forms
+            'forms.assets.sections.basic_information' => [
+                'en' => 'Basic Information',
+                'ar' => 'المعلومات الأساسية',
+            ],
+            'forms.assets.type.options.fixed' => [
+                'en' => 'Fixed Asset',
+                'ar' => 'أصل ثابت',
+            ],
+            'forms.assets.type.options.intangible' => [
+                'en' => 'Intangible Asset',
+                'ar' => 'أصل غير ملموس',
+            ],
+            'forms.assets.type.options.current' => [
+                'en' => 'Current Asset',
+                'ar' => 'أصل متداول',
+            ],
+            'forms.assets.type.options.investment' => [
+                'en' => 'Investment',
+                'ar' => 'استثمار',
+            ],
+            'forms.assets.category.options.property' => [
+                'en' => 'Property',
+                'ar' => 'عقار',
+            ],
+            'forms.assets.category.options.equipment' => [
+                'en' => 'Equipment',
+                'ar' => 'معدات',
+            ],
+            'forms.assets.category.options.vehicle' => [
+                'en' => 'Vehicle',
+                'ar' => 'مركبة',
+            ],
+            'forms.assets.category.options.furniture' => [
+                'en' => 'Furniture',
+                'ar' => 'أثاث',
+            ],
+            'forms.assets.category.options.computer' => [
+                'en' => 'Computer',
+                'ar' => 'كمبيوتر',
+            ],
+            'forms.assets.category.options.other' => [
+                'en' => 'Other',
+                'ar' => 'أخرى',
+            ],
+            'forms.assets.status.options.active' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'forms.assets.status.options.deprecated' => [
+                'en' => 'Deprecated',
+                'ar' => 'مستنفذ',
+            ],
+            'forms.assets.status.options.disposed' => [
+                'en' => 'Disposed',
+                'ar' => 'متصرف به',
+            ],
+            'forms.assets.status.options.maintenance' => [
+                'en' => 'Maintenance',
+                'ar' => 'صيانة',
+            ],
+            'forms.assets.sections.basic_information' => [
+                'en' => 'Basic Information',
+                'ar' => 'المعلومات الأساسية',
+            ],
+            'forms.assets.code.label' => [
+                'en' => 'Asset Code',
+                'ar' => 'رمز الأصل',
+            ],
+            'forms.assets.name.label' => [
+                'en' => 'Asset Name',
+                'ar' => 'اسم الأصل',
+            ],
+            'forms.assets.description.label' => [
+                'en' => 'Description',
+                'ar' => 'الوصف',
+            ],
+            'forms.assets.account_id.label' => [
+                'en' => 'Asset Account',
+                'ar' => 'حساب الأصل',
+            ],
+            'forms.assets.type.label' => [
+                'en' => 'Type',
+                'ar' => 'النوع',
+            ],
+            'forms.assets.category.label' => [
+                'en' => 'Category',
+                'ar' => 'الفئة',
+            ],
+            'forms.assets.status.label' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'forms.assets.sections.financial_information' => [
+                'en' => 'Financial Information',
+                'ar' => 'المعلومات المالية',
+            ],
+            'forms.assets.purchase_cost.label' => [
+                'en' => 'Purchase Cost',
+                'ar' => 'تكلفة الشراء',
+            ],
+            'forms.assets.current_value.label' => [
+                'en' => 'Current Value',
+                'ar' => 'القيمة الحالية',
+            ],
+            'forms.assets.purchase_date.label' => [
+                'en' => 'Purchase Date',
+                'ar' => 'تاريخ الشراء',
+            ],
+            'forms.assets.useful_life_years.label' => [
+                'en' => 'Useful Life (Years)',
+                'ar' => 'العمر الإنتاجي (بالسنوات)',
+            ],
+            'forms.assets.depreciation_rate.label' => [
+                'en' => 'Depreciation Rate (%)',
+                'ar' => 'معدل الإهلاك (%)',
+            ],
+            'forms.assets.sections.location_details' => [
+                'en' => 'Location & Details',
+                'ar' => 'الموقع والتفاصيل',
+            ],
+            'forms.assets.branch_id.label' => [
+                'en' => 'Branch',
+                'ar' => 'الفرع',
+            ],
+            'forms.assets.cost_center_id.label' => [
+                'en' => 'Cost Center',
+                'ar' => 'مركز التكلفة',
+            ],
+            'forms.assets.location.label' => [
+                'en' => 'Location',
+                'ar' => 'الموقع',
+            ],
+            'forms.assets.serial_number.label' => [
+                'en' => 'Serial Number',
+                'ar' => 'الرقم التسلسلي',
+            ],
+
+            // Assets Resource - Tables
+            'tables.assets.code' => [
+                'en' => 'Code',
+                'ar' => 'الرمز',
+            ],
+            'tables.assets.name' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'tables.assets.account' => [
+                'en' => 'Account',
+                'ar' => 'الحساب',
+            ],
+            'tables.assets.type' => [
+                'en' => 'Type',
+                'ar' => 'النوع',
+            ],
+            'tables.assets.category' => [
+                'en' => 'Category',
+                'ar' => 'الفئة',
+            ],
+            'tables.assets.purchase_cost' => [
+                'en' => 'Purchase Cost',
+                'ar' => 'تكلفة الشراء',
+            ],
+            'tables.assets.current_value' => [
+                'en' => 'Current Value',
+                'ar' => 'القيمة الحالية',
+            ],
+            'tables.assets.book_value' => [
+                'en' => 'Book Value',
+                'ar' => 'القيمة الدفترية',
+            ],
+            'tables.assets.status' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'tables.assets.filters.type' => [
+                'en' => 'Type',
+                'ar' => 'النوع',
+            ],
+            'tables.assets.filters.category' => [
+                'en' => 'Category',
+                'ar' => 'الفئة',
+            ],
+            'tables.assets.filters.status' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'tables.assets.filters.branch' => [
+                'en' => 'Branch',
+                'ar' => 'الفرع',
+            ],
+
+            // Fiscal Years Resource - Tables
+            'tables.fiscal_years.fiscal_year' => [
+                'en' => 'Fiscal Year',
+                'ar' => 'السنة المالية',
+            ],
+            'tables.fiscal_years.start_date' => [
+                'en' => 'Start Date',
+                'ar' => 'تاريخ البدء',
+            ],
+            'tables.fiscal_years.end_date' => [
+                'en' => 'End Date',
+                'ar' => 'تاريخ الانتهاء',
+            ],
+            'tables.fiscal_years.active' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'tables.fiscal_years.closed' => [
+                'en' => 'Closed',
+                'ar' => 'مغلق',
+            ],
+            'tables.fiscal_years.periods' => [
+                'en' => 'Periods',
+                'ar' => 'الفترات',
+            ],
+            'tables.fiscal_years.filters.active' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'tables.fiscal_years.filters.all' => [
+                'en' => 'All',
+                'ar' => 'الكل',
+            ],
+            'tables.fiscal_years.filters.active_only' => [
+                'en' => 'Active only',
+                'ar' => 'النشطة فقط',
+            ],
+            'tables.fiscal_years.filters.inactive_only' => [
+                'en' => 'Inactive only',
+                'ar' => 'غير النشطة فقط',
+            ],
+            'tables.fiscal_years.filters.closed' => [
+                'en' => 'Closed',
+                'ar' => 'مغلق',
+            ],
+            'tables.fiscal_years.filters.closed_only' => [
+                'en' => 'Closed only',
+                'ar' => 'المغلقة فقط',
+            ],
+            'tables.fiscal_years.filters.open_only' => [
+                'en' => 'Open only',
+                'ar' => 'المفتوحة فقط',
+            ],
+
+            // Periods Resource - Tables
+            'tables.periods.fiscal_year' => [
+                'en' => 'Fiscal Year',
+                'ar' => 'السنة المالية',
+            ],
+            'tables.periods.period' => [
+                'en' => 'Period',
+                'ar' => 'الفترة',
+            ],
+            'tables.periods.period_number' => [
+                'en' => 'Period #',
+                'ar' => 'رقم الفترة',
+            ],
+            'tables.periods.start_date' => [
+                'en' => 'Start Date',
+                'ar' => 'تاريخ البدء',
+            ],
+            'tables.periods.end_date' => [
+                'en' => 'End Date',
+                'ar' => 'تاريخ الانتهاء',
+            ],
+            'tables.periods.closed' => [
+                'en' => 'Closed',
+                'ar' => 'مغلق',
+            ],
+            'tables.periods.filters.fiscal_year' => [
+                'en' => 'Fiscal Year',
+                'ar' => 'السنة المالية',
+            ],
+            'tables.periods.filters.closed' => [
+                'en' => 'Closed',
+                'ar' => 'مغلق',
+            ],
+            'tables.periods.filters.all' => [
+                'en' => 'All',
+                'ar' => 'الكل',
+            ],
+            'tables.periods.filters.closed_only' => [
+                'en' => 'Closed only',
+                'ar' => 'المغلقة فقط',
+            ],
+            'tables.periods.filters.open_only' => [
+                'en' => 'Open only',
+                'ar' => 'المفتوحة فقط',
+            ],
+
+            // Projects Resource - Tables
+            'tables.projects.code' => [
+                'en' => 'Code',
+                'ar' => 'الرمز',
+            ],
+            'tables.projects.name' => [
+                'en' => 'Project Name',
+                'ar' => 'اسم المشروع',
+            ],
+            'tables.projects.start_date' => [
+                'en' => 'Start Date',
+                'ar' => 'تاريخ البدء',
+            ],
+            'tables.projects.end_date' => [
+                'en' => 'End Date',
+                'ar' => 'تاريخ الانتهاء',
+            ],
+            'tables.projects.active' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'tables.projects.filters.active' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'tables.projects.filters.all' => [
+                'en' => 'All',
+                'ar' => 'الكل',
+            ],
+            'tables.projects.filters.active_only' => [
+                'en' => 'Active only',
+                'ar' => 'النشطة فقط',
+            ],
+            'tables.projects.filters.inactive_only' => [
+                'en' => 'Inactive only',
+                'ar' => 'غير النشطة فقط',
+            ],
+
+            // Bank Accounts Resource - Tables
+            'tables.bank_accounts.account_code' => [
+                'en' => 'Account Code',
+                'ar' => 'رمز الحساب',
+            ],
+            'tables.bank_accounts.account_name' => [
+                'en' => 'Account Name',
+                'ar' => 'اسم الحساب',
+            ],
+            'tables.bank_accounts.bank_name' => [
+                'en' => 'Bank Name',
+                'ar' => 'اسم البنك',
+            ],
+            'tables.bank_accounts.account_number' => [
+                'en' => 'Account Number',
+                'ar' => 'رقم الحساب',
+            ],
+            'tables.bank_accounts.branch' => [
+                'en' => 'Branch',
+                'ar' => 'الفرع',
+            ],
+            'tables.bank_accounts.currency' => [
+                'en' => 'Currency',
+                'ar' => 'العملة',
+            ],
+            'tables.bank_accounts.current_balance' => [
+                'en' => 'Current Balance',
+                'ar' => 'الرصيد الحالي',
+            ],
+            'tables.bank_accounts.active' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'tables.bank_accounts.filters.branch' => [
+                'en' => 'Branch',
+                'ar' => 'الفرع',
+            ],
+            'tables.bank_accounts.filters.currency' => [
+                'en' => 'Currency',
+                'ar' => 'العملة',
+            ],
+            'tables.bank_accounts.filters.active' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'tables.bank_accounts.filters.all' => [
+                'en' => 'All',
+                'ar' => 'الكل',
+            ],
+            'tables.bank_accounts.filters.active_only' => [
+                'en' => 'Active only',
+                'ar' => 'النشطة فقط',
+            ],
+            'tables.bank_accounts.filters.inactive_only' => [
+                'en' => 'Inactive only',
+                'ar' => 'غير النشطة فقط',
+            ],
+
+            // Bank Accounts Resource - Forms
+            'forms.bank_accounts.sections.bank_account_information' => [
+                'en' => 'Bank Account Information',
+                'ar' => 'معلومات الحساب البنكي',
+            ],
+            'forms.bank_accounts.account_id.label' => [
+                'en' => 'Account',
+                'ar' => 'الحساب',
+            ],
+            'forms.bank_accounts.account_id.helper' => [
+                'en' => 'Select the account associated with this bank account',
+                'ar' => 'اختر الحساب المرتبط بهذا الحساب البنكي',
+            ],
+            'forms.bank_accounts.bank_name.label' => [
+                'en' => 'Bank Name',
+                'ar' => 'اسم البنك',
+            ],
+            'forms.bank_accounts.account_number.label' => [
+                'en' => 'Account Number',
+                'ar' => 'رقم الحساب',
+            ],
+            'forms.bank_accounts.iban.label' => [
+                'en' => 'IBAN',
+                'ar' => 'رقم الآيبان',
+            ],
+            'forms.bank_accounts.swift_code.label' => [
+                'en' => 'SWIFT Code',
+                'ar' => 'رمز السويفت',
+            ],
+            'forms.bank_accounts.branch_id.label' => [
+                'en' => 'Branch',
+                'ar' => 'الفرع',
+            ],
+            'forms.bank_accounts.currency_id.label' => [
+                'en' => 'Currency',
+                'ar' => 'العملة',
+            ],
+            'forms.bank_accounts.opening_balance.label' => [
+                'en' => 'Opening Balance',
+                'ar' => 'الرصيد الافتتاحي',
+            ],
+            'forms.bank_accounts.current_balance.label' => [
+                'en' => 'Current Balance',
+                'ar' => 'الرصيد الحالي',
+            ],
+            'forms.bank_accounts.current_balance.helper' => [
+                'en' => 'Calculated from opening balance + all posted transactions. Automatically updated when transactions are posted.',
+                'ar' => 'يتم حسابه من الرصيد الافتتاحي + جميع المعاملات المرحلة. يتم تحديثه تلقائيًا عند ترحيل المعاملات.',
+            ],
+            'forms.bank_accounts.is_active.label' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'forms.bank_accounts.notes.label' => [
+                'en' => 'Notes',
+                'ar' => 'ملاحظات',
+            ],
+            'tables.bank_accounts.actions.reconcile' => [
+                'en' => 'Reconcile',
+                'ar' => 'التسوية',
+            ],
         ];
 
         // Get all active languages

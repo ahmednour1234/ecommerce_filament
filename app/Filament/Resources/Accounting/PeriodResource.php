@@ -21,7 +21,7 @@ class PeriodResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
     protected static ?string $navigationGroup = 'Accounting';
     protected static ?int $navigationSort = 13;
-    protected static ?string $navigationTranslationKey = 'menu.accounting.periods';
+    protected static ?string $navigationTranslationKey = 'sidebar.accounting.periods';
 
     public static function form(Form $form): Form
     {
@@ -79,52 +79,51 @@ class PeriodResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('fiscalYear.name')
-                    ->label(trans_dash('accounting.fiscal_year', 'Fiscal Year'))
+                    ->label(tr('tables.periods.fiscal_year', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('name')
-                    ->label(trans_dash('accounting.period', 'Period'))
+                    ->label(tr('tables.periods.period', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('period_number')
-                    ->label(trans_dash('accounting.period_number', 'Period #'))
+                    ->label(tr('tables.periods.period_number', [], null, 'dashboard'))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('start_date')
-                    ->label(trans_dash('accounting.start_date', 'Start Date'))
+                    ->label(tr('tables.periods.start_date', [], null, 'dashboard'))
                     ->date()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('end_date')
-                    ->label(trans_dash('accounting.end_date', 'End Date'))
+                    ->label(tr('tables.periods.end_date', [], null, 'dashboard'))
                     ->date()
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('is_closed')
-                    ->label(trans_dash('accounting.closed', 'Closed'))
+                    ->label(tr('tables.periods.closed', [], null, 'dashboard'))
                     ->boolean()
                     ->color(fn ($record) => $record->is_closed ? 'danger' : 'success'),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label(trans_dash('accounting.created_at', 'Created At'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('fiscal_year_id')
-                    ->label(trans_dash('accounting.fiscal_year', 'Fiscal Year'))
+                    ->label(tr('tables.periods.filters.fiscal_year', [], null, 'dashboard'))
                     ->relationship('fiscalYear', 'name')
                     ->searchable()
                     ->preload(),
 
                 Tables\Filters\TernaryFilter::make('is_closed')
-                    ->label(trans_dash('accounting.closed', 'Closed'))
-                    ->placeholder('All')
-                    ->trueLabel('Closed only')
-                    ->falseLabel('Open only'),
+                    ->label(tr('tables.periods.filters.closed', [], null, 'dashboard'))
+                    ->placeholder(tr('tables.periods.filters.all', [], null, 'dashboard'))
+                    ->trueLabel(tr('tables.periods.filters.closed_only', [], null, 'dashboard'))
+                    ->falseLabel(tr('tables.periods.filters.open_only', [], null, 'dashboard')),
             ])
             ->actions([
                 Tables\Actions\Action::make('close')
