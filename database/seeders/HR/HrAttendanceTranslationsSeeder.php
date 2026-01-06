@@ -27,16 +27,27 @@ class HrAttendanceTranslationsSeeder extends Seeder
         $translations = [
             // Navigation
             'navigation.groups.hr' => ['en' => 'HR', 'ar' => 'الموارد البشرية'],
+            'sidebar.hr' => ['en' => 'HR', 'ar' => 'الموارد البشرية'],
             'navigation.hr_attendance' => ['en' => 'Attendance', 'ar' => 'الحضور'],
+            'sidebar.hr_attendance' => ['en' => 'Attendance', 'ar' => 'الحضور'],
             'navigation.hr_work_places' => ['en' => 'Work Places', 'ar' => 'أماكن العمل'],
+            'sidebar.hr_work_places' => ['en' => 'Work Places', 'ar' => 'أماكن العمل'],
             'navigation.hr_employee_groups' => ['en' => 'Employee Groups', 'ar' => 'مجموعات الموظفين'],
+            'sidebar.hr_employee_groups' => ['en' => 'Employee Groups', 'ar' => 'مجموعات الموظفين'],
             'navigation.hr_work_schedules' => ['en' => 'Work Schedules', 'ar' => 'مواعيد العمل'],
+            'sidebar.hr_work_schedules' => ['en' => 'Work Schedules', 'ar' => 'مواعيد العمل'],
             'navigation.hr_excuse_requests' => ['en' => 'Excuse Requests', 'ar' => 'طلبات الاستئذان'],
+            'sidebar.hr_excuse_requests' => ['en' => 'Excuse Requests', 'ar' => 'طلبات الاستئذان'],
             'navigation.hr_devices' => ['en' => 'Fingerprint Devices', 'ar' => 'أجهزة البصمة'],
+            'sidebar.hr_devices' => ['en' => 'Fingerprint Devices', 'ar' => 'أجهزة البصمة'],
             'navigation.hr_assign_work_places' => ['en' => 'Assign Work Places', 'ar' => 'تعيين أماكن العمل'],
+            'sidebar.hr_assign_work_places' => ['en' => 'Assign Work Places', 'ar' => 'تعيين أماكن العمل'],
             'navigation.hr_copy_schedules' => ['en' => 'Copy Schedules', 'ar' => 'نسخ المواعيد'],
+            'sidebar.hr_copy_schedules' => ['en' => 'Copy Schedules', 'ar' => 'نسخ المواعيد'],
             'navigation.hr_daily_attendance' => ['en' => 'Daily Attendance', 'ar' => 'الحضور اليومي'],
+            'sidebar.hr_daily_attendance' => ['en' => 'Daily Attendance', 'ar' => 'الحضور اليومي'],
             'navigation.hr_monthly_report' => ['en' => 'Monthly Attendance Report', 'ar' => 'تقرير الحضور الشهري'],
+            'sidebar.hr_monthly_report' => ['en' => 'Monthly Attendance Report', 'ar' => 'تقرير الحضور الشهري'],
 
             // Fields - Work Places
             'fields.latitude' => ['en' => 'Latitude', 'ar' => 'خط العرض'],
