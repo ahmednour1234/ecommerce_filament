@@ -26,7 +26,7 @@ class MainSettings extends Page implements Forms\Contracts\HasForms
 
     protected static string $view = 'filament.pages.main-settings'; // مش هنستخدمه، هنشتغل بـ form()
 
-    public static function getTitle(): string
+    public function getTitle(): string
     {
         return tr('pages.settings.system_settings.title', [], null, 'dashboard');
     }
