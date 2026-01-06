@@ -4274,6 +4274,98 @@ class DashboardTranslationSeeder extends Seeder
                 'en' => 'Choose how times are displayed',
                 'ar' => 'اختر طريقة عرض الأوقات',
             ],
+
+            // Users Resource
+            'forms.users.name' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'forms.users.email' => [
+                'en' => 'Email',
+                'ar' => 'البريد الإلكتروني',
+            ],
+            'forms.users.password' => [
+                'en' => 'Password',
+                'ar' => 'كلمة المرور',
+            ],
+            'forms.users.roles' => [
+                'en' => 'Roles',
+                'ar' => 'الأدوار',
+            ],
+            'tables.users.name' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'tables.users.email' => [
+                'en' => 'Email',
+                'ar' => 'البريد الإلكتروني',
+            ],
+            'tables.users.roles' => [
+                'en' => 'Roles',
+                'ar' => 'الأدوار',
+            ],
+            'tables.common.id' => [
+                'en' => 'Id',
+                'ar' => 'المعرف',
+            ],
+
+            // Roles Resource
+            'forms.roles.name' => [
+                'en' => 'Role Name',
+                'ar' => 'اسم الدور',
+            ],
+            'forms.roles.guard' => [
+                'en' => 'Guard',
+                'ar' => 'الحارس',
+            ],
+            'forms.roles.permissions' => [
+                'en' => 'Permissions',
+                'ar' => 'الصلاحيات',
+            ],
+            'forms.roles.permissions_helper' => [
+                'en' => 'Select permissions assigned to this role. You can select all permissions at once using the checkbox.',
+                'ar' => 'حدد الصلاحيات المخصصة لهذا الدور. يمكنك تحديد جميع الصلاحيات مرة واحدة باستخدام مربع الاختيار.',
+            ],
+            'tables.roles.role' => [
+                'en' => 'Role',
+                'ar' => 'الدور',
+            ],
+            'tables.roles.guard' => [
+                'en' => 'Guard',
+                'ar' => 'الحارس',
+            ],
+            'tables.roles.permissions' => [
+                'en' => 'Permissions',
+                'ar' => 'الصلاحيات',
+            ],
+
+            // Permissions Resource
+            'forms.permissions.name' => [
+                'en' => 'Permission Name',
+                'ar' => 'اسم الصلاحية',
+            ],
+            'forms.permissions.guard' => [
+                'en' => 'Guard',
+                'ar' => 'الحارس',
+            ],
+            'tables.permissions.permission' => [
+                'en' => 'Permission',
+                'ar' => 'الصلاحية',
+            ],
+            'tables.permissions.guard' => [
+                'en' => 'Guard',
+                'ar' => 'الحارس',
+            ],
+
+            // Export Actions
+            'actions.export_to_excel' => [
+                'en' => 'Export to Excel',
+                'ar' => 'تصدير إلى Excel',
+            ],
+            'actions.export_to_pdf' => [
+                'en' => 'Export to PDF',
+                'ar' => 'تصدير إلى PDF',
+            ],
         ];
 
         // Get all active languages

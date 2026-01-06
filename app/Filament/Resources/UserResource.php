@@ -28,15 +28,18 @@ class UserResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label(tr('forms.users.name', [], null, 'dashboard') ?: 'Name')
                     ->required()
                     ->maxLength(255),
 
                 Forms\Components\TextInput::make('email')
+                    ->label(tr('forms.users.email', [], null, 'dashboard') ?: 'Email')
                     ->email()
                     ->required()
                     ->unique(ignoreRecord: true),
 
                 Forms\Components\TextInput::make('password')
+                    ->label(tr('forms.users.password', [], null, 'dashboard') ?: 'Password')
                     ->password()
                     ->revealable()
                     ->dehydrateStateUsing(fn ($state) => filled($state) ? bcrypt($state) : null)
@@ -44,7 +47,7 @@ class UserResource extends Resource
                     ->required(fn (string $operation) => $operation === 'create'),
 
                 Forms\Components\Select::make('roles')
-                    ->label('Roles')
+                    ->label(tr('forms.users.roles', [], null, 'dashboard') ?: 'Roles')
                     ->multiple()
                     ->relationship('roles', 'name')
                     ->options(Role::pluck('name', 'id'))
@@ -57,11 +60,21 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')->sortable(),
-                Tables\Columns\TextColumn::make('name')->searchable(),
-                Tables\Columns\TextColumn::make('email')->searchable(),
-                Tables\Columns\TagsColumn::make('roles.name')->label('Roles'),
-                Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable(),
+                Tables\Columns\TextColumn::make('id')
+                    ->label(tr('tables.common.id', [], null, 'dashboard') ?: 'Id')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('name')
+                    ->label(tr('tables.users.name', [], null, 'dashboard') ?: 'Name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('email')
+                    ->label(tr('tables.users.email', [], null, 'dashboard') ?: 'Email')
+                    ->searchable(),
+                Tables\Columns\TagsColumn::make('roles.name')
+                    ->label(tr('tables.users.roles', [], null, 'dashboard') ?: 'Roles'),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label(tr('tables.common.created_at', [], null, 'dashboard') ?: 'Created')
+                    ->dateTime()
+                    ->sortable(),
             ])
             ->filters([])
             ->actions([

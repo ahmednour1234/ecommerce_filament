@@ -27,13 +27,13 @@ class PermissionResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->label('Permission Name')
+                    ->label(tr('forms.permissions.name', [], null, 'dashboard') ?: 'Permission Name')
                     ->required()
                     ->maxLength(255)
                     ->unique(ignoreRecord: true),
 
                 Forms\Components\TextInput::make('guard_name')
-                    ->label('Guard')
+                    ->label(tr('forms.permissions.guard', [], null, 'dashboard') ?: 'Guard')
                     ->default('web')
                     ->required()
                     ->maxLength(50),
@@ -49,12 +49,12 @@ class PermissionResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Permission')
+                    ->label(tr('tables.permissions.permission', [], null, 'dashboard') ?: 'Permission')
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('guard_name')
-                    ->label('Guard')
+                    ->label(tr('tables.permissions.guard', [], null, 'dashboard') ?: 'Guard')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')

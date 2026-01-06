@@ -28,25 +28,25 @@ class RoleResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->label('Role Name')
+                    ->label(tr('forms.roles.name', [], null, 'dashboard') ?: 'Role Name')
                     ->required()
                     ->maxLength(255)
                     ->unique(ignoreRecord: true),
 
                 Forms\Components\TextInput::make('guard_name')
-                    ->label('Guard')
+                    ->label(tr('forms.roles.guard', [], null, 'dashboard') ?: 'Guard')
                     ->default('web')
                     ->required()
                     ->maxLength(50),
 
                 Forms\Components\CheckboxList::make('permissions')
-                    ->label('Permissions')
+                    ->label(tr('forms.roles.permissions', [], null, 'dashboard') ?: 'Permissions')
                     ->relationship('permissions', 'name')
                     ->options(Permission::query()->pluck('name', 'id'))
                     ->columns(2)
                     ->gridDirection('row')
                     ->searchable()
-                    ->helperText('Select permissions assigned to this role. You can select all permissions at once using the checkbox.'),
+                    ->helperText(tr('forms.roles.permissions_helper', [], null, 'dashboard') ?: 'Select permissions assigned to this role. You can select all permissions at once using the checkbox.'),
             ]);
     }
 
@@ -59,16 +59,16 @@ class RoleResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Role')
+                    ->label(tr('tables.roles.role', [], null, 'dashboard') ?: 'Role')
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('guard_name')
-                    ->label('Guard')
+                    ->label(tr('tables.roles.guard', [], null, 'dashboard') ?: 'Guard')
                     ->sortable(),
 
                 Tables\Columns\TagsColumn::make('permissions.name')
-                    ->label('Permissions')
+                    ->label(tr('tables.roles.permissions', [], null, 'dashboard') ?: 'Permissions')
                     ->limit(3),
 
                 Tables\Columns\TextColumn::make('created_at')
