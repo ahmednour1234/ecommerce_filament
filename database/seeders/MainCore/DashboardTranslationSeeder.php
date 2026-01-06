@@ -2039,6 +2039,40 @@ class DashboardTranslationSeeder extends Seeder
                 'ar' => 'لا توجد عملاء',
             ],
 
+            // Accounts Payable Aging Current Report Page
+            'pages.reports.accounts_payable_aging_current.title' => [
+                'en' => 'Accounts Payable Aging Current Report',
+                'ar' => 'تقرير أعمار الديون الدائنة الحالية',
+            ],
+            'pages.reports.accounts_payable_aging_current.empty_state' => [
+                'en' => 'No accounts',
+                'ar' => 'لا توجد حسابات',
+            ],
+            'pages.reports.accounts_payable_aging_current.supplier' => [
+                'en' => 'Supplier',
+                'ar' => 'المورد',
+            ],
+            'pages.reports.accounts_payable_aging_current.current' => [
+                'en' => '0-30 Days',
+                'ar' => '0-30 يوم',
+            ],
+            'pages.reports.accounts_payable_aging_current.days_31_60' => [
+                'en' => '31-60 Days',
+                'ar' => '31-60 يوم',
+            ],
+            'pages.reports.accounts_payable_aging_current.days_61_90' => [
+                'en' => '61-90 Days',
+                'ar' => '61-90 يوم',
+            ],
+            'pages.reports.accounts_payable_aging_current.over_90' => [
+                'en' => 'Over 90 Days',
+                'ar' => 'أكثر من 90 يوم',
+            ],
+            'pages.reports.accounts_payable_aging_current.total' => [
+                'en' => 'Total',
+                'ar' => 'الإجمالي',
+            ],
+
             // Accounts Payable Aging Overdue Report Page
             'pages.reports.accounts_payable_aging_overdue.title' => [
                 'en' => 'Accounts Payable Aging Overdue Report',

@@ -26,6 +26,21 @@ class AccountsPayableAgingCurrentReportPage extends Page implements HasTable, Ha
 
     public ?array $data = [];
 
+    public static function getNavigationGroup(): ?string
+    {
+        return tr('sidebar.reports', [], null, 'dashboard');
+    }
+
+    public function getTitle(): string
+    {
+        return tr('pages.reports.accounts_payable_aging_current.title', [], null, 'dashboard');
+    }
+
+    public function getHeading(): string
+    {
+        return tr('pages.reports.accounts_payable_aging_current.title', [], null, 'dashboard');
+    }
+
     public function mount(): void
     {
         $this->form->fill([]);
@@ -53,13 +68,25 @@ class AccountsPayableAgingCurrentReportPage extends Page implements HasTable, Ha
         return $table
             ->query(\App\Models\Accounting\Account::query()->whereRaw('1 = 0'))
             ->columns([
-                Tables\Columns\TextColumn::make('supplier')->label('Supplier'),
-                Tables\Columns\TextColumn::make('current')->label('0-30 Days')->money(\App\Support\Money::defaultCurrencyCode()),
-                Tables\Columns\TextColumn::make('days_31_60')->label('31-60 Days')->money(\App\Support\Money::defaultCurrencyCode()),
-                Tables\Columns\TextColumn::make('days_61_90')->label('61-90 Days')->money(\App\Support\Money::defaultCurrencyCode()),
-                Tables\Columns\TextColumn::make('over_90')->label('Over 90 Days')->money(\App\Support\Money::defaultCurrencyCode()),
-                Tables\Columns\TextColumn::make('total')->label('Total')->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('supplier')
+                    ->label(trans_dash('pages.reports.accounts_payable_aging_current.supplier')),
+                Tables\Columns\TextColumn::make('current')
+                    ->label(trans_dash('pages.reports.accounts_payable_aging_current.current'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('days_31_60')
+                    ->label(trans_dash('pages.reports.accounts_payable_aging_current.days_31_60'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('days_61_90')
+                    ->label(trans_dash('pages.reports.accounts_payable_aging_current.days_61_90'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('over_90')
+                    ->label(trans_dash('pages.reports.accounts_payable_aging_current.over_90'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('total')
+                    ->label(trans_dash('pages.reports.accounts_payable_aging_current.total'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
             ])
+            ->emptyStateHeading(tr('pages.reports.accounts_payable_aging_current.empty_state', [], null, 'dashboard'))
             ->paginated([10, 25, 50, 100]);
     }
 

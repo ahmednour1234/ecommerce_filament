@@ -26,7 +26,17 @@ trait TranslatableNavigation
         
         // Try to get translation - use model name or navigation label
         $modelName = strtolower(class_basename(static::getModel()));
-        $group = static::$navigationGroup ? strtolower(str_replace(' ', '_', static::$navigationGroup)) : '';
+        
+        // Normalize group name: remove special characters, replace spaces and & with underscore
+        $group = '';
+        if (static::$navigationGroup) {
+            $group = strtolower(static::$navigationGroup);
+            $group = str_replace([' & ', ' &', '& ', '&'], '_', $group);
+            $group = str_replace([' ', '-', '/'], '_', $group);
+            $group = preg_replace('/[^a-z0-9_]/', '', $group);
+            $group = preg_replace('/_+/', '_', $group); // Remove multiple underscores
+            $group = trim($group, '_'); // Remove leading/trailing underscores
+        }
         
         // Build sidebar key: sidebar.{group}.{item}
         if ($group) {
@@ -51,7 +61,14 @@ trait TranslatableNavigation
         }
         
         // Translate the group name using sidebar.* keys
-        $groupKey = strtolower(str_replace(' ', '_', $group));
+        // Normalize: remove special characters, replace spaces and & with underscore
+        $groupKey = strtolower($group);
+        $groupKey = str_replace([' & ', ' &', '& ', '&'], '_', $groupKey);
+        $groupKey = str_replace([' ', '-', '/'], '_', $groupKey);
+        $groupKey = preg_replace('/[^a-z0-9_]/', '', $groupKey);
+        $groupKey = preg_replace('/_+/', '_', $groupKey); // Remove multiple underscores
+        $groupKey = trim($groupKey, '_'); // Remove leading/trailing underscores
+        
         $translationKey = "sidebar.{$groupKey}";
         
         return tr($translationKey, [], null, 'dashboard') ?: $group;

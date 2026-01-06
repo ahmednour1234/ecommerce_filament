@@ -171,9 +171,9 @@ class ReportsTranslationsSeeder extends Seeder
             'pages.reports.accounts_receivable.title' => ['en' => 'Accounts Receivable Report', 'ar' => 'تقرير ديون العملاء'],
 
             // A/P Aging Current
-            'reports.accounts_payable_aging_current.navigation' => ['en' => 'A/P Aging Current', 'ar' => 'أعمار الديون المدينة'],
-            'reports.accounts_payable_aging_current.title' => ['en' => 'Accounts Payable Aging (Current)', 'ar' => 'أعمار الديون المدينة'],
-            'pages.reports.accounts_payable_aging_current.title' => ['en' => 'Accounts Payable Aging (Current)', 'ar' => 'أعمار الديون المدينة'],
+            'reports.accounts_payable_aging_current.navigation' => ['en' => 'A/P Aging Current', 'ar' => 'تقرير أعمار الديون الدائنة الحالية'],
+            'reports.accounts_payable_aging_current.title' => ['en' => 'Accounts Payable Aging Current Report', 'ar' => 'تقرير أعمار الديون الدائنة الحالية'],
+            'pages.reports.accounts_payable_aging_current.title' => ['en' => 'Accounts Payable Aging Current Report', 'ar' => 'تقرير أعمار الديون الدائنة الحالية'],
 
             // A/P Aging Overdue
             'reports.accounts_payable_aging_overdue.navigation' => ['en' => 'A/P Aging Overdue', 'ar' => 'أعمار الديون الدائنة'],
