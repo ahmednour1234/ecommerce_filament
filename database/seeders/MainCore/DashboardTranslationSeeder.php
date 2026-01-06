@@ -538,6 +538,164 @@ class DashboardTranslationSeeder extends Seeder
                 'de' => 'Datensatz erfolgreich gelöscht',
                 'fr' => 'Enregistrement supprimé avec succès',
             ],
+
+            // Dashboard Statistics
+            'dashboard.stats.total_assets' => [
+                'en' => 'Total Assets',
+                'ar' => 'إجمالي الأصول',
+            ],
+            'dashboard.stats.total_assets_description' => [
+                'en' => 'Sum of all asset accounts',
+                'ar' => 'مجموع جميع حسابات الأصول',
+            ],
+            'dashboard.stats.total_liabilities' => [
+                'en' => 'Total Liabilities',
+                'ar' => 'إجمالي الخصوم',
+            ],
+            'dashboard.stats.total_liabilities_description' => [
+                'en' => 'Sum of all liability accounts',
+                'ar' => 'مجموع جميع حسابات الخصوم',
+            ],
+            'dashboard.stats.total_equity' => [
+                'en' => 'Total Equity',
+                'ar' => 'إجمالي حقوق الملكية',
+            ],
+            'dashboard.stats.total_equity_description' => [
+                'en' => 'Sum of all equity accounts',
+                'ar' => 'مجموع جميع حسابات حقوق الملكية',
+            ],
+            'dashboard.stats.total_products' => [
+                'en' => 'Total Products',
+                'ar' => 'إجمالي المنتجات',
+            ],
+            'dashboard.stats.total_products_description' => [
+                'en' => 'active products',
+                'ar' => 'منتجات نشطة',
+            ],
+            'dashboard.stats.total_categories' => [
+                'en' => 'Total Categories',
+                'ar' => 'إجمالي الفئات',
+            ],
+            'dashboard.stats.total_categories_description' => [
+                'en' => 'Active categories',
+                'ar' => 'فئات نشطة',
+            ],
+            'dashboard.stats.total_brands' => [
+                'en' => 'Total Brands',
+                'ar' => 'إجمالي العلامات التجارية',
+            ],
+            'dashboard.stats.total_brands_description' => [
+                'en' => 'Active brands',
+                'ar' => 'علامات تجارية نشطة',
+            ],
+            'dashboard.stats.low_stock_alert' => [
+                'en' => 'Low Stock Alert',
+                'ar' => 'تنبيه المخزون المنخفض',
+            ],
+            'dashboard.stats.low_stock_alert_description' => [
+                'en' => 'Products with stock ≤ 10',
+                'ar' => 'المنتجات ذات المخزون ≤ 10',
+            ],
+            'dashboard.stats.inventory_value' => [
+                'en' => 'Inventory Value',
+                'ar' => 'قيمة المخزون',
+            ],
+            'dashboard.stats.inventory_value_description' => [
+                'en' => 'Total product inventory value',
+                'ar' => 'إجمالي قيمة مخزون المنتجات',
+            ],
+            'dashboard.stats.todays_orders' => [
+                'en' => 'Today\'s Orders',
+                'ar' => 'طلبات اليوم',
+            ],
+            'dashboard.stats.todays_orders_description' => [
+                'en' => 'Orders placed today',
+                'ar' => 'الطلبات المقدمة اليوم',
+            ],
+            'dashboard.stats.this_month_orders' => [
+                'en' => 'This Month Orders',
+                'ar' => 'طلبات هذا الشهر',
+            ],
+            'dashboard.stats.this_month_orders_description' => [
+                'en' => 'Orders this month',
+                'ar' => 'الطلبات هذا الشهر',
+            ],
+            'dashboard.stats.pending_orders' => [
+                'en' => 'Pending Orders',
+                'ar' => 'الطلبات المعلقة',
+            ],
+            'dashboard.stats.pending_orders_description' => [
+                'en' => 'completed, cancelled',
+                'ar' => 'مكتملة، ملغاة',
+            ],
+            'dashboard.stats.todays_revenue' => [
+                'en' => 'Today\'s Revenue',
+                'ar' => 'إيرادات اليوم',
+            ],
+            'dashboard.stats.todays_revenue_description' => [
+                'en' => 'From completed orders',
+                'ar' => 'من الطلبات المكتملة',
+            ],
+            'dashboard.stats.monthly_revenue' => [
+                'en' => 'Monthly Revenue',
+                'ar' => 'الإيرادات الشهرية',
+            ],
+            'dashboard.stats.monthly_revenue_description' => [
+                'en' => 'This month\'s total',
+                'ar' => 'إجمالي هذا الشهر',
+            ],
+            'dashboard.stats.average_order_value' => [
+                'en' => 'Average Order Value',
+                'ar' => 'متوسط قيمة الطلب',
+            ],
+            'dashboard.stats.average_order_value_description' => [
+                'en' => 'From completed orders',
+                'ar' => 'من الطلبات المكتملة',
+            ],
+            'dashboard.stats.total_customers' => [
+                'en' => 'Total Customers',
+                'ar' => 'إجمالي العملاء',
+            ],
+            'dashboard.stats.total_customers_description' => [
+                'en' => 'Active customers',
+                'ar' => 'عملاء نشطون',
+            ],
+            'dashboard.stats.total_orders' => [
+                'en' => 'Total Orders',
+                'ar' => 'إجمالي الطلبات',
+            ],
+            'dashboard.stats.total_orders_description' => [
+                'en' => 'pending, completed',
+                'ar' => 'معلقة، مكتملة',
+            ],
+            'dashboard.stats.total_revenue' => [
+                'en' => 'Total Revenue',
+                'ar' => 'إجمالي الإيرادات',
+            ],
+            'dashboard.stats.total_revenue_description' => [
+                'en' => 'From paid invoices',
+                'ar' => 'من الفواتير المدفوعة',
+            ],
+            'dashboard.stats.total_invoices' => [
+                'en' => 'Total Invoices',
+                'ar' => 'إجمالي الفواتير',
+            ],
+            'dashboard.stats.total_invoices_description' => [
+                'en' => 'All invoices',
+                'ar' => 'جميع الفواتير',
+            ],
+            'dashboard.stats.orders_over_time' => [
+                'en' => 'Orders Over Time',
+                'ar' => 'الطلبات عبر الزمن',
+            ],
+            'dashboard.stats.invoices_payments' => [
+                'en' => 'Invoices & Payments',
+                'ar' => 'الفواتير والمدفوعات',
+            ],
+            'dashboard.stats.orders_by_status' => [
+                'en' => 'Orders by Status',
+                'ar' => 'الطلبات حسب الحالة',
+            ],
         ];
 
         // Get all active languages
