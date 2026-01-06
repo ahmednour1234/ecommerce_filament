@@ -100,14 +100,27 @@ class FixedAssetsReportPage extends Page implements HasTable, HasForms
                 ->select('fixed_assets_data.*')
             )
             ->columns([
-                Tables\Columns\TextColumn::make('code'),
-                Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('category'),
-                Tables\Columns\TextColumn::make('purchase_date')->date(),
-                Tables\Columns\TextColumn::make('acquisition_cost')->money(\App\Support\Money::defaultCurrencyCode()),
-                Tables\Columns\TextColumn::make('depreciation')->money(\App\Support\Money::defaultCurrencyCode()),
-                Tables\Columns\TextColumn::make('net_book_value')->money(\App\Support\Money::defaultCurrencyCode()),
-                Tables\Columns\TextColumn::make('status')->badge(),
+                Tables\Columns\TextColumn::make('code')
+                    ->label(trans_dash('reports.fixed_assets.code', 'Code')),
+                Tables\Columns\TextColumn::make('name')
+                    ->label(trans_dash('reports.fixed_assets.name', 'Name')),
+                Tables\Columns\TextColumn::make('category')
+                    ->label(trans_dash('reports.fixed_assets.category', 'Category')),
+                Tables\Columns\TextColumn::make('purchase_date')
+                    ->label(trans_dash('reports.fixed_assets.purchase_date', 'Purchase Date'))
+                    ->date(),
+                Tables\Columns\TextColumn::make('acquisition_cost')
+                    ->label(trans_dash('reports.fixed_assets.acquisition_cost', 'Acquisition Cost'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('depreciation')
+                    ->label(trans_dash('reports.fixed_assets.depreciation', 'Depreciation'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('net_book_value')
+                    ->label(trans_dash('reports.fixed_assets.net_book_value', 'Net Book Value'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('status')
+                    ->label(trans_dash('reports.fixed_assets.status', 'Status'))
+                    ->badge(),
             ])
             ->emptyStateHeading(tr('pages.reports.fixed_assets.empty_state', [], null, 'dashboard'))
             ->defaultSort('code', 'asc')

@@ -26,7 +26,7 @@ class CashFlowReportService extends ReportBase
         $this->applyBranch($query);
         $this->applyCostCenter($query);
 
-        $vouchers = $query->get();
+        $vouchers = $query->with(['account', 'journalEntry'])->get();
 
         $rows = [];
         $totalCashIn = 0;
@@ -35,26 +35,31 @@ class CashFlowReportService extends ReportBase
         // Group by voucher type
         foreach ($vouchers as $voucher) {
             $amount = (float) $voucher->amount;
+            $accountCode = $voucher->account ? $voucher->account->code : '';
+            $entryNumber = $voucher->journalEntry ? $voucher->journalEntry->entry_number : '';
+            $reference = $voucher->reference ?? ($voucher->journalEntry ? $voucher->journalEntry->reference : '');
             
             if ($voucher->type === 'receipt') {
                 $totalCashIn += $amount;
                 $rows[] = [
+                    'account_code' => $accountCode,
                     'date' => $voucher->voucher_date->format('Y-m-d'),
-                    'type' => trans_dash('reports.cash_flow.receipt', 'Receipt'),
-                    'voucher_number' => $voucher->voucher_number,
+                    'entry_number' => $entryNumber,
+                    'reference' => $reference,
                     'description' => $voucher->description ?? '',
-                    'cash_in' => $amount,
-                    'cash_out' => 0,
+                    'debit' => 0,
+                    'credit' => $amount,
                 ];
             } else {
                 $totalCashOut += $amount;
                 $rows[] = [
+                    'account_code' => $accountCode,
                     'date' => $voucher->voucher_date->format('Y-m-d'),
-                    'type' => trans_dash('reports.cash_flow.payment', 'Payment'),
-                    'voucher_number' => $voucher->voucher_number,
+                    'entry_number' => $entryNumber,
+                    'reference' => $reference,
                     'description' => $voucher->description ?? '',
-                    'cash_in' => 0,
-                    'cash_out' => $amount,
+                    'debit' => $amount,
+                    'credit' => 0,
                 ];
             }
         }
@@ -63,58 +68,8 @@ class CashFlowReportService extends ReportBase
         $openingBalance = 0; // TODO: Calculate from previous period
 
         // Add summary rows
-        $rows[] = [
-            'date' => '',
-            'type' => trans_dash('reports.cash_flow.opening_balance', 'Opening Balance'),
-            'voucher_number' => '',
-            'description' => '',
-            'cash_in' => $openingBalance > 0 ? $openingBalance : 0,
-            'cash_out' => $openingBalance < 0 ? abs($openingBalance) : 0,
-            '_is_total' => true,
-        ];
-
-        $rows[] = [
-            'date' => '',
-            'type' => trans_dash('reports.cash_flow.total_cash_in', 'Total Cash In'),
-            'voucher_number' => '',
-            'description' => '',
-            'cash_in' => $totalCashIn,
-            'cash_out' => 0,
-            '_is_total' => true,
-        ];
-
-        $rows[] = [
-            'date' => '',
-            'type' => trans_dash('reports.cash_flow.total_cash_out', 'Total Cash Out'),
-            'voucher_number' => '',
-            'description' => '',
-            'cash_in' => 0,
-            'cash_out' => $totalCashOut,
-            '_is_total' => true,
-        ];
-
         $netCashFlow = $totalCashIn - $totalCashOut;
         $closingBalance = $openingBalance + $netCashFlow;
-
-        $rows[] = [
-            'date' => '',
-            'type' => trans_dash('reports.cash_flow.net_cash_flow', 'Net Cash Flow'),
-            'voucher_number' => '',
-            'description' => '',
-            'cash_in' => $netCashFlow > 0 ? $netCashFlow : 0,
-            'cash_out' => $netCashFlow < 0 ? abs($netCashFlow) : 0,
-            '_is_total' => true,
-        ];
-
-        $rows[] = [
-            'date' => '',
-            'type' => trans_dash('reports.cash_flow.closing_balance', 'Closing Balance'),
-            'voucher_number' => '',
-            'description' => '',
-            'cash_in' => $closingBalance > 0 ? $closingBalance : 0,
-            'cash_out' => $closingBalance < 0 ? abs($closingBalance) : 0,
-            '_is_total' => true,
-        ];
 
         $totals = new TotalsDTO([
             'total_amount' => $netCashFlow,
@@ -152,12 +107,13 @@ class CashFlowReportService extends ReportBase
     protected function getExportHeaders(): array
     {
         return [
+            trans_dash('reports.cash_flow.account_code', 'Account Code'),
             trans_dash('reports.cash_flow.date', 'Date'),
-            trans_dash('reports.cash_flow.type', 'Type'),
-            trans_dash('reports.cash_flow.voucher_number', 'Voucher #'),
+            trans_dash('reports.cash_flow.entry_number', 'Entry Number'),
+            trans_dash('reports.cash_flow.reference', 'Reference'),
             trans_dash('reports.cash_flow.description', 'Description'),
-            trans_dash('reports.cash_flow.cash_in', 'Cash In'),
-            trans_dash('reports.cash_flow.cash_out', 'Cash Out'),
+            trans_dash('reports.cash_flow.debit', 'Debit'),
+            trans_dash('reports.cash_flow.credit', 'Credit'),
         ];
     }
 
@@ -165,12 +121,13 @@ class CashFlowReportService extends ReportBase
     {
         return array_map(function ($row) {
             return [
-                $row['date'],
-                $row['type'],
-                $row['voucher_number'],
-                $row['description'],
-                \App\Support\Money::format($row['cash_in']),
-                \App\Support\Money::format($row['cash_out']),
+                $row['account_code'] ?? '',
+                $row['date'] ?? '',
+                $row['entry_number'] ?? '',
+                $row['reference'] ?? '',
+                $row['description'] ?? '',
+                \App\Support\Money::format($row['debit'] ?? 0),
+                \App\Support\Money::format($row['credit'] ?? 0),
             ];
         }, $rows);
     }

@@ -102,12 +102,21 @@ class VatReportPage extends Page implements HasTable, HasForms
                 ->select('vat_report_data.*')
             )
             ->columns([
-                Tables\Columns\TextColumn::make('date')->date(),
-                Tables\Columns\TextColumn::make('account_code'),
-                Tables\Columns\TextColumn::make('account_name'),
-                Tables\Columns\TextColumn::make('entry_number'),
-                Tables\Columns\TextColumn::make('output_vat')->money(\App\Support\Money::defaultCurrencyCode()),
-                Tables\Columns\TextColumn::make('input_vat')->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('date')
+                    ->label(trans_dash('reports.vat.date', 'Date'))
+                    ->date(),
+                Tables\Columns\TextColumn::make('account_code')
+                    ->label(trans_dash('reports.vat.account_code', 'Account Code')),
+                Tables\Columns\TextColumn::make('account_name')
+                    ->label(trans_dash('reports.vat.account_name', 'Account Name')),
+                Tables\Columns\TextColumn::make('entry_number')
+                    ->label(trans_dash('reports.vat.entry_number', 'Entry Number')),
+                Tables\Columns\TextColumn::make('output_vat')
+                    ->label(trans_dash('reports.vat.output_vat', 'Output VAT'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('input_vat')
+                    ->label(trans_dash('reports.vat.input_vat', 'Input VAT'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
             ])
             ->emptyStateHeading(tr('pages.reports.vat_report.empty_state', [], null, 'dashboard'))
             ->defaultSort('date', 'asc')

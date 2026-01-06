@@ -57,27 +57,32 @@ class TrialBalancePage extends Page implements HasTable
                         Forms\Components\DatePicker::make('as_of_date')
                             ->label(tr('pages.reports.trial_balance.filters.as_of_date', [], null, 'dashboard'))
                             ->required()
-                            ->default(now())
-                            ->reactive()
-                            ->afterStateUpdated(fn () => $this->resetTable()),
+                            ->default(now()),
 
                         Forms\Components\Select::make('branch_id')
                             ->label(tr('pages.reports.trial_balance.filters.branch', [], null, 'dashboard'))
                             ->options(Branch::active()->pluck('name', 'id'))
                             ->searchable()
                             ->preload()
-                            ->nullable()
-                            ->reactive()
-                            ->afterStateUpdated(fn () => $this->resetTable()),
+                            ->nullable(),
 
                         Forms\Components\Select::make('cost_center_id')
                             ->label(tr('pages.reports.trial_balance.filters.cost_center', [], null, 'dashboard'))
                             ->options(CostCenter::active()->pluck('name', 'id'))
                             ->searchable()
                             ->preload()
-                            ->nullable()
-                            ->reactive()
-                            ->afterStateUpdated(fn () => $this->resetTable()),
+                            ->nullable(),
+
+                        Forms\Components\Actions::make([
+                            Forms\Components\Actions\Action::make('apply_filters')
+                                ->label(trans_dash('reports.filters.apply', 'Apply Filters'))
+                                ->icon('heroicon-o-magnifying-glass')
+                                ->color('primary')
+                                ->action(fn () => $this->resetTable())
+                                ->keyBindings(['mod+s']),
+                        ])
+                        ->align('end')
+                        ->fullWidth(false),
                     ])
                     ->columns(3),
             ])

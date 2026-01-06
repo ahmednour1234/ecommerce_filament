@@ -67,9 +67,13 @@ class AccountsPayableAgingOverdueReportPage extends Page implements HasTable, Ha
         return $table
             ->query(\App\Models\Accounting\Account::query()->whereRaw('1 = 0'))
             ->columns([
-                Tables\Columns\TextColumn::make('supplier')->label('Supplier'),
-                Tables\Columns\TextColumn::make('overdue_amount')->label('Overdue Amount')->money(\App\Support\Money::defaultCurrencyCode()),
-                Tables\Columns\TextColumn::make('days_overdue')->label('Days Overdue'),
+                Tables\Columns\TextColumn::make('supplier')
+                    ->label(trans_dash('reports.accounts_payable_aging_overdue.supplier', 'Supplier')),
+                Tables\Columns\TextColumn::make('overdue_amount')
+                    ->label(trans_dash('reports.accounts_payable_aging_overdue.overdue_amount', 'Overdue Amount'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('days_overdue')
+                    ->label(trans_dash('reports.accounts_payable_aging_overdue.days_overdue', 'Days Overdue')),
             ])
             ->emptyStateHeading(tr('pages.reports.accounts_payable_aging_overdue.empty_state', [], null, 'dashboard'))
             ->paginated([10, 25, 50, 100]);

@@ -35,6 +35,7 @@ class ReportsTranslationsSeeder extends Seeder
             'reports.filters.period' => ['en' => 'Period', 'ar' => 'الفترة'],
             'reports.filters.include_zero_rows' => ['en' => 'Include Zero Rows', 'ar' => 'تضمين الصفوف الصفرية'],
             'reports.filters.posted_only' => ['en' => 'Posted Only', 'ar' => 'المسجلة فقط'],
+            'reports.filters.apply' => ['en' => 'Apply Filters', 'ar' => 'تطبيق المرشحات'],
 
             // Export Actions
             'reports.export.title' => ['en' => 'Export', 'ar' => 'تصدير'],
@@ -114,6 +115,13 @@ class ReportsTranslationsSeeder extends Seeder
             'reports.account_statement.navigation' => ['en' => 'Account Statement', 'ar' => 'كشف حساب'],
             'reports.account_statement.title' => ['en' => 'Account Statement', 'ar' => 'كشف حساب'],
             'pages.reports.account_statement.title' => ['en' => 'Account Statement', 'ar' => 'كشف حساب'],
+            'reports.account_statement.date' => ['en' => 'Date', 'ar' => 'التاريخ'],
+            'reports.account_statement.entry_number' => ['en' => 'Entry Number', 'ar' => 'رقم القيد'],
+            'reports.account_statement.reference' => ['en' => 'Reference', 'ar' => 'المرجع'],
+            'reports.account_statement.description' => ['en' => 'Description', 'ar' => 'الوصف'],
+            'reports.account_statement.debit' => ['en' => 'Debit', 'ar' => 'مدين'],
+            'reports.account_statement.credit' => ['en' => 'Credit', 'ar' => 'دائن'],
+            'reports.account_statement.balance' => ['en' => 'Balance', 'ar' => 'الرصيد'],
             'reports.account_statement.opening_balance' => ['en' => 'Opening Balance', 'ar' => 'الرصيد الافتتاحي'],
 
             // Balance Sheet
@@ -136,10 +144,15 @@ class ReportsTranslationsSeeder extends Seeder
             'reports.cash_flow.navigation' => ['en' => 'Cash Flow', 'ar' => 'تقرير التدفقات النقدية'],
             'reports.cash_flow.title' => ['en' => 'Cash Flow Statement', 'ar' => 'تقرير التدفقات النقدية'],
             'pages.reports.cash_flow.title' => ['en' => 'Cash Flow Statement', 'ar' => 'تقرير التدفقات النقدية'],
+            'reports.cash_flow.account_code' => ['en' => 'Account Code', 'ar' => 'رمز الحساب'],
             'reports.cash_flow.date' => ['en' => 'Date', 'ar' => 'التاريخ'],
+            'reports.cash_flow.entry_number' => ['en' => 'Entry Number', 'ar' => 'رقم القيد'],
+            'reports.cash_flow.reference' => ['en' => 'Reference', 'ar' => 'المرجع'],
+            'reports.cash_flow.description' => ['en' => 'Description', 'ar' => 'الوصف'],
+            'reports.cash_flow.debit' => ['en' => 'Debit', 'ar' => 'مدين'],
+            'reports.cash_flow.credit' => ['en' => 'Credit', 'ar' => 'دائن'],
             'reports.cash_flow.type' => ['en' => 'Type', 'ar' => 'النوع'],
             'reports.cash_flow.voucher_number' => ['en' => 'Voucher #', 'ar' => 'رقم السند'],
-            'reports.cash_flow.description' => ['en' => 'Description', 'ar' => 'الوصف'],
             'reports.cash_flow.cash_in' => ['en' => 'Cash In', 'ar' => 'نقد وارد'],
             'reports.cash_flow.cash_out' => ['en' => 'Cash Out', 'ar' => 'نقد صادر'],
             'reports.cash_flow.receipt' => ['en' => 'Receipt', 'ar' => 'سند قبض'],

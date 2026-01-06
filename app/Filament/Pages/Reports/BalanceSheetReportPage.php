@@ -105,11 +105,14 @@ class BalanceSheetReportPage extends Page implements HasTable, HasForms
             )
             ->columns([
                 Tables\Columns\TextColumn::make('account_code')
+                    ->label(trans_dash('reports.balance_sheet.account_code', 'Account Code'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('account_name')
+                    ->label(trans_dash('reports.balance_sheet.account_name', 'Account Name'))
                     ->formatStateUsing(fn ($record) => $record->account_name === 'TOTAL' ? '<strong>' . $record->account_name . '</strong>' : $record->account_name)
                     ->html(),
                 Tables\Columns\TextColumn::make('balance')
+                    ->label(trans_dash('reports.balance_sheet.balance', 'Balance'))
                     ->money(\App\Support\Money::defaultCurrencyCode())
                     ->formatStateUsing(fn ($record) => $record->balance !== null ? $record->balance : ''),
             ])

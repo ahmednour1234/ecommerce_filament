@@ -128,13 +128,28 @@ class AccountStatementReportPage extends Page implements HasTable, HasForms
                 ->select('account_statement_data.*')
             )
             ->columns([
-                Tables\Columns\TextColumn::make('date')->date()->sortable(),
-                Tables\Columns\TextColumn::make('entry_number')->searchable(),
-                Tables\Columns\TextColumn::make('reference')->searchable(),
-                Tables\Columns\TextColumn::make('description')->limit(50),
-                Tables\Columns\TextColumn::make('debit')->money(\App\Support\Money::defaultCurrencyCode()),
-                Tables\Columns\TextColumn::make('credit')->money(\App\Support\Money::defaultCurrencyCode()),
-                Tables\Columns\TextColumn::make('balance')->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('date')
+                    ->label(trans_dash('reports.account_statement.date', 'Date'))
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('entry_number')
+                    ->label(trans_dash('reports.account_statement.entry_number', 'Entry Number'))
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('reference')
+                    ->label(trans_dash('reports.account_statement.reference', 'Reference'))
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('description')
+                    ->label(trans_dash('reports.account_statement.description', 'Description'))
+                    ->limit(50),
+                Tables\Columns\TextColumn::make('debit')
+                    ->label(trans_dash('reports.account_statement.debit', 'Debit'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('credit')
+                    ->label(trans_dash('reports.account_statement.credit', 'Credit'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('balance')
+                    ->label(trans_dash('reports.account_statement.balance', 'Balance'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
             ])
             ->defaultSort('date', 'asc')
             ->paginated([10, 25, 50, 100]);

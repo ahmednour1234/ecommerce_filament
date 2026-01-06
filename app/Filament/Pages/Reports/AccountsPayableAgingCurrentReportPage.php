@@ -69,21 +69,21 @@ class AccountsPayableAgingCurrentReportPage extends Page implements HasTable, Ha
             ->query(\App\Models\Accounting\Account::query()->whereRaw('1 = 0'))
             ->columns([
                 Tables\Columns\TextColumn::make('supplier')
-                    ->label(trans_dash('pages.reports.accounts_payable_aging_current.supplier')),
+                    ->label(trans_dash('reports.accounts_payable_aging_current.supplier', 'Supplier')),
                 Tables\Columns\TextColumn::make('current')
-                    ->label(trans_dash('pages.reports.accounts_payable_aging_current.current'))
+                    ->label(trans_dash('reports.accounts_payable_aging_current.current', '0-30 Days'))
                     ->money(\App\Support\Money::defaultCurrencyCode()),
                 Tables\Columns\TextColumn::make('days_31_60')
-                    ->label(trans_dash('pages.reports.accounts_payable_aging_current.days_31_60'))
+                    ->label(trans_dash('reports.accounts_payable_aging_current.days_31_60', '31-60 Days'))
                     ->money(\App\Support\Money::defaultCurrencyCode()),
                 Tables\Columns\TextColumn::make('days_61_90')
-                    ->label(trans_dash('pages.reports.accounts_payable_aging_current.days_61_90'))
+                    ->label(trans_dash('reports.accounts_payable_aging_current.days_61_90', '61-90 Days'))
                     ->money(\App\Support\Money::defaultCurrencyCode()),
                 Tables\Columns\TextColumn::make('over_90')
-                    ->label(trans_dash('pages.reports.accounts_payable_aging_current.over_90'))
+                    ->label(trans_dash('reports.accounts_payable_aging_current.over_90', 'Over 90 Days'))
                     ->money(\App\Support\Money::defaultCurrencyCode()),
                 Tables\Columns\TextColumn::make('total')
-                    ->label(trans_dash('pages.reports.accounts_payable_aging_current.total'))
+                    ->label(trans_dash('reports.accounts_payable_aging_current.total', 'Total'))
                     ->money(\App\Support\Money::defaultCurrencyCode()),
             ])
             ->emptyStateHeading(tr('pages.reports.accounts_payable_aging_current.empty_state', [], null, 'dashboard'))

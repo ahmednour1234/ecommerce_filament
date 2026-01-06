@@ -10,6 +10,8 @@ use Filament\Forms\Components\Component;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action;
 
 /**
  * Unified Report Filters Component
@@ -50,14 +52,12 @@ class ReportFilters
             $schema[] = DatePicker::make('from_date')
                 ->label(trans_dash('reports.filters.from_date', 'From Date'))
                 ->required($requireDateRange)
-                ->default(now()->startOfMonth())
-                ->reactive();
+                ->default(now()->startOfMonth());
 
             $schema[] = DatePicker::make('to_date')
                 ->label(trans_dash('reports.filters.to_date', 'To Date'))
                 ->required($requireDateRange)
-                ->default(now())
-                ->reactive();
+                ->default(now());
         }
 
         // Branch
@@ -66,9 +66,7 @@ class ReportFilters
             ->options(fn () => Branch::active()->pluck('name', 'id'))
             ->searchable()
             ->preload()
-            ->nullable()
-            ->reactive()
-            ->afterStateUpdated(fn ($component) => $component->getLivewire()?->dispatch('filters-updated'));
+            ->nullable();
 
         // Cost Center
         $schema[] = Select::make('cost_center_id')
@@ -76,9 +74,7 @@ class ReportFilters
             ->options(fn () => CostCenter::active()->pluck('name', 'id'))
             ->searchable()
             ->preload()
-            ->nullable()
-            ->reactive()
-            ->afterStateUpdated(fn ($component) => $component->getLivewire()?->dispatch('filters-updated'));
+            ->nullable();
 
         // Account (if enabled)
         if ($showAccount) {
@@ -88,8 +84,7 @@ class ReportFilters
                     return [$account->id => $account->code . ' - ' . $account->name];
                 }))
                 ->searchable()
-                ->preload()
-                ->reactive();
+                ->preload();
             
             if ($requireAccount) {
                 $accountField->required();
@@ -107,8 +102,7 @@ class ReportFilters
                 ->options(fn () => Currency::where('is_active', true)->pluck('name', 'id'))
                 ->searchable()
                 ->preload()
-                ->nullable()
-                ->reactive();
+                ->nullable();
         }
 
         // Project (if enabled)
@@ -118,8 +112,7 @@ class ReportFilters
                 ->options(fn () => \App\Models\Accounting\Project::where('is_active', true)->pluck('name', 'id'))
                 ->searchable()
                 ->preload()
-                ->nullable()
-                ->reactive();
+                ->nullable();
         }
 
         // Fiscal Year (if enabled)
@@ -129,8 +122,7 @@ class ReportFilters
                 ->options(fn () => \App\Models\Accounting\FiscalYear::pluck('name', 'id'))
                 ->searchable()
                 ->preload()
-                ->nullable()
-                ->reactive();
+                ->nullable();
         }
 
         // Period (if enabled)
@@ -140,22 +132,17 @@ class ReportFilters
                 ->options(fn () => \App\Models\Accounting\Period::pluck('name', 'id'))
                 ->searchable()
                 ->preload()
-                ->nullable()
-                ->reactive();
+                ->nullable();
         }
 
         // Toggles
         $schema[] = Toggle::make('include_zero_rows')
             ->label(trans_dash('reports.filters.include_zero_rows', 'Include Zero Rows'))
-            ->default(false)
-            ->reactive()
-            ->afterStateUpdated(fn ($component) => $component->getLivewire()?->dispatch('filters-updated'));
+            ->default(false);
 
         $schema[] = Toggle::make('posted_only')
             ->label(trans_dash('reports.filters.posted_only', 'Posted Only'))
-            ->default(true)
-            ->reactive()
-            ->afterStateUpdated(fn ($component) => $component->getLivewire()?->dispatch('filters-updated'));
+            ->default(true);
 
         return $schema;
     }
@@ -170,9 +157,23 @@ class ReportFilters
     {
         $label = $options['label'] ?? trans_dash('reports.filters.title', 'Report Filters');
         $columns = $options['columns'] ?? 3;
+        
+        $schema = self::schema($options);
+        
+        // Add Apply Filters button
+        $schema[] = Actions::make([
+            Action::make('apply_filters')
+                ->label(trans_dash('reports.filters.apply', 'Apply Filters'))
+                ->icon('heroicon-o-magnifying-glass')
+                ->color('primary')
+                ->action(fn ($livewire) => $livewire->resetTable())
+                ->keyBindings(['mod+s']),
+        ])
+        ->align('end')
+        ->fullWidth(false);
 
         return \Filament\Forms\Components\Section::make($label)
-            ->schema(self::schema($options))
+            ->schema($schema)
             ->columns($columns)
             ->collapsible()
             ->collapsed(false);

@@ -99,10 +99,16 @@ class AccountsReceivableReportPage extends Page implements HasTable, HasForms
                 ->select('ar_report_data.*')
             )
             ->columns([
-                Tables\Columns\TextColumn::make('customer_code'),
-                Tables\Columns\TextColumn::make('customer_name'),
-                Tables\Columns\TextColumn::make('balance')->money(\App\Support\Money::defaultCurrencyCode()),
-                Tables\Columns\TextColumn::make('credit_limit')->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('customer_code')
+                    ->label(trans_dash('reports.accounts_receivable.customer_code', 'Customer Code')),
+                Tables\Columns\TextColumn::make('customer_name')
+                    ->label(trans_dash('reports.accounts_receivable.customer_name', 'Customer Name')),
+                Tables\Columns\TextColumn::make('balance')
+                    ->label(trans_dash('reports.accounts_receivable.balance', 'Balance'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('credit_limit')
+                    ->label(trans_dash('reports.accounts_receivable.credit_limit', 'Credit Limit'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
             ])
             ->emptyStateHeading(tr('pages.reports.accounts_receivable.empty_state', [], null, 'dashboard'))
             ->defaultSort('balance', 'desc')

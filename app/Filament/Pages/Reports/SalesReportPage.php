@@ -59,22 +59,17 @@ class SalesReportPage extends Page implements HasTable
                             ])
                             ->required()
                             ->default('orders')
-                            ->reactive()
-                            ->afterStateUpdated(fn () => $this->resetTable()),
+                            ->reactive(),
 
                         Forms\Components\DatePicker::make('date_from')
                             ->label('From Date')
                             ->required()
-                            ->default(now()->startOfMonth())
-                            ->reactive()
-                            ->afterStateUpdated(fn () => $this->resetTable()),
+                            ->default(now()->startOfMonth()),
 
                         Forms\Components\DatePicker::make('date_to')
                             ->label('To Date')
                             ->required()
-                            ->default(now())
-                            ->reactive()
-                            ->afterStateUpdated(fn () => $this->resetTable()),
+                            ->default(now()),
 
                         Forms\Components\Select::make('branch_id')
                             ->label('Branch')
@@ -83,8 +78,18 @@ class SalesReportPage extends Page implements HasTable
                             ->preload()
                             ->nullable()
                             ->reactive()
-                            ->afterStateUpdated(fn () => $this->resetTable())
                             ->visible(fn ($get) => $get('report_type') === 'income_statement'),
+
+                        Forms\Components\Actions::make([
+                            Forms\Components\Actions\Action::make('apply_filters')
+                                ->label(trans_dash('reports.filters.apply', 'Apply Filters'))
+                                ->icon('heroicon-o-magnifying-glass')
+                                ->color('primary')
+                                ->action(fn () => $this->resetTable())
+                                ->keyBindings(['mod+s']),
+                        ])
+                        ->align('end')
+                        ->fullWidth(false),
                     ])
                     ->columns(3),
             ])

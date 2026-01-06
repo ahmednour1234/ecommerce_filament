@@ -99,11 +99,19 @@ class FinancialPositionReportPage extends Page implements HasTable, HasForms
                 ->select('financial_position_data.*')
             )
             ->columns([
-                Tables\Columns\TextColumn::make('branch'),
-                Tables\Columns\TextColumn::make('cost_center'),
-                Tables\Columns\TextColumn::make('total_debit')->money(\App\Support\Money::defaultCurrencyCode()),
-                Tables\Columns\TextColumn::make('total_credit')->money(\App\Support\Money::defaultCurrencyCode()),
-                Tables\Columns\TextColumn::make('balance')->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('branch')
+                    ->label(trans_dash('reports.financial_position.branch', 'Branch')),
+                Tables\Columns\TextColumn::make('cost_center')
+                    ->label(trans_dash('reports.financial_position.cost_center', 'Cost Center')),
+                Tables\Columns\TextColumn::make('total_debit')
+                    ->label(trans_dash('reports.financial_position.total_debit', 'Total Debit'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('total_credit')
+                    ->label(trans_dash('reports.financial_position.total_credit', 'Total Credit'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('balance')
+                    ->label(trans_dash('reports.financial_position.balance', 'Balance'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
             ])
             ->emptyStateHeading(tr('pages.reports.financial_position.empty_state', [], null, 'dashboard'))
             ->defaultSort('branch', 'asc')

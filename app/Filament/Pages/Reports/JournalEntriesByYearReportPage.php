@@ -102,11 +102,18 @@ class JournalEntriesByYearReportPage extends Page implements HasTable, HasForms
                 ->select('journal_entries_by_year_data.*')
             )
             ->columns([
-                Tables\Columns\TextColumn::make('year'),
-                Tables\Columns\TextColumn::make('month_name')->label('Month'),
-                Tables\Columns\TextColumn::make('entry_count')->label('Entry Count'),
-                Tables\Columns\TextColumn::make('total_debit')->money(\App\Support\Money::defaultCurrencyCode()),
-                Tables\Columns\TextColumn::make('total_credit')->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('year')
+                    ->label(trans_dash('reports.journal_entries_by_year.year', 'Year')),
+                Tables\Columns\TextColumn::make('month_name')
+                    ->label(trans_dash('reports.journal_entries_by_year.month', 'Month')),
+                Tables\Columns\TextColumn::make('entry_count')
+                    ->label(trans_dash('reports.journal_entries_by_year.entry_count', 'Entry Count')),
+                Tables\Columns\TextColumn::make('total_debit')
+                    ->label(trans_dash('reports.journal_entries_by_year.total_debit', 'Total Debit'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('total_credit')
+                    ->label(trans_dash('reports.journal_entries_by_year.total_credit', 'Total Credit'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
             ])
             ->emptyStateHeading(tr('pages.reports.journal_entries_by_year.empty_state', [], null, 'dashboard'))
             ->defaultSort('year', 'desc')

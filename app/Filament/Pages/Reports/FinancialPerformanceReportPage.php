@@ -98,9 +98,17 @@ class FinancialPerformanceReportPage extends Page implements HasTable, HasForms
                 ->select('financial_performance_data.*')
             )
             ->columns([
-                Tables\Columns\TextColumn::make('kpi')->label('KPI')->sortable(),
-                Tables\Columns\TextColumn::make('value')->money(\App\Support\Money::defaultCurrencyCode())->sortable(),
-                Tables\Columns\TextColumn::make('percentage')->formatStateUsing(fn ($state) => number_format($state, 2) . '%')->sortable(),
+                Tables\Columns\TextColumn::make('kpi')
+                    ->label(trans_dash('reports.financial_performance.kpi', 'KPI'))
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('value')
+                    ->label(trans_dash('reports.financial_performance.value', 'Value'))
+                    ->money(\App\Support\Money::defaultCurrencyCode())
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('percentage')
+                    ->label(trans_dash('reports.financial_performance.percentage', 'Percentage'))
+                    ->formatStateUsing(fn ($state) => number_format($state, 2) . '%')
+                    ->sortable(),
             ])
             ->emptyStateHeading(tr('pages.reports.financial_performance.empty_state', [], null, 'dashboard'))
             ->defaultSort('kpi', 'asc')

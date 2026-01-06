@@ -146,10 +146,15 @@ class ComparisonsReportPage extends Page implements HasTable, HasForms
                 ->withoutGlobalScopes() // Remove any global scopes that might add ordering
             )
             ->columns([
-                Tables\Columns\TextColumn::make('period'),
-                Tables\Columns\TextColumn::make('from_date'),
-                Tables\Columns\TextColumn::make('to_date'),
-                Tables\Columns\TextColumn::make('amount')->money(\App\Support\Money::defaultCurrencyCode()),
+                Tables\Columns\TextColumn::make('period')
+                    ->label(trans_dash('reports.comparisons.period', 'Period')),
+                Tables\Columns\TextColumn::make('from_date')
+                    ->label(trans_dash('reports.comparisons.from_date', 'From Date')),
+                Tables\Columns\TextColumn::make('to_date')
+                    ->label(trans_dash('reports.comparisons.to_date', 'To Date')),
+                Tables\Columns\TextColumn::make('amount')
+                    ->label(trans_dash('reports.comparisons.amount', 'Amount'))
+                    ->money(\App\Support\Money::defaultCurrencyCode()),
             ])
             ->defaultSort('id', 'asc')
             ->paginated(false);
