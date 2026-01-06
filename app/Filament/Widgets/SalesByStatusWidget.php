@@ -10,7 +10,7 @@ class SalesByStatusWidget extends ChartWidget
 {
     protected static ?int $sort = 5;
     
-    protected function getHeading(): string
+    public function getHeading(): string
     {
         return tr('dashboard.stats.orders_by_status');
     }

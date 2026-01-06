@@ -10,7 +10,7 @@ class OrdersChartWidget extends ChartWidget
 {
     protected static ?int $sort = 3;
     
-    protected function getHeading(): string
+    public function getHeading(): string
     {
         return tr('dashboard.stats.orders_over_time');
     }

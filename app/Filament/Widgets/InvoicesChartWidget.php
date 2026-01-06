@@ -10,7 +10,7 @@ class InvoicesChartWidget extends ChartWidget
 {
     protected static ?int $sort = 4;
     
-    protected function getHeading(): string
+    public function getHeading(): string
     {
         return tr('dashboard.stats.invoices_payments');
     }
