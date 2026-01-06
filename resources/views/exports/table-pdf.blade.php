@@ -1,5 +1,10 @@
+@php
+    $currentLang = $mcCurrentLang ?? app()->getLocale() ?? 'ar';
+    $isRTL = in_array($currentLang, ['ar', 'he', 'fa', 'ur']);
+    $direction = $isRTL ? 'rtl' : 'ltr';
+@endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ $currentLang }}" dir="{{ $direction }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +21,7 @@
             font-size: 10px;
             color: #333;
             padding: 20px;
+            direction: {{ $direction }};
         }
         
         .header {
@@ -37,7 +43,7 @@
         }
         
         .metadata-item {
-            margin-right: 15px;
+            {{ $isRTL ? 'margin-left' : 'margin-right' }}: 15px;
             display: inline-block;
         }
         
@@ -53,7 +59,7 @@
         
         th {
             padding: 8px;
-            text-align: left;
+            text-align: {{ $isRTL ? 'right' : 'left' }};
             font-weight: bold;
             border: 1px solid #ddd;
             font-size: 9px;
@@ -63,6 +69,7 @@
             padding: 6px 8px;
             border: 1px solid #ddd;
             font-size: 9px;
+            text-align: {{ $isRTL ? 'right' : 'left' }};
         }
         
         tbody tr:nth-child(even) {
