@@ -158,26 +158,34 @@ class AccountsTreePage extends Page
         
         // Headers
         fputcsv($file, [
-            'Code',
-            'Name',
-            'Type',
-            'Parent Account',
-            'Level',
-            'Active',
-            'Allow Manual Entry',
-            'Notes',
+            trans_dash('pages.accounts_tree.export.headers.code'),
+            trans_dash('pages.accounts_tree.export.headers.name'),
+            trans_dash('pages.accounts_tree.export.headers.type'),
+            trans_dash('pages.accounts_tree.export.headers.parent_account'),
+            trans_dash('pages.accounts_tree.export.headers.level'),
+            trans_dash('pages.accounts_tree.export.headers.active'),
+            trans_dash('pages.accounts_tree.export.headers.allow_manual_entry'),
+            trans_dash('pages.accounts_tree.export.headers.notes'),
         ]);
 
         // Data
         foreach ($accounts as $account) {
+            $typeTranslations = [
+                'asset' => trans_dash('pages.accounts_tree.account_type.asset'),
+                'liability' => trans_dash('pages.accounts_tree.account_type.liability'),
+                'equity' => trans_dash('pages.accounts_tree.account_type.equity'),
+                'revenue' => trans_dash('pages.accounts_tree.account_type.revenue'),
+                'expense' => trans_dash('pages.accounts_tree.account_type.expense'),
+            ];
+            
             fputcsv($file, [
                 $account->code,
                 $account->name,
-                ucfirst($account->type),
+                $typeTranslations[$account->type] ?? ucfirst($account->type),
                 $account->parent ? $account->parent->name : '',
                 $account->level,
-                $account->is_active ? 'Yes' : 'No',
-                $account->allow_manual_entry ? 'Yes' : 'No',
+                $account->is_active ? trans_dash('pages.accounts_tree.export.yes') : trans_dash('pages.accounts_tree.export.no'),
+                $account->allow_manual_entry ? trans_dash('pages.accounts_tree.export.yes') : trans_dash('pages.accounts_tree.export.no'),
                 $account->notes ?? '',
             ]);
         }

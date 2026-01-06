@@ -3890,6 +3890,328 @@ class DashboardTranslationSeeder extends Seeder
                 'en' => 'Overdue Installments',
                 'ar' => 'الأقساط المتأخرة',
             ],
+
+            // Accounts Tree Page
+            'pages.accounts_tree.filters.all' => [
+                'en' => 'All',
+                'ar' => 'الكل',
+            ],
+            'pages.accounts_tree.filters.assets' => [
+                'en' => 'Assets',
+                'ar' => 'الأصول',
+            ],
+            'pages.accounts_tree.filters.liabilities' => [
+                'en' => 'Liabilities',
+                'ar' => 'الالتزامات',
+            ],
+            'pages.accounts_tree.filters.equity' => [
+                'en' => 'Equity',
+                'ar' => 'حقوق الملكية',
+            ],
+            'pages.accounts_tree.filters.revenue' => [
+                'en' => 'Revenue',
+                'ar' => 'الإيرادات',
+            ],
+            'pages.accounts_tree.filters.expenses' => [
+                'en' => 'Expenses',
+                'ar' => 'المصروفات',
+            ],
+            'pages.accounts_tree.actions.export_excel' => [
+                'en' => 'Export Excel',
+                'ar' => 'تصدير Excel',
+            ],
+            'pages.accounts_tree.actions.reset' => [
+                'en' => 'Reset',
+                'ar' => 'إعادة تعيين',
+            ],
+            'pages.accounts_tree.actions.add_account' => [
+                'en' => 'Add Account',
+                'ar' => 'إضافة حساب',
+            ],
+            'pages.accounts_tree.search.placeholder' => [
+                'en' => 'Search accounts...',
+                'ar' => 'بحث عن الحسابات...',
+            ],
+            'pages.accounts_tree.empty_state.no_accounts' => [
+                'en' => 'No accounts found',
+                'ar' => 'لا توجد حسابات',
+            ],
+            'pages.accounts_tree.empty_state.get_started' => [
+                'en' => 'Get started by creating a new account.',
+                'ar' => 'ابدأ بإنشاء حساب جديد.',
+            ],
+            'pages.accounts_tree.account_details.title' => [
+                'en' => 'Account Details',
+                'ar' => 'تفاصيل الحساب',
+            ],
+            'pages.accounts_tree.account_details.no_selected' => [
+                'en' => 'No Account Selected',
+                'ar' => 'لم يتم تحديد حساب',
+            ],
+            'pages.accounts_tree.account_details.click_to_view' => [
+                'en' => 'Click on an account from the tree to view its details',
+                'ar' => 'انقر على حساب من الشجرة لعرض تفاصيله',
+            ],
+            'pages.accounts_tree.account_details.account_code' => [
+                'en' => 'Account Code',
+                'ar' => 'رمز الحساب',
+            ],
+            'pages.accounts_tree.account_details.account_name' => [
+                'en' => 'Account Name',
+                'ar' => 'اسم الحساب',
+            ],
+            'pages.accounts_tree.account_details.parent_account' => [
+                'en' => 'Parent Account',
+                'ar' => 'الحساب الأب',
+            ],
+            'pages.accounts_tree.account_details.account_type' => [
+                'en' => 'Account Type',
+                'ar' => 'نوع الحساب',
+            ],
+            'pages.accounts_tree.account_details.account_level' => [
+                'en' => 'Account Level',
+                'ar' => 'مستوى الحساب',
+            ],
+            'pages.accounts_tree.account_details.status' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'pages.accounts_tree.account_details.active' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'pages.accounts_tree.account_details.inactive' => [
+                'en' => 'Inactive',
+                'ar' => 'غير نشط',
+            ],
+            'pages.accounts_tree.account_details.allow_manual_entry' => [
+                'en' => 'Allow Manual Entry',
+                'ar' => 'السماح بالإدخال اليدوي',
+            ],
+            'pages.accounts_tree.account_details.notes' => [
+                'en' => 'Notes',
+                'ar' => 'ملاحظات',
+            ],
+            'pages.accounts_tree.account_details.child_accounts' => [
+                'en' => 'Child Accounts',
+                'ar' => 'الحسابات الفرعية',
+            ],
+            'pages.accounts_tree.account_details.sub_accounts' => [
+                'en' => 'sub-account(s)',
+                'ar' => 'حساب فرعي',
+            ],
+            'pages.accounts_tree.actions.edit_account' => [
+                'en' => 'Edit Account',
+                'ar' => 'تعديل الحساب',
+            ],
+            'pages.accounts_tree.actions.add_sub_account' => [
+                'en' => 'Add Sub Account',
+                'ar' => 'إضافة حساب فرعي',
+            ],
+            'pages.accounts_tree.actions.delete_account' => [
+                'en' => 'Delete Account',
+                'ar' => 'حذف الحساب',
+            ],
+            'pages.accounts_tree.modal.edit_title' => [
+                'en' => 'Edit Account',
+                'ar' => 'تعديل الحساب',
+            ],
+            'pages.accounts_tree.modal.create_title' => [
+                'en' => 'Create New Account',
+                'ar' => 'إنشاء حساب جديد',
+            ],
+            'pages.accounts_tree.modal.edit_description' => [
+                'en' => 'Update account information',
+                'ar' => 'تحديث معلومات الحساب',
+            ],
+            'pages.accounts_tree.modal.create_description' => [
+                'en' => 'Add a new account to your chart of accounts',
+                'ar' => 'إضافة حساب جديد إلى دليل الحسابات',
+            ],
+            'pages.accounts_tree.form.account_code' => [
+                'en' => 'Account Code *',
+                'ar' => 'رمز الحساب *',
+            ],
+            'pages.accounts_tree.form.account_code_placeholder' => [
+                'en' => 'e.g., 1000, 1100',
+                'ar' => 'مثال: 1000، 1100',
+            ],
+            'pages.accounts_tree.form.account_name' => [
+                'en' => 'Account Name *',
+                'ar' => 'اسم الحساب *',
+            ],
+            'pages.accounts_tree.form.account_name_placeholder' => [
+                'en' => 'Enter account name',
+                'ar' => 'أدخل اسم الحساب',
+            ],
+            'pages.accounts_tree.form.account_type' => [
+                'en' => 'Account Type *',
+                'ar' => 'نوع الحساب *',
+            ],
+            'pages.accounts_tree.form.select_type' => [
+                'en' => 'Select Type',
+                'ar' => 'اختر النوع',
+            ],
+            'pages.accounts_tree.form.parent_account' => [
+                'en' => 'Parent Account',
+                'ar' => 'الحساب الأب',
+            ],
+            'pages.accounts_tree.form.none_root' => [
+                'en' => 'None (Root Account)',
+                'ar' => 'لا شيء (حساب جذر)',
+            ],
+            'pages.accounts_tree.form.level' => [
+                'en' => 'Level (Auto-calculated)',
+                'ar' => 'المستوى (محسوب تلقائيًا)',
+            ],
+            'pages.accounts_tree.form.is_active' => [
+                'en' => 'Account is Active',
+                'ar' => 'الحساب نشط',
+            ],
+            'pages.accounts_tree.form.allow_manual_entry' => [
+                'en' => 'Allow Manual Entry',
+                'ar' => 'السماح بالإدخال اليدوي',
+            ],
+            'pages.accounts_tree.form.notes' => [
+                'en' => 'Notes (Optional)',
+                'ar' => 'ملاحظات (اختياري)',
+            ],
+            'pages.accounts_tree.form.notes_placeholder' => [
+                'en' => 'Add any additional notes or comments about this account...',
+                'ar' => 'أضف أي ملاحظات أو تعليقات إضافية حول هذا الحساب...',
+            ],
+            'pages.accounts_tree.form.update_account' => [
+                'en' => 'Update Account',
+                'ar' => 'تحديث الحساب',
+            ],
+            'pages.accounts_tree.form.create_account' => [
+                'en' => 'Create Account',
+                'ar' => 'إنشاء الحساب',
+            ],
+            'pages.accounts_tree.messages.account_updated' => [
+                'en' => 'Account updated successfully.',
+                'ar' => 'تم تحديث الحساب بنجاح.',
+            ],
+            'pages.accounts_tree.messages.account_created' => [
+                'en' => 'Account created successfully.',
+                'ar' => 'تم إنشاء الحساب بنجاح.',
+            ],
+            'pages.accounts_tree.messages.account_deleted' => [
+                'en' => 'Account deleted successfully.',
+                'ar' => 'تم حذف الحساب بنجاح.',
+            ],
+            'pages.accounts_tree.messages.cannot_delete_with_children' => [
+                'en' => 'Cannot delete account with child accounts. Please delete child accounts first.',
+                'ar' => 'لا يمكن حذف الحساب الذي يحتوي على حسابات فرعية. يرجى حذف الحسابات الفرعية أولاً.',
+            ],
+            'pages.accounts_tree.messages.cannot_delete_with_transactions' => [
+                'en' => 'Cannot delete account. This account has :count transaction(s) or journal entry line(s). Please remove all transactions first.',
+                'ar' => 'لا يمكن حذف الحساب. يحتوي هذا الحساب على :count معاملة أو سطر قيد يومية. يرجى إزالة جميع المعاملات أولاً.',
+            ],
+            'pages.accounts_tree.confirm.delete' => [
+                'en' => 'Are you sure you want to delete this account? This action cannot be undone.',
+                'ar' => 'هل أنت متأكد من حذف هذا الحساب؟ لا يمكن التراجع عن هذا الإجراء.',
+            ],
+            'pages.accounts_tree.export.headers.code' => [
+                'en' => 'Code',
+                'ar' => 'الرمز',
+            ],
+            'pages.accounts_tree.export.headers.name' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'pages.accounts_tree.export.headers.type' => [
+                'en' => 'Type',
+                'ar' => 'النوع',
+            ],
+            'pages.accounts_tree.export.headers.parent_account' => [
+                'en' => 'Parent Account',
+                'ar' => 'الحساب الأب',
+            ],
+            'pages.accounts_tree.export.headers.level' => [
+                'en' => 'Level',
+                'ar' => 'المستوى',
+            ],
+            'pages.accounts_tree.export.headers.active' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'pages.accounts_tree.export.headers.allow_manual_entry' => [
+                'en' => 'Allow Manual Entry',
+                'ar' => 'السماح بالإدخال اليدوي',
+            ],
+            'pages.accounts_tree.export.headers.notes' => [
+                'en' => 'Notes',
+                'ar' => 'ملاحظات',
+            ],
+            'pages.accounts_tree.account_type.asset' => [
+                'en' => 'Asset',
+                'ar' => 'أصل',
+            ],
+            'pages.accounts_tree.account_type.liability' => [
+                'en' => 'Liability',
+                'ar' => 'التزام',
+            ],
+            'pages.accounts_tree.account_type.equity' => [
+                'en' => 'Equity',
+                'ar' => 'حقوق الملكية',
+            ],
+            'pages.accounts_tree.account_type.revenue' => [
+                'en' => 'Revenue',
+                'ar' => 'إيراد',
+            ],
+            'pages.accounts_tree.account_type.expense' => [
+                'en' => 'Expense',
+                'ar' => 'مصروف',
+            ],
+            'pages.accounts_tree.form.level_auto' => [
+                'en' => 'Level (Auto-calculated)',
+                'ar' => 'المستوى (محسوب تلقائياً)',
+            ],
+            'pages.accounts_tree.form.account_is_active' => [
+                'en' => 'Account is Active',
+                'ar' => 'الحساب نشط',
+            ],
+            'pages.accounts_tree.form.allow_manual_entry_label' => [
+                'en' => 'Allow Manual Entry',
+                'ar' => 'السماح بالإدخال اليدوي',
+            ],
+            'pages.accounts_tree.form.notes_optional' => [
+                'en' => 'Notes (Optional)',
+                'ar' => 'ملاحظات (اختياري)',
+            ],
+            'pages.accounts_tree.form.notes_placeholder' => [
+                'en' => 'Add any additional notes or comments about this account...',
+                'ar' => 'أضف أي ملاحظات أو تعليقات إضافية حول هذا الحساب...',
+            ],
+            'pages.accounts_tree.tree_item.inactive' => [
+                'en' => 'Inactive',
+                'ar' => 'غير نشط',
+            ],
+            'pages.accounts_tree.tree_item.expand' => [
+                'en' => 'Expand',
+                'ar' => 'توسيع',
+            ],
+            'pages.accounts_tree.tree_item.collapse' => [
+                'en' => 'Collapse',
+                'ar' => 'طي',
+            ],
+            'pages.accounts_tree.tree_item.edit_account' => [
+                'en' => 'Edit account',
+                'ar' => 'تعديل الحساب',
+            ],
+            'pages.accounts_tree.tree_item.add_child_account' => [
+                'en' => 'Add child account',
+                'ar' => 'إضافة حساب فرعي',
+            ],
+            'pages.accounts_tree.export.yes' => [
+                'en' => 'Yes',
+                'ar' => 'نعم',
+            ],
+            'pages.accounts_tree.export.no' => [
+                'en' => 'No',
+                'ar' => 'لا',
+            ],
         ];
 
         // Get all active languages

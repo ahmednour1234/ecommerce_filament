@@ -37,10 +37,10 @@
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                             </svg>
-                            All
+                            {{ trans_dash('pages.accounts_tree.filters.all') }}
                         </button>
                         
-                        @foreach(['asset' => 'Assets', 'liability' => 'Liabilities', 'equity' => 'Equity', 'revenue' => 'Revenue', 'expense' => 'Expenses'] as $type => $label)
+                        @foreach(['asset' => trans_dash('pages.accounts_tree.filters.assets'), 'liability' => trans_dash('pages.accounts_tree.filters.liabilities'), 'equity' => trans_dash('pages.accounts_tree.filters.equity'), 'revenue' => trans_dash('pages.accounts_tree.filters.revenue'), 'expense' => trans_dash('pages.accounts_tree.filters.expenses')] as $type => $label)
                             <button 
                                 wire:click="$set('selectedAccountType', '{{ $type }}')"
                                 class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-150
@@ -61,7 +61,7 @@
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
-                        Export Excel
+                        {{ trans_dash('pages.accounts_tree.actions.export_excel') }}
                     </button>
 
                     {{-- Reset Button --}}
@@ -71,7 +71,7 @@
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                         </svg>
-                        Reset
+                        {{ trans_dash('pages.accounts_tree.actions.reset') }}
                     </button>
 
                     {{-- Add Account Button --}}
@@ -81,7 +81,7 @@
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                         </svg>
-                    Add Account
+                    {{ trans_dash('pages.accounts_tree.actions.add_account') }}
                     </button>
                 </div>
             </div>
@@ -104,7 +104,7 @@
                                 <input 
                                     type="text"
                                     wire:model.live.debounce.300ms="searchTerm"
-                                    placeholder="Search accounts..."
+                                    placeholder="{{ trans_dash('pages.accounts_tree.search.placeholder') }}"
                                     class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                             </div>
                         </div>
@@ -123,8 +123,8 @@
                                 <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                 </svg>
-                                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No accounts found</h3>
-                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by creating a new account.</p>
+                                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ trans_dash('pages.accounts_tree.empty_state.no_accounts') }}</h3>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ trans_dash('pages.accounts_tree.empty_state.get_started') }}</p>
                             </div>
                         @endif
                     </div>
@@ -139,7 +139,7 @@
                             <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Account Details</h3>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ trans_dash('pages.accounts_tree.account_details.title') }}</h3>
                         </div>
                     </div>
 
@@ -160,59 +160,68 @@
                             <div class="space-y-4">
                                 {{-- Account Code --}}
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Account Code</label>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{{ trans_dash('pages.accounts_tree.account_details.account_code') }}</label>
                                     <div class="text-base font-mono font-semibold text-gray-900 dark:text-gray-100">{{ $account->code }}</div>
                                 </div>
 
                                 {{-- Account Name --}}
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Account Name</label>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{{ trans_dash('pages.accounts_tree.account_details.account_name') }}</label>
                                     <div class="text-base font-semibold text-gray-900 dark:text-gray-100">{{ $account->name }}</div>
                                 </div>
 
                                 {{-- Parent Account --}}
                                 @if($account->parent)
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Parent Account</label>
+                                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{{ trans_dash('pages.accounts_tree.account_details.parent_account') }}</label>
                                         <div class="text-base font-semibold text-gray-900 dark:text-gray-100">{{ $account->parent->code }} - {{ $account->parent->name }}</div>
                                     </div>
                                 @endif
 
                                 {{-- Account Type --}}
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Account Type</label>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{{ trans_dash('pages.accounts_tree.account_details.account_type') }}</label>
                                     <span class="inline-flex items-center px-3 py-1 text-sm font-medium rounded-md border {{ $badgeStyle['bg'] }} {{ $badgeStyle['text'] }} {{ $badgeStyle['border'] }}">
-                                        {{ ucfirst($account->type) }}
+                                        @php
+                                            $typeTranslations = [
+                                                'asset' => trans_dash('pages.accounts_tree.account_type.asset'),
+                                                'liability' => trans_dash('pages.accounts_tree.account_type.liability'),
+                                                'equity' => trans_dash('pages.accounts_tree.account_type.equity'),
+                                                'revenue' => trans_dash('pages.accounts_tree.account_type.revenue'),
+                                                'expense' => trans_dash('pages.accounts_tree.account_type.expense'),
+                                            ];
+                                        @endphp
+                                        {{ $typeTranslations[$account->type] ?? ucfirst($account->type) }}
                                     </span>
                                 </div>
 
                                 {{-- Account Level --}}
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Account Level</label>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{{ trans_dash('pages.accounts_tree.account_details.account_level') }}</label>
                                     <div class="text-base text-gray-900 dark:text-gray-100">{{ $account->level }}</div>
                                 </div>
 
                                 {{-- Status --}}
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Status</label>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{{ trans_dash('pages.accounts_tree.account_details.status') }}</label>
                                     <span class="inline-flex items-center px-3 py-1 text-sm font-medium rounded-md border
                                                {{ $account->is_active 
                                                    ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800' 
                                                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-600' }}">
-                                        {{ $account->is_active ? 'Active' : 'Inactive' }}
+                                        {{ $account->is_active ? trans_dash('pages.accounts_tree.account_details.active') : trans_dash('pages.accounts_tree.account_details.inactive') }}
                                     </span>
                                 </div>
 
                                 {{-- Allow Manual Entry --}}
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Allow Manual Entry</label>
-                                    <div class="text-base text-gray-900 dark:text-gray-100">{{ $account->allow_manual_entry ? 'Yes' : 'No' }}</div>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{{ trans_dash('pages.accounts_tree.account_details.allow_manual_entry') }}</label>
+                                    <div class="text-base text-gray-900 dark:text-gray-100">{{ $account->allow_manual_entry ? trans_dash('common.yes') : trans_dash('common.no') }}</div>
                                 </div>
 
                                 {{-- Notes --}}
                                 @if($account->notes)
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Notes</label>
+                                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{{ trans_dash('pages.accounts_tree.account_details.notes') }}</label>
                                         <div class="text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-900/50 rounded-md p-3">{{ $account->notes }}</div>
                                     </div>
                                 @endif
@@ -220,8 +229,8 @@
                                 {{-- Children Count --}}
                                 @if($account->children()->count() > 0)
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Child Accounts</label>
-                                        <div class="text-base text-gray-900 dark:text-gray-100">{{ $account->children()->count() }} sub-account(s)</div>
+                                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{{ trans_dash('pages.accounts_tree.account_details.child_accounts') }}</label>
+                                        <div class="text-base text-gray-900 dark:text-gray-100">{{ $account->children()->count() }} {{ trans_dash('pages.accounts_tree.account_details.sub_accounts') }}</div>
                                     </div>
                                 @endif
                             </div>
@@ -234,7 +243,7 @@
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                     </svg>
-                                    Edit Account
+                                    {{ trans_dash('pages.accounts_tree.actions.edit_account') }}
                                 </button>
 
                                 @if(auth()->user()?->can('accounts.create'))
@@ -244,19 +253,19 @@
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                         </svg>
-                                        Add Sub Account
+                                        {{ trans_dash('pages.accounts_tree.actions.add_sub_account') }}
                                     </button>
                                 @endif
 
                                 @if(auth()->user()?->can('accounts.delete'))
                                     <button 
                                         wire:click="deleteAccount({{ $account->id }})"
-                                        wire:confirm="Are you sure you want to delete this account? This action cannot be undone."
+                                        wire:confirm="{{ trans_dash('pages.accounts_tree.confirm.delete') }}"
                                         class="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-red-600 dark:bg-red-500 border border-transparent rounded-lg hover:bg-red-700 dark:hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                         </svg>
-                                        Delete Account
+                                        {{ trans_dash('pages.accounts_tree.actions.delete_account') }}
                                     </button>
                                 @endif
                             </div>
@@ -265,8 +274,8 @@
                                 <svg class="w-16 h-16 text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                 </svg>
-                                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No Account Selected</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Click on an account from the tree to view its details</p>
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{{ trans_dash('pages.accounts_tree.account_details.no_selected') }}</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ trans_dash('pages.accounts_tree.account_details.click_to_view') }}</p>
                             </div>
                         @endif
                     </div>
@@ -318,10 +327,10 @@
                                 </div>
                                 <div>
                                     <h3 class="text-xl font-bold text-white">
-                                        {{ $isEditing ? 'Edit Account' : 'Create New Account' }}
+                                        {{ $isEditing ? trans_dash('pages.accounts_tree.modal.edit_title') : trans_dash('pages.accounts_tree.modal.create_title') }}
                                     </h3>
                                     <p class="text-sm text-primary-100 mt-0.5">
-                                        {{ $isEditing ? 'Update account information' : 'Add a new account to your chart of accounts' }}
+                                        {{ $isEditing ? trans_dash('pages.accounts_tree.modal.edit_description') : trans_dash('pages.accounts_tree.modal.create_description') }}
                                     </p>
                                 </div>
                             </div>
@@ -345,12 +354,12 @@
                                         <svg class="w-4 h-4 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
                                         </svg>
-                                        Account Code *
+                                        {{ trans_dash('pages.accounts_tree.form.account_code') }}
                                     </label>
                                     <input 
                                         type="text"
                                         wire:model="formData.code"
-                                        placeholder="e.g., 1000, 1100"
+                                        placeholder="{{ trans_dash('pages.accounts_tree.form.account_code_placeholder') }}"
                                         class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-150">
                                     @error('formData.code') 
                                         <span class="text-red-500 text-xs mt-1 flex items-center gap-1">
@@ -368,12 +377,12 @@
                                         <svg class="w-4 h-4 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                                         </svg>
-                                        Account Name *
+                                        {{ trans_dash('pages.accounts_tree.form.account_name') }}
                                     </label>
                                     <input 
                                         type="text"
                                         wire:model="formData.name"
-                                        placeholder="Enter account name"
+                                        placeholder="{{ trans_dash('pages.accounts_tree.form.account_name_placeholder') }}"
                                         class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-150">
                                     @error('formData.name') 
                                         <span class="text-red-500 text-xs mt-1 flex items-center gap-1">
@@ -393,18 +402,18 @@
                                         <svg class="w-4 h-4 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                                         </svg>
-                                        Account Type *
+                                        {{ trans_dash('pages.accounts_tree.form.account_type') }}
                                     </label>
                                     <select 
                                         wire:model.live="formData.type"
                                         wire:change="$set('formData.parent_id', null)"
                                         class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-150">
-                                        <option value="">Select Type</option>
-                                        <option value="asset">Asset</option>
-                                        <option value="liability">Liability</option>
-                                        <option value="equity">Equity</option>
-                                        <option value="revenue">Revenue</option>
-                                        <option value="expense">Expense</option>
+                                        <option value="">{{ trans_dash('pages.accounts_tree.form.select_type') }}</option>
+                                        <option value="asset">{{ trans_dash('pages.accounts_tree.filters.assets') }}</option>
+                                        <option value="liability">{{ trans_dash('pages.accounts_tree.filters.liabilities') }}</option>
+                                        <option value="equity">{{ trans_dash('pages.accounts_tree.filters.equity') }}</option>
+                                        <option value="revenue">{{ trans_dash('pages.accounts_tree.filters.revenue') }}</option>
+                                        <option value="expense">{{ trans_dash('pages.accounts_tree.filters.expenses') }}</option>
                                     </select>
                                     @error('formData.type') 
                                         <span class="text-red-500 text-xs mt-1 flex items-center gap-1">
@@ -422,13 +431,13 @@
                                         <svg class="w-4 h-4 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
                                         </svg>
-                                        Parent Account
+                                        {{ trans_dash('pages.accounts_tree.form.parent_account') }}
                                     </label>
                                     <select 
                                         wire:model.live="formData.parent_id"
                                         wire:change="$wire.updateParentLevel"
                                         class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-150">
-                                        <option value="">None (Root Account)</option>
+                                        <option value="">{{ trans_dash('pages.accounts_tree.form.none_root') }}</option>
                                         @if(!empty($formData['type']))
                                             @foreach($this->parentAccounts as $parent)
                                                 <option value="{{ $parent['id'] }}">{{ $parent['name'] }}</option>
@@ -444,7 +453,7 @@
                                     <svg class="w-4 h-4 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                                     </svg>
-                                    Level (Auto-calculated)
+                                    {{ trans_dash('pages.accounts_tree.form.level_auto') }}
                                 </label>
                                 <input 
                                     type="number"
@@ -462,7 +471,7 @@
                                         id="is_active"
                                         class="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500 focus:ring-2">
                                     <label for="is_active" class="ml-3 text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer">
-                                        Account is Active
+                                        {{ trans_dash('pages.accounts_tree.form.account_is_active') }}
                                     </label>
                                 </div>
 
@@ -474,7 +483,7 @@
                                         id="allow_manual_entry"
                                         class="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500 focus:ring-2">
                                     <label for="allow_manual_entry" class="ml-3 text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer">
-                                        Allow Manual Entry
+                                        {{ trans_dash('pages.accounts_tree.form.allow_manual_entry_label') }}
                                     </label>
                                 </div>
                             </div>
@@ -485,12 +494,12 @@
                                     <svg class="w-4 h-4 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                     </svg>
-                                    Notes (Optional)
+                                    {{ trans_dash('pages.accounts_tree.form.notes_optional') }}
                                 </label>
                                 <textarea 
                                     wire:model="formData.notes"
                                     rows="4"
-                                    placeholder="Add any additional notes or comments about this account..."
+                                    placeholder="{{ trans_dash('pages.accounts_tree.form.notes_placeholder') }}"
                                     class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-150 resize-none"></textarea>
                             </div>
 
@@ -500,7 +509,7 @@
                                     type="button"
                                     wire:click="closeModal"
                                     class="px-6 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-150">
-                                    Cancel
+                                    {{ trans_dash('actions.cancel') }}
                                 </button>
                                 <button 
                                     type="submit"
@@ -509,12 +518,12 @@
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                         </svg>
-                                        Update Account
+                                        {{ trans_dash('pages.accounts_tree.form.update_account') }}
                                     @else
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                         </svg>
-                                        Create Account
+                                        {{ trans_dash('pages.accounts_tree.form.create_account') }}
                                     @endif
                                 </button>
                             </div>
