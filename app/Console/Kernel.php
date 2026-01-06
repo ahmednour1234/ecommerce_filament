@@ -25,6 +25,11 @@ class Kernel extends ConsoleKernel
         // هنا بتحط أي cron jobs
         // مثال:
         // $schedule->command('maincore:sync-currencies')->daily();
+        
+        // Aggregate attendance daily at 1 AM
+        $schedule->command('hr:aggregate-attendance')
+            ->dailyAt('01:00')
+            ->timezone(config('app.timezone', 'UTC'));
     }
 
     /**

@@ -137,5 +137,61 @@ class Employee extends Model
     {
         return $query->where('status', 'inactive');
     }
+
+    /**
+     * Get the work place assignment
+     */
+    public function workPlace()
+    {
+        return $this->hasOne(EmployeeWorkPlace::class, 'employee_id');
+    }
+
+    /**
+     * Get all group memberships
+     */
+    public function groupMemberships()
+    {
+        return $this->hasMany(EmployeeGroupMember::class, 'employee_id');
+    }
+
+    /**
+     * Get all groups this employee belongs to
+     */
+    public function groups()
+    {
+        return $this->belongsToMany(EmployeeGroup::class, 'hr_employee_group_members', 'employee_id', 'group_id');
+    }
+
+    /**
+     * Get all schedules assigned to this employee
+     */
+    public function schedules()
+    {
+        return $this->hasMany(EmployeeSchedule::class, 'employee_id');
+    }
+
+    /**
+     * Get all excuse requests
+     */
+    public function excuseRequests()
+    {
+        return $this->hasMany(ExcuseRequest::class, 'employee_id');
+    }
+
+    /**
+     * Get all attendance logs
+     */
+    public function attendanceLogs()
+    {
+        return $this->hasMany(AttendanceLog::class, 'employee_id');
+    }
+
+    /**
+     * Get all attendance days
+     */
+    public function attendanceDays()
+    {
+        return $this->hasMany(AttendanceDay::class, 'employee_id');
+    }
 }
 

@@ -26,6 +26,10 @@ Route::get('/debug/session', function () {
 Route::prefix('api')->middleware(['web'])->group(function () {
     Route::get('/exchange-rate', [App\Http\Controllers\Api\ExchangeRateController::class, 'getRate']);
     Route::post('/exchange-rates/batch', [App\Http\Controllers\Api\ExchangeRateController::class, 'getBatchRates']);
+    
+    // HR Attendance Device Log API (no CSRF for device push)
+    Route::post('/hr/attendance/device-log', [App\Http\Controllers\Api\Hr\DeviceLogController::class, 'store'])
+        ->middleware('throttle:60,1');
 });
 
 // Export Routes
