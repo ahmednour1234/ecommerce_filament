@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\MainCore\MainCoreSeeder::class,
             \Database\Seeders\Catalog\CatalogSeeder::class, // Must be after MainCore (needs Currency)
             \Database\Seeders\Accounting\AccountingSeeder::class, // Must be after MainCore (needs Branch, CostCenter)
+            \Database\Seeders\Accounting\BankGuaranteePermissionsSeeder::class, // Bank Guarantee permissions
             \Database\Seeders\Sales\SalesSeeder::class, // Must be after Catalog and Accounting
             SuperAdminSeeder::class, // Create super_admin role with ALL permissions (must be last)
         ]);

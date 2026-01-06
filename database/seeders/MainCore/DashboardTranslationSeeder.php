@@ -696,7 +696,7 @@ class DashboardTranslationSeeder extends Seeder
                 'en' => 'Orders by Status',
                 'ar' => 'الطلبات حسب الحالة',
             ],
-            
+
             // Status words
             'dashboard.stats.status.completed' => [
                 'en' => 'completed',
@@ -4366,6 +4366,240 @@ class DashboardTranslationSeeder extends Seeder
                 'en' => 'Export to PDF',
                 'ar' => 'تصدير إلى PDF',
             ],
+
+            // Bank Guarantees Resource - Navigation
+            'sidebar.accounting.bank_guarantees' => [
+                'en' => 'Bank Guarantees',
+                'ar' => 'خطابات الضمان البنكي',
+            ],
+            'navigation.bank_guarantees' => [
+                'en' => 'Bank Guarantees',
+                'ar' => 'خطابات الضمان البنكي',
+            ],
+
+            // Bank Guarantees Resource - Forms
+            'forms.bank_guarantees.sections.basic_information' => [
+                'en' => 'Basic Information',
+                'ar' => 'المعلومات الأساسية',
+            ],
+            'forms.bank_guarantees.sections.financial_information' => [
+                'en' => 'Financial Information',
+                'ar' => 'المعلومات المالية',
+            ],
+            'forms.bank_guarantees.sections.attachments' => [
+                'en' => 'Attachments',
+                'ar' => 'المرفقات',
+            ],
+            'forms.bank_guarantees.sections.notes' => [
+                'en' => 'Notes',
+                'ar' => 'ملاحظات',
+            ],
+            'forms.bank_guarantees.fields.guarantee_number' => [
+                'en' => 'Guarantee Number',
+                'ar' => 'رقم خطاب الضمان',
+            ],
+            'forms.bank_guarantees.fields.beneficiary_name' => [
+                'en' => 'Beneficiary Name',
+                'ar' => 'اسم الجهة المستفيدة',
+            ],
+            'forms.bank_guarantees.fields.issue_date' => [
+                'en' => 'Issue Date',
+                'ar' => 'تاريخ الإصدار',
+            ],
+            'forms.bank_guarantees.fields.start_date' => [
+                'en' => 'Start Date',
+                'ar' => 'تاريخ البدء',
+            ],
+            'forms.bank_guarantees.fields.end_date' => [
+                'en' => 'End Date',
+                'ar' => 'تاريخ الانتهاء',
+            ],
+            'forms.bank_guarantees.fields.current_end_date' => [
+                'en' => 'Current End Date',
+                'ar' => 'تاريخ الانتهاء الحالي',
+            ],
+            'forms.bank_guarantees.fields.new_end_date' => [
+                'en' => 'New End Date',
+                'ar' => 'تاريخ الانتهاء الجديد',
+            ],
+            'forms.bank_guarantees.fields.new_end_date_helper' => [
+                'en' => 'The new end date must be after the current end date',
+                'ar' => 'يجب أن يكون تاريخ الانتهاء الجديد بعد تاريخ الانتهاء الحالي',
+            ],
+            'forms.bank_guarantees.fields.amount' => [
+                'en' => 'Amount',
+                'ar' => 'المبلغ',
+            ],
+            'forms.bank_guarantees.fields.bank_fees' => [
+                'en' => 'Bank Fees',
+                'ar' => 'المصروفات البنكية',
+            ],
+            'forms.bank_guarantees.fields.original_guarantee_account' => [
+                'en' => 'Original Guarantee Account (Debit)',
+                'ar' => 'الحساب المدين (أصل خطاب الضمان)',
+            ],
+            'forms.bank_guarantees.fields.bank_account' => [
+                'en' => 'Bank Account (Credit)',
+                'ar' => 'الحساب الدائن (حساب البنك/الصندوق)',
+            ],
+            'forms.bank_guarantees.fields.bank_fees_account' => [
+                'en' => 'Bank Fees Account',
+                'ar' => 'حساب المصروفات البنكية',
+            ],
+            'forms.bank_guarantees.fields.bank_fees_debit_account' => [
+                'en' => 'Bank Fees Debit Account',
+                'ar' => 'الحساب المدين للمصروفات البنكية',
+            ],
+            'forms.bank_guarantees.fields.attachment' => [
+                'en' => 'Attachment',
+                'ar' => 'مرفق خطاب الضمان',
+            ],
+            'forms.bank_guarantees.fields.notes' => [
+                'en' => 'Notes',
+                'ar' => 'ملاحظات إضافية',
+            ],
+            'forms.bank_guarantees.fields.branch' => [
+                'en' => 'Branch',
+                'ar' => 'الفرع',
+            ],
+            'forms.bank_guarantees.fields.status' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'forms.bank_guarantees.status.active' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'forms.bank_guarantees.status.expired' => [
+                'en' => 'Expired',
+                'ar' => 'منتهي',
+            ],
+            'forms.bank_guarantees.status.cancelled' => [
+                'en' => 'Cancelled',
+                'ar' => 'ملغي',
+            ],
+            'forms.bank_guarantees.currency_symbol' => [
+                'en' => 'SAR',
+                'ar' => 'ريال',
+            ],
+
+            // Bank Guarantees Resource - Tables
+            'tables.bank_guarantees.guarantee_number' => [
+                'en' => 'Guarantee Number',
+                'ar' => 'رقم خطاب الضمان',
+            ],
+            'tables.bank_guarantees.beneficiary_name' => [
+                'en' => 'Beneficiary Name',
+                'ar' => 'اسم الجهة المستفيدة',
+            ],
+            'tables.bank_guarantees.amount' => [
+                'en' => 'Amount',
+                'ar' => 'المبلغ',
+            ],
+            'tables.bank_guarantees.end_date' => [
+                'en' => 'End Date',
+                'ar' => 'تاريخ الانتهاء',
+            ],
+            'tables.bank_guarantees.status' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'tables.bank_guarantees.created_at' => [
+                'en' => 'Created At',
+                'ar' => 'تاريخ الإنشاء',
+            ],
+            'tables.bank_guarantees.filters.status' => [
+                'en' => 'Status',
+                'ar' => 'الحالة',
+            ],
+            'tables.bank_guarantees.filters.end_date_from' => [
+                'en' => 'End Date From',
+                'ar' => 'تاريخ الانتهاء من',
+            ],
+            'tables.bank_guarantees.filters.end_date_until' => [
+                'en' => 'End Date Until',
+                'ar' => 'تاريخ الانتهاء حتى',
+            ],
+            'tables.bank_guarantees.filters.expired_soon' => [
+                'en' => 'Expiring Soon (within 30 days)',
+                'ar' => 'تنتهي قريباً (خلال 30 يوم)',
+            ],
+            'tables.bank_guarantees.filters.beneficiary_name' => [
+                'en' => 'Beneficiary Name',
+                'ar' => 'اسم الجهة المستفيدة',
+            ],
+
+            // Bank Guarantees - Actions
+            'actions.renew' => [
+                'en' => 'Renew',
+                'ar' => 'تمديد',
+            ],
+            'actions.renew_description' => [
+                'en' => 'Extend the expiry date of this bank guarantee',
+                'ar' => 'تمديد تاريخ انتهاء خطاب الضمان البنكي',
+            ],
+            'actions.save_renewal' => [
+                'en' => 'Save Renewal',
+                'ar' => 'حفظ التمديد',
+            ],
+
+            // Bank Guarantees - Messages
+            'messages.renewed_successfully' => [
+                'en' => 'Renewed Successfully',
+                'ar' => 'تم التمديد بنجاح',
+            ],
+            'messages.bank_guarantee_renewed' => [
+                'en' => 'Bank guarantee renewed from :old_date to :new_date',
+                'ar' => 'تم تمديد خطاب الضمان البنكي من :old_date إلى :new_date',
+            ],
+            'messages.renewal_failed' => [
+                'en' => 'Renewal Failed',
+                'ar' => 'فشل التمديد',
+            ],
+            'messages.bank_guarantees.created' => [
+                'en' => 'Bank Guarantee Created',
+                'ar' => 'تم إنشاء خطاب الضمان',
+            ],
+            'messages.bank_guarantees.created_successfully' => [
+                'en' => 'Bank guarantee has been created successfully',
+                'ar' => 'تم إنشاء خطاب الضمان البنكي بنجاح',
+            ],
+            'messages.bank_guarantees.updated' => [
+                'en' => 'Bank Guarantee Updated',
+                'ar' => 'تم تحديث خطاب الضمان',
+            ],
+            'messages.bank_guarantees.updated_successfully' => [
+                'en' => 'Bank guarantee has been updated successfully',
+                'ar' => 'تم تحديث خطاب الضمان البنكي بنجاح',
+            ],
+
+            // Bank Guarantees - Helpers
+            'helpers.auto_generate_number' => [
+                'en' => 'Leave this field empty to auto-generate a guarantee number',
+                'ar' => 'اترك الحقل فارغاً ليتم توليد رقم تلقائياً',
+            ],
+            'helpers.fees_zero_if_none' => [
+                'en' => 'Leave the value as zero if there are no bank fees',
+                'ar' => 'اترك القيمة صفر إذا لم توجد مصروفات بنكية',
+            ],
+            'helpers.fees_debit_optional' => [
+                'en' => 'Optional: If left empty, the bank account will be used',
+                'ar' => 'اختياري: إذا تركت فارغاً، سيتم استخدام حساب البنك',
+            ],
+
+            // Bank Guarantees - Validation
+            'validation.renewal_date_must_be_after' => [
+                'en' => 'The new end date must be after the current end date',
+                'ar' => 'يجب أن يكون تاريخ الانتهاء الجديد بعد تاريخ الانتهاء الحالي',
+            ],
+            'validation.bank_fees_account_required' => [
+                'en' => 'Bank fees account is required when bank fees are greater than zero',
+                'ar' => 'حساب المصروفات البنكية مطلوب عندما تكون المصروفات البنكية أكبر من الصفر',
+            ],
+            'validation.end_date_after_start_date' => [
+                'en' => 'End date must be after start date',
+                'ar' => 'يجب أن يكون تاريخ الانتهاء بعد تاريخ البدء',
+            ],
         ];
 
         // Get all active languages
@@ -4374,7 +4608,7 @@ class DashboardTranslationSeeder extends Seeder
         foreach ($translations as $key => $langTranslations) {
             foreach ($languages as $language) {
                 $code = $language->code;
-                
+
                 // Only create translation if it exists for this language
                 if (isset($langTranslations[$code])) {
                     Translation::updateOrCreate(
