@@ -77,21 +77,21 @@ class GeneralLedgerReportPage extends Page implements HasTable, HasForms
         // Build query for table
         $rows = $reportData->rows;
         $unionQueries = [];
+        $index = 0;
 
         foreach ($rows as $row) {
-            $unionQueries[] = DB::table('general_ledger_entries')
-                ->whereRaw('1 = 0')
-                ->selectRaw('? as date, ? as entry_number, ? as reference, ? as description, ? as debit, ? as credit, ? as balance, ? as branch, ? as cost_center', [
-                    $row['date'] ?? '',
-                    $row['entry_number'] ?? '',
-                    $row['reference'] ?? '',
-                    $row['description'] ?? '',
-                    $row['debit'] ?? 0,
-                    $row['credit'] ?? 0,
-                    $row['balance'] ?? 0,
-                    $row['branch'] ?? '',
-                    $row['cost_center'] ?? '',
-                ]);
+            $unionQueries[] = DB::query()->selectRaw('? as id, ? as date, ? as entry_number, ? as reference, ? as description, ? as debit, ? as credit, ? as balance, ? as branch, ? as cost_center', [
+                $index++,
+                $row['date'] ?? '',
+                $row['entry_number'] ?? '',
+                $row['reference'] ?? '',
+                $row['description'] ?? '',
+                $row['debit'] ?? 0,
+                $row['credit'] ?? 0,
+                $row['balance'] ?? 0,
+                $row['branch'] ?? '',
+                $row['cost_center'] ?? '',
+            ]);
         }
 
         $unionQuery = null;
@@ -99,13 +99,12 @@ class GeneralLedgerReportPage extends Page implements HasTable, HasForms
             if ($unionQuery === null) {
                 $unionQuery = $uq;
             } else {
-                $unionQuery->union($uq);
+                $unionQuery->unionAll($uq);
             }
         }
 
         if ($unionQuery === null) {
-            $unionQuery = DB::table('general_ledger_entries')->whereRaw('1 = 0')
-                ->selectRaw('NULL as date, NULL as entry_number, NULL as reference, NULL as description, 0 as debit, 0 as credit, 0 as balance, NULL as branch, NULL as cost_center');
+            $unionQuery = DB::query()->selectRaw('0 as id, NULL as date, NULL as entry_number, NULL as reference, NULL as description, 0 as debit, 0 as credit, 0 as balance, NULL as branch, NULL as cost_center');
         }
 
         // Filament Tables requires an Eloquent Builder, not a Query Builder.

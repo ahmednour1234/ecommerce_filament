@@ -70,26 +70,25 @@ class AccountsReceivableReportPage extends Page implements HasTable, HasForms
 
         $rows = $reportData->rows;
         $unionQueries = [];
+        $index = 0;
 
         foreach ($rows as $row) {
-            $unionQueries[] = DB::table('customers')
-                ->whereRaw('1 = 0')
-                ->selectRaw('? as customer_code, ? as customer_name, ? as balance, ? as credit_limit', [
-                    $row['customer_code'] ?? '',
-                    $row['customer_name'] ?? '',
-                    $row['balance'] ?? 0,
-                    $row['credit_limit'] ?? 0,
-                ]);
+            $unionQueries[] = DB::query()->selectRaw('? as id, ? as customer_code, ? as customer_name, ? as balance, ? as credit_limit', [
+                $index++,
+                $row['customer_code'] ?? '',
+                $row['customer_name'] ?? '',
+                $row['balance'] ?? 0,
+                $row['credit_limit'] ?? 0,
+            ]);
         }
 
         $unionQuery = null;
         foreach ($unionQueries as $uq) {
-            $unionQuery = $unionQuery ? $unionQuery->union($uq) : $uq;
+            $unionQuery = $unionQuery ? $unionQuery->unionAll($uq) : $uq;
         }
 
         if ($unionQuery === null) {
-            $unionQuery = DB::table('customers')->whereRaw('1 = 0')
-                ->selectRaw('NULL as customer_code, NULL as customer_name, 0 as balance, 0 as credit_limit');
+            $unionQuery = DB::query()->selectRaw('0 as id, NULL as customer_code, NULL as customer_name, 0 as balance, 0 as credit_limit');
         }
 
         // Filament Tables requires an Eloquent Builder, not a Query Builder.

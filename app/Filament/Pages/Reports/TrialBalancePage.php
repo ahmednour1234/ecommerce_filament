@@ -99,6 +99,7 @@ class TrialBalancePage extends Page implements HasTable
 
         // Build the union query from trial balance data
         $subQueries = [];
+        $index = 0;
         
         foreach ($trialBalance as $item) {
             $account = $item['account'];
@@ -107,9 +108,8 @@ class TrialBalancePage extends Page implements HasTable
             $balance = (float) $item['balance'];
             
             // Create a subquery with literal values using a simple table reference
-            $subQueries[] = DB::table('accounts')
-                ->whereRaw('1 = 0') // Never match any rows, we just need the structure
-                ->selectRaw("
+            $subQueries[] = DB::query()->selectRaw("
+                    ? as id,
                     ? as account_id,
                     ? as code,
                     ? as name,
@@ -118,6 +118,7 @@ class TrialBalancePage extends Page implements HasTable
                     ? as credits,
                     ? as balance
                 ", [
+                    $index++,
                     $account->id,
                     $account->code,
                     $account->name,
@@ -134,14 +135,13 @@ class TrialBalancePage extends Page implements HasTable
             if ($unionQuery === null) {
                 $unionQuery = $subQuery;
             } else {
-                $unionQuery->union($subQuery);
+                $unionQuery->unionAll($subQuery);
             }
         }
 
         // If no data, create empty query
         if ($unionQuery === null) {
-            $unionQuery = DB::table('accounts')->whereRaw('1 = 0')
-                ->selectRaw('NULL as account_id, NULL as code, NULL as name, NULL as type, 0 as debits, 0 as credits, 0 as balance');
+            $unionQuery = DB::query()->selectRaw('0 as id, NULL as account_id, NULL as code, NULL as name, NULL as type, 0 as debits, 0 as credits, 0 as balance');
         }
 
         // Filament Tables requires an Eloquent Builder, not a Query Builder.

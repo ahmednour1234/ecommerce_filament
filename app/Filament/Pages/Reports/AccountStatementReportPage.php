@@ -96,29 +96,28 @@ class AccountStatementReportPage extends Page implements HasTable, HasForms
 
         $rows = $reportData->rows;
         $unionQueries = [];
+        $index = 0;
 
         foreach ($rows as $row) {
-            $unionQueries[] = DB::table('general_ledger_entries')
-                ->whereRaw('1 = 0')
-                ->selectRaw('? as date, ? as entry_number, ? as reference, ? as description, ? as debit, ? as credit, ? as balance', [
-                    $row['date'] ?? '',
-                    $row['entry_number'] ?? '',
-                    $row['reference'] ?? '',
-                    $row['description'] ?? '',
-                    $row['debit'] ?? 0,
-                    $row['credit'] ?? 0,
-                    $row['balance'] ?? 0,
-                ]);
+            $unionQueries[] = DB::query()->selectRaw('? as id, ? as date, ? as entry_number, ? as reference, ? as description, ? as debit, ? as credit, ? as balance', [
+                $index++,
+                $row['date'] ?? '',
+                $row['entry_number'] ?? '',
+                $row['reference'] ?? '',
+                $row['description'] ?? '',
+                $row['debit'] ?? 0,
+                $row['credit'] ?? 0,
+                $row['balance'] ?? 0,
+            ]);
         }
 
         $unionQuery = null;
         foreach ($unionQueries as $uq) {
-            $unionQuery = $unionQuery ? $unionQuery->union($uq) : $uq;
+            $unionQuery = $unionQuery ? $unionQuery->unionAll($uq) : $uq;
         }
 
         if ($unionQuery === null) {
-            $unionQuery = DB::table('general_ledger_entries')->whereRaw('1 = 0')
-                ->selectRaw('NULL as date, NULL as entry_number, NULL as reference, NULL as description, 0 as debit, 0 as credit, 0 as balance');
+            $unionQuery = DB::query()->selectRaw('0 as id, NULL as date, NULL as entry_number, NULL as reference, NULL as description, 0 as debit, 0 as credit, 0 as balance');
         }
 
         // Filament Tables requires an Eloquent Builder, not a Query Builder.

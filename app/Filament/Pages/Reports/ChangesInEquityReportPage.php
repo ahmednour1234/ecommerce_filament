@@ -70,27 +70,26 @@ class ChangesInEquityReportPage extends Page implements HasTable, HasForms
 
         $rows = $reportData->rows;
         $unionQueries = [];
+        $index = 0;
 
         foreach ($rows as $row) {
-            $unionQueries[] = DB::table('general_ledger_entries')
-                ->whereRaw('1 = 0')
-                ->selectRaw('? as date, ? as account_code, ? as account_name, ? as description, ? as movement', [
-                    $row['date'] ?? '',
-                    $row['account_code'] ?? '',
-                    $row['account_name'] ?? '',
-                    $row['description'] ?? '',
-                    $row['movement'] ?? 0,
-                ]);
+            $unionQueries[] = DB::query()->selectRaw('? as id, ? as date, ? as account_code, ? as account_name, ? as description, ? as movement', [
+                $index++,
+                $row['date'] ?? '',
+                $row['account_code'] ?? '',
+                $row['account_name'] ?? '',
+                $row['description'] ?? '',
+                $row['movement'] ?? 0,
+            ]);
         }
 
         $unionQuery = null;
         foreach ($unionQueries as $uq) {
-            $unionQuery = $unionQuery ? $unionQuery->union($uq) : $uq;
+            $unionQuery = $unionQuery ? $unionQuery->unionAll($uq) : $uq;
         }
 
         if ($unionQuery === null) {
-            $unionQuery = DB::table('general_ledger_entries')->whereRaw('1 = 0')
-                ->selectRaw('NULL as date, NULL as account_code, NULL as account_name, NULL as description, 0 as movement');
+            $unionQuery = DB::query()->selectRaw('0 as id, NULL as date, NULL as account_code, NULL as account_name, NULL as description, 0 as movement');
         }
 
         // Filament Tables requires an Eloquent Builder, not a Query Builder.

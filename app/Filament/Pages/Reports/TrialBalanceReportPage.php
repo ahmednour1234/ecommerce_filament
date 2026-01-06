@@ -78,18 +78,18 @@ class TrialBalanceReportPage extends Page implements HasTable, HasForms
         // Build query for table
         $rows = $reportData->rows;
         $unionQueries = [];
+        $index = 0;
 
         foreach ($rows as $row) {
-            $unionQueries[] = DB::table('accounts')
-                ->whereRaw('1 = 0')
-                ->selectRaw('? as account_code, ? as account_name, ? as account_type, ? as debits, ? as credits, ? as balance', [
-                    $row['account_code'] ?? '',
-                    $row['account_name'] ?? '',
-                    $row['account_type'] ?? '',
-                    $row['debits'] ?? 0,
-                    $row['credits'] ?? 0,
-                    $row['balance'] ?? 0,
-                ]);
+            $unionQueries[] = DB::query()->selectRaw('? as id, ? as account_code, ? as account_name, ? as account_type, ? as debits, ? as credits, ? as balance', [
+                $index++,
+                $row['account_code'] ?? '',
+                $row['account_name'] ?? '',
+                $row['account_type'] ?? '',
+                $row['debits'] ?? 0,
+                $row['credits'] ?? 0,
+                $row['balance'] ?? 0,
+            ]);
         }
 
         $unionQuery = null;
@@ -97,13 +97,12 @@ class TrialBalanceReportPage extends Page implements HasTable, HasForms
             if ($unionQuery === null) {
                 $unionQuery = $uq;
             } else {
-                $unionQuery->union($uq);
+                $unionQuery->unionAll($uq);
             }
         }
 
         if ($unionQuery === null) {
-            $unionQuery = DB::table('accounts')->whereRaw('1 = 0')
-                ->selectRaw('NULL as account_code, NULL as account_name, NULL as account_type, 0 as debits, 0 as credits, 0 as balance');
+            $unionQuery = DB::query()->selectRaw('0 as id, NULL as account_code, NULL as account_name, NULL as account_type, 0 as debits, 0 as credits, 0 as balance');
         }
 
         // Filament Tables requires an Eloquent Builder, not a Query Builder.

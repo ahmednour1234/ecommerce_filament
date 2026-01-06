@@ -71,28 +71,27 @@ class JournalEntriesByYearReportPage extends Page implements HasTable, HasForms
 
         $rows = $reportData->rows;
         $unionQueries = [];
+        $index = 0;
 
         foreach ($rows as $row) {
-            $unionQueries[] = DB::table('journal_entries')
-                ->whereRaw('1 = 0')
-                ->selectRaw('? as year, ? as month, ? as month_name, ? as entry_count, ? as total_debit, ? as total_credit', [
-                    $row['year'] ?? '',
-                    $row['month'] ?? '',
-                    $row['month_name'] ?? '',
-                    $row['entry_count'] ?? 0,
-                    $row['total_debit'] ?? 0,
-                    $row['total_credit'] ?? 0,
-                ]);
+            $unionQueries[] = DB::query()->selectRaw('? as id, ? as year, ? as month, ? as month_name, ? as entry_count, ? as total_debit, ? as total_credit', [
+                $index++,
+                $row['year'] ?? '',
+                $row['month'] ?? '',
+                $row['month_name'] ?? '',
+                $row['entry_count'] ?? 0,
+                $row['total_debit'] ?? 0,
+                $row['total_credit'] ?? 0,
+            ]);
         }
 
         $unionQuery = null;
         foreach ($unionQueries as $uq) {
-            $unionQuery = $unionQuery ? $unionQuery->union($uq) : $uq;
+            $unionQuery = $unionQuery ? $unionQuery->unionAll($uq) : $uq;
         }
 
         if ($unionQuery === null) {
-            $unionQuery = DB::table('journal_entries')->whereRaw('1 = 0')
-                ->selectRaw('NULL as year, NULL as month, NULL as month_name, 0 as entry_count, 0 as total_debit, 0 as total_credit');
+            $unionQuery = DB::query()->selectRaw('0 as id, NULL as year, NULL as month, NULL as month_name, 0 as entry_count, 0 as total_debit, 0 as total_credit');
         }
 
         // Filament Tables requires an Eloquent Builder, not a Query Builder.

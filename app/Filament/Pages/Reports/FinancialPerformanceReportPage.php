@@ -70,25 +70,24 @@ class FinancialPerformanceReportPage extends Page implements HasTable, HasForms
 
         $rows = $reportData->rows;
         $unionQueries = [];
+        $index = 0;
 
         foreach ($rows as $row) {
-            $unionQueries[] = DB::table('accounts')
-                ->whereRaw('1 = 0')
-                ->selectRaw('? as kpi, ? as value, ? as percentage', [
-                    $row['kpi'] ?? '',
-                    $row['value'] ?? 0,
-                    $row['percentage'] ?? 0,
-                ]);
+            $unionQueries[] = DB::query()->selectRaw('? as id, ? as kpi, ? as value, ? as percentage', [
+                $index++,
+                $row['kpi'] ?? '',
+                $row['value'] ?? 0,
+                $row['percentage'] ?? 0,
+            ]);
         }
 
         $unionQuery = null;
         foreach ($unionQueries as $uq) {
-            $unionQuery = $unionQuery ? $unionQuery->union($uq) : $uq;
+            $unionQuery = $unionQuery ? $unionQuery->unionAll($uq) : $uq;
         }
 
         if ($unionQuery === null) {
-            $unionQuery = DB::table('accounts')->whereRaw('1 = 0')
-                ->selectRaw('NULL as kpi, 0 as value, 0 as percentage');
+            $unionQuery = DB::query()->selectRaw('0 as id, NULL as kpi, 0 as value, 0 as percentage');
         }
 
         // Filament Tables requires an Eloquent Builder, not a Query Builder.

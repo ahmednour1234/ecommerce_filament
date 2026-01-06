@@ -67,30 +67,29 @@ class FixedAssetsReportPage extends Page implements HasTable, HasForms
 
         $rows = $reportData->rows;
         $unionQueries = [];
+        $index = 0;
 
         foreach ($rows as $row) {
-            $unionQueries[] = DB::table('assets')
-                ->whereRaw('1 = 0')
-                ->selectRaw('? as code, ? as name, ? as category, ? as purchase_date, ? as acquisition_cost, ? as depreciation, ? as net_book_value, ? as status', [
-                    $row['code'] ?? '',
-                    $row['name'] ?? '',
-                    $row['category'] ?? '',
-                    $row['purchase_date'] ?? '',
-                    $row['acquisition_cost'] ?? 0,
-                    $row['depreciation'] ?? 0,
-                    $row['net_book_value'] ?? 0,
-                    $row['status'] ?? '',
-                ]);
+            $unionQueries[] = DB::query()->selectRaw('? as id, ? as code, ? as name, ? as category, ? as purchase_date, ? as acquisition_cost, ? as depreciation, ? as net_book_value, ? as status', [
+                $index++,
+                $row['code'] ?? '',
+                $row['name'] ?? '',
+                $row['category'] ?? '',
+                $row['purchase_date'] ?? '',
+                $row['acquisition_cost'] ?? 0,
+                $row['depreciation'] ?? 0,
+                $row['net_book_value'] ?? 0,
+                $row['status'] ?? '',
+            ]);
         }
 
         $unionQuery = null;
         foreach ($unionQueries as $uq) {
-            $unionQuery = $unionQuery ? $unionQuery->union($uq) : $uq;
+            $unionQuery = $unionQuery ? $unionQuery->unionAll($uq) : $uq;
         }
 
         if ($unionQuery === null) {
-            $unionQuery = DB::table('assets')->whereRaw('1 = 0')
-                ->selectRaw('NULL as code, NULL as name, NULL as category, NULL as purchase_date, 0 as acquisition_cost, 0 as depreciation, 0 as net_book_value, NULL as status');
+            $unionQuery = DB::query()->selectRaw('0 as id, NULL as code, NULL as name, NULL as category, NULL as purchase_date, 0 as acquisition_cost, 0 as depreciation, 0 as net_book_value, NULL as status');
         }
 
         // Filament Tables requires an Eloquent Builder, not a Query Builder.

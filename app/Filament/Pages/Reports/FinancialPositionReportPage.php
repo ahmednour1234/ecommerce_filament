@@ -69,27 +69,26 @@ class FinancialPositionReportPage extends Page implements HasTable, HasForms
 
         $rows = $reportData->rows;
         $unionQueries = [];
+        $index = 0;
 
         foreach ($rows as $row) {
-            $unionQueries[] = DB::table('general_ledger_entries')
-                ->whereRaw('1 = 0')
-                ->selectRaw('? as branch, ? as cost_center, ? as total_debit, ? as total_credit, ? as balance', [
-                    $row['branch'] ?? '',
-                    $row['cost_center'] ?? '',
-                    $row['total_debit'] ?? 0,
-                    $row['total_credit'] ?? 0,
-                    $row['balance'] ?? 0,
-                ]);
+            $unionQueries[] = DB::query()->selectRaw('? as id, ? as branch, ? as cost_center, ? as total_debit, ? as total_credit, ? as balance', [
+                $index++,
+                $row['branch'] ?? '',
+                $row['cost_center'] ?? '',
+                $row['total_debit'] ?? 0,
+                $row['total_credit'] ?? 0,
+                $row['balance'] ?? 0,
+            ]);
         }
 
         $unionQuery = null;
         foreach ($unionQueries as $uq) {
-            $unionQuery = $unionQuery ? $unionQuery->union($uq) : $uq;
+            $unionQuery = $unionQuery ? $unionQuery->unionAll($uq) : $uq;
         }
 
         if ($unionQuery === null) {
-            $unionQuery = DB::table('general_ledger_entries')->whereRaw('1 = 0')
-                ->selectRaw('NULL as branch, NULL as cost_center, 0 as total_debit, 0 as total_credit, 0 as balance');
+            $unionQuery = DB::query()->selectRaw('0 as id, NULL as branch, NULL as cost_center, 0 as total_debit, 0 as total_credit, 0 as balance');
         }
 
         // Filament Tables requires an Eloquent Builder, not a Query Builder.

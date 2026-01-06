@@ -399,15 +399,15 @@ class SalesReportPage extends Page implements HasTable
         
         // Build union query from data
         $unionQueries = [];
+        $index = 0;
         foreach ($data as $item) {
-            $unionQueries[] = DB::table('accounts')
-                ->whereRaw('1 = 0')
-                ->selectRaw('? as type, ? as account_code, ? as account_name, ? as amount', [
-                    $item->type,
-                    $item->account_code ?? '',
-                    $item->account_name ?? '',
-                    $item->amount ?? 0,
-                ]);
+            $unionQueries[] = DB::query()->selectRaw('? as id, ? as type, ? as account_code, ? as account_name, ? as amount', [
+                $index++,
+                $item->type,
+                $item->account_code ?? '',
+                $item->account_name ?? '',
+                $item->amount ?? 0,
+            ]);
         }
         
         $unionQuery = null;
@@ -415,13 +415,12 @@ class SalesReportPage extends Page implements HasTable
             if ($unionQuery === null) {
                 $unionQuery = $uq;
             } else {
-                $unionQuery->union($uq);
+                $unionQuery->unionAll($uq);
             }
         }
         
         if ($unionQuery === null) {
-            $unionQuery = DB::table('accounts')->whereRaw('1 = 0')
-                ->selectRaw('NULL as type, NULL as account_code, NULL as account_name, 0 as amount');
+            $unionQuery = DB::query()->selectRaw('0 as id, NULL as type, NULL as account_code, NULL as account_name, 0 as amount');
         }
         
         // Filament Tables requires an Eloquent Builder, not a Query Builder.

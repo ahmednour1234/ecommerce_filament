@@ -78,16 +78,16 @@ class IncomeStatementReportPage extends Page implements HasTable, HasForms
         // Build query for table
         $rows = $reportData->rows;
         $unionQueries = [];
+        $index = 0;
 
         foreach ($rows as $row) {
-            $unionQueries[] = DB::table('accounts')
-                ->whereRaw('1 = 0')
-                ->selectRaw('? as section, ? as account_code, ? as account_name, ? as amount', [
-                    $row['section'] ?? '',
-                    $row['account_code'] ?? '',
-                    $row['account_name'] ?? '',
-                    $row['amount'] ?? null,
-                ]);
+            $unionQueries[] = DB::query()->selectRaw('? as id, ? as section, ? as account_code, ? as account_name, ? as amount', [
+                $index++,
+                $row['section'] ?? '',
+                $row['account_code'] ?? '',
+                $row['account_name'] ?? '',
+                $row['amount'] ?? null,
+            ]);
         }
 
         $unionQuery = null;
@@ -95,13 +95,12 @@ class IncomeStatementReportPage extends Page implements HasTable, HasForms
             if ($unionQuery === null) {
                 $unionQuery = $uq;
             } else {
-                $unionQuery->union($uq);
+                $unionQuery->unionAll($uq);
             }
         }
 
         if ($unionQuery === null) {
-            $unionQuery = DB::table('accounts')->whereRaw('1 = 0')
-                ->selectRaw('NULL as section, NULL as account_code, NULL as account_name, NULL as amount');
+            $unionQuery = DB::query()->selectRaw('0 as id, NULL as section, NULL as account_code, NULL as account_name, NULL as amount');
         }
 
         // Filament Tables requires an Eloquent Builder, not a Query Builder.
