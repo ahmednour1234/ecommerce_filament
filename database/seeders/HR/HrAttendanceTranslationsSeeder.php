@@ -111,6 +111,7 @@ class HrAttendanceTranslationsSeeder extends Seeder
             'fields.schedule_details' => ['en' => 'Schedule Details', 'ar' => 'تفاصيل الموعد'],
             'fields.use_source_schedule' => ['en' => 'Use Source Schedule', 'ar' => 'استخدام موعد المصدر'],
             'fields.schedule' => ['en' => 'Schedule', 'ar' => 'الموعد'],
+            'fields.date' => ['en' => 'Date', 'ar' => 'التاريخ'],
             'fields.date_from' => ['en' => 'Date From', 'ar' => 'من تاريخ'],
             'fields.date_to' => ['en' => 'Date To', 'ar' => 'إلى تاريخ'],
             'fields.year' => ['en' => 'Year', 'ar' => 'السنة'],

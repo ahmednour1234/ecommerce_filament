@@ -105,6 +105,7 @@ class HrTranslationsSeeder extends Seeder
             'fields.status' => ['en' => 'Status', 'ar' => 'الحالة'],
             'fields.status_active' => ['en' => 'Active', 'ar' => 'نشط'],
             'fields.status_inactive' => ['en' => 'Inactive', 'ar' => 'غير نشط'],
+            'fields.date' => ['en' => 'Date', 'ar' => 'التاريخ'],
             'fields.holiday_name' => ['en' => 'Holiday Name', 'ar' => 'اسم العطلة'],
             'fields.start_date' => ['en' => 'Start Date', 'ar' => 'تاريخ بداية العطلة'],
             'fields.days_count' => ['en' => 'Days Count', 'ar' => 'عدد الأيام'],
