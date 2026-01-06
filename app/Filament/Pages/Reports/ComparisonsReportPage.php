@@ -117,10 +117,12 @@ class ComparisonsReportPage extends Page implements HasTable, HasForms
         $rows = $reportData->rows;
         $unionQueries = [];
 
+        $index = 0;
         foreach ($rows as $row) {
             $unionQueries[] = DB::table('accounts')
                 ->whereRaw('1 = 0')
-                ->selectRaw('? as period, ? as from_date, ? as to_date, ? as amount', [
+                ->selectRaw('? as id, ? as period, ? as from_date, ? as to_date, ? as amount', [
+                    $index++,
                     $row['period'] ?? '',
                     $row['from_date'] ?? '',
                     $row['to_date'] ?? '',
@@ -135,7 +137,7 @@ class ComparisonsReportPage extends Page implements HasTable, HasForms
 
         if ($unionQuery === null) {
             $unionQuery = DB::table('accounts')->whereRaw('1 = 0')
-                ->selectRaw('NULL as period, NULL as from_date, NULL as to_date, 0 as amount');
+                ->selectRaw('0 as id, NULL as period, NULL as from_date, NULL as to_date, 0 as amount');
         }
 
         // Filament Tables requires an Eloquent Builder, not a Query Builder.
@@ -144,6 +146,7 @@ class ComparisonsReportPage extends Page implements HasTable, HasForms
             ->query(fn () => \App\Models\Accounting\Account::query()
                 ->fromSub($unionQuery, 'comparisons_data')
                 ->select('comparisons_data.*')
+                ->withoutGlobalScopes() // Remove any global scopes that might add ordering
             )
             ->columns([
                 Tables\Columns\TextColumn::make('period'),
@@ -151,6 +154,7 @@ class ComparisonsReportPage extends Page implements HasTable, HasForms
                 Tables\Columns\TextColumn::make('to_date'),
                 Tables\Columns\TextColumn::make('amount')->money(\App\Support\Money::defaultCurrencyCode()),
             ])
+            ->defaultSort('id', 'asc')
             ->paginated(false);
     }
 
