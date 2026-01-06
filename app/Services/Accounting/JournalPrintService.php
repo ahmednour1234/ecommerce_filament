@@ -20,10 +20,21 @@ class JournalPrintService
 
     public function pdf(Journal $journal, Collection $signatures)
     {
+        $isRtl = app()->getLocale() === 'ar';
+        
         return Pdf::loadView('print.journals.show', [
             'journal' => $journal,
             'signatures' => $signatures,
-        ])->setPaper('a4');
+        ])
+        ->setPaper('a4')
+        ->setOption('enable-local-file-access', true)
+        ->setOption('isHtml5ParserEnabled', true)
+        ->setOption('isRemoteEnabled', true)
+        ->setOption('defaultFont', 'DejaVu Sans')
+        ->setOption('fontDir', [
+            public_path('fonts'),
+            resource_path('fonts'),
+        ]);
     }
 
     public function excelDownload(Journal $journal, Collection $signatures)

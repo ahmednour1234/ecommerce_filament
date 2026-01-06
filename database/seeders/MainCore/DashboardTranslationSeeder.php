@@ -2090,6 +2090,168 @@ class DashboardTranslationSeeder extends Seeder
                 'en' => 'Both periods must be specified for comparison report.',
                 'ar' => 'يجب تحديد كلا الفترتين لتقرير المقارنة.',
             ],
+
+            // Accounts Resource - Forms
+            'forms.accounts.sections.basic_information' => [
+                'en' => 'Basic Information',
+                'ar' => 'المعلومات الأساسية',
+            ],
+            'forms.accounts.code.label' => [
+                'en' => 'Account Code',
+                'ar' => 'رمز الحساب',
+            ],
+            'forms.accounts.code.helper' => [
+                'en' => 'Unique account code (e.g., 1000, 1100, 2000)',
+                'ar' => 'رمز حساب فريد (مثل: 1000، 1100، 2000)',
+            ],
+            'forms.accounts.name.label' => [
+                'en' => 'Account Name',
+                'ar' => 'اسم الحساب',
+            ],
+            'forms.accounts.type.label' => [
+                'en' => 'Account Type',
+                'ar' => 'نوع الحساب',
+            ],
+            'forms.accounts.type.options.asset' => [
+                'en' => 'Asset',
+                'ar' => 'أصل',
+            ],
+            'forms.accounts.type.options.liability' => [
+                'en' => 'Liability',
+                'ar' => 'التزام',
+            ],
+            'forms.accounts.type.options.equity' => [
+                'en' => 'Equity',
+                'ar' => 'حقوق الملكية',
+            ],
+            'forms.accounts.type.options.revenue' => [
+                'en' => 'Revenue',
+                'ar' => 'إيراد',
+            ],
+            'forms.accounts.type.options.expense' => [
+                'en' => 'Expense',
+                'ar' => 'مصروف',
+            ],
+            'forms.accounts.parent_id.label' => [
+                'en' => 'Parent Account',
+                'ar' => 'الحساب الأب',
+            ],
+            'forms.accounts.parent_id.helper' => [
+                'en' => 'Optional: Select a parent account to create a sub-account',
+                'ar' => 'اختياري: اختر حسابًا أبًا لإنشاء حساب فرعي',
+            ],
+            'forms.accounts.level.label' => [
+                'en' => 'Level',
+                'ar' => 'المستوى',
+            ],
+            'forms.accounts.level.helper' => [
+                'en' => 'Automatically calculated based on parent',
+                'ar' => 'يتم حسابه تلقائيًا بناءً على الحساب الأب',
+            ],
+            'forms.accounts.is_active.label' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'forms.accounts.allow_manual_entry.label' => [
+                'en' => 'Allow Manual Entry',
+                'ar' => 'السماح بالإدخال اليدوي',
+            ],
+            'forms.accounts.allow_manual_entry.helper' => [
+                'en' => 'Allow manual journal entries to this account',
+                'ar' => 'السماح بإدخال قيود يومية يدوية لهذا الحساب',
+            ],
+            'forms.accounts.notes.label' => [
+                'en' => 'Notes',
+                'ar' => 'ملاحظات',
+            ],
+
+            // Accounts Resource - Tables
+            'tables.accounts.code' => [
+                'en' => 'Code',
+                'ar' => 'الرمز',
+            ],
+            'tables.accounts.name' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'tables.accounts.type' => [
+                'en' => 'Type',
+                'ar' => 'النوع',
+            ],
+            'tables.accounts.parent' => [
+                'en' => 'Parent',
+                'ar' => 'الأب',
+            ],
+            'tables.accounts.level' => [
+                'en' => 'Level',
+                'ar' => 'المستوى',
+            ],
+            'tables.accounts.active' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'tables.accounts.manual_entry' => [
+                'en' => 'Manual Entry',
+                'ar' => 'إدخال يدوي',
+            ],
+            'tables.accounts.filters.type' => [
+                'en' => 'Type',
+                'ar' => 'النوع',
+            ],
+            'tables.accounts.filters.active' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'tables.accounts.filters.all' => [
+                'en' => 'All',
+                'ar' => 'الكل',
+            ],
+            'tables.accounts.filters.active_only' => [
+                'en' => 'Active only',
+                'ar' => 'النشطة فقط',
+            ],
+            'tables.accounts.filters.inactive_only' => [
+                'en' => 'Inactive only',
+                'ar' => 'غير النشطة فقط',
+            ],
+            'tables.accounts.filters.parent_account' => [
+                'en' => 'Parent Account',
+                'ar' => 'الحساب الأب',
+            ],
+
+            // Journal Entries Resource - Tables
+            'tables.journal_entries.entry_number' => [
+                'en' => 'Entry Number',
+                'ar' => 'رقم القيد',
+            ],
+            'tables.journal_entries.journal' => [
+                'en' => 'Journal',
+                'ar' => 'اليومية',
+            ],
+            'tables.journal_entries.date' => [
+                'en' => 'Date',
+                'ar' => 'التاريخ',
+            ],
+            'tables.journal_entries.reference' => [
+                'en' => 'Reference',
+                'ar' => 'المرجع',
+            ],
+            'tables.journal_entries.branch' => [
+                'en' => 'Branch',
+                'ar' => 'الفرع',
+            ],
+            'tables.journal_entries.cost_center' => [
+                'en' => 'Cost Center',
+                'ar' => 'مركز التكلفة',
+            ],
+            'tables.journal_entries.total_debits' => [
+                'en' => 'Total Debits',
+                'ar' => 'إجمالي المدين',
+            ],
+            'tables.journal_entries.total_credits' => [
+                'en' => 'Total Credits',
+                'ar' => 'إجمالي الدائن',
+            ],
         ];
 
         // Get all active languages

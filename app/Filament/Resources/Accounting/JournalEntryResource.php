@@ -32,7 +32,7 @@ class JournalEntryResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-document-duplicate';
     protected static ?string $navigationGroup = 'Accounting';
     protected static ?int $navigationSort = 4;
-    protected static ?string $navigationTranslationKey = 'menu.accounting.journal_entries';
+    protected static ?string $navigationTranslationKey = 'sidebar.accounting.journal_entries';
 
     public static function form(Form $form): Form
     {
@@ -403,42 +403,42 @@ class JournalEntryResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('entry_number')
-                    ->label('Entry Number')
+                    ->label(tr('tables.journal_entries.entry_number', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('journal.name')
-                    ->label('Journal')
+                    ->label(tr('tables.journal_entries.journal', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('entry_date')
-                    ->label('Date')
+                    ->label(tr('tables.journal_entries.date', [], null, 'dashboard'))
                     ->date()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('reference')
-                    ->label('Reference')
+                    ->label(tr('tables.journal_entries.reference', [], null, 'dashboard'))
                     ->searchable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('branch.name')
-                    ->label('Branch')
+                    ->label(tr('tables.journal_entries.branch', [], null, 'dashboard'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('cost_center.name')
-                    ->label('Cost Center')
+                    ->label(tr('tables.journal_entries.cost_center', [], null, 'dashboard'))
                     ->searchable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('total_debits')
-                    ->label('Total Debits')
+                    ->label(tr('tables.journal_entries.total_debits', [], null, 'dashboard'))
                     ->money('USD')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('total_credits')
-                    ->label('Total Credits')
+                    ->label(tr('tables.journal_entries.total_credits', [], null, 'dashboard'))
                     ->money('USD')
                     ->sortable(),
 
