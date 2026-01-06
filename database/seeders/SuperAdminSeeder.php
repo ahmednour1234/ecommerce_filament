@@ -35,6 +35,7 @@ class SuperAdminSeeder extends Seeder
             $this->command->info('Creating accounting permissions...');
             $this->call([
                 \Database\Seeders\Accounting\AccountingPermissionsSeeder::class,
+                \Database\Seeders\Accounting\BankGuaranteePermissionsSeeder::class,
             ]);
         } catch (\Exception $e) {
             $this->command->warn("Warning: Could not run permission seeders: {$e->getMessage()}");
