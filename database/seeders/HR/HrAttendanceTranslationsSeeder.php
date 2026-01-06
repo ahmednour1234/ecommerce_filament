@@ -32,11 +32,11 @@ class HrAttendanceTranslationsSeeder extends Seeder
             'navigation.hr_employee_groups' => ['en' => 'Employee Groups', 'ar' => 'مجموعات الموظفين'],
             'navigation.hr_work_schedules' => ['en' => 'Work Schedules', 'ar' => 'مواعيد العمل'],
             'navigation.hr_excuse_requests' => ['en' => 'Excuse Requests', 'ar' => 'طلبات الاستئذان'],
-            'navigation.hr_daily_attendance' => ['en' => 'Daily Attendance', 'ar' => 'الحضور اليومي'],
-            'navigation.hr_monthly_report' => ['en' => 'Monthly Attendance Report', 'ar' => 'تقرير الحضور الشهري'],
+            'navigation.hr_devices' => ['en' => 'Fingerprint Devices', 'ar' => 'أجهزة البصمة'],
             'navigation.hr_assign_work_places' => ['en' => 'Assign Work Places', 'ar' => 'تعيين أماكن العمل'],
             'navigation.hr_copy_schedules' => ['en' => 'Copy Schedules', 'ar' => 'نسخ المواعيد'],
-            'navigation.hr_devices' => ['en' => 'Fingerprint Devices', 'ar' => 'أجهزة البصمة'],
+            'navigation.hr_daily_attendance' => ['en' => 'Daily Attendance', 'ar' => 'الحضور اليومي'],
+            'navigation.hr_monthly_report' => ['en' => 'Monthly Attendance Report', 'ar' => 'تقرير الحضور الشهري'],
 
             // Fields - Work Places
             'fields.latitude' => ['en' => 'Latitude', 'ar' => 'خط العرض'],

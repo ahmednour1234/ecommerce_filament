@@ -38,6 +38,17 @@ class HrTranslationsSeeder extends Seeder
             'navigation.hr_employees' => ['en' => 'Employees', 'ar' => 'الموظفين'],
             'navigation.hr_holidays' => ['en' => 'Official Holidays', 'ar' => 'العطلات الرسمية'],
             'navigation.hr_holidays_calendar' => ['en' => 'Holidays Calendar', 'ar' => 'تقويم العطلات'],
+            
+            // HR Attendance Navigation Items
+            'navigation.hr_work_places' => ['en' => 'Work Places', 'ar' => 'أماكن العمل'],
+            'navigation.hr_employee_groups' => ['en' => 'Employee Groups', 'ar' => 'مجموعات الموظفين'],
+            'navigation.hr_work_schedules' => ['en' => 'Work Schedules', 'ar' => 'مواعيد العمل'],
+            'navigation.hr_excuse_requests' => ['en' => 'Excuse Requests', 'ar' => 'طلبات الاستئذان'],
+            'navigation.hr_devices' => ['en' => 'Fingerprint Devices', 'ar' => 'أجهزة البصمة'],
+            'navigation.hr_assign_work_places' => ['en' => 'Assign Work Places', 'ar' => 'تعيين أماكن العمل'],
+            'navigation.hr_copy_schedules' => ['en' => 'Copy Schedules', 'ar' => 'نسخ المواعيد'],
+            'navigation.hr_daily_attendance' => ['en' => 'Daily Attendance', 'ar' => 'الحضور اليومي'],
+            'navigation.hr_monthly_report' => ['en' => 'Monthly Attendance Report', 'ar' => 'تقرير الحضور الشهري'],
 
             // Common Fields
             'fields.name' => ['en' => 'Name', 'ar' => 'الاسم'],
