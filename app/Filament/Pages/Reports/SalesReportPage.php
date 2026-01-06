@@ -517,7 +517,10 @@ class SalesReportPage extends Page implements HasTable
 
     protected function getExportMetadata(): array
     {
-        $metadata = parent::getExportMetadata();
+        $metadata = [
+            'exported_at' => now()->format('Y-m-d H:i:s'),
+            'exported_by' => auth()->user()?->name ?? 'System',
+        ];
         $metadata['report_type'] = $this->data['report_type'] ?? 'orders';
         $metadata['date_from'] = $this->data['date_from'] ?? '';
         $metadata['date_to'] = $this->data['date_to'] ?? '';
