@@ -29,7 +29,7 @@ class ComparisonsReportService extends ReportBase
         $periodBTo = $this->filters->additional['period_b_to'] ?? null;
 
         if (!$periodAFrom || !$periodBFrom) {
-            throw new \InvalidArgumentException(tr('pages.reports.comparisons.error_both_periods_required', [], null, 'dashboard'));
+            throw new \InvalidArgumentException(trans_dash('pages.reports.comparisons.error_both_periods_required', 'Both periods must be specified for comparison report.'));
         }
 
         // Period A

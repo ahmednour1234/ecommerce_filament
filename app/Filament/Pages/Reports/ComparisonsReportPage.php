@@ -74,14 +74,45 @@ class ComparisonsReportPage extends Page implements HasTable, HasForms
 
     public function table(Table $table): Table
     {
+        $periodAFrom = $this->data['from_date'] ?? null;
+        $periodBFrom = $this->data['period_b_from'] ?? null;
+
+        // Validate both periods are set before calling service
+        if (!$periodAFrom || !$periodBFrom) {
+            return $table
+                ->query(fn () => \App\Models\Accounting\Account::query()->whereRaw('1 = 0'))
+                ->columns([
+                    Tables\Columns\TextColumn::make('period'),
+                    Tables\Columns\TextColumn::make('from_date'),
+                    Tables\Columns\TextColumn::make('to_date'),
+                    Tables\Columns\TextColumn::make('amount')->money(\App\Support\Money::defaultCurrencyCode()),
+                ])
+                ->emptyStateHeading(tr('pages.reports.comparisons.error_both_periods_required', [], null, 'dashboard'))
+                ->paginated(false);
+        }
+
         $filters = new FilterDTO(array_merge($this->data, [
-            'period_a_from' => $this->data['from_date'] ?? null,
+            'period_a_from' => $periodAFrom,
             'period_a_to' => $this->data['to_date'] ?? null,
-            'period_b_from' => $this->data['period_b_from'] ?? null,
+            'period_b_from' => $periodBFrom,
             'period_b_to' => $this->data['period_b_to'] ?? null,
         ]));
-        $service = new ComparisonsReportService($filters);
-        $reportData = $service->getData();
+        
+        try {
+            $service = new ComparisonsReportService($filters);
+            $reportData = $service->getData();
+        } catch (\InvalidArgumentException $e) {
+            return $table
+                ->query(fn () => \App\Models\Accounting\Account::query()->whereRaw('1 = 0'))
+                ->columns([
+                    Tables\Columns\TextColumn::make('period'),
+                    Tables\Columns\TextColumn::make('from_date'),
+                    Tables\Columns\TextColumn::make('to_date'),
+                    Tables\Columns\TextColumn::make('amount')->money(\App\Support\Money::defaultCurrencyCode()),
+                ])
+                ->emptyStateHeading($e->getMessage())
+                ->paginated(false);
+        }
 
         $rows = $reportData->rows;
         $unionQueries = [];
