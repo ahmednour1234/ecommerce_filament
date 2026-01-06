@@ -5,6 +5,7 @@ namespace App\Filament\Resources\MainCore;
 use App\Filament\Resources\MainCore\CurrencyRateResource\Pages;
 use App\Filament\Resources\MainCore\CurrencyRateResource\RelationManagers;
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Models\MainCore\Currency;
 use App\Models\MainCore\CurrencyRate;
 use Filament\Forms;
 use Filament\Forms\Form;
