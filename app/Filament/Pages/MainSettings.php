@@ -26,6 +26,11 @@ class MainSettings extends Page implements Forms\Contracts\HasForms
 
     protected static string $view = 'filament.pages.main-settings'; // مش هنستخدمه، هنشتغل بـ form()
 
+    public static function getTitle(): string
+    {
+        return tr('pages.settings.system_settings.title', [], null, 'dashboard');
+    }
+
     public ?array $data = [];
 
     public function mount(
@@ -52,30 +57,30 @@ class MainSettings extends Page implements Forms\Contracts\HasForms
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('General Settings')
-                    ->description('Configure basic application settings')
+                Forms\Components\Section::make(tr('pages.settings.system_settings.sections.general_settings', [], null, 'dashboard'))
+                    ->description(tr('pages.settings.system_settings.sections.general_settings.description', [], null, 'dashboard'))
                     ->icon('heroicon-o-cog-6-tooth')
                             ->schema([
                                 Forms\Components\TextInput::make('app_name')
-                                    ->label('Application Name')
+                                    ->label(tr('pages.settings.system_settings.fields.app_name', [], null, 'dashboard'))
                             ->required()
                             ->maxLength(255)
                             ->columnSpanFull(),
 
                                 Forms\Components\TextInput::make('app_url')
-                                    ->label('Application URL')
+                                    ->label(tr('pages.settings.system_settings.fields.app_url', [], null, 'dashboard'))
                             ->url()
                             ->maxLength(255)
                             ->columnSpanFull(),
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make('Localization')
-                    ->description('Configure language, currency, and timezone settings')
+                Forms\Components\Section::make(tr('pages.settings.system_settings.sections.localization', [], null, 'dashboard'))
+                    ->description(tr('pages.settings.system_settings.sections.localization.description', [], null, 'dashboard'))
                     ->icon('heroicon-o-globe-alt')
                             ->schema([
                                 Forms\Components\Select::make('default_language')
-                                    ->label('Default Language')
+                                    ->label(tr('pages.settings.system_settings.fields.default_language', [], null, 'dashboard'))
                                     ->options(
                                         \App\Models\MainCore\Language::where('is_active', true)
                                             ->pluck('name', 'code')
@@ -92,7 +97,7 @@ class MainSettings extends Page implements Forms\Contracts\HasForms
                             }),
 
                                 Forms\Components\Select::make('default_currency')
-                                    ->label('Default Currency')
+                                    ->label(tr('pages.settings.system_settings.fields.default_currency', [], null, 'dashboard'))
                                     ->options(
                                         \App\Models\MainCore\Currency::where('is_active', true)
                                     ->pluck('name', 'code')
@@ -101,7 +106,7 @@ class MainSettings extends Page implements Forms\Contracts\HasForms
                                     ->required(),
 
                                 Forms\Components\Select::make('timezone')
-                                    ->label('Timezone')
+                                    ->label(tr('pages.settings.system_settings.fields.timezone', [], null, 'dashboard'))
                                     ->options(
                                         collect(timezone_identifiers_list())
                                             ->mapWithKeys(fn ($tz) => [$tz => $tz])
@@ -111,13 +116,13 @@ class MainSettings extends Page implements Forms\Contracts\HasForms
                     ])
                     ->columns(3),
 
-                Forms\Components\Section::make('Appearance')
-                    ->description('Customize the visual appearance of the dashboard')
+                Forms\Components\Section::make(tr('pages.settings.system_settings.sections.appearance', [], null, 'dashboard'))
+                    ->description(tr('pages.settings.system_settings.sections.appearance.description', [], null, 'dashboard'))
                     ->icon('heroicon-o-paint-brush')
                             ->schema([
                                 Forms\Components\ColorPicker::make('primary_color')
-                            ->label('Primary Color')
-                            ->helperText('The main color used throughout the dashboard'),
+                            ->label(tr('pages.settings.system_settings.fields.primary_color', [], null, 'dashboard'))
+                            ->helperText(tr('pages.settings.system_settings.fields.primary_color.helper', [], null, 'dashboard')),
                     ]),
             ])
             ->statePath('data');

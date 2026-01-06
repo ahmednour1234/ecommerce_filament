@@ -4,7 +4,7 @@
 
         <div class="mt-6 flex items-center justify-end gap-4">
             <x-filament::button type="submit" color="primary">
-                Save Settings
+                {{ tr('pages.settings.system_settings.actions.save_settings', [], null, 'dashboard') }}
             </x-filament::button>
         </div>
     </form>

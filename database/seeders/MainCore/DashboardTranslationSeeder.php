@@ -1848,6 +1848,68 @@ class DashboardTranslationSeeder extends Seeder
                 'en' => 'Inactive only',
                 'ar' => 'غير النشطة فقط',
             ],
+
+            // System Settings Page
+            'pages.settings.system_settings.title' => [
+                'en' => 'System Settings',
+                'ar' => 'إعدادات النظام',
+            ],
+            'pages.settings.system_settings.sections.general_settings' => [
+                'en' => 'General Settings',
+                'ar' => 'الإعدادات العامة',
+            ],
+            'pages.settings.system_settings.sections.general_settings.description' => [
+                'en' => 'Configure basic application settings',
+                'ar' => 'تكوين الإعدادات الأساسية للتطبيق',
+            ],
+            'pages.settings.system_settings.sections.localization' => [
+                'en' => 'Localization',
+                'ar' => 'الموقعية',
+            ],
+            'pages.settings.system_settings.sections.localization.description' => [
+                'en' => 'Configure language, currency, and timezone settings',
+                'ar' => 'تكوين إعدادات اللغة والعملة والمنطقة الزمنية',
+            ],
+            'pages.settings.system_settings.sections.appearance' => [
+                'en' => 'Appearance',
+                'ar' => 'المظهر',
+            ],
+            'pages.settings.system_settings.sections.appearance.description' => [
+                'en' => 'Customize the visual appearance of the dashboard',
+                'ar' => 'تخصيص المظهر المرئي للوحة التحكم',
+            ],
+            'pages.settings.system_settings.fields.app_name' => [
+                'en' => 'Application Name',
+                'ar' => 'اسم التطبيق',
+            ],
+            'pages.settings.system_settings.fields.app_url' => [
+                'en' => 'Application URL',
+                'ar' => 'رابط التطبيق',
+            ],
+            'pages.settings.system_settings.fields.default_language' => [
+                'en' => 'Default Language',
+                'ar' => 'اللغة الافتراضية',
+            ],
+            'pages.settings.system_settings.fields.default_currency' => [
+                'en' => 'Default Currency',
+                'ar' => 'العملة الافتراضية',
+            ],
+            'pages.settings.system_settings.fields.timezone' => [
+                'en' => 'Timezone',
+                'ar' => 'المنطقة الزمنية',
+            ],
+            'pages.settings.system_settings.fields.primary_color' => [
+                'en' => 'Primary Color',
+                'ar' => 'اللون الأساسي',
+            ],
+            'pages.settings.system_settings.fields.primary_color.helper' => [
+                'en' => 'The main color used throughout the dashboard',
+                'ar' => 'اللون الرئيسي المستخدم في جميع أنحاء لوحة التحكم',
+            ],
+            'pages.settings.system_settings.actions.save_settings' => [
+                'en' => 'Save Settings',
+                'ar' => 'حفظ الإعدادات',
+            ],
         ];
 
         // Get all active languages
