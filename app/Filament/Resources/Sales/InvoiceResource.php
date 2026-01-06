@@ -29,22 +29,22 @@ class InvoiceResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Invoice Information')
+                Forms\Components\Section::make(trans_dash('forms.invoices.sections.invoice_information'))
                     ->schema([
                         Forms\Components\TextInput::make('invoice_number')
-                            ->label('Invoice Number')
+                            ->label(trans_dash('forms.invoices.invoice_number.label'))
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true)
                             ->default(fn () => 'INV-' . strtoupper(uniqid())),
 
                         Forms\Components\DatePicker::make('invoice_date')
-                            ->label('Invoice Date')
+                            ->label(trans_dash('forms.invoices.invoice_date.label'))
                             ->required()
                             ->default(now()),
 
                         Forms\Components\Select::make('order_id')
-                            ->label('Order')
+                            ->label(trans_dash('forms.invoices.order_id.label'))
                             ->relationship('order', 'order_number')
                             ->searchable()
                             ->preload()
@@ -65,41 +65,41 @@ class InvoiceResource extends Resource
                             }),
 
                         Forms\Components\Select::make('customer_id')
-                            ->label('Customer')
+                            ->label(trans_dash('forms.invoices.customer_id.label'))
                             ->relationship('customer', 'name')
                             ->required()
                             ->searchable()
                             ->preload(),
 
                         Forms\Components\Select::make('status')
-                            ->label('Status')
+                            ->label(trans_dash('forms.invoices.status.label'))
                             ->options([
-                                'draft' => 'Draft',
-                                'sent' => 'Sent',
-                                'paid' => 'Paid',
-                                'partial' => 'Partial',
-                                'overdue' => 'Overdue',
-                                'cancelled' => 'Cancelled',
+                                'draft' => trans_dash('forms.invoices.status.options.draft'),
+                                'sent' => trans_dash('forms.invoices.status.options.sent'),
+                                'paid' => trans_dash('forms.invoices.status.options.paid'),
+                                'partial' => trans_dash('forms.invoices.status.options.partial'),
+                                'overdue' => trans_dash('forms.invoices.status.options.overdue'),
+                                'cancelled' => trans_dash('forms.invoices.status.options.cancelled'),
                             ])
                             ->required()
                             ->default('draft'),
 
                         Forms\Components\DatePicker::make('due_date')
-                            ->label('Due Date')
+                            ->label(trans_dash('forms.invoices.due_date.label'))
                             ->required()
                             ->default(now()->addDays(30)),
 
                         Forms\Components\DateTimePicker::make('paid_at')
-                            ->label('Paid At')
+                            ->label(trans_dash('forms.invoices.paid_at.label'))
                             ->nullable()
                             ->visible(fn ($get) => in_array($get('status'), ['paid', 'partial'])),
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make('Financial Information')
+                Forms\Components\Section::make(trans_dash('forms.invoices.sections.financial_information'))
                     ->schema([
                         Forms\Components\Select::make('currency_id')
-                            ->label('Currency')
+                            ->label(trans_dash('forms.invoices.currency_id.label'))
                             ->relationship('currency', 'name')
                             ->options(Currency::active()->pluck('name', 'id'))
                             ->required()
@@ -107,26 +107,26 @@ class InvoiceResource extends Resource
                             ->preload(),
 
                         Forms\Components\TextInput::make('subtotal')
-                            ->label('Subtotal')
+                            ->label(trans_dash('forms.invoices.subtotal.label'))
                             ->numeric()
                             ->default(0)
                             ->required()
                             ->prefix('$'),
 
                         Forms\Components\TextInput::make('tax_amount')
-                            ->label('Tax Amount')
+                            ->label(trans_dash('forms.invoices.tax_amount.label'))
                             ->numeric()
                             ->default(0)
                             ->prefix('$'),
 
                         Forms\Components\TextInput::make('discount_amount')
-                            ->label('Discount Amount')
+                            ->label(trans_dash('forms.invoices.discount_amount.label'))
                             ->numeric()
                             ->default(0)
                             ->prefix('$'),
 
                         Forms\Components\TextInput::make('total')
-                            ->label('Total')
+                            ->label(trans_dash('forms.invoices.total.label'))
                             ->numeric()
                             ->default(0)
                             ->required()
@@ -135,45 +135,45 @@ class InvoiceResource extends Resource
                     ])
                     ->columns(4),
 
-                Forms\Components\Section::make('Invoice Items')
+                Forms\Components\Section::make(trans_dash('forms.invoices.sections.invoice_items'))
                     ->schema([
                         Forms\Components\Repeater::make('items')
                             ->relationship('items')
                             ->schema([
                                 Forms\Components\Select::make('product_id')
-                                    ->label('Product')
+                                    ->label(trans_dash('forms.invoices.items.product_id.label'))
                                     ->relationship('product', 'name')
                                     ->required()
                                     ->searchable()
                                     ->preload(),
 
                                 Forms\Components\Textarea::make('description')
-                                    ->label('Description')
+                                    ->label(trans_dash('forms.invoices.items.description.label'))
                                     ->rows(2)
                                     ->columnSpanFull(),
 
                                 Forms\Components\TextInput::make('quantity')
-                                    ->label('Quantity')
+                                    ->label(trans_dash('forms.invoices.items.quantity.label'))
                                     ->numeric()
                                     ->required()
                                     ->default(1)
                                     ->minValue(1),
 
                                 Forms\Components\TextInput::make('unit_price')
-                                    ->label('Unit Price')
+                                    ->label(trans_dash('forms.invoices.items.unit_price.label'))
                                     ->numeric()
                                     ->required()
                                     ->default(0)
                                     ->prefix('$'),
 
                                 Forms\Components\TextInput::make('discount')
-                                    ->label('Discount')
+                                    ->label(trans_dash('forms.invoices.items.discount.label'))
                                     ->numeric()
                                     ->default(0)
                                     ->prefix('$'),
 
                                 Forms\Components\TextInput::make('total')
-                                    ->label('Total')
+                                    ->label(trans_dash('forms.invoices.items.total.label'))
                                     ->numeric()
                                     ->default(0)
                                     ->prefix('$')
