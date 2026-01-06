@@ -898,6 +898,124 @@ class DashboardTranslationSeeder extends Seeder
                 'en' => 'Edit Notification Template',
                 'ar' => 'تعديل قالب إشعار',
             ],
+
+            // Payment Methods - Forms
+            'forms.payment_methods.provider_id.label' => [
+                'en' => 'Provider',
+                'ar' => 'المزود',
+            ],
+            'forms.payment_methods.name.label' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'forms.payment_methods.code.label' => [
+                'en' => 'Code',
+                'ar' => 'الرمز',
+            ],
+            'forms.payment_methods.fee_fixed.label' => [
+                'en' => 'Fee Fixed',
+                'ar' => 'الرسوم الثابتة',
+            ],
+            'forms.payment_methods.fee_percent.label' => [
+                'en' => 'Fee Percent',
+                'ar' => 'نسبة الرسوم',
+            ],
+            'forms.payment_methods.is_default.label' => [
+                'en' => 'Is Default',
+                'ar' => 'افتراضي',
+            ],
+            'forms.payment_methods.is_active.label' => [
+                'en' => 'Is Active',
+                'ar' => 'نشط',
+            ],
+            'forms.payment_methods.display_order.label' => [
+                'en' => 'Display Order',
+                'ar' => 'ترتيب العرض',
+            ],
+
+            // Payment Methods - Tables
+            'tables.payment_methods.provider' => [
+                'en' => 'Provider',
+                'ar' => 'المزود',
+            ],
+            'tables.payment_methods.name' => [
+                'en' => 'Name',
+                'ar' => 'الاسم',
+            ],
+            'tables.payment_methods.code' => [
+                'en' => 'Code',
+                'ar' => 'الرمز',
+            ],
+            'tables.payment_methods.fee_fixed' => [
+                'en' => 'Fee Fixed',
+                'ar' => 'الرسوم الثابتة',
+            ],
+            'tables.payment_methods.fee_percent' => [
+                'en' => 'Fee Percent',
+                'ar' => 'نسبة الرسوم',
+            ],
+            'tables.payment_methods.is_default' => [
+                'en' => 'Is Default',
+                'ar' => 'افتراضي',
+            ],
+            'tables.payment_methods.is_active' => [
+                'en' => 'Is Active',
+                'ar' => 'نشط',
+            ],
+            'tables.payment_methods.display_order' => [
+                'en' => 'Display Order',
+                'ar' => 'ترتيب العرض',
+            ],
+            'tables.payment_methods.created_at' => [
+                'en' => 'Created At',
+                'ar' => 'تاريخ الإنشاء',
+            ],
+            'tables.payment_methods.updated_at' => [
+                'en' => 'Updated At',
+                'ar' => 'تاريخ التحديث',
+            ],
+            'tables.payment_methods.filters.provider' => [
+                'en' => 'Provider',
+                'ar' => 'المزود',
+            ],
+            'tables.payment_methods.filters.is_active' => [
+                'en' => 'Active',
+                'ar' => 'نشط',
+            ],
+            'tables.payment_methods.filters.active_only' => [
+                'en' => 'Active only',
+                'ar' => 'النشطة فقط',
+            ],
+            'tables.payment_methods.filters.inactive_only' => [
+                'en' => 'Inactive only',
+                'ar' => 'غير النشطة فقط',
+            ],
+            'tables.payment_methods.filters.is_default' => [
+                'en' => 'Default',
+                'ar' => 'افتراضي',
+            ],
+            'tables.payment_methods.filters.default_only' => [
+                'en' => 'Default only',
+                'ar' => 'الافتراضية فقط',
+            ],
+            'tables.payment_methods.filters.non_default_only' => [
+                'en' => 'Non-default only',
+                'ar' => 'غير الافتراضية فقط',
+            ],
+
+            // Payment Methods - Pages
+            'pages.integrations.payment_methods.title' => [
+                'en' => 'Payment Methods',
+                'ar' => 'طرق الدفع',
+            ],
+            'pages.integrations.payment_methods.create.title' => [
+                'en' => 'Create Payment Method',
+                'ar' => 'إضافة طريقة دفع',
+            ],
+            'pages.integrations.payment_methods.edit.title' => [
+                'en' => 'Edit Payment Method',
+                'ar' => 'تعديل طريقة دفع',
+            ],
         ];
 
         // Get all active languages
