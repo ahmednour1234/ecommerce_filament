@@ -43,7 +43,8 @@ class LoanResource extends Resource
 
                         Forms\Components\Select::make('loan_type_id')
                             ->label(tr('fields.loan_type', [], null, 'dashboard') ?: 'Loan Type')
-                            ->relationship('loanType', 'name', fn ($query) => $query->where('is_active', true))
+                            ->relationship('loanType', 'id', fn ($query) => $query->where('is_active', true))
+                            ->getOptionLabelFromRecordUsing(fn (LoanType $record) => $record->name)
                             ->searchable()
                             ->preload()
                             ->required(),
@@ -131,8 +132,13 @@ class LoanResource extends Resource
 
                 Tables\Columns\TextColumn::make('loanType.name')
                     ->label(tr('fields.loan_type', [], null, 'dashboard') ?: 'Loan Type')
-                    ->searchable()
-                    ->sortable(),
+                    ->getStateUsing(fn ($record) => $record->loanType?->name)
+                    ->searchable(query: function ($query, $search) {
+                        return $query->whereHas('loanType', function ($q) use ($search) {
+                            $q->whereJsonContains('name_json->ar', $search)
+                              ->orWhereJsonContains('name_json->en', $search);
+                        });
+                    }),
 
                 Tables\Columns\TextColumn::make('amount')
                     ->label(tr('fields.amount', [], null, 'dashboard') ?: 'Amount')
@@ -173,7 +179,12 @@ class LoanResource extends Resource
 
                 Tables\Filters\SelectFilter::make('loan_type_id')
                     ->label(tr('fields.loan_type', [], null, 'dashboard') ?: 'Loan Type')
-                    ->relationship('loanType', 'name')
+                    ->options(function () {
+                        return \App\Models\HR\LoanType::where('is_active', true)
+                            ->get()
+                            ->pluck('name', 'id')
+                            ->toArray();
+                    })
                     ->searchable()
                     ->preload(),
 

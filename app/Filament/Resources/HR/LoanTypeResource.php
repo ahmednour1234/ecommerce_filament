@@ -76,8 +76,13 @@ class LoanTypeResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label(tr('fields.name', [], null, 'dashboard') ?: 'Name')
-                    ->searchable()
-                    ->sortable(),
+                    ->getStateUsing(fn ($record) => $record->name)
+                    ->searchable(query: function ($query, $search) {
+                        return $query->where(function ($q) use ($search) {
+                            $q->whereJsonContains('name_json->ar', $search)
+                              ->orWhereJsonContains('name_json->en', $search);
+                        });
+                    }),
 
                 Tables\Columns\TextColumn::make('max_amount')
                     ->label(tr('fields.max_amount', [], null, 'dashboard') ?: 'Max Amount')
