@@ -33,6 +33,9 @@ class HrLeavesTranslationsSeeder extends Seeder
             'navigation.hr_leave_reports' => ['en' => 'Leave Reports', 'ar' => 'تقرير الإجازات'],
 
             // Pages
+            'pages.hr_leave_types.create' => ['en' => 'Create Leave Type', 'ar' => 'إنشاء نوع إجازة'],
+            'pages.hr_leave_requests.title' => ['en' => 'Leave Requests', 'ar' => 'طلبات الإجازات'],
+            'pages.hr_leave_requests.create' => ['en' => 'Create Leave Request', 'ar' => 'إنشاء طلب إجازة'],
             'pages.hr_leave_requests.my_requests' => ['en' => 'My Leave Requests', 'ar' => 'طلبات الإجازات الخاصة بي'],
             'pages.hr_leave_balance.title' => ['en' => 'Leave Balance', 'ar' => 'رصيد الإجازات'],
             'pages.hr_leave_balance.heading' => ['en' => 'Leave Balance', 'ar' => 'رصيد الإجازات'],
@@ -56,6 +59,8 @@ class HrLeavesTranslationsSeeder extends Seeder
             'fields.remaining' => ['en' => 'Remaining', 'ar' => 'المتبقي'],
             'fields.date_from' => ['en' => 'From Date', 'ar' => 'من تاريخ'],
             'fields.date_to' => ['en' => 'To Date', 'ar' => 'إلى تاريخ'],
+            'fields.select_option' => ['en' => 'Select an option', 'ar' => 'اختر خياراً'],
+            'fields.no_file_chosen' => ['en' => 'No file chosen', 'ar' => 'لم يتم اختيار ملف'],
 
             // Status
             'status.pending' => ['en' => 'Pending', 'ar' => 'قيد الانتظار'],
@@ -66,15 +71,22 @@ class HrLeavesTranslationsSeeder extends Seeder
             'status.inactive' => ['en' => 'Inactive', 'ar' => 'غير نشط'],
 
             // Actions
+            'actions.create' => ['en' => 'Create', 'ar' => 'إنشاء'],
+            'actions.create_another' => ['en' => 'Create & create another', 'ar' => 'إنشاء وإنشاء آخر'],
+            'actions.list' => ['en' => 'List', 'ar' => 'قائمة'],
+            'actions.add' => ['en' => 'Add', 'ar' => 'إضافة'],
             'actions.approve' => ['en' => 'Approve', 'ar' => 'موافقة'],
             'actions.reject' => ['en' => 'Reject', 'ar' => 'رفض'],
             'actions.cancel' => ['en' => 'Cancel', 'ar' => 'إلغاء'],
             'actions.recalculate_balances' => ['en' => 'Recalculate Balances', 'ar' => 'إعادة حساب الأرصدة'],
             'actions.show_summary' => ['en' => 'Show Summary', 'ar' => 'عرض الملخص'],
-            'actions.export_excel' => ['en' => 'Export Excel', 'ar' => 'تصدير Excel'],
-            'actions.export_pdf' => ['en' => 'Export PDF', 'ar' => 'تصدير PDF'],
+            'actions.export_excel' => ['en' => 'Export to Excel', 'ar' => 'تصدير إلى Excel'],
+            'actions.export_pdf' => ['en' => 'Export to PDF', 'ar' => 'تصدير إلى PDF'],
             'actions.print' => ['en' => 'Print', 'ar' => 'طباعة'],
             'actions.close' => ['en' => 'Close', 'ar' => 'إغلاق'],
+            'actions.remove_item' => ['en' => 'Remove item', 'ar' => 'إزالة عنصر'],
+            'actions.remove_filter' => ['en' => 'Remove filter', 'ar' => 'إزالة الفلتر'],
+            'actions.toggle_columns' => ['en' => 'Toggle columns', 'ar' => 'تبديل الأعمدة'],
 
             // Forms - Leave Types
             'forms.hr_leave_types.name_ar' => ['en' => 'Leave Type Name (AR)', 'ar' => 'اسم نوع الإجازة (عربي)'],
@@ -138,6 +150,13 @@ class HrLeavesTranslationsSeeder extends Seeder
             'stats.pending_requests' => ['en' => 'Pending Requests', 'ar' => 'قيد الانتظار'],
             'stats.approved_requests' => ['en' => 'Approved Requests', 'ar' => 'تمت الموافقة'],
             'stats.rejected_requests' => ['en' => 'Rejected Requests', 'ar' => 'مرفوضة'],
+
+            // UI Labels
+            'ui.search' => ['en' => 'Search', 'ar' => 'بحث'],
+            'ui.filter' => ['en' => 'Filter', 'ar' => 'فلتر'],
+            'ui.active_filters' => ['en' => 'Active filters', 'ar' => 'الفلاتر النشطة'],
+            'ui.no_leave_requests' => ['en' => 'No leave requests', 'ar' => 'لا توجد طلبات إجازة'],
+            'ui.no_leave_balances' => ['en' => 'No leave balances', 'ar' => 'لا توجد أرصدة إجازة'],
 
             // Messages
             'messages.recalculate_balances_confirmation' => ['en' => 'This will recalculate all leave balances for the selected year. Continue?', 'ar' => 'سيتم إعادة حساب جميع أرصدة الإجازات للسنة المحددة. متابعة؟'],
