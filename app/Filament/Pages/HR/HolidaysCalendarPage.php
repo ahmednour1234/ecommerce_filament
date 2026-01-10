@@ -3,11 +3,13 @@
 namespace App\Filament\Pages\HR;
 
 use App\Models\HR\Holiday;
+use App\Filament\Concerns\TranslatableNavigation;
 use Filament\Actions;
 use Filament\Pages\Page;
 
 class HolidaysCalendarPage extends Page
 {
+    use TranslatableNavigation;
     protected static ?string $navigationIcon = 'heroicon-o-calendar';
     protected static ?string $navigationGroup = 'HR';
     protected static ?int $navigationSort = 31;

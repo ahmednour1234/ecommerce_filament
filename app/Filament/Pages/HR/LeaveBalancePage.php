@@ -5,6 +5,7 @@ namespace App\Filament\Pages\HR;
 use App\Models\HR\LeaveBalance;
 use App\Models\HR\Employee;
 use App\Services\HR\LeaveBalanceService;
+use App\Filament\Concerns\TranslatableNavigation;
 use Filament\Actions;
 use Filament\Forms;
 use Filament\Tables;
@@ -17,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 class LeaveBalancePage extends Page implements HasTable
 {
     use InteractsWithTable;
+    use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-calculator';
     protected static ?string $navigationGroup = 'HR';

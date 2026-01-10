@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\HR;
 
 use App\Models\HR\AttendanceDay;
+use App\Filament\Concerns\TranslatableNavigation;
 use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -12,6 +13,7 @@ use Filament\Pages\Page;
 class DailyAttendancePage extends Page implements HasTable
 {
     use InteractsWithTable;
+    use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
     protected static ?string $navigationGroup = 'HR';

@@ -6,6 +6,7 @@ use App\Models\HR\Department;
 use App\Models\HR\Employee;
 use App\Models\HR\WorkPlace;
 use App\Services\HR\AttendanceService;
+use App\Filament\Concerns\TranslatableNavigation;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -21,6 +22,7 @@ class MonthlyAttendanceReportPage extends Page implements HasForms, HasTable
 {
     use InteractsWithForms;
     use InteractsWithTable;
+    use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
     protected static ?string $navigationGroup = 'HR';

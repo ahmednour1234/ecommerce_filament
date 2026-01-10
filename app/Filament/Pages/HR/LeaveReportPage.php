@@ -7,6 +7,7 @@ use App\Models\HR\Employee;
 use App\Models\HR\LeaveType;
 use App\Models\HR\Department;
 use App\Services\HR\LeaveReportService;
+use App\Filament\Concerns\TranslatableNavigation;
 use Filament\Actions;
 use Filament\Forms;
 use Filament\Tables;
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Builder;
 class LeaveReportPage extends Page implements HasTable
 {
     use InteractsWithTable;
+    use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
     protected static ?string $navigationGroup = 'HR';

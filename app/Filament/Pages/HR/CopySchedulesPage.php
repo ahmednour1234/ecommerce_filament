@@ -7,6 +7,7 @@ use App\Models\HR\EmployeeGroup;
 use App\Models\HR\Employee;
 use App\Models\HR\WorkSchedule;
 use App\Services\HR\ScheduleCopyService;
+use App\Filament\Concerns\TranslatableNavigation;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -16,6 +17,7 @@ use Illuminate\Support\Collection;
 class CopySchedulesPage extends Page implements HasForms
 {
     use InteractsWithForms;
+    use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-duplicate';
     protected static ?string $navigationGroup = 'HR';
