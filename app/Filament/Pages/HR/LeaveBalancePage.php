@@ -158,7 +158,6 @@ class LeaveBalancePage extends Page implements HasTable
                     ->searchable()
                     ->preload()
                     ->native(false)
-                    ->reactive()
                     ->afterStateUpdated(fn ($state) => $this->selectedEmployeeId = $state),
 
                 Tables\Filters\SelectFilter::make('year')
@@ -172,7 +171,6 @@ class LeaveBalancePage extends Page implements HasTable
                     })
                     ->default(now()->year)
                     ->native(false)
-                    ->reactive()
                     ->afterStateUpdated(fn ($state) => $this->selectedYear = $state),
             ])
             ->defaultSort('employee.employee_number');

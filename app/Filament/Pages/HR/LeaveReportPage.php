@@ -159,7 +159,6 @@ class LeaveReportPage extends Page implements HasTable
                     })
                     ->default(now()->year)
                     ->native(false)
-                    ->reactive()
                     ->afterStateUpdated(fn ($state) => $this->filters['year'] = $state),
 
                 Tables\Filters\SelectFilter::make('month')
@@ -170,7 +169,6 @@ class LeaveReportPage extends Page implements HasTable
                         9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December',
                     ])
                     ->native(false)
-                    ->reactive()
                     ->afterStateUpdated(fn ($state) => $this->filters['month'] = $state),
 
                 Tables\Filters\SelectFilter::make('employee_id')
@@ -180,7 +178,6 @@ class LeaveReportPage extends Page implements HasTable
                     ->searchable()
                     ->preload()
                     ->native(false)
-                    ->reactive()
                     ->afterStateUpdated(fn ($state) => $this->filters['employee_id'] = $state),
 
                 Tables\Filters\SelectFilter::make('department_id')
@@ -189,7 +186,6 @@ class LeaveReportPage extends Page implements HasTable
                     ->searchable()
                     ->preload()
                     ->native(false)
-                    ->reactive()
                     ->afterStateUpdated(fn ($state) => $this->filters['department_id'] = $state),
 
                 Tables\Filters\SelectFilter::make('leave_type_id')
@@ -199,7 +195,6 @@ class LeaveReportPage extends Page implements HasTable
                     ->searchable()
                     ->preload()
                     ->native(false)
-                    ->reactive()
                     ->afterStateUpdated(fn ($state) => $this->filters['leave_type_id'] = $state),
 
                 Tables\Filters\SelectFilter::make('status')
@@ -211,7 +206,6 @@ class LeaveReportPage extends Page implements HasTable
                         'cancelled' => tr('status.cancelled', [], null, 'dashboard') ?: 'Cancelled',
                     ])
                     ->native(false)
-                    ->reactive()
                     ->afterStateUpdated(fn ($state) => $this->filters['status'] = $state),
 
                 Tables\Filters\Filter::make('date_range')
@@ -232,7 +226,6 @@ class LeaveReportPage extends Page implements HasTable
                                 fn (Builder $query, $date): Builder => $query->whereDate('end_date', '<=', $date),
                             );
                     })
-                    ->reactive()
                     ->afterStateUpdated(function ($state) {
                         if ($state) {
                             $this->filters['date_from'] = $state['date_from'] ?? null;
