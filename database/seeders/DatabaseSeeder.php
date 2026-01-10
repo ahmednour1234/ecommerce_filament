@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class, // Seed permissions for all resources
             \Database\Seeders\HR\HrPermissionsSeeder::class, // HR module permissions
             \Database\Seeders\HR\HrTranslationsSeeder::class, // HR module translations
+            \Database\Seeders\HR\HrLoansTranslationsSeeder::class, // HR Loans module translations
             \Database\Seeders\HR\HrLookupsSeeder::class, // HR default lookups
             \Database\Seeders\MainCore\MainCoreSeeder::class,
             \Database\Seeders\Catalog\CatalogSeeder::class, // Must be after MainCore (needs Currency)
