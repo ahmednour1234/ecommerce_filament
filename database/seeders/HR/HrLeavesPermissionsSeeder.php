@@ -16,39 +16,39 @@ class HrLeavesPermissionsSeeder extends Seeder
     {
         $this->command->info('Creating HR Leaves module permissions...');
 
-        // Leave Types Permissions
+        // Leave Types Permissions (used by LeaveTypeResource)
         $leaveTypePermissions = [
-            'hr.leave_types.view',
-            'hr.leave_types.create',
-            'hr.leave_types.update',
-            'hr.leave_types.delete',
-            'hr.leave_types.export',
+            'hr.leave_types.view',        // Used in: LeaveTypeResource::canViewAny(), shouldRegisterNavigation()
+            'hr.leave_types.create',      // Used in: LeaveTypeResource::canCreate()
+            'hr.leave_types.update',      // Used in: LeaveTypeResource::canEdit(), EditAction visibility
+            'hr.leave_types.delete',      // Used in: LeaveTypeResource::canDelete(), DeleteAction visibility
+            'hr.leave_types.export',      // Used in: ListLeaveTypes header actions (Excel, PDF, Print)
         ];
 
-        // Leave Requests Permissions
+        // Leave Requests Permissions (used by LeaveRequestResource)
         $leaveRequestPermissions = [
-            'hr.leave_requests.view_any',
-            'hr.leave_requests.view_own',
-            'hr.leave_requests.create',
-            'hr.leave_requests.update',
-            'hr.leave_requests.approve',
-            'hr.leave_requests.reject',
-            'hr.leave_requests.cancel',
-            'hr.leave_requests.delete',
-            'hr.leave_requests.export',
+            'hr.leave_requests.view_any', // Used in: LeaveRequestResource::canViewAny()
+            'hr.leave_requests.view_own', // Used in: LeaveRequestResource::shouldRegisterNavigation(), MyLeaveRequests page
+            'hr.leave_requests.create',   // Used in: LeaveRequestResource::canCreate()
+            'hr.leave_requests.update',   // Used in: LeaveRequestResource::canEdit(), EditAction visibility
+            'hr.leave_requests.approve',  // Used in: LeaveRequestResource table actions (ApproveAction)
+            'hr.leave_requests.reject',   // Used in: LeaveRequestResource table actions (RejectAction)
+            'hr.leave_requests.cancel',   // Used in: LeaveRequestResource table actions (CancelAction)
+            'hr.leave_requests.delete',   // Used in: LeaveRequestResource::canDelete(), DeleteAction visibility
+            'hr.leave_requests.export',   // Used in: ListLeaveRequests header actions (Excel, PDF, Print)
         ];
 
-        // Leave Balance Permissions
+        // Leave Balance Permissions (used by LeaveBalancePage)
         $leaveBalancePermissions = [
-            'hr.leave_balance.view',
-            'hr.leave_balance.recalculate',
-            'hr.leave_balance.export',
+            'hr.leave_balance.view',      // Used in: LeaveBalancePage::shouldRegisterNavigation()
+            'hr.leave_balance.recalculate', // Used in: LeaveBalancePage header actions (RecalculateAction)
+            'hr.leave_balance.export',    // Used in: LeaveBalancePage header actions (Export actions)
         ];
 
-        // Leave Reports Permissions
+        // Leave Reports Permissions (used by LeaveReportPage)
         $leaveReportPermissions = [
-            'hr.leave_reports.view',
-            'hr.leave_reports.export',
+            'hr.leave_reports.view',      // Used in: LeaveReportPage::shouldRegisterNavigation()
+            'hr.leave_reports.export',    // Used in: LeaveReportPage header actions (Export actions)
         ];
 
         $allPermissions = array_merge(
