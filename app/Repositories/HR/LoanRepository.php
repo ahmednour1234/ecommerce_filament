@@ -17,7 +17,7 @@ class LoanRepository
 
     public function getAll(array $filters = []): Collection
     {
-        $query = $this->model->newQuery()->with(['employee', 'loanType']);
+        $query = $this->model->newQuery()->with(['employee', 'loanType', 'currency']);
 
         if (isset($filters['employee_id'])) {
             $query->where('employee_id', $filters['employee_id']);
@@ -44,7 +44,7 @@ class LoanRepository
 
     public function getPaginated(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
-        $query = $this->model->newQuery()->with(['employee', 'loanType']);
+        $query = $this->model->newQuery()->with(['employee', 'loanType', 'currency']);
 
         if (isset($filters['employee_id'])) {
             $query->where('employee_id', $filters['employee_id']);
@@ -71,7 +71,7 @@ class LoanRepository
 
     public function findById(int $id): ?Loan
     {
-        return $this->model->with(['employee', 'loanType', 'installments'])->find($id);
+        return $this->model->with(['employee', 'loanType', 'currency', 'installments'])->find($id);
     }
 
     public function create(array $data): Loan

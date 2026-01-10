@@ -2,6 +2,7 @@
 
 namespace App\Models\HR;
 
+use App\Models\MainCore\Currency;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,6 +15,9 @@ class Loan extends Model
         'employee_id',
         'loan_type_id',
         'amount',
+        'currency_id',
+        'exchange_rate',
+        'base_amount',
         'installments_count',
         'installment_amount',
         'start_date',
@@ -24,6 +28,8 @@ class Loan extends Model
 
     protected $casts = [
         'amount' => 'decimal:2',
+        'exchange_rate' => 'decimal:8',
+        'base_amount' => 'decimal:2',
         'installment_amount' => 'decimal:2',
         'installments_count' => 'integer',
         'start_date' => 'date',
@@ -38,6 +44,11 @@ class Loan extends Model
     public function loanType(): BelongsTo
     {
         return $this->belongsTo(LoanType::class, 'loan_type_id');
+    }
+
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class, 'currency_id');
     }
 
     public function installments(): HasMany

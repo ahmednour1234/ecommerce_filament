@@ -9,7 +9,10 @@ use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\HR\Loan;
 use App\Models\HR\Employee;
 use App\Models\HR\LoanType;
+use App\Models\MainCore\Currency;
+use App\Services\Accounting\CurrencyConversionService;
 use App\Services\HR\LoanService;
+use App\Services\MainCore\CurrencyService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -29,6 +32,11 @@ class LoanResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $currencyService = app(CurrencyService::class);
+        $defaultCurrency = $currencyService->defaultCurrency();
+        $defaultCurrencyId = $defaultCurrency?->id;
+        $currencyOptions = Currency::where('is_active', true)->pluck('name', 'id')->toArray();
+
         return $form
             ->schema([
                 Forms\Components\Section::make()
@@ -54,7 +62,50 @@ class LoanResource extends Resource
                             ->numeric()
                             ->required()
                             ->minValue(0)
-                            ->prefix('$')
+                            ->reactive(),
+
+                        Forms\Components\Select::make('currency_id')
+                            ->label(tr('fields.currency', [], null, 'dashboard') ?: 'Currency')
+                            ->options($currencyOptions)
+                            ->default($defaultCurrencyId)
+                            ->searchable()
+                            ->preload()
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set, callable $get) use ($defaultCurrencyId) {
+                                if ($state == $defaultCurrencyId || empty($state)) {
+                                    $set('exchange_rate', 1);
+                                } else {
+                                    try {
+                                        $startDate = $get('start_date') ?? now();
+                                        if (is_string($startDate)) {
+                                            $startDate = new \DateTime($startDate);
+                                        }
+                                        $conversionService = app(CurrencyConversionService::class);
+                                        $rate = $conversionService->getExchangeRate((int) $state, $startDate);
+                                        $set('exchange_rate', $rate);
+                                    } catch (\Exception $e) {
+                                        $set('exchange_rate', 1);
+                                    }
+                                }
+                            }),
+
+                        Forms\Components\TextInput::make('exchange_rate')
+                            ->label(tr('fields.exchange_rate', [], null, 'dashboard') ?: 'Exchange Rate')
+                            ->numeric()
+                            ->default(1)
+                            ->required()
+                            ->minValue(0)
+                            ->step(0.00000001)
+                            ->reactive()
+                            ->disabled(fn ($get) => $get('currency_id') == $defaultCurrencyId || empty($get('currency_id'))),
+
+                        Forms\Components\TextInput::make('base_amount')
+                            ->label(tr('fields.base_amount', [], null, 'dashboard') ?: 'Base Amount')
+                            ->numeric()
+                            ->disabled()
+                            ->dehydrated()
+                            ->visible(fn ($get) => $get('amount') && $get('exchange_rate'))
+                            ->default(fn ($get) => round(($get('amount') ?? 0) * ($get('exchange_rate') ?? 1), 2))
                             ->reactive(),
 
                         Forms\Components\TextInput::make('installments_count')
@@ -70,7 +121,22 @@ class LoanResource extends Resource
                             ->required()
                             ->native(false)
                             ->displayFormat('Y-m-d')
-                            ->reactive(),
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                $currencyId = $get('currency_id');
+                                if ($currencyId && $currencyId != app(CurrencyService::class)->defaultCurrency()?->id) {
+                                    try {
+                                        if (is_string($state)) {
+                                            $state = new \DateTime($state);
+                                        }
+                                        $conversionService = app(CurrencyConversionService::class);
+                                        $rate = $conversionService->getExchangeRate((int) $currencyId, $state);
+                                        $set('exchange_rate', $rate);
+                                    } catch (\Exception $e) {
+                                        // Keep existing rate
+                                    }
+                                }
+                            }),
 
                         Forms\Components\Textarea::make('purpose')
                             ->label(tr('fields.purpose', [], null, 'dashboard') ?: 'Purpose')
@@ -142,8 +208,28 @@ class LoanResource extends Resource
 
                 Tables\Columns\TextColumn::make('amount')
                     ->label(tr('fields.amount', [], null, 'dashboard') ?: 'Amount')
-                    ->money('USD')
+                    ->formatStateUsing(fn ($record) => ($record->currency?->symbol ?? '$') . ' ' . number_format($record->amount, 2) . ' (' . ($record->currency?->code ?? 'USD') . ')')
                     ->sortable(),
+
+                Tables\Columns\TextColumn::make('currency.name')
+                    ->label(tr('fields.currency', [], null, 'dashboard') ?: 'Currency')
+                    ->getStateUsing(fn ($record) => $record->currency?->name ?? '-')
+                    ->sortable()
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('exchange_rate')
+                    ->label(tr('fields.exchange_rate', [], null, 'dashboard') ?: 'Exchange Rate')
+                    ->numeric(
+                        decimalPlaces: 8,
+                    )
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('base_amount')
+                    ->label(tr('fields.base_amount', [], null, 'dashboard') ?: 'Base Amount')
+                    ->money('USD')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('installments_count')
                     ->label(tr('fields.installments', [], null, 'dashboard') ?: 'Installments')
@@ -185,6 +271,12 @@ class LoanResource extends Resource
                             ->pluck('name', 'id')
                             ->toArray();
                     })
+                    ->searchable()
+                    ->preload(),
+
+                Tables\Filters\SelectFilter::make('currency_id')
+                    ->label(tr('fields.currency', [], null, 'dashboard') ?: 'Currency')
+                    ->relationship('currency', 'name')
                     ->searchable()
                     ->preload(),
 
