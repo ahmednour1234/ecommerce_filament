@@ -41,12 +41,13 @@ class HrLeavesTranslationsSeeder extends Seeder
             'pages.hr_leave_reports.summary' => ['en' => 'Report Summary', 'ar' => 'ملخص التقرير'],
 
             // Fields
+            'fields.employee' => ['en' => 'Employee', 'ar' => 'الموظف'],
             'fields.leave_type' => ['en' => 'Leave Type', 'ar' => 'نوع الإجازة'],
             'fields.start_date' => ['en' => 'Start Date', 'ar' => 'تاريخ البداية'],
             'fields.end_date' => ['en' => 'End Date', 'ar' => 'تاريخ النهاية'],
             'fields.total_days' => ['en' => 'Total Days', 'ar' => 'إجمالي الأيام'],
             'fields.reason' => ['en' => 'Reason', 'ar' => 'السبب'],
-            'fields.attachment' => ['en' => 'Attachment', 'ar' => 'المرفق'],
+            'fields.attachment' => ['en' => 'Attachment', 'ar' => 'مرفق'],
             'fields.manager_note' => ['en' => 'Manager Note', 'ar' => 'ملاحظة المدير'],
             'fields.allowed_days_per_year' => ['en' => 'Allowed Days Per Year', 'ar' => 'الأيام المسموحة سنوياً'],
             'fields.year' => ['en' => 'Year', 'ar' => 'السنة'],
@@ -70,15 +71,18 @@ class HrLeavesTranslationsSeeder extends Seeder
             'actions.cancel' => ['en' => 'Cancel', 'ar' => 'إلغاء'],
             'actions.recalculate_balances' => ['en' => 'Recalculate Balances', 'ar' => 'إعادة حساب الأرصدة'],
             'actions.show_summary' => ['en' => 'Show Summary', 'ar' => 'عرض الملخص'],
+            'actions.export_excel' => ['en' => 'Export Excel', 'ar' => 'تصدير Excel'],
+            'actions.export_pdf' => ['en' => 'Export PDF', 'ar' => 'تصدير PDF'],
+            'actions.print' => ['en' => 'Print', 'ar' => 'طباعة'],
             'actions.close' => ['en' => 'Close', 'ar' => 'إغلاق'],
 
             // Forms - Leave Types
-            'forms.hr_leave_types.name_ar' => ['en' => 'Name (Arabic)', 'ar' => 'الاسم (عربي)'],
-            'forms.hr_leave_types.name_en' => ['en' => 'Name (English)', 'ar' => 'الاسم (إنجليزي)'],
-            'forms.hr_leave_types.allowed_days_per_year' => ['en' => 'Allowed Days Per Year', 'ar' => 'الأيام المسموحة سنوياً'],
-            'forms.hr_leave_types.description_ar' => ['en' => 'Description (Arabic)', 'ar' => 'الوصف (عربي)'],
-            'forms.hr_leave_types.description_en' => ['en' => 'Description (English)', 'ar' => 'الوصف (إنجليزي)'],
+            'forms.hr_leave_types.name_ar' => ['en' => 'Leave Type Name (AR)', 'ar' => 'اسم نوع الإجازة (عربي)'],
+            'forms.hr_leave_types.name_en' => ['en' => 'Leave Type Name (EN)', 'ar' => 'اسم نوع الإجازة (إنجليزي)'],
+            'forms.hr_leave_types.allowed_days_per_year' => ['en' => 'Allowed Days Per Year', 'ar' => 'عدد الأيام السنوية'],
             'forms.hr_leave_types.status' => ['en' => 'Status', 'ar' => 'الحالة'],
+            'forms.hr_leave_types.description_ar' => ['en' => 'Description (AR)', 'ar' => 'الوصف (عربي)'],
+            'forms.hr_leave_types.description_en' => ['en' => 'Description (EN)', 'ar' => 'الوصف (إنجليزي)'],
 
             // Tables - Leave Types
             'tables.hr_leave_types.name' => ['en' => 'Name', 'ar' => 'الاسم'],
@@ -131,9 +135,9 @@ class HrLeavesTranslationsSeeder extends Seeder
 
             // Stats
             'stats.total_requests' => ['en' => 'Total Requests', 'ar' => 'إجمالي الطلبات'],
-            'stats.pending_requests' => ['en' => 'Pending', 'ar' => 'قيد الانتظار'],
-            'stats.approved_requests' => ['en' => 'Approved', 'ar' => 'موافق عليه'],
-            'stats.rejected_requests' => ['en' => 'Rejected', 'ar' => 'مرفوض'],
+            'stats.pending_requests' => ['en' => 'Pending Requests', 'ar' => 'قيد الانتظار'],
+            'stats.approved_requests' => ['en' => 'Approved Requests', 'ar' => 'تمت الموافقة'],
+            'stats.rejected_requests' => ['en' => 'Rejected Requests', 'ar' => 'مرفوضة'],
 
             // Messages
             'messages.recalculate_balances_confirmation' => ['en' => 'This will recalculate all leave balances for the selected year. Continue?', 'ar' => 'سيتم إعادة حساب جميع أرصدة الإجازات للسنة المحددة. متابعة؟'],
