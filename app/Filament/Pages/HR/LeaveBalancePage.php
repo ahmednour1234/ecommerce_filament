@@ -25,9 +25,6 @@ class LeaveBalancePage extends Page implements HasTable
     protected static ?int $navigationSort = 30;
     protected static string $view = 'filament.pages.hr.leave-balance';
 
-    public ?int $selectedEmployeeId = null;
-    public ?int $selectedYear = null;
-
     public static function getNavigationLabel(): string
     {
         return tr('navigation.hr_leave_balance', [], null, 'dashboard') ?: 'Leave Balance';
@@ -46,11 +43,6 @@ class LeaveBalancePage extends Page implements HasTable
     public static function shouldRegisterNavigation(): bool
     {
         return auth()->user()?->can('hr.leave_balance.view') ?? false;
-    }
-
-    public function mount(): void
-    {
-        $this->selectedYear = now()->year;
     }
 
     protected function getHeaderActions(): array
@@ -111,8 +103,6 @@ class LeaveBalancePage extends Page implements HasTable
             ->query(
                 LeaveBalance::query()
                     ->with(['employee', 'leaveType', 'employee.department'])
-                    ->when($this->selectedEmployeeId, fn ($query) => $query->where('employee_id', $this->selectedEmployeeId))
-                    ->when($this->selectedYear, fn ($query) => $query->where('year', $this->selectedYear))
             )
             ->columns([
                 Tables\Columns\TextColumn::make('employee.employee_number')
@@ -157,8 +147,7 @@ class LeaveBalancePage extends Page implements HasTable
                     ->getOptionLabelFromRecordUsing(fn (Employee $record) => $record->employee_number . ' - ' . $record->full_name)
                     ->searchable()
                     ->preload()
-                    ->native(false)
-                    ->afterStateUpdated(fn ($state) => $this->selectedEmployeeId = $state),
+                    ->native(false),
 
                 Tables\Filters\SelectFilter::make('year')
                     ->label(tr('tables.hr_leave_balance.filters.year', [], null, 'dashboard') ?: 'Year')
@@ -170,8 +159,7 @@ class LeaveBalancePage extends Page implements HasTable
                         return $years;
                     })
                     ->default(now()->year)
-                    ->native(false)
-                    ->afterStateUpdated(fn ($state) => $this->selectedYear = $state),
+                    ->native(false),
             ])
             ->defaultSort('employee.employee_number');
     }

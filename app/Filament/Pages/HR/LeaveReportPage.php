@@ -84,22 +84,10 @@ class LeaveReportPage extends Page implements HasTable
 
     public function table(Table $table): Table
     {
-        $service = app(LeaveReportService::class);
-        $reportData = $service->getReportData($this->filters);
-        $stats = $reportData['statistics'];
-
         return $table
             ->query(
                 LeaveRequest::query()
                     ->with(['employee', 'leaveType', 'employee.department'])
-                    ->when($this->filters['year'] ?? null, fn ($query, $year) => $query->whereYear('start_date', $year))
-                    ->when($this->filters['month'] ?? null, fn ($query, $month) => $query->whereMonth('start_date', $month))
-                    ->when($this->filters['employee_id'] ?? null, fn ($query, $employeeId) => $query->where('employee_id', $employeeId))
-                    ->when($this->filters['leave_type_id'] ?? null, fn ($query, $leaveTypeId) => $query->where('leave_type_id', $leaveTypeId))
-                    ->when($this->filters['status'] ?? null, fn ($query, $status) => $query->where('status', $status))
-                    ->when($this->filters['department_id'] ?? null, fn ($query, $departmentId) => $query->whereHas('employee', fn ($q) => $q->where('department_id', $departmentId)))
-                    ->when($this->filters['date_from'] ?? null, fn ($query, $date) => $query->whereDate('start_date', '>=', $date))
-                    ->when($this->filters['date_to'] ?? null, fn ($query, $date) => $query->whereDate('end_date', '<=', $date))
             )
             ->columns([
                 Tables\Columns\TextColumn::make('employee.employee_number')
@@ -159,7 +147,13 @@ class LeaveReportPage extends Page implements HasTable
                     })
                     ->default(now()->year)
                     ->native(false)
-                    ->afterStateUpdated(fn ($state) => $this->filters['year'] = $state),
+                    ->modifyQueryUsing(function (Builder $query, $state) {
+                        if ($state) {
+                            $this->filters['year'] = $state;
+                            return $query->whereYear('start_date', $state);
+                        }
+                        return $query;
+                    }),
 
                 Tables\Filters\SelectFilter::make('month')
                     ->label(tr('tables.hr_leave_reports.filters.month', [], null, 'dashboard') ?: 'Month')
@@ -169,7 +163,13 @@ class LeaveReportPage extends Page implements HasTable
                         9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December',
                     ])
                     ->native(false)
-                    ->afterStateUpdated(fn ($state) => $this->filters['month'] = $state),
+                    ->modifyQueryUsing(function (Builder $query, $state) {
+                        if ($state) {
+                            $this->filters['month'] = $state;
+                            return $query->whereMonth('start_date', $state);
+                        }
+                        return $query;
+                    }),
 
                 Tables\Filters\SelectFilter::make('employee_id')
                     ->label(tr('tables.hr_leave_reports.filters.employee', [], null, 'dashboard') ?: 'Employee')
@@ -178,7 +178,13 @@ class LeaveReportPage extends Page implements HasTable
                     ->searchable()
                     ->preload()
                     ->native(false)
-                    ->afterStateUpdated(fn ($state) => $this->filters['employee_id'] = $state),
+                    ->modifyQueryUsing(function (Builder $query, $state) {
+                        if ($state) {
+                            $this->filters['employee_id'] = $state;
+                            return $query->where('employee_id', $state);
+                        }
+                        return $query;
+                    }),
 
                 Tables\Filters\SelectFilter::make('department_id')
                     ->label(tr('tables.hr_leave_reports.filters.department', [], null, 'dashboard') ?: 'Department')
@@ -186,7 +192,13 @@ class LeaveReportPage extends Page implements HasTable
                     ->searchable()
                     ->preload()
                     ->native(false)
-                    ->afterStateUpdated(fn ($state) => $this->filters['department_id'] = $state),
+                    ->modifyQueryUsing(function (Builder $query, $state) {
+                        if ($state) {
+                            $this->filters['department_id'] = $state;
+                            return $query->whereHas('employee', fn ($q) => $q->where('department_id', $state));
+                        }
+                        return $query;
+                    }),
 
                 Tables\Filters\SelectFilter::make('leave_type_id')
                     ->label(tr('tables.hr_leave_reports.filters.leave_type', [], null, 'dashboard') ?: 'Leave Type')
@@ -195,7 +207,13 @@ class LeaveReportPage extends Page implements HasTable
                     ->searchable()
                     ->preload()
                     ->native(false)
-                    ->afterStateUpdated(fn ($state) => $this->filters['leave_type_id'] = $state),
+                    ->modifyQueryUsing(function (Builder $query, $state) {
+                        if ($state) {
+                            $this->filters['leave_type_id'] = $state;
+                            return $query->where('leave_type_id', $state);
+                        }
+                        return $query;
+                    }),
 
                 Tables\Filters\SelectFilter::make('status')
                     ->label(tr('tables.hr_leave_reports.filters.status', [], null, 'dashboard') ?: 'Status')
@@ -206,7 +224,13 @@ class LeaveReportPage extends Page implements HasTable
                         'cancelled' => tr('status.cancelled', [], null, 'dashboard') ?: 'Cancelled',
                     ])
                     ->native(false)
-                    ->afterStateUpdated(fn ($state) => $this->filters['status'] = $state),
+                    ->modifyQueryUsing(function (Builder $query, $state) {
+                        if ($state) {
+                            $this->filters['status'] = $state;
+                            return $query->where('status', $state);
+                        }
+                        return $query;
+                    }),
 
                 Tables\Filters\Filter::make('date_range')
                     ->form([
@@ -216,6 +240,12 @@ class LeaveReportPage extends Page implements HasTable
                             ->label(tr('fields.date_to', [], null, 'dashboard') ?: 'To Date'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
+                        if (isset($data['date_from'])) {
+                            $this->filters['date_from'] = $data['date_from'];
+                        }
+                        if (isset($data['date_to'])) {
+                            $this->filters['date_to'] = $data['date_to'];
+                        }
                         return $query
                             ->when(
                                 $data['date_from'] ?? null,
@@ -225,12 +255,6 @@ class LeaveReportPage extends Page implements HasTable
                                 $data['date_to'] ?? null,
                                 fn (Builder $query, $date): Builder => $query->whereDate('end_date', '<=', $date),
                             );
-                    })
-                    ->afterStateUpdated(function ($state) {
-                        if ($state) {
-                            $this->filters['date_from'] = $state['date_from'] ?? null;
-                            $this->filters['date_to'] = $state['date_to'] ?? null;
-                        }
                     }),
             ])
             ->defaultSort('start_date', 'desc')
@@ -239,7 +263,12 @@ class LeaveReportPage extends Page implements HasTable
                     ->label(tr('actions.show_summary', [], null, 'dashboard') ?: 'Show Summary')
                     ->icon('heroicon-o-information-circle')
                     ->modalHeading(tr('pages.hr_leave_reports.summary', [], null, 'dashboard') ?: 'Report Summary')
-                    ->modalContent(fn () => view('filament.pages.hr.leave-report-summary', ['stats' => $stats]))
+                    ->modalContent(function () {
+                        $service = app(LeaveReportService::class);
+                        $reportData = $service->getReportData($this->filters ?? []);
+                        $stats = $reportData['statistics'] ?? [];
+                        return view('filament.pages.hr.leave-report-summary', ['stats' => $stats]);
+                    })
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel(tr('actions.close', [], null, 'dashboard') ?: 'Close'),
             ]);
