@@ -7,12 +7,12 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\MenuItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets;
-use Filament\Navigation\MenuItem;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -31,13 +31,15 @@ class AdminPanelProvider extends PanelProvider
         $theme = $themeService->defaultTheme();
 
         // 🟡 ألوان جايّة من الداتابيز (ColorPicker)
-        // لو مش موجودة في الداتابيز، نحط قيم افتراضية محترمة
         $primaryHex   = $theme?->primary_color   ?: '#F59E0B'; // Amber
         $secondaryHex = $theme?->secondary_color ?: '#0EA5E9'; // Sky
         $accentHex    = $theme?->accent_color    ?: '#22C55E'; // Green
 
-        // 🧠 ممكن كمان تعمل brandName من setting
+        // 🧠 brandName من setting
         $brandName = setting('app.name', 'MainCore Dashboard');
+
+        // ✅ Toggle module
+        $accountingEnabled = (bool) config('modules.accounting', true);
 
         return $panel
             ->default()
@@ -51,22 +53,13 @@ class AdminPanelProvider extends PanelProvider
             // 🖼️ اللوجو الخفيف (light) من الـ theme
             ->brandLogo(fn () => $theme?->logo_light_url ?? null)
 
-            // 🎨 كل الألوان الأساسية متأثرة بالـ theme
+            // 🎨 ألوان Filament
             ->colors([
-                // اللون الأساسي لكل الأزرار / الـ primary actions
                 'primary'   => Color::hex($primaryHex),
-
-                // تقدر تستخدمه في مكونات مخصصة أو في بعض الأماكن المدعومة في Filament
                 'secondary' => Color::hex($secondaryHex),
-
-                // نخلي accent هو اللون اللي نستخدمه للـ info + success (علشان تحس إن السيستم كله ماشي على نفس اللون)
                 'accent'    => Color::hex($accentHex),
-
-                // ألوان الحالات
                 'info'      => Color::hex($accentHex),
                 'success'   => Color::hex($accentHex),
-
-                // تقدر تخلي الـ warning / danger ثابتين أو تخليهم برضه من theme لو حابب
                 'warning'   => Color::Amber,
                 'danger'    => Color::Rose,
             ])
@@ -95,6 +88,21 @@ class AdminPanelProvider extends PanelProvider
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
             ])
+
+            // ✅ Hide "المحاسبة" group بالكامل من الـ Sidebar
+            ->navigation(function (\Filament\Navigation\NavigationBuilder $builder) use ($accountingEnabled) {
+                $navigation = $builder->build();
+
+                if (! $accountingEnabled) {
+                    // لو اسم الجروب في الـ Resources: "المحاسبة"
+                    $navigation->groups = collect($navigation->groups)
+                        ->reject(fn ($group) => ($group->getLabel() === 'المحاسبة'))
+                        ->values()
+                        ->all();
+                }
+
+                return $navigation;
+            })
 
             // User Menu Items (Navbar)
             ->userMenuItems([
