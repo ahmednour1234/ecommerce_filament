@@ -38,9 +38,6 @@ class AdminPanelProvider extends PanelProvider
         // 🧠 brandName من setting
         $brandName = setting('app.name', 'MainCore Dashboard');
 
-        // ✅ Toggle module
-        $accountingEnabled = (bool) config('modules.accounting', true);
-
         return $panel
             ->default()
             ->id('admin')
@@ -88,21 +85,6 @@ class AdminPanelProvider extends PanelProvider
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
             ])
-
-            // ✅ Hide "المحاسبة" group بالكامل من الـ Sidebar
-            ->navigation(function (\Filament\Navigation\NavigationBuilder $builder) use ($accountingEnabled) {
-                $navigation = $builder->build();
-
-                if (! $accountingEnabled) {
-                    // لو اسم الجروب في الـ Resources: "المحاسبة"
-                    $navigation->groups = collect($navigation->groups)
-                        ->reject(fn ($group) => ($group->getLabel() === 'المحاسبة'))
-                        ->values()
-                        ->all();
-                }
-
-                return $navigation;
-            })
 
             // User Menu Items (Navbar)
             ->userMenuItems([

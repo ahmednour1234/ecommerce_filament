@@ -10,10 +10,11 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Filament\Concerns\AccountingModuleGate;
 
 class AccountResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation,AccountingModuleGate;
 
     protected static ?string $model = Account::class;
 
@@ -55,7 +56,7 @@ class AccountResource extends Resource
 
                         Forms\Components\Select::make('parent_id')
                             ->label(tr('forms.accounts.parent_id.label', [], null, 'dashboard'))
-                            ->relationship('parent', 'name', fn ($query, $get) => 
+                            ->relationship('parent', 'name', fn ($query, $get) =>
                                 $query->where('type', $get('type'))
                             )
                             ->searchable()
