@@ -13,10 +13,11 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Filament\Concerns\AccountingModuleGate;
 
 class AssetResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation,  AccountingModuleGate;
 
     protected static ?string $model = Asset::class;
 
@@ -49,7 +50,7 @@ class AssetResource extends Resource
 
                         Forms\Components\Select::make('account_id')
                             ->label(tr('forms.assets.account_id.label', [], null, 'dashboard'))
-                            ->relationship('account', 'name', fn ($query) => 
+                            ->relationship('account', 'name', fn ($query) =>
                                 $query->where('type', 'asset')
                             )
                             ->searchable()

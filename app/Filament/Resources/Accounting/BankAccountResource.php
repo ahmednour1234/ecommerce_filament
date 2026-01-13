@@ -11,10 +11,11 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Filament\Concerns\AccountingModuleGate;
 
 class BankAccountResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation, AccountingModuleGate;
 
     protected static ?string $model = BankAccount::class;
 
@@ -31,7 +32,7 @@ class BankAccountResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('account_id')
                             ->label(tr('forms.bank_accounts.account_id.label', [], null, 'dashboard'))
-                            ->relationship('account', 'name', fn ($query) => 
+                            ->relationship('account', 'name', fn ($query) =>
                                 $query->where('type', 'asset')->where('is_active', true)
                             )
                             ->required()
@@ -81,7 +82,7 @@ class BankAccountResource extends Resource
 
                         Forms\Components\Select::make('branch_id')
                             ->label(tr('forms.bank_accounts.branch_id.label', [], null, 'dashboard'))
-                            ->relationship('branch', 'name', fn ($query) => 
+                            ->relationship('branch', 'name', fn ($query) =>
                                 $query->where('status', 'active')
                             )
                             ->searchable()
@@ -90,7 +91,7 @@ class BankAccountResource extends Resource
 
                         Forms\Components\Select::make('currency_id')
                             ->label(tr('forms.bank_accounts.currency_id.label', [], null, 'dashboard'))
-                            ->relationship('currency', 'name', fn ($query) => 
+                            ->relationship('currency', 'name', fn ($query) =>
                                 $query->where('is_active', true)
                             )
                             ->searchable()
@@ -171,7 +172,7 @@ class BankAccountResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('branch_id')
                     ->label(tr('tables.bank_accounts.filters.branch', [], null, 'dashboard'))
-                    ->relationship('branch', 'name', fn ($query) => 
+                    ->relationship('branch', 'name', fn ($query) =>
                         $query->where('status', 'active')
                     )
                     ->searchable()

@@ -17,10 +17,11 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Validation\Rule;
+use App\Filament\Concerns\AccountingModuleGate;
 
 class BankGuaranteeResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation,AccountingModuleGate;
 
     protected static ?string $model = BankGuarantee::class;
 
@@ -132,7 +133,7 @@ class BankGuaranteeResource extends Resource
                                         if (is_string($issueDate)) {
                                             $issueDate = new \DateTime($issueDate);
                                         }
-                                        
+
                                         $conversionService = app(CurrencyConversionService::class);
                                         $rate = $conversionService->getExchangeRate((int) $state, $issueDate);
                                         $set('exchange_rate', $rate);
