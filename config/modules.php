@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'accounting' => env('MODULE_ACCOUNTING', true),
+    'accounting' => env('MODULE_ACCOUNTING', false),
 ];
