@@ -27,15 +27,17 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\Accounting\AccountingSeeder::class, // Must be after MainCore (needs Branch, CostCenter)
             \Database\Seeders\Accounting\BankGuaranteePermissionsSeeder::class, // Bank Guarantee permissions
             \Database\Seeders\Sales\SalesSeeder::class, // Must be after Catalog and Accounting
+        \Database\Seeders\Finance\FinanceTranslationsSeeder::class,
+        \Database\Seeders\FinancePermissionsSeeder::class,
             SuperAdminSeeder::class, // Create super_admin role with ALL permissions (must be last)
         ]);
-        
+
         // Run payment transactions and shipments after sales data exists
         $this->call([
             \Database\Seeders\MainCore\PaymentTransactionSeeder::class,
             \Database\Seeders\MainCore\ShipmentSeeder::class,
         ]);
-        
+
         // Only create test user if it doesn't exist
         if (!User::where('email', 'test@example.com')->exists()) {
             User::factory()->create([
