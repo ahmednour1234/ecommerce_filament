@@ -14,6 +14,7 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Filament\Tables;
 use Illuminate\Support\Facades\DB;
+use App\Filament\Concerns\AccountingModuleGate;
 
 /**
  * Trial Balance Report Page

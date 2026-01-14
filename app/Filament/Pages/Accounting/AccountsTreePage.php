@@ -6,10 +6,11 @@ use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\Accounting\Account;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Response;
+use App\Filament\Concerns\AccountingModuleGate;
 
 class AccountsTreePage extends Page
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation,AccountingModuleGate;
 
     protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
     protected static ?string $navigationGroup = 'Accounting';
@@ -22,7 +23,7 @@ class AccountsTreePage extends Page
     public $expandedAccounts = [];
     public $selectedAccountId = null;
     public $searchTerm = '';
-    
+
     // Form properties for edit/create
     public $showModal = false;
     public $isEditing = false;
@@ -74,7 +75,7 @@ class AccountsTreePage extends Page
         }
 
         $allAccounts = $query->orderBy('code')->get();
-        
+
         // Build tree structure
         $this->accounts = $this->buildTree($allAccounts);
     }
@@ -89,7 +90,7 @@ class AccountsTreePage extends Page
         if (!$this->selectedAccountId) {
             return null;
         }
-        
+
         return Account::with('parent')->find($this->selectedAccountId);
     }
 
@@ -135,7 +136,7 @@ class AccountsTreePage extends Page
         foreach ($accounts as $item) {
             $account = $item['account'];
             $children = $item['children'] ?? [];
-            
+
             if (count($children) > 0) {
                 $this->expandedAccounts[] = $account->id;
                 $this->collectAccountIds($children);
@@ -146,20 +147,20 @@ class AccountsTreePage extends Page
     public function exportToExcel()
     {
         $accounts = Account::orderBy('code')->get();
-        
+
         $filename = 'accounts_export_' . date('Y-m-d_His') . '.csv';
         $filepath = storage_path('app/temp/' . $filename);
-        
+
         // Ensure temp directory exists
         if (!file_exists(storage_path('app/temp'))) {
             mkdir(storage_path('app/temp'), 0755, true);
         }
-        
+
         $file = fopen($filepath, 'w');
-        
+
         // Add BOM for UTF-8
         fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-        
+
         // Headers
         fputcsv($file, [
             trans_dash('pages.accounts_tree.export.headers.code'),
@@ -181,7 +182,7 @@ class AccountsTreePage extends Page
                 'revenue' => trans_dash('pages.accounts_tree.account_type.revenue'),
                 'expense' => trans_dash('pages.accounts_tree.account_type.expense'),
             ];
-            
+
             fputcsv($file, [
                 $account->code,
                 $account->name,
@@ -195,7 +196,7 @@ class AccountsTreePage extends Page
         }
 
         fclose($file);
-        
+
         return Response::download($filepath, $filename)->deleteFileAfterSend(true);
     }
 
@@ -211,21 +212,21 @@ class AccountsTreePage extends Page
     public function deleteAccount($accountId): void
     {
         $account = Account::find($accountId);
-        
+
         if ($account && auth()->user()?->can('accounts.delete')) {
             // Check if account has children
             if ($account->children()->count() > 0) {
                 session()->flash('error', 'Cannot delete account with child accounts. Please delete child accounts first.');
                 return;
             }
-            
+
             // Check if account has any journal entries or transactions
             if ($account->hasTransactions()) {
                 $transactionCount = $account->transaction_count;
                 session()->flash('error', "Cannot delete account. This account has {$transactionCount} transaction(s) or journal entry line(s). Please remove all transactions first.");
                 return;
             }
-            
+
             $account->delete();
             $this->selectedAccountId = null;
             $this->loadAccounts();
@@ -253,7 +254,7 @@ class AccountsTreePage extends Page
     public function openEditModal($accountId): void
     {
         $account = Account::find($accountId);
-        
+
         if ($account) {
             $this->isEditing = true;
             $this->showModal = true;
@@ -339,14 +340,14 @@ class AccountsTreePage extends Page
         if (empty($this->formData['type'])) {
             return [];
         }
-        
+
         $query = Account::where('type', $this->formData['type'])
             ->orderBy('code');
-            
+
         if ($this->isEditing && $this->selectedAccountId) {
             $query->where('id', '!=', $this->selectedAccountId);
         }
-        
+
         return $query->get()->map(fn($account) => ['id' => $account->id, 'name' => $account->code . ' - ' . $account->name]);
     }
 

@@ -16,10 +16,11 @@ use Filament\Tables\Table;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Support\Facades\DB;
+use App\Filament\Concerns\AccountingModuleGate;
 
 class TrialBalancePage extends Page implements HasTable
 {
-    use InteractsWithTable;
+    use InteractsWithTable,AccountingModuleGate;
     use ExportsTable;
     use TranslatableNavigation;
 
@@ -103,13 +104,13 @@ class TrialBalancePage extends Page implements HasTable
         // Build the union query from trial balance data
         $subQueries = [];
         $index = 0;
-        
+
         foreach ($trialBalance as $item) {
             $account = $item['account'];
             $debits = (float) $item['debits'];
             $credits = (float) $item['credits'];
             $balance = (float) $item['balance'];
-            
+
             // Create a subquery with literal values using a simple table reference
             $subQueries[] = DB::query()->selectRaw("
                     ? as id,
@@ -229,19 +230,19 @@ class TrialBalancePage extends Page implements HasTable
             'exported_at' => now()->format('Y-m-d H:i:s'),
             'exported_by' => auth()->user()?->name ?? 'System',
         ];
-        
+
         $metadata['as_of_date'] = $this->data['as_of_date'] ?? '';
-        
+
         if (isset($this->data['branch_id'])) {
             $branch = Branch::find($this->data['branch_id']);
             $metadata['branch'] = $branch?->name ?? '';
         }
-        
+
         if (isset($this->data['cost_center_id'])) {
             $costCenter = CostCenter::find($this->data['cost_center_id']);
             $metadata['cost_center'] = $costCenter?->name ?? '';
         }
-        
+
         return $metadata;
     }
 
