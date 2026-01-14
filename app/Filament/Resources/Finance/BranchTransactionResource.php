@@ -244,11 +244,12 @@ class BranchTransactionResource extends Resource
                         app(BranchTransactionService::class)->reject($record, $data['rejection_note']);
                     }),
 
-                Tables\Actions\Action::make('print')
+                    Tables\Actions\Action::make('print')
                     ->label(tr('actions.print', [], null, 'dashboard'))
                     ->visible(fn () => auth()->user()?->can('branch_tx.print'))
-                    ->url(fn ($record) => static::getUrl('print', ['record' => $record]))
+                    ->url(fn ($record) => route('finance.branch-transactions.print', $record))
                     ->openUrlInNewTab(),
+
             ])
             ->defaultSort('transaction_date', 'desc');
     }

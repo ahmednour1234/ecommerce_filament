@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\VoucherPrintController;
+use App\Http\Controllers\Finance\BranchTransactionPrintController;
 
 Route::get('/', function () {
     return redirect()->route('filament.admin.pages.dashboard');
@@ -26,7 +27,7 @@ Route::get('/debug/session', function () {
 Route::prefix('api')->middleware(['web'])->group(function () {
     Route::get('/exchange-rate', [App\Http\Controllers\Api\ExchangeRateController::class, 'getRate']);
     Route::post('/exchange-rates/batch', [App\Http\Controllers\Api\ExchangeRateController::class, 'getBatchRates']);
-    
+
     // HR Attendance Device Log API (no CSRF for device push)
     Route::post('/hr/attendance/device-log', [App\Http\Controllers\Api\Hr\DeviceLogController::class, 'store'])
         ->middleware('throttle:60,1');
@@ -56,3 +57,7 @@ Route::middleware(['web', 'auth'])
         Route::get('hr/holidays-calendar/json', [App\Http\Controllers\HR\HolidaysCalendarController::class, 'getHolidaysJson'])
             ->name('filament.admin.pages.hr.holidays-calendar.json');
     });
+
+    Route::middleware(['web', 'auth'])
+        ->get('/admin/finance/branch-transactions/{branchTransaction}/print', BranchTransactionPrintController::class)
+        ->name('finance.branch-transactions.print');
