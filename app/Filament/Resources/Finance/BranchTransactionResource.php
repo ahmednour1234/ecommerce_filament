@@ -258,7 +258,6 @@ class BranchTransactionResource extends Resource
         return [
             'index' => Pages\ListBranchTransactions::route('/'),
             'create' => Pages\CreateBranchTransaction::route('/create'),
-            'edit' => Pages\EditBranchTransaction::route('/{record}/edit'),
             'print' => Pages\PrintBranchTransaction::route('/{record}/print'),
         ];
     }
