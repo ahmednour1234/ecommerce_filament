@@ -12,10 +12,11 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
+use App\Filament\Concerns\AccountingModuleGate;
 
 class OrdersReportPage extends Page implements HasTable
 {
-    use InteractsWithTable;
+    use InteractsWithTable,AccountingModuleGate;
     use ExportsTable;
     use TranslatableNavigation;
 
@@ -179,12 +180,12 @@ class OrdersReportPage extends Page implements HasTable
         $dateFrom = $this->data['date_from'] ?? now()->startOfMonth();
         $dateTo = $this->data['date_to'] ?? now();
         $status = $this->data['status'] ?? null;
-        
+
         $title = 'Orders Report';
         if ($status) {
             $title .= ' - ' . ucfirst($status);
         }
-        
+
         return $title . ' (' . $dateFrom . ' to ' . $dateTo . ')';
     }
 
@@ -197,7 +198,7 @@ class OrdersReportPage extends Page implements HasTable
         $metadata['date_from'] = $this->data['date_from'] ?? '';
         $metadata['date_to'] = $this->data['date_to'] ?? '';
         $metadata['status'] = $this->data['status'] ?? 'All';
-        
+
         return $metadata;
     }
 
@@ -208,7 +209,7 @@ class OrdersReportPage extends Page implements HasTable
         if (!$user) {
             return false;
         }
-        
+
         // Check if user has any report permission
         $hasReportPermission = $user->can('reports.trial_balance') ||
                               $user->can('reports.general_ledger') ||
@@ -216,7 +217,7 @@ class OrdersReportPage extends Page implements HasTable
                               $user->can('reports.income_statement') ||
                               $user->can('reports.balance_sheet') ||
                               $user->can('reports.cash_flow');
-        
+
         return $hasReportPermission;
     }
 }

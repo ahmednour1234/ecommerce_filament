@@ -18,10 +18,11 @@ use Filament\Tables\Table;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Support\Facades\DB;
+use App\Filament\Concerns\AccountingModuleGate;
 
 class SalesReportPage extends Page implements HasTable
 {
-    use InteractsWithTable;
+    use InteractsWithTable,AccountingModuleGate;
     use ExportsTable;
     use TranslatableNavigation;
 
@@ -329,21 +330,21 @@ class SalesReportPage extends Page implements HasTable
     {
         $reportService = app(ReportService::class);
         $branchId = $this->data['branch_id'] ?? null;
-        
+
         $filters = [
             'from_date' => $dateFrom,
             'to_date' => $dateTo,
         ];
-        
+
         if ($branchId) {
             $filters['branch_id'] = $branchId;
         }
-        
+
         $incomeStatement = $reportService->getIncomeStatement($filters);
-        
+
         // Combine revenue and expense details into a single dataset
         $data = [];
-        
+
         // Add revenue section
         $data[] = (object) [
             'type' => 'header',
@@ -351,7 +352,7 @@ class SalesReportPage extends Page implements HasTable
             'account_name' => 'REVENUE',
             'amount' => null,
         ];
-        
+
         foreach ($incomeStatement['revenue_details'] as $item) {
             $data[] = (object) [
                 'type' => 'revenue',
@@ -360,14 +361,14 @@ class SalesReportPage extends Page implements HasTable
                 'amount' => $item['amount'],
             ];
         }
-        
+
         $data[] = (object) [
             'type' => 'total',
             'account_code' => '',
             'account_name' => 'Total Revenue',
             'amount' => $incomeStatement['revenue'],
         ];
-        
+
         // Add expense section
         $data[] = (object) [
             'type' => 'header',
@@ -375,7 +376,7 @@ class SalesReportPage extends Page implements HasTable
             'account_name' => 'EXPENSES',
             'amount' => null,
         ];
-        
+
         foreach ($incomeStatement['expense_details'] as $item) {
             $data[] = (object) [
                 'type' => 'expense',
@@ -384,14 +385,14 @@ class SalesReportPage extends Page implements HasTable
                 'amount' => $item['amount'],
             ];
         }
-        
+
         $data[] = (object) [
             'type' => 'total',
             'account_code' => '',
             'account_name' => 'Total Expenses',
             'amount' => $incomeStatement['expenses'],
         ];
-        
+
         // Add net income
         $data[] = (object) [
             'type' => 'net',
@@ -399,7 +400,7 @@ class SalesReportPage extends Page implements HasTable
             'account_name' => 'NET INCOME',
             'amount' => $incomeStatement['net_income'],
         ];
-        
+
         // Build union query from data
         $unionQueries = [];
         $index = 0;
@@ -412,7 +413,7 @@ class SalesReportPage extends Page implements HasTable
                 $item->amount ?? 0,
             ]);
         }
-        
+
         $unionQuery = null;
         foreach ($unionQueries as $uq) {
             if ($unionQuery === null) {
@@ -421,11 +422,11 @@ class SalesReportPage extends Page implements HasTable
                 $unionQuery->unionAll($uq);
             }
         }
-        
+
         if ($unionQuery === null) {
             $unionQuery = DB::query()->selectRaw('0 as id, NULL as type, NULL as account_code, NULL as account_name, 0 as amount');
         }
-        
+
         // Filament Tables requires an Eloquent Builder, not a Query Builder.
         // Wrap in closure to ensure Filament receives a proper Eloquent Builder instance.
         return $table
@@ -512,11 +513,11 @@ class SalesReportPage extends Page implements HasTable
             'customers' => 'Customers Report',
             'income_statement' => 'Income Statement',
         ];
-        
+
         $title = $titles[$reportType] ?? 'Report';
         $dateFrom = $this->data['date_from'] ?? now()->startOfMonth();
         $dateTo = $this->data['date_to'] ?? now();
-        
+
         return $title . ' (' . $dateFrom . ' to ' . $dateTo . ')';
     }
 
@@ -529,12 +530,12 @@ class SalesReportPage extends Page implements HasTable
         $metadata['report_type'] = $this->data['report_type'] ?? 'orders';
         $metadata['date_from'] = $this->data['date_from'] ?? '';
         $metadata['date_to'] = $this->data['date_to'] ?? '';
-        
+
         if (isset($this->data['branch_id'])) {
             $branch = Branch::find($this->data['branch_id']);
             $metadata['branch'] = $branch?->name ?? '';
         }
-        
+
         return $metadata;
     }
 
@@ -545,7 +546,7 @@ class SalesReportPage extends Page implements HasTable
         if (!$user) {
             return false;
         }
-        
+
         // Check if user has any report permission
         $hasReportPermission = $user->can('reports.trial_balance') ||
                               $user->can('reports.general_ledger') ||
@@ -553,7 +554,7 @@ class SalesReportPage extends Page implements HasTable
                               $user->can('reports.income_statement') ||
                               $user->can('reports.balance_sheet') ||
                               $user->can('reports.cash_flow');
-        
+
         return $hasReportPermission;
     }
 }
