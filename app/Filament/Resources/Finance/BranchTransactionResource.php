@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Finance;
 
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Filament\Resources\Finance\BranchTransactionResource\Pages;
 use App\Models\Finance\BranchTransaction;
 use App\Services\Finance\BranchTransactionService;
 use Filament\Forms;
@@ -22,18 +23,6 @@ class BranchTransactionResource extends Resource
     protected static ?string $navigationGroup = 'Finance';
     protected static ?int $navigationSort = 1;
     protected static ?string $navigationTranslationKey = 'sidebar.finance.branch_transactions';
-
-    /**
-     * ✅ مهم: لازم ده يكون موجود علشان Pages تتعرف
-     */
-    public static function getPages(): array
-    {
-        return [
-            'index' => BranchTransactionResource\Pages\ListBranchTransactions::route('/'),
-            'create' => BranchTransactionResource\Pages\CreateBranchTransaction::route('/create'),
-            'print' => BranchTransactionResource\Pages\PrintBranchTransaction::route('/{record}/print'),
-        ];
-    }
 
     public static function getEloquentQuery(): Builder
     {
@@ -146,9 +135,10 @@ class BranchTransactionResource extends Resource
                     ->label(tr('tables.branch_tx.country', [], null, 'dashboard'))
                     ->toggleable(isToggledHiddenByDefault: true),
 
+                // ✅ FIX: $state بدل $s
                 Tables\Columns\BadgeColumn::make('type')
                     ->label(tr('tables.branch_tx.type', [], null, 'dashboard'))
-                    ->formatStateUsing(fn ($s) => $s === 'income'
+                    ->formatStateUsing(fn ($state) => $state === 'income'
                         ? tr('forms.branch_tx.type_income', [], null, 'dashboard')
                         : tr('forms.branch_tx.type_expense', [], null, 'dashboard')
                     )
@@ -164,9 +154,10 @@ class BranchTransactionResource extends Resource
                     ->formatStateUsing(fn ($state) => $state ? number_format((float) $state, 2) : '-')
                     ->toggleable(isToggledHiddenByDefault: true),
 
+                // ✅ FIX: $state بدل $s
                 Tables\Columns\BadgeColumn::make('status')
                     ->label(tr('tables.branch_tx.status', [], null, 'dashboard'))
-                    ->formatStateUsing(fn ($s) => tr('tables.branch_tx.status_' . $s, [], null, 'dashboard'))
+                    ->formatStateUsing(fn ($state) => tr('tables.branch_tx.status_' . $state, [], null, 'dashboard'))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('transaction_date')
@@ -217,10 +208,10 @@ class BranchTransactionResource extends Resource
                         Forms\Components\DatePicker::make('from'),
                         Forms\Components\DatePicker::make('to'),
                     ])
-                    ->query(function ($query, array $data) {
+                    ->query(function (Builder $query, array $data) {
                         return $query
-                            ->when($data['from'] ?? null, fn ($q, $d) => $q->whereDate('transaction_date', '>=', $d))
-                            ->when($data['to'] ?? null, fn ($q, $d) => $q->whereDate('transaction_date', '<=', $d));
+                            ->when($data['from'] ?? null, fn (Builder $q, $d) => $q->whereDate('transaction_date', '>=', $d))
+                            ->when($data['to'] ?? null, fn (Builder $q, $d) => $q->whereDate('transaction_date', '<=', $d));
                     }),
             ])
             ->actions([
@@ -260,6 +251,16 @@ class BranchTransactionResource extends Resource
                     ->openUrlInNewTab(),
             ])
             ->defaultSort('transaction_date', 'desc');
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListBranchTransactions::route('/'),
+            'create' => Pages\CreateBranchTransaction::route('/create'),
+            'edit' => Pages\EditBranchTransaction::route('/{record}/edit'),
+            'print' => Pages\PrintBranchTransaction::route('/{record}/print'),
+        ];
     }
 
     public static function canViewAny(): bool
