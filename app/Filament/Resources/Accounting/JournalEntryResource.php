@@ -22,10 +22,11 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use App\Filament\Concerns\AccountingModuleGate;
 
 class JournalEntryResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation, AccountingModuleGate;
 
     protected static ?string $model = JournalEntry::class;
 
@@ -74,7 +75,7 @@ class JournalEntryResource extends Resource
                                         $lastEntry = JournalEntry::where('journal_id', $state)
                                             ->orderBy('id', 'desc')
                                             ->first();
-                                        
+
                                         $number = $lastEntry ? ((int) substr($lastEntry->entry_number, -6)) + 1 : 1;
                                         $entryNumber = $prefix . '-' . str_pad($number, 6, '0', STR_PAD_LEFT);
                                         $set('entry_number', $entryNumber);
@@ -351,9 +352,9 @@ class JournalEntryResource extends Resource
                             ])
                             ->columns(3)
                             ->defaultItems(0)
-                            ->itemLabel(fn (array $state): ?string => 
-                                ($state['account_id'] ? (Account::find($state['account_id'])?->code . ' - ' . Account::find($state['account_id'])?->name) : null) . 
-                                ' (' . ($state['type'] ?? 'debit') . ': ' . 
+                            ->itemLabel(fn (array $state): ?string =>
+                                ($state['account_id'] ? (Account::find($state['account_id'])?->code . ' - ' . Account::find($state['account_id'])?->name) : null) .
+                                ' (' . ($state['type'] ?? 'debit') . ': ' .
                                 number_format((float) ($state['debit'] ?? $state['credit'] ?? 0), 2) . ')'
                             )
                             ->collapsible()
@@ -525,16 +526,16 @@ class JournalEntryResource extends Resource
                         if (!$status->canBeSubmitted()) {
                             throw new \Exception(trans_dash('accounting.cannot_submit', 'Entry cannot be submitted in current status.'));
                         }
-                        
+
                         if (!$record->isBalanced()) {
                             throw new \Exception(trans_dash('accounting.entries_not_balanced', 'Entry is not balanced. Debits must equal credits.'));
                         }
-                        
+
                         $record->update([
                             'status' => JournalEntryStatus::PENDING_APPROVAL->value,
                         ]);
                     })
-                    ->visible(fn (JournalEntry $record) => 
+                    ->visible(fn (JournalEntry $record) =>
                         JournalEntryStatus::from($record->status ?? JournalEntryStatus::DRAFT->value)->canBeSubmitted() &&
                         (auth()->user()?->can('journal_entries.submit') ?? false)
                     ),
@@ -554,14 +555,14 @@ class JournalEntryResource extends Resource
                         if (!$status->canBeApproved()) {
                             throw new \Exception(trans_dash('accounting.cannot_approve', 'Entry cannot be approved in current status.'));
                         }
-                        
+
                         $record->update([
                             'status' => JournalEntryStatus::APPROVED->value,
                             'approved_by' => auth()->id(),
                             'approved_at' => now(),
                         ]);
                     })
-                    ->visible(fn (JournalEntry $record) => 
+                    ->visible(fn (JournalEntry $record) =>
                         JournalEntryStatus::from($record->status ?? JournalEntryStatus::DRAFT->value)->canBeApproved() &&
                         (auth()->user()?->can('journal_entries.approve') ?? false)
                     ),
@@ -582,7 +583,7 @@ class JournalEntryResource extends Resource
                         if (!$status->canBeApproved()) {
                             throw new \Exception(trans_dash('accounting.cannot_reject', 'Entry cannot be rejected in current status.'));
                         }
-                        
+
                         $record->update([
                             'status' => JournalEntryStatus::REJECTED->value,
                             'rejected_by' => auth()->id(),
@@ -590,7 +591,7 @@ class JournalEntryResource extends Resource
                             'rejection_reason' => $data['rejection_reason'],
                         ]);
                     })
-                    ->visible(fn (JournalEntry $record) => 
+                    ->visible(fn (JournalEntry $record) =>
                         JournalEntryStatus::from($record->status ?? JournalEntryStatus::DRAFT->value)->canBeApproved() &&
                         (auth()->user()?->can('journal_entries.reject') ?? false)
                     ),
@@ -605,23 +606,23 @@ class JournalEntryResource extends Resource
                         if (!$status->canBePosted()) {
                             throw new \Exception(trans_dash('accounting.cannot_post', 'Entry must be approved before posting.'));
                         }
-                        
+
                         if ($record->is_posted) {
                             throw new \Exception(trans_dash('accounting.already_posted', 'Entry is already posted.'));
                         }
-                        
+
                         if (!$record->isBalanced()) {
                             throw new \Exception(trans_dash('accounting.entries_not_balanced', 'Entry is not balanced. Debits must equal credits.'));
                         }
-                        
+
                         $record->update([
                             'is_posted' => true,
                             'posted_at' => now(),
                             'status' => JournalEntryStatus::POSTED->value,
                         ]);
                     })
-                    ->visible(fn (JournalEntry $record) => 
-                        !$record->is_posted && 
+                    ->visible(fn (JournalEntry $record) =>
+                        !$record->is_posted &&
                         JournalEntryStatus::from($record->status ?? JournalEntryStatus::DRAFT->value)->canBePosted() &&
                         (auth()->user()?->can('journal_entries.post') ?? false)
                     ),
@@ -629,15 +630,15 @@ class JournalEntryResource extends Resource
                 Tables\Actions\ViewAction::make(),
 
                 Tables\Actions\EditAction::make()
-                    ->visible(fn (JournalEntry $record) => 
-                        !$record->is_posted && 
+                    ->visible(fn (JournalEntry $record) =>
+                        !$record->is_posted &&
                         JournalEntryStatus::from($record->status ?? JournalEntryStatus::DRAFT->value)->canBeEdited() &&
                         (auth()->user()?->can('journal_entries.update') ?? false)
                     ),
 
                 Tables\Actions\DeleteAction::make()
-                    ->visible(fn (JournalEntry $record) => 
-                        !$record->is_posted && 
+                    ->visible(fn (JournalEntry $record) =>
+                        !$record->is_posted &&
                         JournalEntryStatus::from($record->status ?? JournalEntryStatus::DRAFT->value)->canBeDeleted() &&
                         (auth()->user()?->can('journal_entries.delete') ?? false)
                     ),
@@ -730,7 +731,7 @@ class JournalEntryResource extends Resource
                             ->schema([
                                 Infolists\Components\TextEntry::make('account.code')
                                     ->label(trans_dash('accounting.account', 'Account'))
-                                    ->formatStateUsing(fn ($state, $record) => 
+                                    ->formatStateUsing(fn ($state, $record) =>
                                         ($record->account->code ?? '') . ' - ' . ($record->account->name ?? '')
                                     ),
 
@@ -772,7 +773,7 @@ class JournalEntryResource extends Resource
 
                                 Infolists\Components\TextEntry::make('project.code')
                                     ->label(trans_dash('accounting.project', 'Project'))
-                                    ->formatStateUsing(fn ($state, $record) => 
+                                    ->formatStateUsing(fn ($state, $record) =>
                                         $record->project ? ($record->project->code . ' - ' . $record->project->name) : '-'
                                     )
                                     ->placeholder('-')
@@ -808,8 +809,8 @@ class JournalEntryResource extends Resource
                             ->size('lg')
                             ->formatStateUsing(function ($state, $record) {
                                 $difference = abs($record->total_debits - $record->total_credits);
-                                return $difference < 0.01 ? 
-                                    trans_dash('accounting.balanced', 'Balanced') : 
+                                return $difference < 0.01 ?
+                                    trans_dash('accounting.balanced', 'Balanced') :
                                     number_format($difference, 2);
                             })
                             ->color(function ($record) {

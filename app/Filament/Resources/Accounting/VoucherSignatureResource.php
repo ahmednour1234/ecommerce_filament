@@ -11,10 +11,11 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Storage;
+use App\Filament\Concerns\AccountingModuleGate;
 
 class VoucherSignatureResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation,AccountingModuleGate;
 
     protected static ?string $model = VoucherSignature::class;
 

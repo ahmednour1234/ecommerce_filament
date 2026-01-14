@@ -17,10 +17,11 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Validation\ValidationException;
+use App\Filament\Concerns\AccountingModuleGate;
 
 class VoucherResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation,AccountingModuleGate;
 
     protected static ?string $model = Voucher::class;
 

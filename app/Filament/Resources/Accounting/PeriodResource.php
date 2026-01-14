@@ -11,10 +11,11 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Filament\Concerns\AccountingModuleGate;
 
 class PeriodResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation, AccountingModuleGate;
 
     protected static ?string $model = Period::class;
 
