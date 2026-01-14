@@ -16,19 +16,23 @@ class ListBranchTransactions extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()->visible(fn()=> auth()->user()?->can('branch_tx.create')),
+            Actions\CreateAction::make()
+                ->visible(fn () => auth()->user()?->can('branch_tx.create') ?? false),
+
             Actions\Action::make('export_excel')
-                ->label('Excel')
-                ->visible(fn()=> auth()->user()?->can('branch_tx.export'))
-                ->action(fn()=> $this->exportToExcel()),
+                ->label(tr('actions.export_excel', [], null, 'dashboard'))
+                ->visible(fn () => auth()->user()?->can('branch_tx.export') ?? false)
+                ->action(fn () => $this->exportToExcel()),
+
             Actions\Action::make('export_pdf')
-                ->label('PDF')
-                ->visible(fn()=> auth()->user()?->can('branch_tx.export'))
-                ->action(fn()=> $this->exportToPdf()),
+                ->label(tr('actions.export_pdf', [], null, 'dashboard'))
+                ->visible(fn () => auth()->user()?->can('branch_tx.export') ?? false)
+                ->action(fn () => $this->exportToPdf()),
+
             Actions\Action::make('print')
                 ->label(tr('actions.print', [], null, 'dashboard'))
-                ->visible(fn()=> auth()->user()?->can('branch_tx.print'))
-                ->url(fn()=> $this->getPrintUrl())
+                ->visible(fn () => auth()->user()?->can('branch_tx.print') ?? false)
+                ->url(fn () => $this->getPrintUrl())
                 ->openUrlInNewTab(),
         ];
     }
@@ -36,5 +40,13 @@ class ListBranchTransactions extends ListRecords
     protected function getExportTitle(): ?string
     {
         return tr('reports.branch_tx.title', [], null, 'dashboard');
+    }
+
+    protected function getExportMetadata(): array
+    {
+        return [
+            'exported_at' => now()->format('Y-m-d H:i:s'),
+            'exported_by' => auth()->user()?->name ?? 'System',
+        ];
     }
 }

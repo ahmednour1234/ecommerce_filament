@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class BranchTransactionResource extends Resource
 {
@@ -22,9 +23,22 @@ class BranchTransactionResource extends Resource
     protected static ?int $navigationSort = 1;
     protected static ?string $navigationTranslationKey = 'sidebar.finance.branch_transactions';
 
-    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    /**
+     * ✅ مهم: لازم ده يكون موجود علشان Pages تتعرف
+     */
+    public static function getPages(): array
     {
-        $q = parent::getEloquentQuery()->with(['branch','country','currency','creator','approver','rejecter']);
+        return [
+            'index' => BranchTransactionResource\Pages\ListBranchTransactions::route('/'),
+            'create' => BranchTransactionResource\Pages\CreateBranchTransaction::route('/create'),
+            'print' => BranchTransactionResource\Pages\PrintBranchTransaction::route('/{record}/print'),
+        ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $q = parent::getEloquentQuery()
+            ->with(['branch', 'country', 'currency', 'creator', 'approver', 'rejecter']);
 
         if (! auth()->user()?->can('branch_tx.view_all_branches')) {
             $q->where('branch_id', auth()->user()?->branch_id);
@@ -152,7 +166,7 @@ class BranchTransactionResource extends Resource
 
                 Tables\Columns\BadgeColumn::make('status')
                     ->label(tr('tables.branch_tx.status', [], null, 'dashboard'))
-                    ->formatStateUsing(fn ($s) => tr('tables.branch_tx.status_'.$s, [], null, 'dashboard'))
+                    ->formatStateUsing(fn ($s) => tr('tables.branch_tx.status_' . $s, [], null, 'dashboard'))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('transaction_date')
@@ -214,7 +228,7 @@ class BranchTransactionResource extends Resource
                     ->visible(fn ($record) => auth()->user()?->can('branch_tx.update') && $record->status === 'pending'),
 
                 Tables\Actions\DeleteAction::make()
-                    ->visible(fn () => auth()->user()?->can('branch_tx.delete')),
+                    ->visible(fn ($record) => auth()->user()?->can('branch_tx.delete') && $record->status === 'pending'),
 
                 Tables\Actions\Action::make('approve')
                     ->label(tr('actions.approve', [], null, 'dashboard'))
@@ -242,20 +256,10 @@ class BranchTransactionResource extends Resource
                 Tables\Actions\Action::make('print')
                     ->label(tr('actions.print', [], null, 'dashboard'))
                     ->visible(fn () => auth()->user()?->can('branch_tx.print'))
-                    ->url(fn ($record) => BranchTransactionResource::getUrl('print', ['record' => $record]))
+                    ->url(fn ($record) => static::getUrl('print', ['record' => $record]))
                     ->openUrlInNewTab(),
             ])
             ->defaultSort('transaction_date', 'desc');
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListBranchTransactions::route('/'),
-            'create' => Pages\CreateBranchTransaction::route('/create'),
-            'edit' => Pages\EditBranchTransaction::route('/{record}/edit'),
-            'print' => Pages\PrintBranchTransaction::route('/{record}/print'),
-        ];
     }
 
     public static function canViewAny(): bool
