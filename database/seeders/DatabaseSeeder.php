@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\Sales\SalesSeeder::class, // Must be after Catalog and Accounting
         \Database\Seeders\Finance\FinanceTranslationsSeeder::class,
         \Database\Seeders\FinancePermissionsSeeder::class,
+        \Database\Seeders\MainCore\CountriesSeeder::class,
             SuperAdminSeeder::class, // Create super_admin role with ALL permissions (must be last)
         ]);
 
