@@ -71,6 +71,31 @@ class FinanceTranslationsSeeder extends Seeder
             'tables.branch_tx.status'              => ['en' => 'Status', 'ar' => 'الحالة'],
             'tables.branch_tx.transaction_date'    => ['en' => 'Date', 'ar' => 'التاريخ'],
             'tables.branch_tx.receiver_name'       => ['en' => 'Receiver', 'ar' => 'المستلم'],
+// Reports navigation
+'sidebar.finance.reports.income_expense' => ['en' => 'Reports: Income & Expense', 'ar' => 'التقارير: الإيرادات والمصروفات'],
+'sidebar.finance.reports.branches'       => ['en' => 'Reports: Branch Performance', 'ar' => 'التقارير: أداء الفروع'],
+
+// Report titles
+'reports.income_expense.title' => ['en' => 'Income & Expense Report', 'ar' => 'تقرير الإيرادات والمصروفات'],
+'reports.branches.title'       => ['en' => 'Branch Performance Report', 'ar' => 'تقرير أداء الفروع'],
+
+// Columns
+'reports.columns.period'  => ['en' => 'Period', 'ar' => 'الفترة'],
+'reports.columns.branch'  => ['en' => 'Branch', 'ar' => 'الفرع'],
+'reports.columns.income'  => ['en' => 'Income', 'ar' => 'إيرادات'],
+'reports.columns.expense' => ['en' => 'Expense', 'ar' => 'مصروفات'],
+'reports.columns.net'     => ['en' => 'Net', 'ar' => 'الصافي'],
+
+// Filters
+'reports.filters.from' => ['en' => 'From', 'ar' => 'من'],
+'reports.filters.to' => ['en' => 'To', 'ar' => 'إلى'],
+'reports.filters.branch' => ['en' => 'Branch', 'ar' => 'الفرع'],
+'reports.filters.country' => ['en' => 'Country', 'ar' => 'الدولة'],
+'reports.filters.currency' => ['en' => 'Currency', 'ar' => 'العملة'],
+'reports.filters.status' => ['en' => 'Status', 'ar' => 'الحالة'],
+'reports.filters.group_by' => ['en' => 'Group By', 'ar' => 'تجميع حسب'],
+'reports.filters.group_by_day' => ['en' => 'Daily', 'ar' => 'يومي'],
+'reports.filters.group_by_month' => ['en' => 'Monthly', 'ar' => 'شهري'],
 
             // Status labels
             'tables.branch_tx.status_pending'      => ['en' => 'Pending', 'ar' => 'قيد المراجعة'],
