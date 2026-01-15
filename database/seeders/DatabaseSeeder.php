@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\Accounting\BankGuaranteePermissionsSeeder::class, // Bank Guarantee permissions
             \Database\Seeders\Sales\SalesSeeder::class, // Must be after Catalog and Accounting
         \Database\Seeders\Finance\FinanceTranslationsSeeder::class,
+        \Database\Seeders\Finance\FinanceReportPermissionSeeder::class,
         \Database\Seeders\FinancePermissionsSeeder::class,
         \Database\Seeders\MainCore\CountriesSeeder::class,
             SuperAdminSeeder::class, // Create super_admin role with ALL permissions (must be last)
