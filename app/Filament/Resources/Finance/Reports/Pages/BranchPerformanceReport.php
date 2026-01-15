@@ -153,6 +153,9 @@ class BranchPerformanceReport extends Page implements HasForms, HasTable
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->check() && auth()->user()?->can('finance_reports.view');
+        if (!auth()->check()) {
+            return false;
+        }
+        return auth()->user()?->can('finance_reports.view') ?? false;
     }
 }

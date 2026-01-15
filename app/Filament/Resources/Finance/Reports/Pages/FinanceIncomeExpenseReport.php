@@ -111,6 +111,9 @@ class FinanceIncomeExpenseReport extends Page implements HasForms
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->check() && auth()->user()?->can('finance_reports.view');
+        if (!auth()->check()) {
+            return false;
+        }
+        return auth()->user()?->can('finance_reports.view') ?? false;
     }
 }
