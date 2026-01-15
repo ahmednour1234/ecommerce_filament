@@ -106,7 +106,6 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
                     ->formatStateUsing(fn ($s) => number_format((float) $s, 2))
                     ->sortable(),
             ])
-            ->defaultSort('period', 'asc')
             ->paginated(false);
     }
 
