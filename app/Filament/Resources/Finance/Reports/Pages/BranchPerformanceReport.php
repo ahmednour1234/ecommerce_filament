@@ -110,33 +110,44 @@ class BranchPerformanceReport extends Page implements HasForms, HasTable
         [$from, $to] = $this->dateRange();
 
         $q = BranchTransaction::query()
-            ->with('branch')
-            ->whereBetween('transaction_date', [$from, $to]);
+            ->join('branches', 'branch_transactions.branch_id', '=', 'branches.id')
+            ->whereBetween('branch_transactions.transaction_date', [$from, $to]);
 
         if (! auth()->user()?->can('branch_tx.view_all_branches')) {
-            $q->where('branch_id', auth()->user()?->branch_id);
+            $q->where('branch_transactions.branch_id', auth()->user()?->branch_id);
         }
 
-        $q->when($this->branch_id, fn ($qq) => $qq->where('branch_id', $this->branch_id));
-        $q->when($this->country_id, fn ($qq) => $qq->where('country_id', $this->country_id));
-        $q->when($this->currency_id, fn ($qq) => $qq->where('currency_id', $this->currency_id));
-        $q->when($this->status, fn ($qq) => $qq->where('status', $this->status));
+        $q->when($this->branch_id, fn ($qq) => $qq->where('branch_transactions.branch_id', $this->branch_id));
+        $q->when($this->country_id, fn ($qq) => $qq->where('branch_transactions.country_id', $this->country_id));
+        $q->when($this->currency_id, fn ($qq) => $qq->where('branch_transactions.currency_id', $this->currency_id));
+        $q->when($this->status, fn ($qq) => $qq->where('branch_transactions.status', $this->status));
 
         return $q->selectRaw("
-                branch_id,
-                MAX(branch_id) as branch_id2,
-                SUM(CASE WHEN type='income' THEN amount ELSE 0 END) as income,
-                SUM(CASE WHEN type='expense' THEN amount ELSE 0 END) as expense,
-                (SUM(CASE WHEN type='income' THEN amount ELSE 0 END) - SUM(CASE WHEN type='expense' THEN amount ELSE 0 END)) as net
+                branch_transactions.branch_id,
+                branches.name as branch_name,
+                SUM(CASE WHEN branch_transactions.type='income' THEN branch_transactions.amount ELSE 0 END) as income,
+                SUM(CASE WHEN branch_transactions.type='expense' THEN branch_transactions.amount ELSE 0 END) as expense,
+                (SUM(CASE WHEN branch_transactions.type='income' THEN branch_transactions.amount ELSE 0 END) - SUM(CASE WHEN branch_transactions.type='expense' THEN branch_transactions.amount ELSE 0 END)) as net
             ")
-            ->groupBy('branch_id')
-            ->orderByDesc('net')
-            ->getQuery()
-            ->fromSub(function ($sub) use ($q) {
-                // 👇 نخلي branch_name selectable
-            }, 't');
+            ->groupBy('branch_transactions.branch_id', 'branches.name')
+            ->orderByDesc('net');
     }
 
-    // 👇 أسهل حل: نعمل reportQuery بدون fromSub ونضيف branch_name عبر accessor بالـ table
-    // لذلك اعمل Column branch_name بالـ state using:
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            TopBranchesNetBarChart::class,
+        ];
+    }
+
+    public function getWidgetData(): array
+    {
+        return [
+            'from' => $this->from,
+            'to' => $this->to,
+            'country_id' => $this->country_id,
+            'currency_id' => $this->currency_id,
+            'status' => $this->status,
+        ];
+    }
 }

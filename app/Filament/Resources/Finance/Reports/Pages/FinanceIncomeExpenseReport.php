@@ -93,7 +93,7 @@ class FinanceIncomeExpenseReport extends Page implements HasForms
     }
 
     // ✅ نبعث الفلاتر للـ widgets
-    protected function getWidgetData(): array
+    public function getWidgetData(): array
     {
         return [
             'from' => $this->from,

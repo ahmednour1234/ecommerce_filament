@@ -149,7 +149,7 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
         ];
     }
 
-    protected function getWidgetData(): array
+    public function getWidgetData(): array
     {
         return [
             'from' => $this->from,
