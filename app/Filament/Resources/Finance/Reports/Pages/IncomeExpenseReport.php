@@ -149,6 +149,7 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
             ->groupByRaw($periodExpr);
 
         return BranchTransaction::query()
+            ->withoutGlobalScopes()
             ->fromSub($unionQuery, 'report_data')
             ->select('report_data.*')
             ->orderBy('report_data.period', 'asc');
