@@ -45,7 +45,7 @@ class FinanceBranchPerformanceReport extends Page implements HasForms
         ];
     }
 
-    protected function getWidgetData(): array
+    public function getWidgetData(): array
     {
         return [
             'from' => $this->from,
