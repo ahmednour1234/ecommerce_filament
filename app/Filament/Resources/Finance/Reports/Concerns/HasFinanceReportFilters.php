@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources\Finance\Reports\Concerns;
 
+use App\Models\MainCore\Branch;
+use App\Models\MainCore\Country;
+use App\Models\MainCore\Currency;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Illuminate\Support\Carbon;
@@ -37,23 +40,26 @@ trait HasFinanceReportFilters
 
             Forms\Components\Select::make('branch_id')
                 ->label(tr('reports.filters.branch', [], null, 'dashboard'))
-                ->relationship('branch', 'name')
+                ->options(fn () => Branch::where('status', 'active')->pluck('name', 'id'))
                 ->searchable()
                 ->preload()
+                ->nullable()
                 ->live(),
 
             Forms\Components\Select::make('country_id')
                 ->label(tr('reports.filters.country', [], null, 'dashboard'))
-                ->relationship('country', 'name')
+                ->options(fn () => Country::pluck('name', 'id'))
                 ->searchable()
                 ->preload()
+                ->nullable()
                 ->live(),
 
             Forms\Components\Select::make('currency_id')
                 ->label(tr('reports.filters.currency', [], null, 'dashboard'))
-                ->relationship('currency', 'code')
+                ->options(fn () => Currency::where('is_active', true)->pluck('code', 'id'))
                 ->searchable()
                 ->preload()
+                ->nullable()
                 ->live(),
 
             Forms\Components\Select::make('status')
