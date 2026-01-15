@@ -104,8 +104,8 @@ class FinanceBranchPerformanceReport extends Page implements HasForms, HasTable
     {
         $filters = $this->tableFilters ?? [];
         $dateFilter = $filters['transaction_date'] ?? [];
-        $from = $dateFilter['from'] ? Carbon::parse($dateFilter['from'])->startOfDay() : now()->startOfMonth()->startOfDay();
-        $to = $dateFilter['to'] ? Carbon::parse($dateFilter['to'])->endOfDay() : now()->endOfDay();
+        $from = isset($dateFilter['from']) && $dateFilter['from'] ? Carbon::parse($dateFilter['from'])->startOfDay() : now()->startOfMonth()->startOfDay();
+        $to = isset($dateFilter['to']) && $dateFilter['to'] ? Carbon::parse($dateFilter['to'])->endOfDay() : now()->endOfDay();
 
         $q = BranchTransaction::query()
             ->join('branches', 'branch_transactions.branch_id', '=', 'branches.id')
@@ -149,10 +149,11 @@ class FinanceBranchPerformanceReport extends Page implements HasForms, HasTable
 
     public function getWidgetData(): array
     {
-        $tableFilters = $this->tableFilters;
+        $tableFilters = $this->tableFilters ?? [];
+        $dateFilter = $tableFilters['transaction_date'] ?? [];
         return [
-            'from' => $tableFilters['transaction_date']['from'] ?? now()->startOfMonth()->toDateString(),
-            'to' => $tableFilters['transaction_date']['to'] ?? now()->toDateString(),
+            'from' => $dateFilter['from'] ?? now()->startOfMonth()->toDateString(),
+            'to' => $dateFilter['to'] ?? now()->toDateString(),
             'country_id' => $tableFilters['country_id'] ?? null,
             'currency_id' => $tableFilters['currency_id'] ?? null,
             'status' => $tableFilters['status'] ?? null,

@@ -145,8 +145,8 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
     {
         $filters = $this->tableFilters ?? [];
         $dateFilter = $filters['transaction_date'] ?? [];
-        $from = $dateFilter['from'] ? Carbon::parse($dateFilter['from'])->startOfDay() : now()->startOfMonth()->startOfDay();
-        $to = $dateFilter['to'] ? Carbon::parse($dateFilter['to'])->endOfDay() : now()->endOfDay();
+        $from = isset($dateFilter['from']) && $dateFilter['from'] ? Carbon::parse($dateFilter['from'])->startOfDay() : now()->startOfMonth()->startOfDay();
+        $to = isset($dateFilter['to']) && $dateFilter['to'] ? Carbon::parse($dateFilter['to'])->endOfDay() : now()->endOfDay();
         $groupBy = $filters['group_by'] ?? 'day';
 
         $periodExpr = $groupBy === 'month'
