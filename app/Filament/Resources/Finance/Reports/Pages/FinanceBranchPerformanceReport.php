@@ -3,23 +3,27 @@
 namespace App\Filament\Resources\Finance\Reports\Pages;
 
 use App\Filament\Concerns\TranslatableNavigation;
-use App\Filament\Resources\Finance\Reports\Concerns\HasFinanceReportFilters;
 use App\Filament\Resources\Finance\Reports\Widgets\TopBranchesNetBarChart;
 use App\Models\Finance\BranchTransaction;
+use App\Models\MainCore\Branch;
+use App\Models\MainCore\Country;
+use App\Models\MainCore\Currency;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Table;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 
 class FinanceBranchPerformanceReport extends Page implements HasForms, HasTable
 {
     use TranslatableNavigation;
     use InteractsWithForms;
     use InteractsWithTable;
-    use HasFinanceReportFilters;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
     protected static ?string $navigationGroup = 'Finance';
@@ -32,17 +36,6 @@ class FinanceBranchPerformanceReport extends Page implements HasForms, HasTable
 
     public function mount(): void
     {
-        $this->initDefaultDates();
-        $this->form->fill([
-            'from' => $this->from,
-            'to'   => $this->to,
-            'group_by' => $this->group_by,
-        ]);
-    }
-
-    public function form(\Filament\Forms\Form $form): \Filament\Forms\Form
-    {
-        return $this->filtersForm($form);
     }
 
     public function table(Table $table): Table
@@ -70,13 +63,49 @@ class FinanceBranchPerformanceReport extends Page implements HasForms, HasTable
                     ->formatStateUsing(fn ($state) => number_format((float) ($state ?? 0), 2))
                     ->sortable(),
             ])
+            ->filters([
+                Filter::make('transaction_date')
+                    ->form([
+                        \Filament\Forms\Components\DatePicker::make('from')
+                            ->label(tr('reports.filters.from', [], null, 'dashboard'))
+                            ->default(now()->startOfMonth()),
+                        \Filament\Forms\Components\DatePicker::make('to')
+                            ->label(tr('reports.filters.to', [], null, 'dashboard'))
+                            ->default(now()),
+                    ]),
+                SelectFilter::make('branch_id')
+                    ->label(tr('reports.filters.branch', [], null, 'dashboard'))
+                    ->options(fn () => Branch::where('status', 'active')->pluck('name', 'id'))
+                    ->searchable()
+                    ->preload(),
+                SelectFilter::make('country_id')
+                    ->label(tr('reports.filters.country', [], null, 'dashboard'))
+                    ->options(fn () => Country::pluck('name', 'id'))
+                    ->searchable()
+                    ->preload(),
+                SelectFilter::make('currency_id')
+                    ->label(tr('reports.filters.currency', [], null, 'dashboard'))
+                    ->options(fn () => Currency::where('is_active', true)->pluck('code', 'id'))
+                    ->searchable()
+                    ->preload(),
+                SelectFilter::make('status')
+                    ->label(tr('reports.filters.status', [], null, 'dashboard'))
+                    ->options([
+                        'pending'  => tr('tables.branch_tx.status_pending', [], null, 'dashboard'),
+                        'approved' => tr('tables.branch_tx.status_approved', [], null, 'dashboard'),
+                        'rejected' => tr('tables.branch_tx.status_rejected', [], null, 'dashboard'),
+                    ]),
+            ])
             ->defaultSort('net', 'desc')
             ->paginated(false);
     }
 
     protected function reportQuery(): Builder
     {
-        [$from, $to] = $this->dateRange();
+        $filters = $this->tableFilters ?? [];
+        $dateFilter = $filters['transaction_date'] ?? [];
+        $from = $dateFilter['from'] ? Carbon::parse($dateFilter['from'])->startOfDay() : now()->startOfMonth()->startOfDay();
+        $to = $dateFilter['to'] ? Carbon::parse($dateFilter['to'])->endOfDay() : now()->endOfDay();
 
         $q = BranchTransaction::query()
             ->join('branches', 'branch_transactions.branch_id', '=', 'branches.id')
@@ -86,10 +115,18 @@ class FinanceBranchPerformanceReport extends Page implements HasForms, HasTable
             $q->where('branch_transactions.branch_id', auth()->user()?->branch_id);
         }
 
-        $q->when($this->branch_id, fn ($qq) => $qq->where('branch_transactions.branch_id', $this->branch_id));
-        $q->when($this->country_id, fn ($qq) => $qq->where('branch_transactions.country_id', $this->country_id));
-        $q->when($this->currency_id, fn ($qq) => $qq->where('branch_transactions.currency_id', $this->currency_id));
-        $q->when($this->status, fn ($qq) => $qq->where('branch_transactions.status', $this->status));
+        if (isset($filters['branch_id'])) {
+            $q->where('branch_transactions.branch_id', $filters['branch_id']);
+        }
+        if (isset($filters['country_id'])) {
+            $q->where('branch_transactions.country_id', $filters['country_id']);
+        }
+        if (isset($filters['currency_id'])) {
+            $q->where('branch_transactions.currency_id', $filters['currency_id']);
+        }
+        if (isset($filters['status'])) {
+            $q->where('branch_transactions.status', $filters['status']);
+        }
 
         return $q->selectRaw("
                 branch_transactions.branch_id as id,
@@ -112,18 +149,20 @@ class FinanceBranchPerformanceReport extends Page implements HasForms, HasTable
 
     public function getWidgetData(): array
     {
+        $tableFilters = $this->tableFilters;
         return [
-            'from' => $this->from,
-            'to' => $this->to,
-            'country_id' => $this->country_id,
-            'currency_id' => $this->currency_id,
-            'status' => $this->status,
+            'from' => $tableFilters['transaction_date']['from'] ?? now()->startOfMonth()->toDateString(),
+            'to' => $tableFilters['transaction_date']['to'] ?? now()->toDateString(),
+            'country_id' => $tableFilters['country_id'] ?? null,
+            'currency_id' => $tableFilters['currency_id'] ?? null,
+            'status' => $tableFilters['status'] ?? null,
         ];
     }
 
     public function kpis(): array
     {
-        [$from, $to] = $this->dateRange();
+        $from = now()->startOfMonth()->startOfDay();
+        $to = now()->endOfDay();
 
         $q = BranchTransaction::query()
             ->whereBetween('transaction_date', [$from, $to]);
@@ -132,9 +171,10 @@ class FinanceBranchPerformanceReport extends Page implements HasForms, HasTable
             $q->where('branch_id', auth()->user()?->branch_id);
         }
 
-        $q->when($this->country_id, fn($qq) => $qq->where('country_id', $this->country_id));
-        $q->when($this->currency_id, fn($qq) => $qq->where('currency_id', $this->currency_id));
-        $q->when($this->status, fn($qq) => $qq->where('status', $this->status));
+        $tableFilters = $this->tableFilters ?? [];
+        $q->when($tableFilters['country_id'] ?? null, fn($qq, $id) => $qq->where('country_id', $id));
+        $q->when($tableFilters['currency_id'] ?? null, fn($qq, $id) => $qq->where('currency_id', $id));
+        $q->when($tableFilters['status'] ?? null, fn($qq, $status) => $qq->where('status', $status));
 
         $branchesCount = (clone $q)->distinct('branch_id')->count('branch_id');
         $txCount = (clone $q)->count();

@@ -4,10 +4,12 @@ namespace App\Filament\Resources\Finance\Reports\Pages;
 
 use App\Filament\Concerns\ExportsResourceTable;
 use App\Filament\Concerns\TranslatableNavigation;
-use App\Filament\Resources\Finance\Reports\Concerns\HasFinanceReportFilters;
 use App\Filament\Resources\Finance\Reports\Widgets\IncomeExpenseDonutChart;
 use App\Filament\Resources\Finance\Reports\Widgets\IncomeExpenseTrendChart;
 use App\Models\Finance\BranchTransaction;
+use App\Models\MainCore\Branch;
+use App\Models\MainCore\Country;
+use App\Models\MainCore\Currency;
 use Filament\Actions;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -15,15 +17,17 @@ use Filament\Pages\Page;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Table;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 
 class IncomeExpenseReport extends Page implements HasForms, HasTable
 {
     use TranslatableNavigation;
     use InteractsWithForms;
     use InteractsWithTable;
-    use HasFinanceReportFilters;
     use ExportsResourceTable;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
@@ -38,18 +42,6 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
     public function mount(): void
     {
         abort_unless(auth()->user()?->can('finance_reports.view'), 403);
-
-        $this->initDefaultDates();
-        $this->form->fill([
-            'from' => $this->from,
-            'to' => $this->to,
-            'group_by' => $this->group_by,
-        ]);
-    }
-
-    public function form(\Filament\Forms\Form $form): \Filament\Forms\Form
-    {
-        return $this->filtersForm($form);
     }
 
     protected function getHeaderActions(): array
@@ -106,14 +98,58 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
                     ->formatStateUsing(fn ($state) => number_format((float) ($state ?? 0), 2))
                     ->sortable(),
             ])
+            ->filters([
+                Filter::make('transaction_date')
+                    ->form([
+                        \Filament\Forms\Components\DatePicker::make('from')
+                            ->label(tr('reports.filters.from', [], null, 'dashboard'))
+                            ->default(now()->startOfMonth()),
+                        \Filament\Forms\Components\DatePicker::make('to')
+                            ->label(tr('reports.filters.to', [], null, 'dashboard'))
+                            ->default(now()),
+                    ]),
+                SelectFilter::make('branch_id')
+                    ->label(tr('reports.filters.branch', [], null, 'dashboard'))
+                    ->options(fn () => Branch::where('status', 'active')->pluck('name', 'id'))
+                    ->searchable()
+                    ->preload(),
+                SelectFilter::make('country_id')
+                    ->label(tr('reports.filters.country', [], null, 'dashboard'))
+                    ->options(fn () => Country::pluck('name', 'id'))
+                    ->searchable()
+                    ->preload(),
+                SelectFilter::make('currency_id')
+                    ->label(tr('reports.filters.currency', [], null, 'dashboard'))
+                    ->options(fn () => Currency::where('is_active', true)->pluck('code', 'id'))
+                    ->searchable()
+                    ->preload(),
+                SelectFilter::make('status')
+                    ->label(tr('reports.filters.status', [], null, 'dashboard'))
+                    ->options([
+                        'pending'  => tr('tables.branch_tx.status_pending', [], null, 'dashboard'),
+                        'approved' => tr('tables.branch_tx.status_approved', [], null, 'dashboard'),
+                        'rejected' => tr('tables.branch_tx.status_rejected', [], null, 'dashboard'),
+                    ]),
+                SelectFilter::make('group_by')
+                    ->label(tr('reports.filters.group_by', [], null, 'dashboard'))
+                    ->options([
+                        'day'   => tr('reports.filters.group_by_day', [], null, 'dashboard'),
+                        'month' => tr('reports.filters.group_by_month', [], null, 'dashboard'),
+                    ])
+                    ->default('day'),
+            ])
             ->paginated(false);
     }
 
     protected function reportQuery(): Builder
     {
-        [$from, $to] = $this->dateRange();
+        $filters = $this->tableFilters ?? [];
+        $dateFilter = $filters['transaction_date'] ?? [];
+        $from = $dateFilter['from'] ? Carbon::parse($dateFilter['from'])->startOfDay() : now()->startOfMonth()->startOfDay();
+        $to = $dateFilter['to'] ? Carbon::parse($dateFilter['to'])->endOfDay() : now()->endOfDay();
+        $groupBy = $filters['group_by'] ?? 'day';
 
-        $periodExpr = $this->group_by === 'month'
+        $periodExpr = $groupBy === 'month'
             ? "DATE_FORMAT(branch_transactions.transaction_date, '%Y-%m')"
             : "DATE(branch_transactions.transaction_date)";
 
@@ -121,22 +157,21 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
             ->whereBetween('transaction_date', [$from, $to])
             ->whereNull('deleted_at');
 
-        // permissions scope
         if (! auth()->user()?->can('branch_tx.view_all_branches')) {
             $subQuery->where('branch_id', auth()->user()?->branch_id);
         }
 
-        if ($this->branch_id) {
-            $subQuery->where('branch_id', $this->branch_id);
+        if (isset($filters['branch_id'])) {
+            $subQuery->where('branch_id', $filters['branch_id']);
         }
-        if ($this->country_id) {
-            $subQuery->where('country_id', $this->country_id);
+        if (isset($filters['country_id'])) {
+            $subQuery->where('country_id', $filters['country_id']);
         }
-        if ($this->currency_id) {
-            $subQuery->where('currency_id', $this->currency_id);
+        if (isset($filters['currency_id'])) {
+            $subQuery->where('currency_id', $filters['currency_id']);
         }
-        if ($this->status) {
-            $subQuery->where('status', $this->status);
+        if (isset($filters['status'])) {
+            $subQuery->where('status', $filters['status']);
         }
 
         $unionQuery = $subQuery->selectRaw("
@@ -165,14 +200,16 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
 
     public function getWidgetData(): array
     {
+        $tableFilters = $this->tableFilters ?? [];
+        $dateFilter = $tableFilters['transaction_date'] ?? [];
         return [
-            'from' => $this->from,
-            'to' => $this->to,
-            'branch_id' => $this->branch_id,
-            'country_id' => $this->country_id,
-            'currency_id' => $this->currency_id,
-            'status' => $this->status,
-            'group_by' => $this->group_by,
+            'from' => $dateFilter['from'] ?? now()->startOfMonth()->toDateString(),
+            'to' => $dateFilter['to'] ?? now()->toDateString(),
+            'branch_id' => $tableFilters['branch_id'] ?? null,
+            'country_id' => $tableFilters['country_id'] ?? null,
+            'currency_id' => $tableFilters['currency_id'] ?? null,
+            'status' => $tableFilters['status'] ?? null,
+            'group_by' => $tableFilters['group_by'] ?? 'day',
         ];
     }
 
