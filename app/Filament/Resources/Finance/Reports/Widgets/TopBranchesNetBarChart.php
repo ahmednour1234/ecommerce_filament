@@ -38,7 +38,7 @@ class TopBranchesNetBarChart extends ChartWidget
                 SUM(CASE WHEN type='expense' THEN amount ELSE 0 END) as expense
             ")
             ->groupBy('branch_id')
-            ->orderByRaw('(income - expense) DESC')
+            ->orderByRaw('(SUM(CASE WHEN type=\'income\' THEN amount ELSE 0 END) - SUM(CASE WHEN type=\'expense\' THEN amount ELSE 0 END)) DESC')
             ->limit(10)
             ->get();
 
