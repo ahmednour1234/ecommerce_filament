@@ -84,7 +84,7 @@ class FinanceIncomeExpenseReport extends Page implements HasForms
         ];
     }
 
-    protected function getHeaderWidgetsColumns(): int|array
+    public function getHeaderWidgetsColumns(): int|array
     {
         return [
             'sm' => 1,
