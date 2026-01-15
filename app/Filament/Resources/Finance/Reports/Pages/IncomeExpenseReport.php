@@ -146,12 +146,12 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
                 SUM(CASE WHEN type='expense' THEN amount ELSE 0 END) as expense,
                 (SUM(CASE WHEN type='income' THEN amount ELSE 0 END) - SUM(CASE WHEN type='expense' THEN amount ELSE 0 END)) as net
             ")
-            ->groupByRaw($periodExpr)
-            ->orderByRaw($periodExpr);
+            ->groupByRaw($periodExpr);
 
         return BranchTransaction::query()
             ->fromSub($unionQuery, 'report_data')
-            ->select('report_data.*');
+            ->select('report_data.*')
+            ->orderBy('report_data.period', 'asc');
     }
 
     protected function getHeaderWidgets(): array
