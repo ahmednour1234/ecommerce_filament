@@ -135,7 +135,6 @@ class BranchTransactionResource extends Resource
                     ->label(tr('tables.branch_tx.country', [], null, 'dashboard'))
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                // ✅ FIX: $state بدل $s
                 Tables\Columns\BadgeColumn::make('type')
                     ->label(tr('tables.branch_tx.type', [], null, 'dashboard'))
                     ->formatStateUsing(fn ($state) => $state === 'income'
@@ -154,7 +153,6 @@ class BranchTransactionResource extends Resource
                     ->formatStateUsing(fn ($state) => $state ? number_format((float) $state, 2) : '-')
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                // ✅ FIX: $state بدل $s
                 Tables\Columns\BadgeColumn::make('status')
                     ->label(tr('tables.branch_tx.status', [], null, 'dashboard'))
                     ->formatStateUsing(fn ($state) => tr('tables.branch_tx.status_' . $state, [], null, 'dashboard'))
@@ -244,18 +242,13 @@ class BranchTransactionResource extends Resource
                         app(BranchTransactionService::class)->reject($record, $data['rejection_note']);
                     }),
 
-             Tables\Actions\Action::make('print')
-    ->label(tr('actions.print', [], null, 'dashboard'))
-    ->visible(fn () => auth()->user()?->can('branch_tx.print'))
-    ->url(fn ($record) => route('finance.branch-transactions.print', $record))
-    ->openUrlInNewTab(),
-    Tables\Actions\Action::make('print')
-    ->label(tr('actions.print', [], null, 'dashboard'))
-    ->visible(fn () => auth()->user()?->can('branch_tx.print'))
-    ->url(fn ($record) => route('finance.branch-transactions.print', $record))
-    ->openUrlInNewTab(),
-
-
+                // ✅ Print (مرة واحدة فقط) + URL بتاع Filament
+                Tables\Actions\Action::make('print')
+                    ->label(tr('actions.print', [], null, 'dashboard'))
+                    ->icon('heroicon-o-printer')
+                    ->visible(fn () => auth()->user()?->can('branch_tx.print'))
+                    ->url(fn ($record) => static::getUrl('print', ['record' => $record]))
+                    ->openUrlInNewTab(),
             ])
             ->defaultSort('transaction_date', 'desc');
     }
@@ -263,9 +256,9 @@ class BranchTransactionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListBranchTransactions::route('/'),
+            'index'  => Pages\ListBranchTransactions::route('/'),
             'create' => Pages\CreateBranchTransaction::route('/create'),
-            'print' => Pages\PrintBranchTransaction::route('/{record}/print'),
+            'print'  => Pages\PrintBranchTransaction::route('/{record}/print'),
         ];
     }
 

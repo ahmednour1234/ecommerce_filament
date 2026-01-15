@@ -13,18 +13,14 @@ class PrintBranchTransaction extends Page
 
     protected static string $resource = BranchTransactionResource::class;
 
-    // ✅ لازم الـ view ده يكون موجود فعلاً
     protected static string $view = 'filament.finance.branch-transactions.print';
 
     public function mount(BranchTransaction $record): void
     {
-        // ✅ Filament هيحقن الـ record تلقائيًا من /{record}/print
-        $this->record = $record->load(['branch', 'country', 'currency', 'creator', 'approver', 'rejecter']);
-    }
+        abort_unless(auth()->user()?->can('branch_tx.print'), 403);
 
-    // Optional: منع الدخول بدون صلاحية
-    public static function canAccess(array $parameters = []): bool
-    {
-        return auth()->user()?->can('branch_tx.print') ?? false;
+        $this->record = $record->load([
+            'branch', 'country', 'currency', 'creator', 'approver', 'rejecter',
+        ]);
     }
 }
