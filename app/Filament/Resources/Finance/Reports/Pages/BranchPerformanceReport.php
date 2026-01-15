@@ -88,17 +88,17 @@ class BranchPerformanceReport extends Page implements HasForms, HasTable
 
                 \Filament\Tables\Columns\TextColumn::make('income')
                     ->label(tr('reports.columns.income', [], null, 'dashboard'))
-                    ->formatStateUsing(fn ($s) => number_format((float) $s, 2))
+                    ->formatStateUsing(fn ($state) => number_format((float) ($state ?? 0), 2))
                     ->sortable(),
 
                 \Filament\Tables\Columns\TextColumn::make('expense')
                     ->label(tr('reports.columns.expense', [], null, 'dashboard'))
-                    ->formatStateUsing(fn ($s) => number_format((float) $s, 2))
+                    ->formatStateUsing(fn ($state) => number_format((float) ($state ?? 0), 2))
                     ->sortable(),
 
                 \Filament\Tables\Columns\TextColumn::make('net')
                     ->label(tr('reports.columns.net', [], null, 'dashboard'))
-                    ->formatStateUsing(fn ($s) => number_format((float) $s, 2))
+                    ->formatStateUsing(fn ($state) => number_format((float) ($state ?? 0), 2))
                     ->sortable(),
             ])
             ->defaultSort('net', 'desc')
