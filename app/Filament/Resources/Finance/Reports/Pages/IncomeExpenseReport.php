@@ -202,14 +202,37 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
     {
         $tableFilters = $this->tableFilters ?? [];
         $dateFilter = $tableFilters['transaction_date'] ?? [];
+
+        $branchId = $tableFilters['branch_id'] ?? null;
+        $countryId = $tableFilters['country_id'] ?? null;
+        $currencyId = $tableFilters['currency_id'] ?? null;
+
+        if (is_array($branchId)) {
+            $branchId = !empty($branchId) ? (int) reset($branchId) : null;
+        } else {
+            $branchId = $branchId ? (int) $branchId : null;
+        }
+
+        if (is_array($countryId)) {
+            $countryId = !empty($countryId) ? (int) reset($countryId) : null;
+        } else {
+            $countryId = $countryId ? (int) $countryId : null;
+        }
+
+        if (is_array($currencyId)) {
+            $currencyId = !empty($currencyId) ? (int) reset($currencyId) : null;
+        } else {
+            $currencyId = $currencyId ? (int) $currencyId : null;
+        }
+
         return [
             'from' => $dateFilter['from'] ?? now()->startOfMonth()->toDateString(),
             'to' => $dateFilter['to'] ?? now()->toDateString(),
-            'branch_id' => $tableFilters['branch_id'] ?? null,
-            'country_id' => $tableFilters['country_id'] ?? null,
-            'currency_id' => $tableFilters['currency_id'] ?? null,
-            'status' => $tableFilters['status'] ?? null,
-            'group_by' => $tableFilters['group_by'] ?? 'day',
+            'branch_id' => $branchId,
+            'country_id' => $countryId,
+            'currency_id' => $currencyId,
+            'status' => is_array($tableFilters['status'] ?? null) ? reset($tableFilters['status']) : ($tableFilters['status'] ?? null),
+            'group_by' => is_array($tableFilters['group_by'] ?? null) ? reset($tableFilters['group_by']) : ($tableFilters['group_by'] ?? 'day'),
         ];
     }
 
