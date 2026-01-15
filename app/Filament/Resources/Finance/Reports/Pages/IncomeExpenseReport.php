@@ -138,8 +138,8 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
                 SUM(CASE WHEN type='expense' THEN amount ELSE 0 END) as expense,
                 (SUM(CASE WHEN type='income' THEN amount ELSE 0 END) - SUM(CASE WHEN type='expense' THEN amount ELSE 0 END)) as net
             ")
-            ->groupBy('period')
-            ->orderBy('period');
+            ->groupByRaw($periodExpr)
+            ->orderByRaw($periodExpr);
     }
 
     protected function getHeaderWidgets(): array
