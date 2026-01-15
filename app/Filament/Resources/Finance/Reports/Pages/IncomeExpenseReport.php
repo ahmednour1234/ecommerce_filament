@@ -132,6 +132,7 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
         $q->when($this->status, fn ($qq) => $qq->where('status', $this->status));
 
         return $q->selectRaw("
+                {$periodExpr} as id,
                 {$periodExpr} as period,
                 SUM(CASE WHEN type='income' THEN amount ELSE 0 END) as income,
                 SUM(CASE WHEN type='expense' THEN amount ELSE 0 END) as expense,

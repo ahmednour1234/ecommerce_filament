@@ -123,6 +123,7 @@ class BranchPerformanceReport extends Page implements HasForms, HasTable
         $q->when($this->status, fn ($qq) => $qq->where('branch_transactions.status', $this->status));
 
         return $q->selectRaw("
+                branch_transactions.branch_id as id,
                 branch_transactions.branch_id,
                 branches.name as branch_name,
                 SUM(CASE WHEN branch_transactions.type='income' THEN branch_transactions.amount ELSE 0 END) as income,
