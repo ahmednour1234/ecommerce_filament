@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Finance\Reports\Pages;
 
+use App\Filament\Concerns\TranslatableNavigation;
 use App\Filament\Resources\Finance\Reports\Concerns\HasFinanceReportFilters;
 use App\Filament\Resources\Finance\Reports\Widgets\TopBranchesNetBarChart;
 use App\Models\Finance\BranchTransaction;
@@ -11,6 +12,7 @@ use Filament\Pages\Page;
 
 class FinanceBranchPerformanceReport extends Page implements HasForms
 {
+    use TranslatableNavigation;
     use InteractsWithForms;
     use HasFinanceReportFilters;
 
@@ -78,5 +80,10 @@ class FinanceBranchPerformanceReport extends Page implements HasForms
             'branches' => $branchesCount,
             'tx' => $txCount,
         ];
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->check() && auth()->user()?->can('finance_reports.view');
     }
 }

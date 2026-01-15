@@ -161,4 +161,9 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
             'group_by' => $this->group_by,
         ];
     }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->check() && auth()->user()?->can('finance_reports.view');
+    }
 }

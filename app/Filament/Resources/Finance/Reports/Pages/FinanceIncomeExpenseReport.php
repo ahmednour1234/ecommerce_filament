@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Finance\Reports\Pages;
 
+use App\Filament\Concerns\TranslatableNavigation;
 use App\Filament\Resources\Finance\Reports\Concerns\HasFinanceReportFilters;
 use App\Filament\Resources\Finance\Reports\Widgets\IncomeExpenseBreakdownDonut;
 use App\Filament\Resources\Finance\Reports\Widgets\IncomeExpenseTrendChart;
@@ -12,6 +13,7 @@ use Filament\Pages\Page;
 
 class FinanceIncomeExpenseReport extends Page implements HasForms
 {
+    use TranslatableNavigation;
     use InteractsWithForms;
     use HasFinanceReportFilters;
 
@@ -21,6 +23,7 @@ class FinanceIncomeExpenseReport extends Page implements HasForms
 
     protected static ?string $title = 'Finance Reports - Income & Expense';
     protected static ?string $navigationLabel = 'Reports (Income/Expense)';
+    protected static ?string $navigationTranslationKey = 'sidebar.finance.reports.income_expense';
 
     protected static string $view = 'filament.finance.reports.income-expense-report';
 
@@ -104,5 +107,10 @@ class FinanceIncomeExpenseReport extends Page implements HasForms
             'status' => $this->status,
             'group_by' => $this->group_by,
         ];
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->check() && auth()->user()?->can('finance_reports.view');
     }
 }
