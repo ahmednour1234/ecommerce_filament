@@ -114,23 +114,32 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
         [$from, $to] = $this->dateRange();
 
         $periodExpr = $this->group_by === 'month'
-            ? "DATE_FORMAT(transaction_date, '%Y-%m')"
-            : "DATE(transaction_date)";
+            ? "DATE_FORMAT(branch_transactions.transaction_date, '%Y-%m')"
+            : "DATE(branch_transactions.transaction_date)";
 
-        $q = BranchTransaction::query()
-            ->whereBetween('transaction_date', [$from, $to]);
+        $subQuery = DB::table('branch_transactions')
+            ->whereBetween('transaction_date', [$from, $to])
+            ->whereNull('deleted_at');
 
         // permissions scope
         if (! auth()->user()?->can('branch_tx.view_all_branches')) {
-            $q->where('branch_id', auth()->user()?->branch_id);
+            $subQuery->where('branch_id', auth()->user()?->branch_id);
         }
 
-        $q->when($this->branch_id, fn ($qq) => $qq->where('branch_id', $this->branch_id));
-        $q->when($this->country_id, fn ($qq) => $qq->where('country_id', $this->country_id));
-        $q->when($this->currency_id, fn ($qq) => $qq->where('currency_id', $this->currency_id));
-        $q->when($this->status, fn ($qq) => $qq->where('status', $this->status));
+        if ($this->branch_id) {
+            $subQuery->where('branch_id', $this->branch_id);
+        }
+        if ($this->country_id) {
+            $subQuery->where('country_id', $this->country_id);
+        }
+        if ($this->currency_id) {
+            $subQuery->where('currency_id', $this->currency_id);
+        }
+        if ($this->status) {
+            $subQuery->where('status', $this->status);
+        }
 
-        return $q->selectRaw("
+        $unionQuery = $subQuery->selectRaw("
                 {$periodExpr} as id,
                 {$periodExpr} as period,
                 SUM(CASE WHEN type='income' THEN amount ELSE 0 END) as income,
@@ -139,6 +148,10 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
             ")
             ->groupByRaw($periodExpr)
             ->orderByRaw($periodExpr);
+
+        return BranchTransaction::query()
+            ->fromSub($unionQuery, 'report_data')
+            ->select('report_data.*');
     }
 
     protected function getHeaderWidgets(): array
