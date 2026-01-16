@@ -20,7 +20,6 @@ use Filament\Tables\Table;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 
 class IncomeExpenseReport extends Page implements HasForms, HasTable
@@ -137,7 +136,7 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
                         'month' => tr('reports.filters.group_by_month', [], null, 'dashboard'),
                     ])
                     ->default('day')
-                    ->query(fn ($query) => $query),
+                    ->modifyQueryUsing(fn (Builder $query, $state) => $query),
             ])
             ->paginated(false);
     }
