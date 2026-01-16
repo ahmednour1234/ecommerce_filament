@@ -136,7 +136,9 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
                         'month' => tr('reports.filters.group_by_month', [], null, 'dashboard'),
                     ])
                     ->default('day')
-                    ->modifyQueryUsing(fn (Builder $query, $state) => $query),
+                    ->query(function (Builder $query, $state) {
+                        return $query;
+                    }),
             ])
             ->paginated(false);
     }
@@ -147,7 +149,7 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
         $dateFilter = $filters['transaction_date'] ?? [];
         $from = isset($dateFilter['from']) && $dateFilter['from'] ? Carbon::parse($dateFilter['from'])->startOfDay() : now()->startOfMonth()->startOfDay();
         $to = isset($dateFilter['to']) && $dateFilter['to'] ? Carbon::parse($dateFilter['to'])->endOfDay() : now()->endOfDay();
-        
+
         $groupByFilter = $filters['group_by'] ?? 'day';
         $groupBy = is_array($groupByFilter) ? reset($groupByFilter) : $groupByFilter;
         $groupBy = $groupBy ?? 'day';
