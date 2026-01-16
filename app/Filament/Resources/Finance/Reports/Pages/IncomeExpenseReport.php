@@ -136,7 +136,8 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
                         'day'   => tr('reports.filters.group_by_day', [], null, 'dashboard'),
                         'month' => tr('reports.filters.group_by_month', [], null, 'dashboard'),
                     ])
-                    ->default('day'),
+                    ->default('day')
+                    ->query(fn ($query) => $query),
             ])
             ->paginated(false);
     }
@@ -147,7 +148,10 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
         $dateFilter = $filters['transaction_date'] ?? [];
         $from = isset($dateFilter['from']) && $dateFilter['from'] ? Carbon::parse($dateFilter['from'])->startOfDay() : now()->startOfMonth()->startOfDay();
         $to = isset($dateFilter['to']) && $dateFilter['to'] ? Carbon::parse($dateFilter['to'])->endOfDay() : now()->endOfDay();
-        $groupBy = $filters['group_by'] ?? 'day';
+        
+        $groupByFilter = $filters['group_by'] ?? 'day';
+        $groupBy = is_array($groupByFilter) ? reset($groupByFilter) : $groupByFilter;
+        $groupBy = $groupBy ?? 'day';
 
         if ($groupBy === 'month') {
             $periodExpr = "DATE_FORMAT(branch_transactions.transaction_date, '%Y-%m')";
@@ -164,16 +168,20 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
         }
 
         if (isset($filters['branch_id'])) {
-            $q->where('branch_transactions.branch_id', $filters['branch_id']);
+            $branchId = is_array($filters['branch_id']) ? reset($filters['branch_id']) : $filters['branch_id'];
+            $q->where('branch_transactions.branch_id', $branchId);
         }
         if (isset($filters['country_id'])) {
-            $q->where('branch_transactions.country_id', $filters['country_id']);
+            $countryId = is_array($filters['country_id']) ? reset($filters['country_id']) : $filters['country_id'];
+            $q->where('branch_transactions.country_id', $countryId);
         }
         if (isset($filters['currency_id'])) {
-            $q->where('branch_transactions.currency_id', $filters['currency_id']);
+            $currencyId = is_array($filters['currency_id']) ? reset($filters['currency_id']) : $filters['currency_id'];
+            $q->where('branch_transactions.currency_id', $currencyId);
         }
         if (isset($filters['status'])) {
-            $q->where('branch_transactions.status', $filters['status']);
+            $status = is_array($filters['status']) ? reset($filters['status']) : $filters['status'];
+            $q->where('branch_transactions.status', $status);
         }
 
         return $q->selectRaw("
