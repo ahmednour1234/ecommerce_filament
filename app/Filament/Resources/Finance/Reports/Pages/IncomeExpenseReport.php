@@ -149,45 +149,42 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
         $to = isset($dateFilter['to']) && $dateFilter['to'] ? Carbon::parse($dateFilter['to'])->endOfDay() : now()->endOfDay();
         $groupBy = $filters['group_by'] ?? 'day';
 
-        $periodExpr = $groupBy === 'month'
-            ? "DATE_FORMAT(branch_transactions.transaction_date, '%Y-%m')"
-            : "DATE(branch_transactions.transaction_date)";
+        if ($groupBy === 'month') {
+            $periodExpr = "DATE_FORMAT(branch_transactions.transaction_date, '%Y-%m')";
+        } else {
+            $periodExpr = "DATE(branch_transactions.transaction_date)";
+        }
 
-        $subQuery = DB::table('branch_transactions')
-            ->whereBetween('transaction_date', [$from, $to])
-            ->whereNull('deleted_at');
+        $q = BranchTransaction::query()
+            ->whereBetween('branch_transactions.transaction_date', [$from, $to])
+            ->whereNull('branch_transactions.deleted_at');
 
         if (! auth()->user()?->can('branch_tx.view_all_branches')) {
-            $subQuery->where('branch_id', auth()->user()?->branch_id);
+            $q->where('branch_transactions.branch_id', auth()->user()?->branch_id);
         }
 
         if (isset($filters['branch_id'])) {
-            $subQuery->where('branch_id', $filters['branch_id']);
+            $q->where('branch_transactions.branch_id', $filters['branch_id']);
         }
         if (isset($filters['country_id'])) {
-            $subQuery->where('country_id', $filters['country_id']);
+            $q->where('branch_transactions.country_id', $filters['country_id']);
         }
         if (isset($filters['currency_id'])) {
-            $subQuery->where('currency_id', $filters['currency_id']);
+            $q->where('branch_transactions.currency_id', $filters['currency_id']);
         }
         if (isset($filters['status'])) {
-            $subQuery->where('status', $filters['status']);
+            $q->where('branch_transactions.status', $filters['status']);
         }
 
-        $unionQuery = $subQuery->selectRaw("
+        return $q->selectRaw("
                 {$periodExpr} as id,
                 {$periodExpr} as period,
-                SUM(CASE WHEN type='income' THEN amount ELSE 0 END) as income,
-                SUM(CASE WHEN type='expense' THEN amount ELSE 0 END) as expense,
-                (SUM(CASE WHEN type='income' THEN amount ELSE 0 END) - SUM(CASE WHEN type='expense' THEN amount ELSE 0 END)) as net
+                SUM(CASE WHEN branch_transactions.type='income' THEN branch_transactions.amount ELSE 0 END) as income,
+                SUM(CASE WHEN branch_transactions.type='expense' THEN branch_transactions.amount ELSE 0 END) as expense,
+                (SUM(CASE WHEN branch_transactions.type='income' THEN branch_transactions.amount ELSE 0 END) - SUM(CASE WHEN branch_transactions.type='expense' THEN branch_transactions.amount ELSE 0 END)) as net
             ")
-            ->groupByRaw($periodExpr);
-
-        return BranchTransaction::query()
-            ->withoutGlobalScopes()
-            ->fromSub($unionQuery, 'report_data')
-            ->select('report_data.*')
-            ->orderBy('report_data.period', 'asc');
+            ->groupByRaw($periodExpr)
+            ->orderByRaw($periodExpr . ' ASC');
     }
 
     protected function getHeaderWidgets(): array
