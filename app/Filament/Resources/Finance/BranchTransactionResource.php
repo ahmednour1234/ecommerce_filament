@@ -249,8 +249,7 @@ class BranchTransactionResource extends Resource
                     ->visible(fn () => auth()->user()?->can('branch_tx.print'))
                     ->url(fn ($record) => static::getUrl('print', ['record' => $record]))
                     ->openUrlInNewTab(),
-            ])
-            ->defaultSort('transaction_date', 'desc');
+            ]);
     }
 
     public static function getPages(): array
