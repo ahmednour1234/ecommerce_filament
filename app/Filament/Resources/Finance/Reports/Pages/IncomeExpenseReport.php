@@ -193,7 +193,7 @@ class IncomeExpenseReport extends Page implements HasForms, HasTable
                 (SUM(CASE WHEN branch_transactions.type='income' THEN branch_transactions.amount ELSE 0 END) - SUM(CASE WHEN branch_transactions.type='expense' THEN branch_transactions.amount ELSE 0 END)) as net
             ")
             ->groupByRaw($periodExpr)
-            ->orderByRaw($periodExpr . ' ASC');
+          ;
     }
 
     protected function getHeaderWidgets(): array

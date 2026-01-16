@@ -131,7 +131,7 @@ class BranchPerformanceReport extends Page implements HasForms, HasTable
                 (SUM(CASE WHEN branch_transactions.type='income' THEN branch_transactions.amount ELSE 0 END) - SUM(CASE WHEN branch_transactions.type='expense' THEN branch_transactions.amount ELSE 0 END)) as net
             ")
             ->groupBy('branch_transactions.branch_id', 'branches.name')
-            ->orderByDesc('net');
+           ;
     }
 
     protected function getHeaderWidgets(): array
