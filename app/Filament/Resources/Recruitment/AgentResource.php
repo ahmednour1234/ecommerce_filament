@@ -265,7 +265,8 @@ class AgentResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->can('recruitment.agents.view_any') ?? false;
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('recruitment.agents.view_any') ?? false;
     }
 
     public static function canCreate(): bool
