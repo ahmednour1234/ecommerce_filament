@@ -70,6 +70,9 @@ class RecruitmentTranslationsSeeder extends Seeder
             'recruitment.sections.notes' => ['en' => 'Notes', 'ar' => 'ملاحظات'],
 
             'general.actions.labor_prices' => ['en' => 'Labor Prices', 'ar' => 'أسعار العمل'],
+            'general.actions.export_excel' => ['en' => 'Export to Excel', 'ar' => 'تصدير إلى Excel'],
+            'general.actions.export_pdf' => ['en' => 'Export to PDF', 'ar' => 'تصدير إلى PDF'],
+            'general.actions.print' => ['en' => 'Print', 'ar' => 'طباعة'],
         ];
 
         $created = 0;
