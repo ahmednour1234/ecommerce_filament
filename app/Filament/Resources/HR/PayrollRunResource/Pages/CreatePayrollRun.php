@@ -11,7 +11,7 @@ class CreatePayrollRun extends CreateRecord
 {
     protected static string $resource = PayrollRunResource::class;
 
-    protected function mutateFormDataBeforeCreate(array $data): array
+    protected function handleRecordCreation(array $data): \Illuminate\Database\Eloquent\Model
     {
         $service = app(PayrollGenerationService::class);
 
@@ -29,9 +29,7 @@ class CreatePayrollRun extends CreateRecord
             ->success()
             ->send();
 
-        $this->record = $payrollRun;
-
-        return [];
+        return $payrollRun;
     }
 
     protected function getRedirectUrl(): string

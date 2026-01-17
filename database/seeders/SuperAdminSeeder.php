@@ -45,6 +45,7 @@ class SuperAdminSeeder extends Seeder
                 \Database\Seeders\HR\HrAttendancePermissionsSeeder::class,
                 \Database\Seeders\HR\HrLeavesPermissionsSeeder::class,
                 \Database\Seeders\HR\HrLoansPermissionsSeeder::class,
+                \Database\Seeders\HR\PayrollPermissionsSeeder::class,
             ]);
         } catch (\Exception $e) {
             $this->command->warn("Warning: Could not run permission seeders: {$e->getMessage()}");
