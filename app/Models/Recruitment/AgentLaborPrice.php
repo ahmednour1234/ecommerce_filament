@@ -36,4 +36,9 @@ class AgentLaborPrice extends Model
     {
         return $this->belongsTo(Nationality::class);
     }
+
+    public function profession(): BelongsTo
+    {
+        return $this->belongsTo(Profession::class);
+    }
 }

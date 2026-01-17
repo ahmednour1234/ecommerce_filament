@@ -12,18 +12,18 @@ class RecruitmentPermissionsSeeder extends Seeder
     {
         $this->command->info('Creating Recruitment module permissions...');
 
-        $resources = ['agents', 'agent_prices', 'nationalities'];
+        $resources = ['agents', 'agent_prices', 'nationalities', 'professions'];
 
         $permissions = [];
 
         foreach ($resources as $resource) {
             foreach (['view_any', 'view', 'create', 'update', 'delete'] as $action) {
                 $permName = "recruitment.{$resource}.{$action}";
-                
+
                 $permission = Permission::firstOrCreate(
                     ['name' => $permName, 'guard_name' => 'web']
                 );
-                
+
                 $permissions[] = $permission;
             }
         }

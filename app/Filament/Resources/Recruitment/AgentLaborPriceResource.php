@@ -7,6 +7,7 @@ use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\Recruitment\Agent;
 use App\Models\Recruitment\AgentLaborPrice;
 use App\Models\Recruitment\Nationality;
+use App\Models\Recruitment\Profession;
 use App\Models\MainCore\Currency;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -54,9 +55,15 @@ class AgentLaborPriceResource extends Resource
                             ->preload()
                             ->required(),
 
-                        Forms\Components\TextInput::make('profession_id')
-                            ->label(tr('recruitment.prices.fields.profession', [], null, 'dashboard') ?: 'Profession ID')
-                            ->numeric()
+                        Forms\Components\Select::make('profession_id')
+                            ->label(tr('recruitment.prices.fields.profession', [], null, 'dashboard') ?: 'Profession')
+                            ->relationship('profession', 'name_en')
+                            ->options(Profession::query()->where('is_active', true)->get()->mapWithKeys(function ($profession) {
+                                $label = app()->getLocale() === 'ar' ? $profession->name_ar : $profession->name_en;
+                                return [$profession->id => $label . ($profession->code ? ' (' . $profession->code . ')' : '')];
+                            }))
+                            ->searchable()
+                            ->preload()
                             ->required(),
 
                         Forms\Components\TextInput::make('experience_level')
@@ -105,8 +112,12 @@ class AgentLaborPriceResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('profession_id')
-                    ->label(tr('recruitment.prices.fields.profession', [], null, 'dashboard') ?: 'Profession ID')
+                Tables\Columns\TextColumn::make('profession.name_' . app()->getLocale())
+                    ->label(tr('recruitment.prices.fields.profession', [], null, 'dashboard') ?: 'Profession')
+                    ->formatStateUsing(fn ($state, $record) => $record->profession 
+                        ? (app()->getLocale() === 'ar' ? $record->profession->name_ar : $record->profession->name_en)
+                        : ($record->profession_id ?? ''))
+                    ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('experience_level')
@@ -146,15 +157,15 @@ class AgentLaborPriceResource extends Resource
                     ->searchable()
                     ->preload(),
 
-                Tables\Filters\Filter::make('profession_id')
-                    ->form([
-                        Forms\Components\TextInput::make('profession_id')
-                            ->label(tr('recruitment.prices.fields.profession', [], null, 'dashboard') ?: 'Profession ID')
-                            ->numeric(),
-                    ])
-                    ->query(fn (Builder $query, array $data) => 
-                        $query->when($data['profession_id'], fn ($q, $v) => $q->where('profession_id', $v))
-                    ),
+                Tables\Filters\SelectFilter::make('profession_id')
+                    ->label(tr('recruitment.prices.fields.profession', [], null, 'dashboard') ?: 'Profession')
+                    ->relationship('profession', 'name_en')
+                    ->options(Profession::query()->where('is_active', true)->get()->mapWithKeys(function ($profession) {
+                        $label = app()->getLocale() === 'ar' ? $profession->name_ar : $profession->name_en;
+                        return [$profession->id => $label];
+                    }))
+                    ->searchable()
+                    ->preload(),
 
                 Tables\Filters\SelectFilter::make('experience_level')
                     ->options(fn () => AgentLaborPrice::query()->distinct()->pluck('experience_level', 'experience_level')->toArray())
@@ -198,7 +209,7 @@ class AgentLaborPriceResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->with(['agent', 'currency', 'nationality']);
+        return parent::getEloquentQuery()->with(['agent', 'currency', 'nationality', 'profession']);
     }
 
     public static function canViewAny(): bool

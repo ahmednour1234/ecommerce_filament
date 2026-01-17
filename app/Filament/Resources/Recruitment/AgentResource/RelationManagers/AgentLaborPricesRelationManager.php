@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Recruitment\AgentResource\RelationManagers;
 use App\Models\MainCore\Currency;
 use App\Models\Recruitment\AgentLaborPrice;
 use App\Models\Recruitment\Nationality;
+use App\Models\Recruitment\Profession;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -47,9 +48,15 @@ class AgentLaborPricesRelationManager extends RelationManager
                     ->preload()
                     ->required(),
 
-                Forms\Components\TextInput::make('profession_id')
-                    ->label(tr('recruitment.prices.fields.profession', [], null, 'dashboard') ?: 'Profession ID')
-                    ->numeric()
+                Forms\Components\Select::make('profession_id')
+                    ->label(tr('recruitment.prices.fields.profession', [], null, 'dashboard') ?: 'Profession')
+                    ->relationship('profession', 'name_en')
+                    ->options(Profession::query()->where('is_active', true)->get()->mapWithKeys(function ($profession) {
+                        $label = app()->getLocale() === 'ar' ? $profession->name_ar : $profession->name_en;
+                        return [$profession->id => $label . ($profession->code ? ' (' . $profession->code . ')' : '')];
+                    }))
+                    ->searchable()
+                    ->preload()
                     ->required(),
 
                 Forms\Components\TextInput::make('experience_level')
@@ -92,8 +99,12 @@ class AgentLaborPricesRelationManager extends RelationManager
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('profession_id')
-                    ->label(tr('recruitment.prices.fields.profession', [], null, 'dashboard') ?: 'Profession ID')
+                Tables\Columns\TextColumn::make('profession.name_' . app()->getLocale())
+                    ->label(tr('recruitment.prices.fields.profession', [], null, 'dashboard') ?: 'Profession')
+                    ->formatStateUsing(fn ($state, $record) => $record->profession 
+                        ? (app()->getLocale() === 'ar' ? $record->profession->name_ar : $record->profession->name_en)
+                        : ($record->profession_id ?? ''))
+                    ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('experience_level')
@@ -130,7 +141,7 @@ class AgentLaborPricesRelationManager extends RelationManager
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['currency', 'nationality']));
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['currency', 'nationality', 'profession']));
     }
 
     protected function mutateFormDataBeforeCreate(array $data): array
