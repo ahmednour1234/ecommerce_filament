@@ -209,5 +209,13 @@ class Employee extends Model
     {
         return $this->hasMany(LeaveBalance::class, 'employee_id');
     }
+
+    /**
+     * Get the financial profile for this employee
+     */
+    public function financialProfile()
+    {
+        return $this->hasOne(EmployeeFinancialProfile::class, 'employee_id');
+    }
 }
 
