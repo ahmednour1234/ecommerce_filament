@@ -12,7 +12,7 @@ class RecruitmentPermissionsSeeder extends Seeder
     {
         $this->command->info('Creating Recruitment module permissions...');
 
-        $resources = ['agents', 'agent_prices', 'nationalities', 'professions'];
+        $resources = ['agents', 'agent_prices', 'nationalities', 'professions', 'laborers', 'laborers_used'];
 
         $permissions = [];
 
