@@ -94,12 +94,18 @@ class FileUpload extends BaseFileUpload
      */
     public static function any(string $name, string $directory = 'files'): static
     {
-        return static::make($name)
+        return parent::make($name)
+            ->disk('public')
             ->directory($directory)
-            ->acceptedFileTypes(null) // Accept all
+            ->visibility('public')
             ->maxSize(20480) // 20MB
             ->downloadable()
-            ->previewable();
+            ->previewable()
+            ->deleteUploadedFileUsing(function ($file) {
+                if ($file && is_string($file)) {
+                    Storage::disk('public')->delete($file);
+                }
+            });
     }
 }
 
