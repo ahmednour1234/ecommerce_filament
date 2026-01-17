@@ -25,8 +25,10 @@ class RecruitmentTranslationsSeeder extends Seeder
             'sidebar.recruitment' => ['en' => 'Recruitment', 'ar' => 'التوظيف'],
             'navigation.recruitment_agents' => ['en' => 'Agents', 'ar' => 'الوكلاء'],
             'navigation.recruitment_agent_prices' => ['en' => 'Agent Labor Prices', 'ar' => 'أسعار عمل الوكلاء'],
+            'navigation.recruitment_nationalities' => ['en' => 'Nationalities', 'ar' => 'الجنسيات'],
             'recruitment.agents.title' => ['en' => 'Agents', 'ar' => 'الوكلاء'],
             'recruitment.agent_prices.title' => ['en' => 'Agent Labor Prices', 'ar' => 'أسعار عمل الوكلاء'],
+            'recruitment.nationalities.title' => ['en' => 'Nationalities', 'ar' => 'الجنسيات'],
 
             'recruitment.fields.code' => ['en' => 'Code', 'ar' => 'الرمز'],
             'recruitment.fields.name_ar' => ['en' => 'Name (Arabic)', 'ar' => 'الاسم (عربي)'],
@@ -51,6 +53,7 @@ class RecruitmentTranslationsSeeder extends Seeder
             'recruitment.fields.password' => ['en' => 'Password', 'ar' => 'كلمة المرور'],
             'recruitment.fields.email' => ['en' => 'Email', 'ar' => 'البريد الإلكتروني'],
             'recruitment.fields.responsible_name' => ['en' => 'Responsible Name', 'ar' => 'اسم المسؤول'],
+            'recruitment.fields.active' => ['en' => 'Active', 'ar' => 'نشط'],
 
             'recruitment.prices.fields.agent' => ['en' => 'Agent', 'ar' => 'الوكيل'],
             'recruitment.prices.fields.nationality' => ['en' => 'Nationality', 'ar' => 'الجنسية'],
