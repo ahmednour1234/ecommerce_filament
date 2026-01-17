@@ -22,11 +22,12 @@ class RecruitmentTranslationsSeeder extends Seeder
 
         $translations = [
             'navigation.groups.recruitment' => ['en' => 'Recruitment', 'ar' => 'التوظيف'],
+            'sidebar.recruitment' => ['en' => 'Recruitment', 'ar' => 'التوظيف'],
             'navigation.recruitment_agents' => ['en' => 'Agents', 'ar' => 'الوكلاء'],
             'navigation.recruitment_agent_prices' => ['en' => 'Agent Labor Prices', 'ar' => 'أسعار عمل الوكلاء'],
             'recruitment.agents.title' => ['en' => 'Agents', 'ar' => 'الوكلاء'],
             'recruitment.agent_prices.title' => ['en' => 'Agent Labor Prices', 'ar' => 'أسعار عمل الوكلاء'],
-            
+
             'recruitment.fields.code' => ['en' => 'Code', 'ar' => 'الرمز'],
             'recruitment.fields.name_ar' => ['en' => 'Name (Arabic)', 'ar' => 'الاسم (عربي)'],
             'recruitment.fields.name_en' => ['en' => 'Name (English)', 'ar' => 'الاسم (إنجليزي)'],
@@ -50,21 +51,21 @@ class RecruitmentTranslationsSeeder extends Seeder
             'recruitment.fields.password' => ['en' => 'Password', 'ar' => 'كلمة المرور'],
             'recruitment.fields.email' => ['en' => 'Email', 'ar' => 'البريد الإلكتروني'],
             'recruitment.fields.responsible_name' => ['en' => 'Responsible Name', 'ar' => 'اسم المسؤول'],
-            
+
             'recruitment.prices.fields.agent' => ['en' => 'Agent', 'ar' => 'الوكيل'],
             'recruitment.prices.fields.nationality' => ['en' => 'Nationality', 'ar' => 'الجنسية'],
             'recruitment.prices.fields.profession' => ['en' => 'Profession', 'ar' => 'المهنة'],
             'recruitment.prices.fields.experience_level' => ['en' => 'Experience Level', 'ar' => 'مستوى الخبرة'],
             'recruitment.prices.fields.cost_amount' => ['en' => 'Cost Amount', 'ar' => 'المبلغ'],
             'recruitment.prices.fields.currency' => ['en' => 'Currency', 'ar' => 'العملة'],
-            
+
             'recruitment.sections.basic_info' => ['en' => 'Basic Information', 'ar' => 'المعلومات الأساسية'],
             'recruitment.sections.contact' => ['en' => 'Contact Information', 'ar' => 'معلومات الاتصال'],
             'recruitment.sections.location' => ['en' => 'Location', 'ar' => 'الموقع'],
             'recruitment.sections.identity' => ['en' => 'Identity & Banking', 'ar' => 'الهوية والمصرفية'],
             'recruitment.sections.login' => ['en' => 'Login Credentials', 'ar' => 'بيانات تسجيل الدخول'],
             'recruitment.sections.notes' => ['en' => 'Notes', 'ar' => 'ملاحظات'],
-            
+
             'general.actions.labor_prices' => ['en' => 'Labor Prices', 'ar' => 'أسعار العمل'],
         ];
 
