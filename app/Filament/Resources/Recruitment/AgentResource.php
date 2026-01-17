@@ -229,9 +229,13 @@ class AgentResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make()
+                    ->label(tr('actions.view', [], null, 'dashboard') ?: 'View'),
                 Tables\Actions\EditAction::make()
-                    ->visible(fn () => auth()->user()?->can('recruitment.agents.update') ?? false),
+                    ->label(tr('actions.edit', [], null, 'dashboard') ?: 'Edit')
+                    ->visible(fn () => auth()->user()?->hasRole('super_admin') || auth()->user()?->can('recruitment.agents.update') ?? false),
                 Tables\Actions\DeleteAction::make()
+                    ->label(tr('actions.delete', [], null, 'dashboard') ?: 'Delete')
                     ->visible(fn () => auth()->user()?->can('recruitment.agents.delete') ?? false),
                 Tables\Actions\Action::make('labor_prices')
                     ->label(tr('general.actions.labor_prices', [], null, 'dashboard') ?: 'Labor Prices')
@@ -259,6 +263,7 @@ class AgentResource extends Resource
         return [
             'index' => Pages\ListAgents::route('/'),
             'create' => Pages\CreateAgent::route('/create'),
+            'view' => Pages\ViewAgent::route('/{record}'),
             'edit' => Pages\EditAgent::route('/{record}/edit'),
         ];
     }
@@ -271,12 +276,20 @@ class AgentResource extends Resource
 
     public static function canCreate(): bool
     {
-        return auth()->user()?->can('recruitment.agents.create') ?? false;
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('recruitment.agents.create') ?? false;
+    }
+
+    public static function canView(mixed $record): bool
+    {
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('recruitment.agents.view') ?? false;
     }
 
     public static function canEdit(mixed $record): bool
     {
-        return auth()->user()?->can('recruitment.agents.update') ?? false;
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('recruitment.agents.update') ?? false;
     }
 
     public static function canDelete(mixed $record): bool

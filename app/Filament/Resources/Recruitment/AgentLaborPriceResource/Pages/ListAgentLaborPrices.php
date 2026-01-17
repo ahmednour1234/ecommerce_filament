@@ -16,7 +16,8 @@ class ListAgentLaborPrices extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label(tr('actions.create', [], null, 'dashboard') ?: 'Create'),
             Actions\Action::make('export_excel')
                 ->label(tr('general.actions.export_excel', [], null, 'dashboard') ?: 'Export to Excel')
                 ->icon('heroicon-o-arrow-down-tray')
