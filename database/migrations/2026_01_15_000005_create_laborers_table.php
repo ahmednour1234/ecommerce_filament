@@ -26,7 +26,7 @@ return new class extends Migration {
             $table->string('phone_1')->nullable();
             $table->string('phone_2')->nullable();
             $table->unsignedBigInteger('agent_id');
-            $table->unsignedBigInteger('country_id');
+            $table->unsignedInteger('country_id');
             $table->decimal('height', 5, 2)->nullable();
             $table->decimal('weight', 5, 2)->nullable();
             $table->boolean('speaks_arabic')->default(false);
