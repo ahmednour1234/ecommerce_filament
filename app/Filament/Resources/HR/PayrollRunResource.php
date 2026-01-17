@@ -95,7 +95,7 @@ class PayrollRunResource extends Resource
                 Tables\Columns\TextColumn::make('total_net_salary')
                     ->label(trans_dash('tables.hr_payroll.net_salary') ?: 'Total Net Salary')
                     ->money('USD')
-                    ->sortable(fn (Builder $query, string $direction) => $query->withSum('items', 'net_salary')->orderBy('items_sum_net_salary', $direction)),
+                    ->formatStateUsing(fn (PayrollRun $record) => $record->total_net_salary ?? 0),
 
                 Tables\Columns\BadgeColumn::make('status')
                     ->label(trans_dash('tables.hr_payroll.status') ?: 'Status')
