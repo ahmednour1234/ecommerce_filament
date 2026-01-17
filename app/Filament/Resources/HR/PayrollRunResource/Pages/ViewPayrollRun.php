@@ -15,7 +15,7 @@ class ViewPayrollRun extends ViewRecord
             Actions\Action::make('print')
                 ->label(trans_dash('actions.print_payroll') ?: 'Print Payroll Sheet')
                 ->icon('heroicon-o-printer')
-                ->url(fn () => route('filament.admin.resources.hr.payroll-runs.print', $this->record))
+                ->url(fn () => PayrollRunResource::getUrl('print', ['record' => $this->record]))
                 ->openUrlInNewTab()
                 ->visible(fn () => auth()->user()?->can('hr_payroll.export') ?? false),
         ];

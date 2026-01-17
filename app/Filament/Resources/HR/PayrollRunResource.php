@@ -151,6 +151,7 @@ class PayrollRunResource extends Resource
             'index' => Pages\ListPayrollRuns::route('/'),
             'create' => Pages\CreatePayrollRun::route('/create'),
             'view' => Pages\ViewPayrollRun::route('/{record}'),
+            'print' => Pages\PrintPayrollRun::route('/{record}/print'),
         ];
     }
 

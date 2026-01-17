@@ -33,7 +33,12 @@ class EmployeeFinancialProfileResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('employee_id')
                             ->label(trans_dash('forms.employee_financial_profiles.employee') ?: 'Employee')
-                            ->relationship('employee', 'full_name', fn (Builder $query) => $query->active())
+                            ->relationship(
+                                'employee',
+                                'first_name',
+                                fn (Builder $query) => $query->active()->orderBy('employee_number')
+                            )
+                            ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->employee_number} - {$record->full_name}")
                             ->searchable(['employee_number', 'first_name', 'last_name'])
                             ->preload()
                             ->required()
