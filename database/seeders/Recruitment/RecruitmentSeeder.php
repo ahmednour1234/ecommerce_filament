@@ -18,6 +18,7 @@ class RecruitmentSeeder extends Seeder
             RecruitmentTranslationsSeeder::class,
             NationalitySeeder::class,
             ProfessionSeeder::class,
+            LaborerSeeder::class,
         ]);
 
         $this->command->newLine();
