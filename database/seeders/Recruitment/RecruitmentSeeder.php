@@ -18,6 +18,7 @@ class RecruitmentSeeder extends Seeder
             RecruitmentTranslationsSeeder::class,
             NationalitySeeder::class,
             ProfessionSeeder::class,
+            AgentSeeder::class,
             LaborerSeeder::class,
         ]);
 
