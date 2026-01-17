@@ -86,6 +86,8 @@ trait ExportsResourceTable
      */
     protected function getColumnValue($record, string $key, array $column): mixed
     {
+        $value = null;
+        
         // Handle nested relationships (e.g., 'customer.name')
         if (str_contains($key, '.')) {
             $parts = explode('.', $key);
@@ -99,26 +101,56 @@ trait ExportsResourceTable
                     return '';
                 }
             }
-            return $value ?? '';
+            $value = $value ?? '';
+        } else {
+            // Handle direct attributes
+            if (is_object($record)) {
+                $value = $record->$key ?? $record->getAttribute($key) ?? '';
+            } else {
+                $value = $record[$key] ?? '';
+            }
         }
 
-        // Handle direct attributes
-        if (is_object($record)) {
-            $value = $record->$key ?? $record->getAttribute($key) ?? '';
-            
-            // Format based on type
-            if (is_numeric($value) && (str_contains($key, 'total') || str_contains($key, 'amount') || str_contains($key, 'price'))) {
-                return number_format((float) $value, 2);
-            }
-            
-            if ($value instanceof \DateTime || $value instanceof \Carbon\Carbon) {
-                return $value->format('Y-m-d');
-            }
-            
+        // Format based on type
+        if (is_numeric($value) && (str_contains($key, 'total') || str_contains($key, 'amount') || str_contains($key, 'price') || str_contains($key, 'cost'))) {
+            return number_format((float) $value, 2);
+        }
+        
+        if ($value instanceof \DateTime || $value instanceof \Carbon\Carbon) {
+            return $value->format('Y-m-d');
+        }
+
+        // Ensure string values are valid UTF-8
+        if (is_string($value)) {
+            return $this->ensureUtf8($value);
+        }
+
+        return $value;
+    }
+
+    /**
+     * Ensure value is properly UTF-8 encoded
+     */
+    protected function ensureUtf8($value): string
+    {
+        if (!is_string($value)) {
+            $value = (string) $value;
+        }
+
+        // Check if already valid UTF-8
+        if (mb_check_encoding($value, 'UTF-8')) {
             return $value;
         }
 
-        return $record[$key] ?? '';
+        // Try to convert to UTF-8
+        $converted = mb_convert_encoding($value, 'UTF-8', mb_detect_encoding($value, ['UTF-8', 'ISO-8859-1', 'Windows-1256', 'ASCII'], true));
+        
+        // If conversion fails, remove invalid characters
+        if ($converted === false || !mb_check_encoding($converted, 'UTF-8')) {
+            $converted = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+        }
+
+        return $converted;
     }
 
     /**

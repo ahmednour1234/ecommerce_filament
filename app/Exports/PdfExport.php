@@ -22,12 +22,7 @@ class PdfExport
 
     public function download(string $filename = 'export.pdf'): \Illuminate\Http\Response
     {
-        $pdf = Pdf::loadView('exports.table-pdf', [
-            'title' => $this->title,
-            'headers' => $this->headers,
-            'rows' => $this->data->map(fn($row) => is_array($row) ? array_values($row) : array_values((array) $row))->toArray(),
-            'metadata' => $this->metadata,
-        ]);
+        $pdf = Pdf::loadView('exports.table-pdf', $this->getViewData());
 
         $pdf->setPaper('a4', 'landscape');
         
@@ -36,16 +31,65 @@ class PdfExport
 
     public function stream(string $filename = 'export.pdf'): \Illuminate\Http\Response
     {
-        $pdf = Pdf::loadView('exports.table-pdf', [
-            'title' => $this->title,
-            'headers' => $this->headers,
-            'rows' => $this->data->map(fn($row) => is_array($row) ? array_values($row) : array_values((array) $row))->toArray(),
-            'metadata' => $this->metadata,
-        ]);
+        $pdf = Pdf::loadView('exports.table-pdf', $this->getViewData());
 
         $pdf->setPaper('a4', 'landscape');
         
         return $pdf->stream($filename);
+    }
+
+    protected function getViewData(): array
+    {
+        $cleanRows = $this->data->map(function($row) {
+            if (is_array($row)) {
+                return array_values(array_map([$this, 'ensureUtf8'], $row));
+            }
+            $array = (array) $row;
+            return array_values(array_map([$this, 'ensureUtf8'], $array));
+        })->toArray();
+
+        $cleanHeaders = array_map([$this, 'ensureUtf8'], $this->headers);
+        $cleanTitle = $this->ensureUtf8($this->title);
+        $cleanMetadata = array_map(function($value) {
+            return is_string($value) ? $this->ensureUtf8($value) : $value;
+        }, $this->metadata);
+
+        return [
+            'title' => $cleanTitle,
+            'headers' => $cleanHeaders,
+            'rows' => $cleanRows,
+            'metadata' => $cleanMetadata,
+        ];
+    }
+
+    protected function ensureUtf8($value): string
+    {
+        if (is_null($value)) {
+            return '';
+        }
+
+        if (is_numeric($value) || is_bool($value)) {
+            return (string) $value;
+        }
+
+        if (!is_string($value)) {
+            $value = (string) $value;
+        }
+
+        // Check if already valid UTF-8
+        if (mb_check_encoding($value, 'UTF-8')) {
+            return $value;
+        }
+
+        // Try to convert to UTF-8
+        $converted = mb_convert_encoding($value, 'UTF-8', mb_detect_encoding($value, ['UTF-8', 'ISO-8859-1', 'Windows-1256', 'ASCII'], true));
+        
+        // If conversion fails, remove invalid characters
+        if ($converted === false || !mb_check_encoding($converted, 'UTF-8')) {
+            $converted = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+        }
+
+        return $converted;
     }
 }
 
