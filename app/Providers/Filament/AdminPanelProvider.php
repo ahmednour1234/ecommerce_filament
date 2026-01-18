@@ -75,8 +75,6 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 Pages\Dashboard::class,
                 \App\Filament\Resources\Finance\Reports\Pages\FinanceIncomeExpenseReport::class,
-                \App\Filament\Resources\Finance\Reports\Pages\FinanceBranchPerformanceReport::class,
-                \App\Filament\Resources\Finance\Reports\Pages\BranchPerformanceReport::class,
             ])
 
             // Widgets
