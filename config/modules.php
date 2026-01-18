@@ -5,7 +5,7 @@ return [
     'finance' => env('MODULE_FINANCE', true),
     'notification' => env('MODULE_NOTIFICATION', false),
     'inventory' => env('MODULE_INVENTORY', false),
-    'hr' => env('MODULE_HR', false),
+    'hr' => env('MODULE_HR', true),
     'sales' => env('MODULE_SALES', false),
     'purchase' => env('MODULE_PURCHASE', false),
     'production' => env('MODULE_PRODUCTION', false),
