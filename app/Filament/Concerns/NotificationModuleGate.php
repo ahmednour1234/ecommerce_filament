@@ -16,7 +16,7 @@ trait NotificationModuleGate
         return static::moduleEnabled() && static::canViewAny();
     }
 
-    public static function canAccess(): bool
+    public static function canAccess(array $parameters = []): bool
     {
         return static::moduleEnabled() && static::canViewAny();
     }
