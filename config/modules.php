@@ -13,6 +13,6 @@ return [
     'maintenance' => env('MODULE_MAINTENANCE', false),
     'security' => env('MODULE_SECURITY', true),
     'environmental' => env('MODULE_ENVIRONMENTAL', false),
-    'integrations' => env('MODULE_INTEGRATIONS', true),
+    'integrations' => env('MODULE_INTEGRATIONS', false),
 
 ];
