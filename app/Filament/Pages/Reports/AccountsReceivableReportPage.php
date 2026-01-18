@@ -4,6 +4,7 @@ namespace App\Filament\Pages\Reports;
 
 use App\Filament\Actions\ReportExportActions;
 use App\Filament\Forms\Components\ReportFilters;
+use App\Filament\Concerns\AccountingModuleGate;
 use App\Reports\DTOs\FilterDTO;
 use App\Services\Reports\AccountsReceivableReportService;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -18,7 +19,7 @@ use Illuminate\Support\Facades\DB;
 class AccountsReceivableReportPage extends Page implements HasTable, HasForms
 {
     use InteractsWithTable;
-    use InteractsWithForms;
+    use InteractsWithForms, AccountingModuleGate;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
     protected static ?string $navigationGroup = 'Reports';

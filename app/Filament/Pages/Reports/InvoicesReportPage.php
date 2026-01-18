@@ -4,6 +4,7 @@ namespace App\Filament\Pages\Reports;
 
 use App\Filament\Concerns\ExportsTable;
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Filament\Concerns\AccountingModuleGate;
 use App\Models\Sales\Invoice;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -17,7 +18,7 @@ class InvoicesReportPage extends Page implements HasTable
 {
     use InteractsWithTable;
     use ExportsTable;
-    use TranslatableNavigation;
+    use TranslatableNavigation, AccountingModuleGate;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationGroup = 'Accounting';

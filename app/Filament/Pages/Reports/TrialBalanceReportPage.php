@@ -22,7 +22,7 @@ use App\Filament\Concerns\AccountingModuleGate;
 class TrialBalanceReportPage extends Page implements HasTable, HasForms
 {
     use InteractsWithTable;
-    use InteractsWithForms;
+    use InteractsWithForms, AccountingModuleGate;
 
     protected static ?string $navigationIcon = 'heroicon-o-calculator';
     protected static ?string $navigationGroup = 'Reports';

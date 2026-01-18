@@ -4,6 +4,7 @@ namespace App\Filament\Pages\Reports;
 
 use App\Filament\Actions\ReportExportActions;
 use App\Filament\Forms\Components\ReportFilters;
+use App\Filament\Concerns\AccountingModuleGate;
 use App\Reports\DTOs\FilterDTO;
 use App\Services\Reports\AccountsPayableAgingOverdueReportService;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -17,7 +18,7 @@ use Filament\Tables;
 class AccountsPayableAgingOverdueReportPage extends Page implements HasTable, HasForms
 {
     use InteractsWithTable;
-    use InteractsWithForms;
+    use InteractsWithForms, AccountingModuleGate;
 
     protected static ?string $navigationIcon = 'heroicon-o-exclamation-triangle';
     protected static ?string $navigationGroup = 'Reports';
