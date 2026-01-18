@@ -13,10 +13,11 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Concerns\NotificationModuleGate;
 
 class NotificationChannelResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation,NotificationModuleGate;
     protected static ?string $model = NotificationChannel::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-bell';
