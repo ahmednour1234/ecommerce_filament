@@ -221,7 +221,7 @@ class BranchTransactionResource extends Resource
 
                 Tables\Actions\Action::make('approve')
                     ->label(tr('actions.approve', [], null, 'dashboard'))
-                    ->visible(fn ($record) => auth()->user()?->can('branch_tx.approve') )
+                    ->visible(fn ($record) => auth()->user()?->can('branch_tx.approve') && $record->status === 'pending')
                     ->form([
                         Forms\Components\Textarea::make('approval_note')
                             ->label(tr('forms.branch_tx.approval_note', [], null, 'dashboard')),
