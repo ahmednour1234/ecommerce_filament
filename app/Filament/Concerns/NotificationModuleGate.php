@@ -11,7 +11,7 @@ trait NotificationModuleGate
         return (bool) config('modules.notification', true);
     }
 
-    public static function shouldRegisterNavigation(): bool
+    public static function shouldRegisterNavigation(array $parameters = []): bool
     {
         return static::moduleEnabled() && static::canViewAny();
     }

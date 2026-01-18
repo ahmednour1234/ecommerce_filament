@@ -11,7 +11,7 @@ trait AccountingModuleGate
         return (bool) config('modules.accounting', true);
     }
 
-    public static function shouldRegisterNavigation(): bool
+    public static function shouldRegisterNavigation(array $parameters = []): bool
     {
         return static::moduleEnabled() && static::canViewAny();
     }
