@@ -5,6 +5,7 @@ namespace App\Filament\Resources\MainCore;
 use App\Filament\Resources\MainCore\ShipmentResource\Pages;
 use App\Filament\Resources\MainCore\ShipmentResource\RelationManagers;
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Filament\Concerns\IntegrationsModuleGate;
 use App\Models\MainCore\Shipment;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ShipmentResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation, IntegrationsModuleGate;
     protected static ?string $model = Shipment::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-paper-airplane';

@@ -5,6 +5,7 @@ namespace App\Filament\Resources\MainCore;
 use App\Filament\Resources\MainCore\PaymentProviderResource\Pages;
 use App\Filament\Resources\MainCore\PaymentProviderResource\RelationManagers;
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Filament\Concerns\IntegrationsModuleGate;
 use App\Models\MainCore\PaymentProvider;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PaymentProviderResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation, IntegrationsModuleGate;
     protected static ?string $model = PaymentProvider::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-credit-card';
