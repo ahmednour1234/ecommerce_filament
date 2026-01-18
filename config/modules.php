@@ -11,7 +11,7 @@ return [
     'production' => env('MODULE_PRODUCTION', false),
     'quality' => env('MODULE_QUALITY', false),
     'maintenance' => env('MODULE_MAINTENANCE', false),
-    'security' => env('MODULE_SECURITY', false),
+    'security' => env('MODULE_SECURITY', true),
     'environmental' => env('MODULE_ENVIRONMENTAL', false),
 
 ];
