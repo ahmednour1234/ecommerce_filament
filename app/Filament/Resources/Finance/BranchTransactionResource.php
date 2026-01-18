@@ -214,14 +214,14 @@ class BranchTransactionResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
-                    ->visible(fn ($record) => auth()->user()?->can('branch_tx.update') && $record->status === 'pending'),
+                    ->visible(fn ($record) => auth()->user()?->can('branch_tx.update') ),
 
                 Tables\Actions\DeleteAction::make()
-                    ->visible(fn ($record) => auth()->user()?->can('branch_tx.delete') && $record->status === 'pending'),
+                    ->visible(fn ($record) => auth()->user()?->can('branch_tx.delete') ),
 
                 Tables\Actions\Action::make('approve')
                     ->label(tr('actions.approve', [], null, 'dashboard'))
-                    ->visible(fn ($record) => auth()->user()?->can('branch_tx.approve') && $record->status === 'pending')
+                    ->visible(fn ($record) => auth()->user()?->can('branch_tx.approve') )
                     ->form([
                         Forms\Components\Textarea::make('approval_note')
                             ->label(tr('forms.branch_tx.approval_note', [], null, 'dashboard')),
