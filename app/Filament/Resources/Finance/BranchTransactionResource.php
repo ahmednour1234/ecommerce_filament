@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Finance;
 
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Filament\Concerns\FinanceModuleGate;
 use App\Filament\Resources\Finance\BranchTransactionResource\Pages;
 use App\Models\Finance\BranchTransaction;
 use App\Services\Finance\BranchTransactionService;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class BranchTransactionResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation, FinanceModuleGate;
 
     protected static ?string $model = BranchTransaction::class;
 

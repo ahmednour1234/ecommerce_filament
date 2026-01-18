@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Catalog;
 
 use App\Filament\Resources\Catalog\ProductResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Filament\Concerns\InventoryModuleGate;
 use App\Models\Catalog\Product;
 use App\Models\Catalog\Category;
 use App\Models\Catalog\Brand;
@@ -17,7 +18,7 @@ use Filament\Tables\Table;
 
 class ProductResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation, InventoryModuleGate;
 
     protected static ?string $model = Product::class;
 

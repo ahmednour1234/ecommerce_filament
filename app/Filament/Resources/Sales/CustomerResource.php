@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Sales;
 
 use App\Filament\Resources\Sales\CustomerResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Filament\Concerns\SalesModuleGate;
 use App\Models\Sales\Customer;
 use App\Models\MainCore\Currency;
 use Filament\Forms;
@@ -14,7 +15,7 @@ use Filament\Tables\Table;
 
 class CustomerResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation, SalesModuleGate;
 
     protected static ?string $model = Customer::class;
 

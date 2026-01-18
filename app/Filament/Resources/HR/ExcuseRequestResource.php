@@ -4,6 +4,7 @@ namespace App\Filament\Resources\HR;
 
 use App\Filament\Resources\HR\ExcuseRequestResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Filament\Concerns\HrModuleGate;
 use App\Models\HR\ExcuseRequest;
 use App\Models\HR\Employee;
 use Filament\Forms;
@@ -15,7 +16,7 @@ use Carbon\Carbon;
 
 class ExcuseRequestResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation, HrModuleGate;
 
     protected static ?string $model = ExcuseRequest::class;
 

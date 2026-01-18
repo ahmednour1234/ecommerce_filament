@@ -4,6 +4,7 @@ namespace App\Filament\Resources\HR;
 
 use App\Filament\Resources\HR\PayrollRunResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Filament\Concerns\HrModuleGate;
 use App\Models\HR\PayrollRun;
 use App\Models\HR\PayrollRunItem;
 use App\Models\HR\Department;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class PayrollRunResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation, HrModuleGate;
 
     protected static ?string $model = PayrollRun::class;
 

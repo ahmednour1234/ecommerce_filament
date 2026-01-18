@@ -4,6 +4,7 @@ namespace App\Filament\Resources\HR;
 
 use App\Filament\Resources\HR\SalaryComponentResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Filament\Concerns\HrModuleGate;
 use App\Models\HR\SalaryComponent;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class SalaryComponentResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation, HrModuleGate;
 
     protected static ?string $model = SalaryComponent::class;
 

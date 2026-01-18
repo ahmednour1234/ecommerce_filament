@@ -4,6 +4,7 @@ namespace App\Filament\Resources\HR;
 
 use App\Filament\Resources\HR\WorkScheduleResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Filament\Concerns\HrModuleGate;
 use App\Models\HR\WorkSchedule;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -13,7 +14,7 @@ use Filament\Tables\Table;
 
 class WorkScheduleResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation, HrModuleGate;
 
     protected static ?string $model = WorkSchedule::class;
 

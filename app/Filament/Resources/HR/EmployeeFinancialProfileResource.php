@@ -4,6 +4,7 @@ namespace App\Filament\Resources\HR;
 
 use App\Filament\Resources\HR\EmployeeFinancialProfileResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Filament\Concerns\HrModuleGate;
 use App\Models\HR\EmployeeFinancialProfile;
 use App\Models\HR\Employee;
 use App\Models\HR\SalaryComponent;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class EmployeeFinancialProfileResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation, HrModuleGate;
 
     protected static ?string $model = EmployeeFinancialProfile::class;
 

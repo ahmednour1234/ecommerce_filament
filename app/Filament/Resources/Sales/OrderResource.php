@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Sales;
 
 use App\Filament\Resources\Sales\OrderResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Filament\Concerns\SalesModuleGate;
 use App\Models\Sales\Order;
 use App\Models\Sales\Customer;
 use App\Models\MainCore\Branch;
@@ -17,7 +18,7 @@ use Filament\Tables\Table;
 
 class OrderResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation, SalesModuleGate;
 
     protected static ?string $model = Order::class;
 

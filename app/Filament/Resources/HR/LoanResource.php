@@ -6,6 +6,7 @@ use App\Filament\Resources\HR\LoanResource\Pages;
 use App\Filament\Resources\HR\LoanResource\RelationManagers;
 use App\Filament\Resources\HR\LoanResource\Widgets;
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Filament\Concerns\HrModuleGate;
 use App\Models\HR\Loan;
 use App\Models\HR\Employee;
 use App\Models\HR\LoanType;
@@ -21,7 +22,7 @@ use Filament\Tables\Table;
 
 class LoanResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation, HrModuleGate;
 
     protected static ?string $model = Loan::class;
 

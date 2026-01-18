@@ -4,6 +4,7 @@ namespace App\Filament\Resources\HR;
 
 use App\Filament\Resources\HR\EmployeeGroupResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Filament\Concerns\HrModuleGate;
 use App\Models\HR\EmployeeGroup;
 use App\Models\HR\Employee;
 use Filament\Forms;
@@ -14,7 +15,7 @@ use Filament\Tables\Table;
 
 class EmployeeGroupResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation, HrModuleGate;
 
     protected static ?string $model = EmployeeGroup::class;
 

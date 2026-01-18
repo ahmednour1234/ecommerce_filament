@@ -5,6 +5,7 @@ namespace App\Filament\Resources\HR;
 use App\Filament\Forms\Components\FileUpload;
 use App\Filament\Resources\HR\EmployeeResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Filament\Concerns\HrModuleGate;
 use App\Models\HR\Employee;
 use App\Models\HR\Department;
 use App\Models\HR\Position;
@@ -18,7 +19,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class EmployeeResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation, HrModuleGate;
 
     protected static ?string $model = Employee::class;
 

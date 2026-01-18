@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Catalog;
 
 use App\Filament\Resources\Catalog\CategoryResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Filament\Concerns\InventoryModuleGate;
 use App\Models\Catalog\Category;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -13,7 +14,7 @@ use Filament\Tables\Table;
 
 class CategoryResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation, InventoryModuleGate;
 
     protected static ?string $model = Category::class;
 

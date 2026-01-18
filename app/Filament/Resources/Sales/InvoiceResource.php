@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Sales;
 
 use App\Filament\Resources\Sales\InvoiceResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Filament\Concerns\SalesModuleGate;
 use App\Models\Sales\Invoice;
 use App\Models\Sales\Order;
 use App\Models\Sales\Customer;
@@ -16,7 +17,7 @@ use Filament\Tables\Table;
 
 class InvoiceResource extends Resource
 {
-    use TranslatableNavigation;
+    use TranslatableNavigation, SalesModuleGate;
 
     protected static ?string $model = Invoice::class;
 
