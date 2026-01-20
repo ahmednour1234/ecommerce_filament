@@ -215,7 +215,7 @@ class ReportPdfExport
     /**
      * Download PDF
      */
-    public function download(string $filename = 'export.pdf'): \Illuminate\Http\Response
+    public function download(string $filename = 'export.pdf'): \Symfony\Component\HttpFoundation\StreamedResponse
     {
         $mpdf = $this->createMpdf();
         $html = $this->renderView();
@@ -232,7 +232,7 @@ class ReportPdfExport
     /**
      * Stream PDF
      */
-    public function stream(string $filename = 'export.pdf'): \Illuminate\Http\Response
+    public function stream(string $filename = 'export.pdf'): \Symfony\Component\HttpFoundation\StreamedResponse
     {
         $mpdf = $this->createMpdf();
         $html = $this->renderView();
