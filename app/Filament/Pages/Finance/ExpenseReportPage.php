@@ -17,6 +17,7 @@ use Filament\Tables;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -260,6 +261,35 @@ class ExpenseReportPage extends Page implements HasTable
         );
 
         return $export->download($this->getExportFilename('pdf'));
+    }
+
+    public function getTotalExpenses(): float
+    {
+        $query = $this->getFilteredTableQuery();
+        return (float) ($query->sum('amount') ?? 0);
+    }
+
+    public function getTransactionCount(): int
+    {
+        $query = $this->getFilteredTableQuery();
+        return (int) $query->count();
+    }
+
+    public function getGroupedByCategory(): Collection
+    {
+        $query = $this->getFilteredTableQuery();
+
+        return $query
+            ->select('finance_type_id', DB::raw('COUNT(*) as count'), DB::raw('SUM(amount) as total_amount'))
+            ->groupBy('finance_type_id')
+            ->with('financeType:id,name')
+            ->orderByDesc('total_amount')
+            ->get()
+            ->map(fn ($item) => [
+                'category_name' => $this->ensureUtf8($item->financeType?->name ?? ''),
+                'count' => (int) $item->count,
+                'total_amount' => (float) $item->total_amount,
+            ]);
     }
 
     protected function groupedByCategoryFromQuery(Builder $query)
