@@ -26,7 +26,7 @@ class SalesOperationsStatsWidget extends BaseWidget
         $dateRange = session()->get('dashboard_date_range', 'month');
         $dateFrom = session()->get('dashboard_date_from');
         $dateTo = session()->get('dashboard_date_to');
-        
+
         if ($dateRange === 'today') {
             $from = now()->startOfDay();
             $to = now()->endOfDay();
@@ -37,7 +37,7 @@ class SalesOperationsStatsWidget extends BaseWidget
             $from = $dateFrom ? Carbon::parse($dateFrom)->startOfDay() : now()->startOfMonth()->startOfDay();
             $to = $dateTo ? Carbon::parse($dateTo)->endOfDay() : now()->endOfDay();
         }
-        
+
         $user = auth()->user();
         $branchId = $user->branch_id ?? $this->branch_id ?? null;
 
@@ -51,25 +51,18 @@ class SalesOperationsStatsWidget extends BaseWidget
                 $ordersMonthQuery = Order::query()
                     ->whereMonth('order_date', now()->month)
                     ->whereYear('order_date', now()->year);
-                
+
                 if ($branchId) {
                     $ordersTodayQuery->where('branch_id', $branchId);
                     $ordersMonthQuery->where('branch_id', $branchId);
                 }
-                
+
                 $ordersToday = $ordersTodayQuery->count();
                 $ordersThisMonth = $ordersMonthQuery->count();
-                
-                $stats[] = Stat::make('طلبات اليوم / هذا الشهر', Number::format($ordersToday) . ' / ' . Number::format($ordersThisMonth))
-                    ->description('عدد الطلبات')
-                    ->descriptionIcon('heroicon-o-shopping-bag')
-                    ->color('info')
-                    ->icon('heroicon-o-shopping-cart');
+
+
             } catch (\Exception $e) {
-                $stats[] = Stat::make('طلبات اليوم / هذا الشهر', 'غير متاح')
-                    ->description('غير متاح')
-                    ->color('gray')
-                    ->icon('heroicon-o-x-circle');
+
             }
 
             try {
@@ -79,84 +72,53 @@ class SalesOperationsStatsWidget extends BaseWidget
                             ->orWhereNotNull('paid_at');
                     })
                     ->whereBetween('invoice_date', [$from, $to]);
-                
+
                 if ($branchId) {
                     $paidSalesQuery->where('branch_id', $branchId);
                 }
-                
+
                 $totalPaidSales = (float) $paidSalesQuery->sum('total');
-                
-                $stats[] = Stat::make('إجمالي المبيعات المدفوعة', Number::currency($totalPaidSales))
-                    ->description('في الفترة المحددة')
-                    ->descriptionIcon('heroicon-o-check-circle')
-                    ->color('success')
-                    ->icon('heroicon-o-banknotes');
+
             } catch (\Exception $e) {
-                $stats[] = Stat::make('إجمالي المبيعات المدفوعة', 'غير متاح')
-                    ->description('غير متاح')
-                    ->color('gray')
-                    ->icon('heroicon-o-x-circle');
+
             }
 
             try {
                 $invoicesQuery = Invoice::query()->whereBetween('invoice_date', [$from, $to]);
-                
+
                 if ($branchId) {
                     $invoicesQuery->where('branch_id', $branchId);
                 }
-                
+
                 $totalInvoices = $invoicesQuery->count();
-                
-                $stats[] = Stat::make('إجمالي الفواتير', Number::format($totalInvoices))
-                    ->description('في الفترة المحددة')
-                    ->descriptionIcon('heroicon-o-document-text')
-                    ->color('primary')
-                    ->icon('heroicon-o-document-duplicate');
+
+
             } catch (\Exception $e) {
-                $stats[] = Stat::make('إجمالي الفواتير', 'غير متاح')
-                    ->description('غير متاح')
-                    ->color('gray')
-                    ->icon('heroicon-o-x-circle');
+
             }
 
             try {
                 $avgOrderQuery = Order::query()->whereBetween('order_date', [$from, $to]);
-                
+
                 if ($branchId) {
                     $avgOrderQuery->where('branch_id', $branchId);
                 }
-                
+
                 $avgOrderValue = (float) $avgOrderQuery->avg('total');
-                
-                $stats[] = Stat::make('متوسط قيمة الطلب', Number::currency($avgOrderValue))
-                    ->description('في الفترة المحددة')
-                    ->descriptionIcon('heroicon-o-calculator')
-                    ->color('warning')
-                    ->icon('heroicon-o-chart-bar');
+
             } catch (\Exception $e) {
-                $stats[] = Stat::make('متوسط قيمة الطلب', 'غير متاح')
-                    ->description('غير متاح')
-                    ->color('gray')
-                    ->icon('heroicon-o-x-circle');
+
             }
 
             try {
                 $newCustomersQuery = Customer::query()
                     ->whereMonth('created_at', now()->month)
                     ->whereYear('created_at', now()->year);
-                
+
                 $newCustomersThisMonth = $newCustomersQuery->count();
-                
-                $stats[] = Stat::make('العملاء الجدد هذا الشهر', Number::format($newCustomersThisMonth))
-                    ->description('تم التسجيل هذا الشهر')
-                    ->descriptionIcon('heroicon-o-user-plus')
-                    ->color('success')
-                    ->icon('heroicon-o-user-group');
+
             } catch (\Exception $e) {
-                $stats[] = Stat::make('العملاء الجدد هذا الشهر', 'غير متاح')
-                    ->description('غير متاح')
-                    ->color('gray')
-                    ->icon('heroicon-o-x-circle');
+
             }
 
             return $stats;
