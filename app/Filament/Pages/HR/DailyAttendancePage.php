@@ -16,8 +16,8 @@ class DailyAttendancePage extends Page implements HasTable
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
-    protected static ?string $navigationGroup = 'HR';
-    protected static ?int $navigationSort = 77;
+    protected static ?string $navigationGroup = 'الموارد البشرية';
+    protected static ?int $navigationSort = 330;
     protected static string $view = 'filament.pages.hr.daily-attendance';
 
     public ?string $selectedDate = null;

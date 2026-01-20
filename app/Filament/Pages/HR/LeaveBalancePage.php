@@ -21,8 +21,8 @@ class LeaveBalancePage extends Page implements HasTable
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-calculator';
-    protected static ?string $navigationGroup = 'HR';
-    protected static ?int $navigationSort = 30;
+    protected static ?string $navigationGroup = 'الموارد البشرية';
+    protected static ?int $navigationSort = 420;
     protected static string $view = 'filament.pages.hr.leave-balance';
 
     public static function getNavigationLabel(): string

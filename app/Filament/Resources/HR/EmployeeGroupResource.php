@@ -20,8 +20,8 @@ class EmployeeGroupResource extends Resource
     protected static ?string $model = EmployeeGroup::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
-    protected static ?string $navigationGroup = 'HR';
-    protected static ?int $navigationSort = 71;
+    protected static ?string $navigationGroup = 'الموارد البشرية';
+    protected static ?int $navigationSort = 220;
     protected static ?string $navigationTranslationKey = 'navigation.hr_employee_groups';
 
     public static function form(Form $form): Form

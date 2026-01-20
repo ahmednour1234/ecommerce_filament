@@ -19,8 +19,8 @@ class PositionResource extends Resource
     protected static ?string $model = Position::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-briefcase';
-    protected static ?string $navigationGroup = 'HR';
-    protected static ?int $navigationSort = 20;
+    protected static ?string $navigationGroup = 'الموارد البشرية';
+    protected static ?int $navigationSort = 120;
     protected static ?string $navigationTranslationKey = 'navigation.hr_positions';
 
     public static function form(Form $form): Form

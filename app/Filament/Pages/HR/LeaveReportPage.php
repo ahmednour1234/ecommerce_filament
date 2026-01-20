@@ -23,8 +23,8 @@ class LeaveReportPage extends Page implements HasTable
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
-    protected static ?string $navigationGroup = 'HR';
-    protected static ?int $navigationSort = 40;
+    protected static ?string $navigationGroup = 'الموارد البشرية';
+    protected static ?int $navigationSort = 460;
     protected static string $view = 'filament.pages.hr.leave-report';
 
     public array $filters = [];

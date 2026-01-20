@@ -19,8 +19,8 @@ class LeaveTypeResource extends Resource
     protected static ?string $model = LeaveType::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
-    protected static ?string $navigationGroup = 'HR';
-    protected static ?int $navigationSort = 10;
+    protected static ?string $navigationGroup = 'الموارد البشرية';
+    protected static ?int $navigationSort = 410;
     protected static ?string $navigationTranslationKey = 'navigation.hr_leave_types';
 
     public static function form(Form $form): Form
