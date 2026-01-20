@@ -59,20 +59,8 @@ class IncomeReportPage extends Page implements HasTable, HasForms
         ]);
     }
 
-    /**
-     * @param Forms\Form|FilamentInfolist $form
-     * @return Forms\Form|FilamentInfolist
-     */
-    public function form($form)
+    public function form(Forms\Form $form): Forms\Form
     {
-        if ($form instanceof FilamentInfolist) {
-            return $form->schema([]);
-        }
-
-        if (!$form instanceof Forms\Form) {
-            return $form;
-        }
-
         return $form
             ->schema([
                 Forms\Components\Section::make(tr('reports.filters.title', [], null, 'dashboard') ?: 'Filters')
