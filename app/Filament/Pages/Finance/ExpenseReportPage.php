@@ -49,9 +49,9 @@ class ExpenseReportPage extends Page implements HasTable
                     ->getStateUsing(fn ($r) => $this->ensureUtf8($r->branch?->name ?? ''))
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('country.name_text')
+                Tables\Columns\TextColumn::make('country.name')
                     ->label(tr('reports.expense.columns.country', [], null, 'dashboard') ?: 'Country')
-                    ->getStateUsing(fn ($r) => $this->ensureUtf8($r->country?->name_text ?? ''))
+                    ->getStateUsing(fn ($r) => $this->ensureUtf8($r->country?->name ?? ''))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('currency.code')
@@ -59,9 +59,9 @@ class ExpenseReportPage extends Page implements HasTable
                     ->getStateUsing(fn ($r) => $this->ensureUtf8($r->currency?->code ?? ''))
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('financeType.name_text')
+                Tables\Columns\TextColumn::make('financeType.name')
                     ->label(tr('reports.expense.columns.category', [], null, 'dashboard') ?: 'Category')
-                    ->getStateUsing(fn ($r) => $this->ensureUtf8($r->financeType?->name_text ?? ''))
+                    ->getStateUsing(fn ($r) => $this->ensureUtf8($r->financeType?->name ?? ''))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('amount')
@@ -112,7 +112,7 @@ class ExpenseReportPage extends Page implements HasTable
                 Tables\Filters\SelectFilter::make('country_id')
                     ->label(tr('reports.expense.filters.country', [], null, 'dashboard') ?: 'Country')
                     ->options(fn () => Country::where('is_active', true)
-                        ->pluck('name_text', 'id')
+                        ->pluck('name', 'id')
                         ->map(fn ($v) => $this->ensureUtf8($v))
                         ->toArray())
                     ->searchable()
@@ -131,7 +131,7 @@ class ExpenseReportPage extends Page implements HasTable
                     ->label(tr('reports.expense.filters.category', [], null, 'dashboard') ?: 'Category')
                     ->options(fn () => FinanceType::where('kind', 'expense')
                         ->where('is_active', true)
-                        ->pluck('name_text', 'id')
+                        ->pluck('name', 'id')
                         ->map(fn ($v) => $this->ensureUtf8($v))
                         ->toArray())
                     ->searchable()
@@ -199,9 +199,9 @@ class ExpenseReportPage extends Page implements HasTable
         $detailedData = $records->map(fn ($r) => [
             'date' => $r->trx_date?->format('Y-m-d') ?? '',
             'branch' => $this->ensureUtf8($r->branch?->name ?? ''),
-            'country' => $this->ensureUtf8($r->country?->name_text ?? ''),
+            'country' => $this->ensureUtf8($r->country?->name?? ''),
             'currency' => $this->ensureUtf8($r->currency?->code ?? ''),
-            'category' => $this->ensureUtf8($r->financeType?->name_text ?? ''),
+            'category' => $this->ensureUtf8($r->financeType?->name ?? ''),
             'amount' => number_format((float) $r->amount, 2),
             'payment_method' => $this->ensureUtf8($r->payment_method ?? ''),
             'reference_no' => $this->ensureUtf8($r->reference_no ?? ''),
@@ -222,9 +222,9 @@ class ExpenseReportPage extends Page implements HasTable
         $detailedRows = $records->map(fn ($r) => [
             $r->trx_date?->format('Y-m-d') ?? '',
             $this->ensureUtf8($r->branch?->name ?? ''),
-            $this->ensureUtf8($r->country?->name_text ?? ''),
+            $this->ensureUtf8($r->country?->name ?? ''),
             $this->ensureUtf8($r->currency?->code ?? ''),
-            $this->ensureUtf8($r->financeType?->name_text ?? ''),
+            $this->ensureUtf8($r->financeType?->name ?? ''),
             number_format((float) $r->amount, 2),
             $this->ensureUtf8($r->payment_method ?? ''),
             $this->ensureUtf8($r->reference_no ?? ''),
@@ -269,11 +269,11 @@ class ExpenseReportPage extends Page implements HasTable
         return $q
             ->select('finance_type_id', DB::raw('COUNT(*) as count'), DB::raw('SUM(amount) as total_amount'))
             ->groupBy('finance_type_id')
-            ->with('financeType:id,name_text')
+            ->with('financeType:id,name')
             ->orderByDesc('total_amount')
             ->get()
             ->map(fn ($item) => [
-                'category_name' => $this->ensureUtf8($item->financeType?->name_text ?? ''),
+                'category_name' => $this->ensureUtf8($item->financeType?->name ?? ''),
                 'count' => (int) $item->count,
                 'total_amount' => number_format((float) $item->total_amount, 2),
             ]);
