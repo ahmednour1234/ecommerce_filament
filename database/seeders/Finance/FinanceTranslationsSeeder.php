@@ -212,6 +212,43 @@ class FinanceTranslationsSeeder extends Seeder
         ]);
 
         // ============================================
+        // Reports - Expense Report
+        // ============================================
+        $this->command->info('Step 8.2: Creating Expense Report translations...');
+        $translations = array_merge($translations, [
+            'sidebar.finance.reports.expense' => ['en' => 'Expense Report', 'ar' => 'تقرير المصروفات'],
+            'pages.finance.expense_report.title' => ['en' => 'Expense Report', 'ar' => 'تقرير المصروفات'],
+            'reports.expense.filters.date_from' => ['en' => 'From Date', 'ar' => 'من تاريخ'],
+            'reports.expense.filters.date_to' => ['en' => 'To Date', 'ar' => 'إلى تاريخ'],
+            'reports.expense.filters.branch' => ['en' => 'Branch', 'ar' => 'الفرع'],
+            'reports.expense.filters.country' => ['en' => 'Country', 'ar' => 'الدولة'],
+            'reports.expense.filters.currency' => ['en' => 'Currency', 'ar' => 'العملة'],
+            'reports.expense.filters.payment_method' => ['en' => 'Payment Method', 'ar' => 'طريقة الدفع'],
+            'reports.expense.filters.category' => ['en' => 'Category', 'ar' => 'الفئة'],
+            'reports.expense.filters.search' => ['en' => 'Search', 'ar' => 'بحث'],
+            'reports.expense.filters.search_placeholder' => ['en' => 'Search by receiver, reference, notes...', 'ar' => 'بحث حسب المستلم، المرجع، الملاحظات...'],
+            'reports.expense.columns.date' => ['en' => 'Date', 'ar' => 'التاريخ'],
+            'reports.expense.columns.branch' => ['en' => 'Branch', 'ar' => 'الفرع'],
+            'reports.expense.columns.country' => ['en' => 'Country', 'ar' => 'الدولة'],
+            'reports.expense.columns.currency' => ['en' => 'Currency', 'ar' => 'العملة'],
+            'reports.expense.columns.category' => ['en' => 'Category', 'ar' => 'الفئة'],
+            'reports.expense.columns.amount' => ['en' => 'Amount', 'ar' => 'المبلغ'],
+            'reports.expense.columns.payment_method' => ['en' => 'Payment Method', 'ar' => 'طريقة الدفع'],
+            'reports.expense.columns.reference' => ['en' => 'Reference', 'ar' => 'المرجع'],
+            'reports.expense.columns.receiver' => ['en' => 'Receiver', 'ar' => 'المستلم'],
+            'reports.expense.columns.attachment' => ['en' => 'Attachment', 'ar' => 'مرفق'],
+            'reports.expense.columns.created_by' => ['en' => 'Created By', 'ar' => 'تم الإنشاء بواسطة'],
+            'reports.expense.summary.title' => ['en' => 'Summary', 'ar' => 'ملخص'],
+            'reports.expense.summary.total_expenses' => ['en' => 'Total Expenses', 'ar' => 'إجمالي المصروفات'],
+            'reports.expense.summary.transaction_count' => ['en' => 'Transaction Count', 'ar' => 'عدد المعاملات'],
+            'reports.expense.summary.by_category' => ['en' => 'Summary by Category', 'ar' => 'ملخص حسب الفئة'],
+            'reports.expense.summary.category' => ['en' => 'Category', 'ar' => 'الفئة'],
+            'reports.expense.summary.count' => ['en' => 'Count', 'ar' => 'العدد'],
+            'reports.expense.summary.total_amount' => ['en' => 'Total Amount', 'ar' => 'إجمالي المبلغ'],
+            'reports.expense.detailed_transactions' => ['en' => 'Detailed Transactions', 'ar' => 'المعاملات التفصيلية'],
+        ]);
+
+        // ============================================
         // Common Actions
         // ============================================
         $this->command->info('Step 9: Creating common action translations...');
