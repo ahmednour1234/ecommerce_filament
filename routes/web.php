@@ -61,3 +61,7 @@ Route::middleware(['web', 'auth'])
     Route::middleware(['web', 'auth'])
         ->get('/admin/finance/branch-transactions/{branchTransaction}/print', BranchTransactionPrintController::class)
         ->name('finance.branch-transactions.print');
+
+    Route::middleware(['web', 'auth'])
+        ->get('/admin/finance/import/template', [App\Http\Controllers\Finance\FinanceImportTemplateController::class, 'download'])
+        ->name('finance.import.template');

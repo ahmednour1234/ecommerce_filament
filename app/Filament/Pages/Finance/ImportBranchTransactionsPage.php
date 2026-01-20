@@ -193,41 +193,21 @@ class ImportBranchTransactionsPage extends Page implements HasForms
                 ->label(tr('pages.finance.import.download_template', [], null, 'dashboard') ?: 'تحميل قالب Excel')
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('success')
-                ->action(function () {
-                    $data = $this->form->getState();
-                    $branchId = $data['branch_id'] ?? null;
-                    $kind = $data['kind'] ?? null;
-                    $financeTypeId = $data['finance_type_id'] ?? null;
-
-                    if (!$branchId) {
-                        Notification::make()
-                            ->warning()
-                            ->title(tr('pages.finance.import.select_branch_first', [], null, 'dashboard') ?: 'Please select Branch first')
-                            ->send();
-                        return;
+                ->url(function () {
+                    try {
+                        $data = $this->form->getRawState();
+                        $kind = $data['kind'] ?? 'expense';
+                    } catch (\Exception $e) {
+                        $kind = 'expense';
                     }
-
-                    if (!$kind) {
-                        Notification::make()
-                            ->warning()
-                            ->title(tr('pages.finance.import.select_kind_first', [], null, 'dashboard') ?: 'Please select Kind first')
-                            ->send();
-                        return;
+                    
+                    if (!in_array($kind, ['income', 'expense'])) {
+                        $kind = 'expense';
                     }
-
-                    if (!$financeTypeId) {
-                        Notification::make()
-                            ->warning()
-                            ->title(tr('pages.finance.import.select_type_first', [], null, 'dashboard') ?: 'Please select Finance Type first')
-                            ->send();
-                        return;
-                    }
-
-                    $export = new FinanceImportTemplateExport($kind);
-                    $filename = 'finance-import-' . ($kind === 'expense' ? 'expenses' : 'income') . '-template.xlsx';
-                    return Excel::download($export, $filename);
+                    
+                    return route('finance.import.template', ['kind' => $kind]);
                 })
-                ->requiresConfirmation(false),
+                ->openUrlInNewTab(false),
         ];
     }
 
