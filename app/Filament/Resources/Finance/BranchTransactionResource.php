@@ -59,7 +59,7 @@ class BranchTransactionResource extends Resource
                 Forms\Components\Section::make()
                     ->schema([
                         Forms\Components\Select::make('finance_type_id')
-                            ->label('Type')
+                            ->label(tr('forms.branch_transactions.finance_type_id', [], null, 'dashboard') ?: 'Type')
                             ->options(function ($get) {
                                 $query = FinanceType::query()->where('is_active', true);
                                 if ($get('kind_filter')) {
@@ -74,10 +74,10 @@ class BranchTransactionResource extends Resource
                             ->afterStateUpdated(fn ($state, callable $set) => $set('kind_filter', null)),
 
                         Forms\Components\Select::make('kind_filter')
-                            ->label('Filter by Kind')
+                            ->label(tr('forms.branch_transactions.kind_filter', [], null, 'dashboard') ?: 'Filter by Kind')
                             ->options([
-                                'income' => 'Income',
-                                'expense' => 'Expense',
+                                'income' => tr('forms.finance_types.kind_income', [], null, 'dashboard') ?: 'Income',
+                                'expense' => tr('forms.finance_types.kind_expense', [], null, 'dashboard') ?: 'Expense',
                             ])
                             ->reactive()
                             ->afterStateUpdated(function ($state, callable $set, callable $get) {
@@ -88,12 +88,12 @@ class BranchTransactionResource extends Resource
                             ->dehydrated(false),
 
                         Forms\Components\DatePicker::make('trx_date')
-                            ->label('Transaction Date')
+                            ->label(tr('forms.branch_transactions.trx_date', [], null, 'dashboard') ?: 'Transaction Date')
                             ->required()
                             ->default(now()),
 
                         Forms\Components\Select::make('branch_id')
-                            ->label('Branch')
+                            ->label(tr('forms.branch_transactions.branch_id', [], null, 'dashboard') ?: 'Branch')
                             ->relationship('branch', 'name')
                             ->searchable()
                             ->preload()
@@ -103,7 +103,7 @@ class BranchTransactionResource extends Resource
                             ->visible(fn () => $canViewAllBranches || !empty($userBranches)),
 
                         Forms\Components\Select::make('country_id')
-                            ->label('Country')
+                            ->label(tr('forms.branch_transactions.country_id', [], null, 'dashboard') ?: 'Country')
                             ->relationship('country', 'name')
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record->name_text ?? $record->name['en'] ?? '')
                             ->searchable()
@@ -111,7 +111,7 @@ class BranchTransactionResource extends Resource
                             ->nullable(),
 
                         Forms\Components\Select::make('currency_id')
-                            ->label('Currency')
+                            ->label(tr('forms.branch_transactions.currency_id', [], null, 'dashboard') ?: 'Currency')
                             ->relationship('currency', 'code')
                             ->searchable()
                             ->preload()
@@ -119,28 +119,28 @@ class BranchTransactionResource extends Resource
                             ->default($defaultCurrencyId),
 
                         Forms\Components\TextInput::make('amount')
-                            ->label('Amount')
+                            ->label(tr('forms.branch_transactions.amount', [], null, 'dashboard') ?: 'Amount')
                             ->numeric()
                             ->required()
                             ->step(0.01),
 
                         Forms\Components\TextInput::make('payment_method')
-                            ->label('Payment Method')
+                            ->label(tr('forms.branch_transactions.payment_method', [], null, 'dashboard') ?: 'Payment Method')
                             ->maxLength(50)
                             ->nullable(),
 
                         Forms\Components\TextInput::make('recipient_name')
-                            ->label('Recipient Name')
+                            ->label(tr('forms.branch_transactions.recipient_name', [], null, 'dashboard') ?: 'Recipient Name')
                             ->maxLength(150)
                             ->nullable(),
 
                         Forms\Components\TextInput::make('reference_no')
-                            ->label('Reference No')
+                            ->label(tr('forms.branch_transactions.reference_no', [], null, 'dashboard') ?: 'Reference No')
                             ->maxLength(100)
                             ->nullable(),
 
                         Forms\Components\FileUpload::make('attachment_path')
-                            ->label('Attachment')
+                            ->label(tr('forms.branch_transactions.attachment_path', [], null, 'dashboard') ?: 'Attachment')
                             ->disk('public')
                             ->directory('finance/transactions')
                             ->openable()
@@ -150,7 +150,7 @@ class BranchTransactionResource extends Resource
                             ->nullable(),
 
                         Forms\Components\Textarea::make('notes')
-                            ->label('Notes')
+                            ->label(tr('forms.branch_transactions.notes', [], null, 'dashboard') ?: 'Notes')
                             ->rows(3)
                             ->columnSpanFull()
                             ->nullable(),
@@ -164,65 +164,79 @@ class BranchTransactionResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('trx_date')
-                    ->label('Date')
+                    ->label(tr('tables.branch_transactions.trx_date', [], null, 'dashboard') ?: 'Date')
                     ->date()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('branch.name')
-                    ->label('Branch')
+                    ->label(tr('tables.branch_transactions.branch', [], null, 'dashboard') ?: 'Branch')
                     ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('financeType.kind')
-                    ->label('Kind')
+                    ->label(tr('tables.branch_transactions.kind', [], null, 'dashboard') ?: 'Kind')
                     ->badge()
                     ->colors([
                         'success' => 'income',
                         'danger' => 'expense',
                     ])
+                    ->formatStateUsing(fn ($state) => $state === 'income' 
+                        ? (tr('forms.finance_types.kind_income', [], null, 'dashboard') ?: 'Income')
+                        : (tr('forms.finance_types.kind_expense', [], null, 'dashboard') ?: 'Expense'))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('financeType.name_text')
-                    ->label('Type')
+                    ->label(tr('tables.branch_transactions.type', [], null, 'dashboard') ?: 'Type')
                     ->getStateUsing(fn ($record) => $record->financeType?->name_text)
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('amount')
-                    ->label('Amount')
+                    ->label(tr('tables.branch_transactions.amount', [], null, 'dashboard') ?: 'Amount')
                     ->formatStateUsing(fn ($state, $record) => number_format((float) $state, 2) . ' ' . ($record->currency?->code ?? ''))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('currency.code')
-                    ->label('Currency')
+                    ->label(tr('tables.branch_transactions.currency', [], null, 'dashboard') ?: 'Currency')
                     ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('reference_no')
-                    ->label('Reference')
+                    ->label(tr('tables.branch_transactions.reference_no', [], null, 'dashboard') ?: 'Reference')
                     ->searchable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('recipient_name')
-                    ->label('Recipient')
+                    ->label(tr('tables.branch_transactions.recipient_name', [], null, 'dashboard') ?: 'Recipient')
                     ->searchable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('payment_method')
-                    ->label('Payment Method')
+                    ->label(tr('tables.branch_transactions.payment_method', [], null, 'dashboard') ?: 'Payment Method')
                     ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('status')
+                    ->label(tr('tables.branch_transactions.status', [], null, 'dashboard') ?: 'Status')
+                    ->badge()
+                    ->colors([
+                        'warning' => 'pending',
+                        'success' => 'approved',
+                        'danger' => 'rejected',
+                    ])
+                    ->formatStateUsing(fn ($state) => tr('fields.status_' . $state, [], null, 'dashboard') ?: ucfirst($state))
+                    ->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('branch_id')
-                    ->label('Branch')
+                    ->label(tr('tables.branch_transactions.filters.branch', [], null, 'dashboard') ?: 'Branch')
                     ->relationship('branch', 'name')
                     ->searchable()
                     ->preload(),
 
                 Tables\Filters\SelectFilter::make('kind')
-                    ->label('Kind')
+                    ->label(tr('tables.branch_transactions.filters.kind', [], null, 'dashboard') ?: 'Kind')
                     ->options([
-                        'income' => 'Income',
-                        'expense' => 'Expense',
+                        'income' => tr('forms.finance_types.kind_income', [], null, 'dashboard') ?: 'Income',
+                        'expense' => tr('forms.finance_types.kind_expense', [], null, 'dashboard') ?: 'Expense',
                     ])
                     ->query(function (Builder $query, array $data) {
                         if ($data['value']) {
@@ -234,35 +248,105 @@ class BranchTransactionResource extends Resource
                     }),
 
                 Tables\Filters\SelectFilter::make('finance_type_id')
-                    ->label('Type')
+                    ->label(tr('tables.branch_transactions.filters.type', [], null, 'dashboard') ?: 'Type')
                     ->options(FinanceType::where('is_active', true)->get()->pluck('name_text', 'id'))
                     ->searchable()
                     ->preload(),
 
                 Tables\Filters\SelectFilter::make('currency_id')
-                    ->label('Currency')
+                    ->label(tr('tables.branch_transactions.filters.currency', [], null, 'dashboard') ?: 'Currency')
                     ->relationship('currency', 'code')
                     ->searchable()
                     ->preload(),
 
                 Tables\Filters\Filter::make('trx_date')
+                    ->label(tr('tables.branch_transactions.filters.date_range', [], null, 'dashboard') ?: 'Date Range')
                     ->form([
                         Forms\Components\DatePicker::make('from')
-                            ->label('From'),
+                            ->label(tr('reports.filters.from', [], null, 'dashboard') ?: 'From'),
                         Forms\Components\DatePicker::make('to')
-                            ->label('To'),
+                            ->label(tr('reports.filters.to', [], null, 'dashboard') ?: 'To'),
                     ])
                     ->query(function (Builder $query, array $data) {
                         return $query
                             ->when($data['from'] ?? null, fn (Builder $q, $date) => $q->whereDate('trx_date', '>=', $date))
                             ->when($data['to'] ?? null, fn (Builder $q, $date) => $q->whereDate('trx_date', '<=', $date));
                     }),
+
+                Tables\Filters\SelectFilter::make('status')
+                    ->label(tr('tables.branch_transactions.filters.status', [], null, 'dashboard') ?: 'Status')
+                    ->options([
+                        'pending' => tr('fields.status_pending', [], null, 'dashboard') ?: 'Pending',
+                        'approved' => tr('fields.status_approved', [], null, 'dashboard') ?: 'Approved',
+                        'rejected' => tr('fields.status_rejected', [], null, 'dashboard') ?: 'Rejected',
+                    ]),
             ])
             ->actions([
+                Tables\Actions\Action::make('approve')
+                    ->label(tr('actions.approve', [], null, 'dashboard') ?: 'Approve')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->form([
+                        Forms\Components\Textarea::make('notes')
+                            ->label(tr('forms.branch_transactions.approval_notes', [], null, 'dashboard') ?: 'Approval Notes')
+                            ->rows(3)
+                            ->nullable(),
+                    ])
+                    ->action(function (BranchTransaction $record, array $data) {
+                        $record->update([
+                            'status' => 'approved',
+                            'approved_by' => auth()->id(),
+                            'approved_at' => now(),
+                        ]);
+                        \Filament\Notifications\Notification::make()
+                            ->success()
+                            ->title(tr('notifications.approved', [], null, 'dashboard') ?: 'Transaction approved')
+                            ->send();
+                    })
+                    ->visible(fn (BranchTransaction $record) => 
+                        $record->status === 'pending' && 
+                        (auth()->user()?->hasRole('super_admin') || auth()->user()?->can('finance.approve_transactions') ?? false)
+                    ),
+
+                Tables\Actions\Action::make('reject')
+                    ->label(tr('actions.reject', [], null, 'dashboard') ?: 'Reject')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->form([
+                        Forms\Components\Textarea::make('rejection_reason')
+                            ->label(tr('forms.branch_transactions.rejection_reason', [], null, 'dashboard') ?: 'Rejection Reason')
+                            ->required()
+                            ->rows(3),
+                    ])
+                    ->action(function (BranchTransaction $record, array $data) {
+                        $record->update([
+                            'status' => 'rejected',
+                            'rejected_by' => auth()->id(),
+                            'rejected_at' => now(),
+                            'rejection_reason' => $data['rejection_reason'],
+                        ]);
+                        \Filament\Notifications\Notification::make()
+                            ->danger()
+                            ->title(tr('notifications.rejected', [], null, 'dashboard') ?: 'Transaction rejected')
+                            ->send();
+                    })
+                    ->visible(fn (BranchTransaction $record) => 
+                        $record->status === 'pending' && 
+                        (auth()->user()?->hasRole('super_admin') || auth()->user()?->can('finance.reject_transactions') ?? false)
+                    ),
+
                 Tables\Actions\EditAction::make()
-                    ->visible(fn () => auth()->user()?->hasRole('super_admin') || auth()->user()?->can('finance.update_transactions') ?? false),
+                    ->visible(fn (BranchTransaction $record) => 
+                        $record->status === 'pending' && 
+                        (auth()->user()?->hasRole('super_admin') || auth()->user()?->can('finance.update_transactions') ?? false)
+                    ),
                 Tables\Actions\DeleteAction::make()
-                    ->visible(fn () => auth()->user()?->hasRole('super_admin') || auth()->user()?->can('finance.delete_transactions') ?? false),
+                    ->visible(fn (BranchTransaction $record) => 
+                        $record->status === 'pending' && 
+                        (auth()->user()?->hasRole('super_admin') || auth()->user()?->can('finance.delete_transactions') ?? false)
+                    ),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

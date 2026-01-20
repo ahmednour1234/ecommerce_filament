@@ -7,9 +7,11 @@ use App\Filament\Resources\Finance\Reports\Concerns\HasFinanceReportFilters;
 use App\Filament\Resources\Finance\Reports\Widgets\IncomeExpenseBreakdownDonut;
 use App\Filament\Resources\Finance\Reports\Widgets\IncomeExpenseTrendChart;
 use App\Models\Finance\BranchTransaction;
+use App\Models\User;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
+use Illuminate\Support\Facades\Auth;
 
 class FinanceIncomeExpenseReport extends Page implements HasForms
 {
@@ -51,7 +53,8 @@ class FinanceIncomeExpenseReport extends Page implements HasForms
             ->with(['branch', 'country', 'currency', 'financeType'])
             ->whereBetween('trx_date', [$from, $to]);
 
-        $user = auth()->user();
+        /** @var User|null $user */
+        $user = Auth::user();
         if ($user && !$user->hasRole('super_admin') && !$user->can('finance.view_all_branches')) {
             $branchIds = $user->branches()->pluck('branches.id')->toArray();
             if (!empty($branchIds)) {
@@ -114,9 +117,11 @@ class FinanceIncomeExpenseReport extends Page implements HasForms
 
     public static function shouldRegisterNavigation(): bool
     {
-        if (!auth()->check()) {
+        if (!Auth::check()) {
             return false;
         }
-        return auth()->user()?->can('finance_reports.view') ?? false;
+        /** @var User|null $user */
+        $user = Auth::user();
+        return $user?->can('finance_reports.view') ?? false;
     }
 }

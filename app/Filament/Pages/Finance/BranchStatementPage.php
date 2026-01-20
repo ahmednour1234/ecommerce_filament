@@ -52,10 +52,10 @@ class BranchStatementPage extends Page implements HasTable, HasForms
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Filters')
+                Forms\Components\Section::make(tr('reports.filters.title', [], null, 'dashboard') ?: 'Filters')
                     ->schema([
                         Forms\Components\Select::make('branch_id')
-                            ->label('Branch')
+                            ->label(tr('reports.branch_statement.filters.branch', [], null, 'dashboard') ?: 'Branch')
                             ->options(Branch::where('status', 'active')->pluck('name', 'id'))
                             ->searchable()
                             ->preload()
@@ -63,17 +63,17 @@ class BranchStatementPage extends Page implements HasTable, HasForms
                             ->reactive(),
 
                         Forms\Components\DatePicker::make('from')
-                            ->label('From Date')
+                            ->label(tr('reports.branch_statement.filters.from', [], null, 'dashboard') ?: 'From Date')
                             ->required()
                             ->reactive(),
 
                         Forms\Components\DatePicker::make('to')
-                            ->label('To Date')
+                            ->label(tr('reports.branch_statement.filters.to', [], null, 'dashboard') ?: 'To Date')
                             ->required()
                             ->reactive(),
 
                         Forms\Components\Select::make('currency_id')
-                            ->label('Currency')
+                            ->label(tr('reports.branch_statement.filters.currency', [], null, 'dashboard') ?: 'Currency')
                             ->options(Currency::where('is_active', true)->pluck('code', 'id'))
                             ->searchable()
                             ->preload()
@@ -81,17 +81,17 @@ class BranchStatementPage extends Page implements HasTable, HasForms
                             ->reactive(),
 
                         Forms\Components\Select::make('kind')
-                            ->label('Kind (Optional)')
+                            ->label(tr('reports.branch_statement.filters.kind', [], null, 'dashboard') ?: 'Kind (Optional)')
                             ->options([
-                                'income' => 'Income',
-                                'expense' => 'Expense',
+                                'income' => tr('forms.finance_types.kind_income', [], null, 'dashboard') ?: 'Income',
+                                'expense' => tr('forms.finance_types.kind_expense', [], null, 'dashboard') ?: 'Expense',
                             ])
                             ->nullable()
                             ->reactive()
                             ->afterStateUpdated(fn ($state, callable $set) => $set('finance_type_id', null)),
 
                         Forms\Components\Select::make('finance_type_id')
-                            ->label('Type (Optional)')
+                            ->label(tr('reports.branch_statement.filters.type', [], null, 'dashboard') ?: 'Type (Optional)')
                             ->options(function ($get) {
                                 $query = \App\Models\Finance\FinanceType::query()->where('is_active', true);
                                 if ($get('kind')) {
@@ -144,40 +144,43 @@ class BranchStatementPage extends Page implements HasTable, HasForms
             ->query($this->getTableQuery())
             ->columns([
                 Tables\Columns\TextColumn::make('trx_date')
-                    ->label('Date')
+                    ->label(tr('tables.branch_transactions.trx_date', [], null, 'dashboard') ?: 'Date')
                     ->date()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('financeType.kind')
-                    ->label('Kind')
+                    ->label(tr('tables.branch_transactions.kind', [], null, 'dashboard') ?: 'Kind')
                     ->badge()
                     ->colors([
                         'success' => 'income',
                         'danger' => 'expense',
-                    ]),
+                    ])
+                    ->formatStateUsing(fn ($state) => $state === 'income' 
+                        ? (tr('forms.finance_types.kind_income', [], null, 'dashboard') ?: 'Income')
+                        : (tr('forms.finance_types.kind_expense', [], null, 'dashboard') ?: 'Expense')),
 
                 Tables\Columns\TextColumn::make('financeType.name_text')
-                    ->label('Type')
+                    ->label(tr('tables.branch_transactions.type', [], null, 'dashboard') ?: 'Type')
                     ->getStateUsing(fn ($record) => $record->financeType?->name_text),
 
                 Tables\Columns\TextColumn::make('reference_no')
-                    ->label('Reference')
+                    ->label(tr('tables.branch_transactions.reference_no', [], null, 'dashboard') ?: 'Reference')
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('recipient_name')
-                    ->label('Recipient'),
+                    ->label(tr('tables.branch_transactions.recipient_name', [], null, 'dashboard') ?: 'Recipient'),
 
                 Tables\Columns\TextColumn::make('payment_method')
-                    ->label('Payment Method')
+                    ->label(tr('tables.branch_transactions.payment_method', [], null, 'dashboard') ?: 'Payment Method')
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('notes')
-                    ->label('Notes')
+                    ->label(tr('forms.branch_transactions.notes', [], null, 'dashboard') ?: 'Notes')
                     ->limit(50)
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('amount')
-                    ->label('Amount')
+                    ->label(tr('tables.branch_transactions.amount', [], null, 'dashboard') ?: 'Amount')
                     ->formatStateUsing(function ($state, $record) use (&$runningBalance) {
                         $amount = (float) $state;
                         if ($record->financeType?->kind === 'expense') {
@@ -189,7 +192,7 @@ class BranchStatementPage extends Page implements HasTable, HasForms
                     ->alignEnd(),
 
                 Tables\Columns\TextColumn::make('running_balance')
-                    ->label('Running Balance')
+                    ->label(tr('tables.branch_transactions.running_balance', [], null, 'dashboard') ?: 'Running Balance')
                     ->formatStateUsing(function ($state, $record) use (&$runningBalance) {
                         return number_format($runningBalance, 2);
                     })
@@ -198,14 +201,14 @@ class BranchStatementPage extends Page implements HasTable, HasForms
             ->filters([])
             ->headerActions([
                 Tables\Actions\Action::make('export_excel')
-                    ->label('Export Excel')
+                    ->label(tr('actions.export_excel', [], null, 'dashboard') ?: 'Export Excel')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->action(function () use ($table) {
                         return $this->exportToExcel($table, $this->getExportFilename('xlsx'));
                     }),
 
                 Tables\Actions\Action::make('export_pdf')
-                    ->label('Export PDF')
+                    ->label(tr('actions.export_pdf', [], null, 'dashboard') ?: 'Export PDF')
                     ->icon('heroicon-o-document-arrow-down')
                     ->action(function () use ($table) {
                         return $this->exportToPdf($table, $this->getExportFilename('pdf'));
@@ -246,6 +249,16 @@ class BranchStatementPage extends Page implements HasTable, HasForms
         $to = $this->data['to'] ?? '';
 
         return 'Branch Statement - ' . ($branch?->name ?? '') . ' (' . $from . ' to ' . $to . ') - ' . ($currency?->code ?? '');
+    }
+
+    public function getTitle(): string
+    {
+        return tr('reports.branch_statement.title', [], null, 'dashboard') ?: 'Branch Statement';
+    }
+
+    public function getHeading(): string
+    {
+        return tr('reports.branch_statement.title', [], null, 'dashboard') ?: 'Branch Statement';
     }
 
     protected function getExportFilename(string $extension = 'xlsx'): string

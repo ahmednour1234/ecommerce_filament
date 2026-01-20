@@ -37,6 +37,8 @@ class FinancePermissionsSeeder extends Seeder
             'finance.create_transactions',
             'finance.update_transactions',
             'finance.delete_transactions',
+            'finance.approve_transactions',
+            'finance.reject_transactions',
         ];
 
         // ============================================

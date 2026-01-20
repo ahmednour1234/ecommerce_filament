@@ -39,10 +39,10 @@ class IncomeStatementByBranchPage extends Page implements HasForms
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Filters')
+                Forms\Components\Section::make(tr('reports.filters.title', [], null, 'dashboard') ?: 'Filters')
                     ->schema([
                         Forms\Components\Select::make('branch_id')
-                            ->label('Branch')
+                            ->label(tr('reports.income_statement.filters.branch', [], null, 'dashboard') ?: 'Branch')
                             ->options(Branch::where('status', 'active')->pluck('name', 'id'))
                             ->searchable()
                             ->preload()
@@ -50,17 +50,17 @@ class IncomeStatementByBranchPage extends Page implements HasForms
                             ->reactive(),
 
                         Forms\Components\DatePicker::make('from')
-                            ->label('From Date')
+                            ->label(tr('reports.income_statement.filters.from', [], null, 'dashboard') ?: 'From Date')
                             ->required()
                             ->reactive(),
 
                         Forms\Components\DatePicker::make('to')
-                            ->label('To Date')
+                            ->label(tr('reports.income_statement.filters.to', [], null, 'dashboard') ?: 'To Date')
                             ->required()
                             ->reactive(),
 
                         Forms\Components\Select::make('currency_id')
-                            ->label('Currency')
+                            ->label(tr('reports.income_statement.filters.currency', [], null, 'dashboard') ?: 'Currency')
                             ->options(Currency::where('is_active', true)->pluck('code', 'id'))
                             ->searchable()
                             ->preload()
@@ -143,6 +143,16 @@ class IncomeStatementByBranchPage extends Page implements HasForms
     protected function getNetProfit(): float
     {
         return $this->getTotalIncome() - $this->getTotalExpense();
+    }
+
+    public function getTitle(): string
+    {
+        return tr('reports.income_statement.title', [], null, 'dashboard') ?: 'Income Statement by Branch';
+    }
+
+    public function getHeading(): string
+    {
+        return tr('reports.income_statement.title', [], null, 'dashboard') ?: 'Income Statement by Branch';
     }
 
     public static function canAccess(): bool

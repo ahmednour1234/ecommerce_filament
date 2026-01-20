@@ -198,6 +198,21 @@ class FinanceTranslationsSeeder extends Seeder
             'common.sort' => ['en' => 'Sort', 'ar' => 'الترتيب'],
             'common.active' => ['en' => 'Active', 'ar' => 'نشط'],
             'common.transactions' => ['en' => 'Transactions', 'ar' => 'المعاملات'],
+            'common.all' => ['en' => 'All', 'ar' => 'الكل'],
+            'common.active_only' => ['en' => 'Active only', 'ar' => 'نشط فقط'],
+            'common.inactive_only' => ['en' => 'Inactive only', 'ar' => 'غير نشط فقط'],
+            'reports.filters.title' => ['en' => 'Filters', 'ar' => 'الفلاتر'],
+            'fields.status' => ['en' => 'Status', 'ar' => 'الحالة'],
+            'fields.status_pending' => ['en' => 'Pending', 'ar' => 'قيد الانتظار'],
+            'fields.status_approved' => ['en' => 'Approved', 'ar' => 'معتمد'],
+            'fields.status_rejected' => ['en' => 'Rejected', 'ar' => 'مرفوض'],
+            'forms.branch_transactions.approval_notes' => ['en' => 'Approval Notes', 'ar' => 'ملاحظات الموافقة'],
+            'forms.branch_transactions.rejection_reason' => ['en' => 'Rejection Reason', 'ar' => 'سبب الرفض'],
+            'tables.branch_transactions.status' => ['en' => 'Status', 'ar' => 'الحالة'],
+            'tables.branch_transactions.filters.status' => ['en' => 'Status', 'ar' => 'الحالة'],
+            'notifications.approved' => ['en' => 'Transaction approved', 'ar' => 'تم اعتماد المعاملة'],
+            'notifications.rejected' => ['en' => 'Transaction rejected', 'ar' => 'تم رفض المعاملة'],
+            'actions.print_pdf' => ['en' => 'Print PDF', 'ar' => 'طباعة PDF'],
         ]);
 
         // ============================================

@@ -26,11 +26,19 @@ class BranchTransaction extends Model
         'notes',
         'attachment_path',
         'created_by',
+        'status',
+        'approved_by',
+        'approved_at',
+        'rejected_by',
+        'rejected_at',
+        'rejection_reason',
     ];
 
     protected $casts = [
         'trx_date' => 'date',
         'amount' => 'decimal:2',
+        'approved_at' => 'datetime',
+        'rejected_at' => 'datetime',
     ];
 
     public function branch(): BelongsTo
@@ -56,6 +64,31 @@ class BranchTransaction extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function rejector(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'rejected_by');
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('status', 'approved');
+    }
+
+    public function scopeRejected($query)
+    {
+        return $query->where('status', 'rejected');
     }
 
     public function scopeForBranch($query, $branchId)
