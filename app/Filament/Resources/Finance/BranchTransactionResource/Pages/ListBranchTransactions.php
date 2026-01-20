@@ -29,11 +29,7 @@ class ListBranchTransactions extends ListRecords
                 ->icon('heroicon-o-document-arrow-down')
                 ->action(fn () => $this->exportToPdf()),
 
-            Actions\Action::make('print')
-                ->label(tr('actions.print', [], null, 'dashboard') ?: 'Print')
-                ->icon('heroicon-o-printer')
-                ->url(fn () => $this->getPrintUrl())
-                ->openUrlInNewTab(),
+
 
             Actions\Action::make('print_pdf')
                 ->label(tr('actions.print_pdf', [], null, 'dashboard') ?: 'Print PDF')
