@@ -126,14 +126,14 @@ class FinanceTypeResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
-                    ->visible(fn () => auth()->user()?->can('finance.manage_types') ?? false),
+                    ->visible(fn () => auth()->user()?->hasRole('super_admin') || auth()->user()?->can('finance.manage_types') ?? false),
                 Tables\Actions\DeleteAction::make()
-                    ->visible(fn () => auth()->user()?->can('finance.manage_types') ?? false),
+                    ->visible(fn () => auth()->user()?->hasRole('super_admin') || auth()->user()?->can('finance.manage_types') ?? false),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
-                        ->visible(fn () => auth()->user()?->can('finance.manage_types') ?? false),
+                        ->visible(fn () => auth()->user()?->hasRole('super_admin') || auth()->user()?->can('finance.manage_types') ?? false),
                 ]),
             ])
             ->defaultSort('sort');
@@ -150,27 +150,32 @@ class FinanceTypeResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->can('finance.view_types') ?? false;
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('finance.view_types') ?? false;
     }
 
     public static function canCreate(): bool
     {
-        return auth()->user()?->can('finance.manage_types') ?? false;
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('finance.manage_types') ?? false;
     }
 
     public static function canEdit(mixed $record): bool
     {
-        return auth()->user()?->can('finance.manage_types') ?? false;
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('finance.manage_types') ?? false;
     }
 
     public static function canDelete(mixed $record): bool
     {
-        return auth()->user()?->can('finance.manage_types') ?? false;
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('finance.manage_types') ?? false;
     }
 
     public static function canDeleteAny(): bool
     {
-        return auth()->user()?->can('finance.manage_types') ?? false;
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('finance.manage_types') ?? false;
     }
 
     public static function shouldRegisterNavigation(): bool

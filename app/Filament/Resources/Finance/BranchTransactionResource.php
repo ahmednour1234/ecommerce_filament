@@ -260,14 +260,14 @@ class BranchTransactionResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
-                    ->visible(fn () => auth()->user()?->can('finance.update_transactions') ?? false),
+                    ->visible(fn () => auth()->user()?->hasRole('super_admin') || auth()->user()?->can('finance.update_transactions') ?? false),
                 Tables\Actions\DeleteAction::make()
-                    ->visible(fn () => auth()->user()?->can('finance.delete_transactions') ?? false),
+                    ->visible(fn () => auth()->user()?->hasRole('super_admin') || auth()->user()?->can('finance.delete_transactions') ?? false),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
-                        ->visible(fn () => auth()->user()?->can('finance.delete_transactions') ?? false),
+                        ->visible(fn () => auth()->user()?->hasRole('super_admin') || auth()->user()?->can('finance.delete_transactions') ?? false),
                 ]),
             ])
             ->defaultSort('trx_date', 'desc');
@@ -284,27 +284,32 @@ class BranchTransactionResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->can('finance.view_transactions') ?? false;
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('finance.view_transactions') ?? false;
     }
 
     public static function canCreate(): bool
     {
-        return auth()->user()?->can('finance.create_transactions') ?? false;
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('finance.create_transactions') ?? false;
     }
 
     public static function canEdit(mixed $record): bool
     {
-        return auth()->user()?->can('finance.update_transactions') ?? false;
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('finance.update_transactions') ?? false;
     }
 
     public static function canDelete(mixed $record): bool
     {
-        return auth()->user()?->can('finance.delete_transactions') ?? false;
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('finance.delete_transactions') ?? false;
     }
 
     public static function canDeleteAny(): bool
     {
-        return auth()->user()?->can('finance.delete_transactions') ?? false;
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('finance.delete_transactions') ?? false;
     }
 
     public static function shouldRegisterNavigation(): bool

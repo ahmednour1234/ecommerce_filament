@@ -15,7 +15,7 @@ class ListBranchTransactions extends ListRecords
     {
         return [
             Tables\Actions\CreateAction::make()
-                ->visible(fn () => auth()->user()?->can('finance.create_transactions') ?? false),
+                ->visible(fn () => auth()->user()?->hasRole('super_admin') || auth()->user()?->can('finance.create_transactions') ?? false),
         ];
     }
 }

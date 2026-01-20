@@ -23,7 +23,7 @@ class ListFinanceTypes extends ListRecords
     {
         return [
             Tables\Actions\CreateAction::make()
-                ->visible(fn () => auth()->user()?->can('finance.manage_types') ?? false),
+                ->visible(fn () => auth()->user()?->hasRole('super_admin') || auth()->user()?->can('finance.manage_types') ?? false),
         ];
     }
 }

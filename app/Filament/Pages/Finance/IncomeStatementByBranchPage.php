@@ -147,7 +147,8 @@ class IncomeStatementByBranchPage extends Page implements HasForms
 
     public static function canAccess(): bool
     {
-        return auth()->user()?->can('finance.view_reports') ?? false;
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('finance.view_reports') ?? false;
     }
 
     public static function shouldRegisterNavigation(): bool

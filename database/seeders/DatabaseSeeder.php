@@ -27,10 +27,10 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\Accounting\AccountingSeeder::class, // Must be after MainCore (needs Branch, CostCenter)
             \Database\Seeders\Accounting\BankGuaranteePermissionsSeeder::class, // Bank Guarantee permissions
             \Database\Seeders\Sales\SalesSeeder::class, // Must be after Catalog and Accounting
-        \Database\Seeders\Finance\FinanceTranslationsSeeder::class,
-        \Database\Seeders\Finance\FinanceReportPermissionSeeder::class,
-        \Database\Seeders\FinancePermissionsSeeder::class,
-        \Database\Seeders\MainCore\CountriesSeeder::class,
+            \Database\Seeders\Finance\FinancePermissionsSeeder::class, // Finance module permissions
+            \Database\Seeders\Finance\FinanceTypesSeeder::class, // Finance types data
+            \Database\Seeders\Finance\FinanceTranslationsSeeder::class, // Finance translations
+            \Database\Seeders\MainCore\CountriesSeeder::class,
             SuperAdminSeeder::class, // Create super_admin role with ALL permissions (must be last)
         ]);
 
