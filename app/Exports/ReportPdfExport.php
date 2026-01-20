@@ -19,6 +19,8 @@ class ReportPdfExport
     protected array $metadata;
     protected bool $isRtl;
     protected string $view;
+    protected ?Collection $summaryData = null;
+    protected ?array $summaryHeaders = null;
 
     public function __construct(
         Collection $data,
@@ -138,12 +140,35 @@ class ReportPdfExport
             return $this->ensureUtf8($value);
         }, $this->metadata);
 
+        $cleanSummaryData = null;
+        $cleanSummaryHeaders = null;
+
+        if ($this->summaryData && $this->summaryHeaders) {
+            $cleanSummaryData = $this->summaryData->map(function($row) {
+                if (is_array($row)) {
+                    return array_map(function($value) {
+                        return $this->ensureUtf8($value);
+                    }, array_values($row));
+                }
+                $array = (array) $row;
+                return array_map(function($value) {
+                    return $this->ensureUtf8($value);
+                }, array_values($array));
+            })->toArray();
+
+            $cleanSummaryHeaders = array_map(function($header) {
+                return $this->ensureUtf8($header);
+            }, $this->summaryHeaders);
+        }
+
         $html = view($this->view, [
             'title' => $cleanTitle,
             'headers' => $cleanHeaders,
             'rows' => $cleanData,
             'metadata' => $cleanMetadata,
             'isRtl' => $this->isRtl,
+            'summaryRows' => $cleanSummaryData,
+            'summaryHeaders' => $cleanSummaryHeaders,
         ])->render();
 
         // Ensure the HTML is UTF-8
@@ -233,5 +258,10 @@ class ReportPdfExport
         
         return $mpdf->Output('', 'S');
     }
-}
+
+    public function setSummaryData(Collection $summaryData, array $summaryHeaders): void
+    {
+        $this->summaryData = $summaryData;
+        $this->summaryHeaders = $summaryHeaders;
+    }
 

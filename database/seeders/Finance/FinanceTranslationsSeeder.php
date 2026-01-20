@@ -175,6 +175,43 @@ class FinanceTranslationsSeeder extends Seeder
         ]);
 
         // ============================================
+        // Reports - Income Report
+        // ============================================
+        $this->command->info('Step 8.1: Creating Income Report translations...');
+        $translations = array_merge($translations, [
+            'sidebar.finance.reports.income' => ['en' => 'Income Report', 'ar' => 'تقرير الإيرادات'],
+            'pages.finance.income_report.title' => ['en' => 'Income Report', 'ar' => 'تقرير الإيرادات'],
+            'reports.income.filters.date_from' => ['en' => 'From Date', 'ar' => 'من تاريخ'],
+            'reports.income.filters.date_to' => ['en' => 'To Date', 'ar' => 'إلى تاريخ'],
+            'reports.income.filters.branch' => ['en' => 'Branch', 'ar' => 'الفرع'],
+            'reports.income.filters.country' => ['en' => 'Country', 'ar' => 'الدولة'],
+            'reports.income.filters.currency' => ['en' => 'Currency', 'ar' => 'العملة'],
+            'reports.income.filters.payment_method' => ['en' => 'Payment Method', 'ar' => 'طريقة الدفع'],
+            'reports.income.filters.category' => ['en' => 'Category', 'ar' => 'الفئة'],
+            'reports.income.filters.search' => ['en' => 'Search', 'ar' => 'بحث'],
+            'reports.income.filters.search_placeholder' => ['en' => 'Search by payer, reference, notes...', 'ar' => 'بحث حسب الدافع، المرجع، الملاحظات...'],
+            'reports.income.columns.date' => ['en' => 'Date', 'ar' => 'التاريخ'],
+            'reports.income.columns.branch' => ['en' => 'Branch', 'ar' => 'الفرع'],
+            'reports.income.columns.country' => ['en' => 'Country', 'ar' => 'الدولة'],
+            'reports.income.columns.currency' => ['en' => 'Currency', 'ar' => 'العملة'],
+            'reports.income.columns.category' => ['en' => 'Category', 'ar' => 'الفئة'],
+            'reports.income.columns.amount' => ['en' => 'Amount', 'ar' => 'المبلغ'],
+            'reports.income.columns.payment_method' => ['en' => 'Payment Method', 'ar' => 'طريقة الدفع'],
+            'reports.income.columns.reference' => ['en' => 'Reference', 'ar' => 'المرجع'],
+            'reports.income.columns.payer' => ['en' => 'Payer', 'ar' => 'الدافع'],
+            'reports.income.columns.attachment' => ['en' => 'Attachment', 'ar' => 'مرفق'],
+            'reports.income.columns.created_by' => ['en' => 'Created By', 'ar' => 'تم الإنشاء بواسطة'],
+            'reports.income.summary.title' => ['en' => 'Summary', 'ar' => 'ملخص'],
+            'reports.income.summary.total_income' => ['en' => 'Total Income', 'ar' => 'إجمالي الإيرادات'],
+            'reports.income.summary.transaction_count' => ['en' => 'Transaction Count', 'ar' => 'عدد المعاملات'],
+            'reports.income.summary.by_category' => ['en' => 'Summary by Category', 'ar' => 'ملخص حسب الفئة'],
+            'reports.income.summary.category' => ['en' => 'Category', 'ar' => 'الفئة'],
+            'reports.income.summary.count' => ['en' => 'Count', 'ar' => 'العدد'],
+            'reports.income.summary.total_amount' => ['en' => 'Total Amount', 'ar' => 'إجمالي المبلغ'],
+            'reports.income.detailed_transactions' => ['en' => 'Detailed Transactions', 'ar' => 'المعاملات التفصيلية'],
+        ]);
+
+        // ============================================
         // Common Actions
         // ============================================
         $this->command->info('Step 9: Creating common action translations...');
