@@ -151,17 +151,30 @@ class BranchStatementPage extends Page implements HasTable, HasForms
             return BranchTransaction::query()->whereRaw('1 = 0');
         }
 
-        return BranchTransaction::query()
-            ->where('branch_id', $data['branch_id'])
-            ->where('currency_id', $data['currency_id'])
-            ->whereBetween('trx_date', [$data['from'], $data['to']])
-            ->when(!empty($data['kind']), function (Builder $q) use ($data) {
-                $q->whereHas('financeType', fn ($x) => $x->where('kind', $data['kind']));
-            })
-            ->when(!empty($data['finance_type_id']), fn (Builder $q) => $q->where('finance_type_id', $data['finance_type_id']))
+        return $this->baseQuery()
             ->with(['financeType', 'currency'])
             ->orderBy('trx_date')
             ->orderBy('id');
+    }
+
+    protected function baseQuery(): Builder
+    {
+        $data = $this->data ?? [];
+
+        $query = BranchTransaction::query()
+            ->where('branch_id', $data['branch_id'])
+            ->where('currency_id', $data['currency_id'])
+            ->whereBetween('trx_date', [$data['from'], $data['to']]);
+
+        if (!empty($data['kind'])) {
+            $query->whereHas('financeType', fn ($q) => $q->where('kind', $data['kind']));
+        }
+
+        if (!empty($data['finance_type_id'])) {
+            $query->where('finance_type_id', $data['finance_type_id']);
+        }
+
+        return $query;
     }
 
     public function table(Table $table): Table
@@ -194,6 +207,15 @@ class BranchStatementPage extends Page implements HasTable, HasForms
                 Tables\Columns\TextColumn::make('recipient_name')
                     ->label(tr('tables.branch_transactions.recipient_name', [], null, 'dashboard') ?: 'Recipient'),
 
+                Tables\Columns\TextColumn::make('payment_method')
+                    ->label(tr('tables.branch_transactions.payment_method', [], null, 'dashboard') ?: 'Payment Method')
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('notes')
+                    ->label(tr('forms.branch_transactions.notes', [], null, 'dashboard') ?: 'Notes')
+                    ->limit(50)
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('amount')
                     ->label(tr('tables.branch_transactions.amount', [], null, 'dashboard') ?: 'Amount')
                     ->formatStateUsing(function ($state, $record) use (&$runningBalance) {
@@ -225,7 +247,13 @@ class BranchStatementPage extends Page implements HasTable, HasForms
             ->paginated(false);
     }
 
-    protected function getOpeningBalance(): float
+    protected function guardReady(): bool
+    {
+        $data = $this->data ?? [];
+        return !empty($data['branch_id']) && !empty($data['from']) && !empty($data['to']) && !empty($data['currency_id']);
+    }
+
+    public function getOpeningBalance(): float
     {
         $data = $this->data ?? [];
 
@@ -248,6 +276,66 @@ class BranchStatementPage extends Page implements HasTable, HasForms
             ->sum('amount');
 
         return $income - $expense;
+    }
+
+    public function getTotalIncome(): float
+    {
+        if (!$this->guardReady()) {
+            return 0;
+        }
+
+        $data = $this->data ?? [];
+
+        $query = BranchTransaction::query()
+            ->where('branch_id', $data['branch_id'])
+            ->where('currency_id', $data['currency_id'])
+            ->whereBetween('trx_date', [$data['from'], $data['to']])
+            ->whereHas('financeType', fn ($q) => $q->where('kind', 'income'));
+
+        if (!empty($data['finance_type_id'])) {
+            $query->where('finance_type_id', $data['finance_type_id']);
+        }
+
+        if (!empty($data['kind']) && $data['kind'] !== 'income') {
+            return 0;
+        }
+
+        return (float) $query->sum('amount');
+    }
+
+    public function getTotalExpense(): float
+    {
+        if (!$this->guardReady()) {
+            return 0;
+        }
+
+        $data = $this->data ?? [];
+
+        $query = BranchTransaction::query()
+            ->where('branch_id', $data['branch_id'])
+            ->where('currency_id', $data['currency_id'])
+            ->whereBetween('trx_date', [$data['from'], $data['to']])
+            ->whereHas('financeType', fn ($q) => $q->where('kind', 'expense'));
+
+        if (!empty($data['finance_type_id'])) {
+            $query->where('finance_type_id', $data['finance_type_id']);
+        }
+
+        if (!empty($data['kind']) && $data['kind'] !== 'expense') {
+            return 0;
+        }
+
+        return (float) $query->sum('amount');
+    }
+
+    public function getNetChange(): float
+    {
+        return $this->getTotalIncome() - $this->getTotalExpense();
+    }
+
+    public function getClosingBalance(): float
+    {
+        return $this->getOpeningBalance() + $this->getNetChange();
     }
 
     protected function getExportFilename(string $extension = 'xlsx'): string
