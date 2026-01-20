@@ -323,6 +323,20 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
         return $export->download($this->getExportFilename('pdf'));
     }
 
+    public function getTotalExpenses(): float
+    {
+        $query = $this->baseQuery();
+        $this->applyFilters($query);
+        return (float) ($query->sum('amount') ?? 0);
+    }
+
+    public function getTransactionCount(): int
+    {
+        $query = $this->baseQuery();
+        $this->applyFilters($query);
+        return (int) $query->count();
+    }
+
     public function getGroupedByCategory(): Collection
     {
         $query = $this->baseQuery();
@@ -337,7 +351,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
             ->map(fn ($item) => [
                 'category_name' => $this->ensureUtf8($item->financeType?->name_text ?? ''),
                 'count' => (int) $item->count,
-                'total_amount' => number_format((float) $item->total_amount, 2),
+                'total_amount' => (float) $item->total_amount,
             ]);
     }
 
