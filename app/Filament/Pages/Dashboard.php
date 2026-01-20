@@ -5,8 +5,6 @@ namespace App\Filament\Pages;
 use App\Filament\Widgets\Dashboard\FinanceStatsWidget;
 use App\Filament\Widgets\Dashboard\FinanceTopTypesWidget;
 use App\Filament\Widgets\Dashboard\HRStatsWidget;
-use App\Filament\Widgets\Dashboard\OrdersByStatusChartWidget;
-use App\Filament\Widgets\Dashboard\SalesOperationsStatsWidget;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Dashboard as BaseDashboard;
