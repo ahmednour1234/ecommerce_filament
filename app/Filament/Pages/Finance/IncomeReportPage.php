@@ -23,6 +23,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -65,12 +66,12 @@ class IncomeReportPage extends Page implements HasTable, HasForms
                     ->schema([
                         Forms\Components\DatePicker::make('date_from')
                             ->label(tr('reports.income.filters.date_from', [], null, 'dashboard') ?: 'From Date')
-                            ->required()
+                            ->nullable()
                             ->reactive(),
 
                         Forms\Components\DatePicker::make('date_to')
                             ->label(tr('reports.income.filters.date_to', [], null, 'dashboard') ?: 'To Date')
-                            ->required()
+                            ->nullable()
                             ->reactive(),
 
                         Forms\Components\Select::make('branch_id')
@@ -146,46 +147,54 @@ class IncomeReportPage extends Page implements HasTable, HasForms
             ->statePath('data');
     }
 
-    protected function getTableQuery(): Builder
+    protected function baseQuery(): Builder
     {
-        $data = $this->data;
-        if (empty($data['date_from']) || empty($data['date_to'])) {
-            return BranchTransaction::query()->whereRaw('1 = 0');
-        }
-
-        $query = BranchTransaction::query()
-            ->whereHas('financeType', fn($q) => $q->where('kind', 'income'))
-            ->whereBetween('trx_date', [$data['date_from'], $data['date_to']])
+        return BranchTransaction::query()
+            ->whereHas('financeType', fn (Builder $q) => $q->where('kind', 'income'))
             ->with(['financeType', 'branch', 'country', 'currency', 'creator']);
+    }
 
-        if (!empty($data['branch_id'])) {
-            $query->where('branch_id', $data['branch_id']);
+    protected function applyFilters(Builder $query): void
+    {
+        $d = $this->form->getRawState();
+
+        $from = !empty($d['date_from']) ? Carbon::parse($d['date_from'])->startOfDay() : null;
+        $to = !empty($d['date_to']) ? Carbon::parse($d['date_to'])->endOfDay() : null;
+
+        if ($from && $to) {
+            $query->whereBetween('trx_date', [$from, $to]);
+        } elseif ($from) {
+            $query->where('trx_date', '>=', $from);
+        } elseif ($to) {
+            $query->where('trx_date', '<=', $to);
         }
 
-        if (!empty($data['country_id'])) {
-            $query->where('country_id', $data['country_id']);
+        if (!empty($d['branch_id'])) $query->where('branch_id', $d['branch_id']);
+        if (!empty($d['country_id'])) $query->where('country_id', $d['country_id']);
+        if (!empty($d['currency_id'])) $query->where('currency_id', $d['currency_id']);
+
+        if (!empty($d['payment_method'])) {
+            $query->where('payment_method', 'like', '%' . $d['payment_method'] . '%');
         }
 
-        if (!empty($data['currency_id'])) {
-            $query->where('currency_id', $data['currency_id']);
+        if (!empty($d['finance_type_id'])) {
+            $query->where('finance_type_id', $d['finance_type_id']);
         }
 
-        if (!empty($data['payment_method'])) {
-            $query->where('payment_method', 'like', '%' . $data['payment_method'] . '%');
-        }
-
-        if (!empty($data['finance_type_id'])) {
-            $query->where('finance_type_id', $data['finance_type_id']);
-        }
-
-        if (!empty($data['q'])) {
-            $search = $data['q'];
-            $query->where(function ($q) use ($search) {
+        if (!empty($d['q'])) {
+            $search = $d['q'];
+            $query->where(function (Builder $q) use ($search) {
                 $q->where('recipient_name', 'like', '%' . $search . '%')
                     ->orWhere('reference_no', 'like', '%' . $search . '%')
                     ->orWhere('notes', 'like', '%' . $search . '%');
             });
         }
+    }
+
+    protected function getTableQuery(): Builder
+    {
+        $query = $this->baseQuery();
+        $this->applyFilters($query);
 
         return $query->orderBy('trx_date', 'desc')->orderBy('id', 'desc');
     }
@@ -193,7 +202,7 @@ class IncomeReportPage extends Page implements HasTable, HasForms
     public function table(Table $table): Table
     {
         return $table
-            ->query($this->getTableQuery())
+            ->query(fn () => $this->getTableQuery())
             ->columns([
                 Tables\Columns\TextColumn::make('trx_date')
                     ->label(tr('reports.income.columns.date', [], null, 'dashboard') ?: 'Date')
@@ -299,101 +308,40 @@ class IncomeReportPage extends Page implements HasTable, HasForms
 
     public function getTotalIncome(): float
     {
-        $data = $this->data;
-        if (empty($data['date_from']) || empty($data['date_to'])) {
-            return 0;
-        }
-
-        $query = BranchTransaction::query()
-            ->whereHas('financeType', fn($q) => $q->where('kind', 'income'))
-            ->whereBetween('trx_date', [$data['date_from'], $data['date_to']]);
-
-        $this->applyFiltersToQuery($query);
-
+        $query = $this->baseQuery();
+        $this->applyFilters($query);
         return (float) ($query->sum('amount') ?? 0);
     }
 
     public function getTransactionCount(): int
     {
-        $data = $this->data;
-        if (empty($data['date_from']) || empty($data['date_to'])) {
-            return 0;
-        }
-
-        $query = BranchTransaction::query()
-            ->whereHas('financeType', fn($q) => $q->where('kind', 'income'))
-            ->whereBetween('trx_date', [$data['date_from'], $data['date_to']]);
-
-        $this->applyFiltersToQuery($query);
-
+        $query = $this->baseQuery();
+        $this->applyFilters($query);
         return (int) $query->count();
     }
 
     public function getGroupedByCategory(): Collection
     {
-        $data = $this->data;
-        if (empty($data['date_from']) || empty($data['date_to'])) {
-            return collect([]);
-        }
-
-        $query = BranchTransaction::query()
-            ->whereHas('financeType', fn($q) => $q->where('kind', 'income'))
-            ->whereBetween('trx_date', [$data['date_from'], $data['date_to']]);
-
-        $this->applyFiltersToQuery($query);
+        $query = $this->baseQuery();
+        $this->applyFilters($query);
 
         return $query
             ->select('finance_type_id', DB::raw('COUNT(*) as count'), DB::raw('SUM(amount) as total_amount'))
             ->groupBy('finance_type_id')
-            ->with('financeType')
+            ->with('financeType:id,name')
             ->orderByDesc('total_amount')
             ->get()
             ->map(function ($item) {
                 return [
                     'category_name' => $this->ensureUtf8($item->financeType?->name_text ?? ''),
-                    'count' => $item->count,
+                    'count' => (int) $item->count,
                     'total_amount' => (float) $item->total_amount,
                 ];
             });
     }
 
-    protected function applyFiltersToQuery(Builder $query): void
-    {
-        $data = $this->data;
-
-        if (!empty($data['branch_id'])) {
-            $query->where('branch_id', $data['branch_id']);
-        }
-
-        if (!empty($data['country_id'])) {
-            $query->where('country_id', $data['country_id']);
-        }
-
-        if (!empty($data['currency_id'])) {
-            $query->where('currency_id', $data['currency_id']);
-        }
-
-        if (!empty($data['payment_method'])) {
-            $query->where('payment_method', 'like', '%' . $data['payment_method'] . '%');
-        }
-
-        if (!empty($data['finance_type_id'])) {
-            $query->where('finance_type_id', $data['finance_type_id']);
-        }
-
-        if (!empty($data['q'])) {
-            $search = $data['q'];
-            $query->where(function ($q) use ($search) {
-                $q->where('recipient_name', 'like', '%' . $search . '%')
-                    ->orWhere('reference_no', 'like', '%' . $search . '%')
-                    ->orWhere('notes', 'like', '%' . $search . '%');
-            });
-        }
-    }
-
     public function exportToExcelIncome()
     {
-        $data = $this->data;
         $tableQuery = $this->getTableQuery();
         $records = $tableQuery->get();
 
@@ -428,7 +376,6 @@ class IncomeReportPage extends Page implements HasTable, HasForms
 
     public function exportToPdfIncome()
     {
-        $data = $this->data;
         $tableQuery = $this->getTableQuery();
         $records = $tableQuery->get();
 
@@ -496,10 +443,14 @@ class IncomeReportPage extends Page implements HasTable, HasForms
 
     protected function getExportTitle(): ?string
     {
-        $data = $this->data;
-        $from = $data['date_from'] ?? '';
-        $to = $data['date_to'] ?? '';
-        return tr('pages.finance.income_report.title', [], null, 'dashboard') ?: 'Income Report' . ' (' . $from . ' to ' . $to . ')';
+        $d = $this->form->getRawState();
+        $base = tr('pages.finance.income_report.title', [], null, 'dashboard') ?: 'Income Report';
+        $from = $d['date_from'] ?? null;
+        $to = $d['date_to'] ?? null;
+
+        if (!$from && !$to) return $base;
+
+        return $base . ' (' . ($from ?: '-') . ' to ' . ($to ?: '-') . ')';
     }
 
     protected function getExportFilename(string $extension = 'xlsx'): string
@@ -510,22 +461,20 @@ class IncomeReportPage extends Page implements HasTable, HasForms
 
     protected function getExportMetadata(): array
     {
-        $data = $this->data;
+        $d = $this->form->getRawState();
         $metadata = [
             'exported_at' => now()->format('Y-m-d H:i:s'),
-            'exported_by' => auth()->user()?->name ?? 'System',
-            'date_from' => $data['date_from'] ?? '',
-            'date_to' => $data['date_to'] ?? '',
+            'exported_by' => Auth::user()?->name ?? 'System',
+            'date_from' => $d['date_from'] ?? '',
+            'date_to' => $d['date_to'] ?? '',
         ];
 
-        if (!empty($data['branch_id'])) {
-            $branch = Branch::find($data['branch_id']);
-            $metadata['branch'] = $this->ensureUtf8($branch?->name ?? '');
+        if (!empty($d['branch_id'])) {
+            $metadata['branch'] = $this->ensureUtf8(Branch::find($d['branch_id'])?->name ?? '');
         }
 
-        if (!empty($data['currency_id'])) {
-            $currency = Currency::find($data['currency_id']);
-            $metadata['currency'] = $this->ensureUtf8($currency?->code ?? '');
+        if (!empty($d['currency_id'])) {
+            $metadata['currency'] = $this->ensureUtf8(Currency::find($d['currency_id'])?->code ?? '');
         }
 
         return $metadata;
@@ -584,8 +533,10 @@ class IncomeReportPage extends Page implements HasTable, HasForms
 
     public static function canAccess(): bool
     {
-        $user = auth()->user();
-        return $user?->hasRole('super_admin') || $user?->can('finance.reports.income') || $user?->can('finance_reports.view') ?? false;
+        $user = Auth::user();
+        return $user?->hasRole('super_admin')
+            || $user?->can('finance.reports.income')
+            || ($user?->can('finance_reports.view') ?? false);
     }
 
     public static function shouldRegisterNavigation(): bool
