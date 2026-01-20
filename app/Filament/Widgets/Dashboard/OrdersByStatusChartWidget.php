@@ -25,7 +25,7 @@ class OrdersByStatusChartWidget extends ChartWidget
         $dateRange = session()->get('dashboard_date_range', 'month');
         $dateFrom = session()->get('dashboard_date_from');
         $dateTo = session()->get('dashboard_date_to');
-        
+
         if ($dateRange === 'today') {
             $from = now()->startOfDay();
             $to = now()->endOfDay();
@@ -36,7 +36,7 @@ class OrdersByStatusChartWidget extends ChartWidget
             $from = $dateFrom ? Carbon::parse($dateFrom)->startOfDay() : now()->startOfMonth()->startOfDay();
             $to = $dateTo ? Carbon::parse($dateTo)->endOfDay() : now()->endOfDay();
         }
-        
+
         $user = auth()->user();
         $branchId = $user->branch_id ?? $this->branch_id ?? null;
 
@@ -83,16 +83,6 @@ class OrdersByStatusChartWidget extends ChartWidget
                 $data[] = 0;
             }
 
-            return [
-                'labels' => $labels,
-                'datasets' => [
-                    [
-                        'label' => 'عدد الطلبات',
-                        'data' => $data,
-                        'backgroundColor' => array_values(array_intersect_key($colors, array_flip($results->pluck('status')->toArray()))) ?: ['rgba(156, 163, 175, 0.8)'],
-                    ],
-                ],
-            ];
         });
     }
 
