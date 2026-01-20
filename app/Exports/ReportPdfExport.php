@@ -264,4 +264,5 @@ class ReportPdfExport
         $this->summaryData = $summaryData;
         $this->summaryHeaders = $summaryHeaders;
     }
+}
 
