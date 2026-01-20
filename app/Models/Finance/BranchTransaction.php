@@ -7,57 +7,83 @@ use App\Models\MainCore\Branch;
 use App\Models\MainCore\Country;
 use App\Models\MainCore\Currency;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BranchTransaction extends Model
 {
-    use SoftDeletes;
+    protected $table = 'finance_branch_transactions';
 
     protected $fillable = [
-        'document_no',
+        'trx_date',
         'branch_id',
         'country_id',
-        'type',
-        'amount',
         'currency_id',
-        'amount_base',
-        'rate_used',
-        'transaction_date',
-        'receiver_name',
+        'finance_type_id',
+        'amount',
         'payment_method',
+        'recipient_name',
         'reference_no',
         'notes',
         'attachment_path',
-        'status',
         'created_by',
-        'approved_by',
-        'approved_at',
-        'approval_note',
-        'rejected_by',
-        'rejected_at',
-        'rejection_note',
     ];
 
     protected $casts = [
+        'trx_date' => 'date',
         'amount' => 'decimal:2',
-        'amount_base' => 'decimal:2',
-        'rate_used' => 'decimal:8',
-        'transaction_date' => 'date',
-        'approved_at' => 'datetime',
-        'rejected_at' => 'datetime',
     ];
 
-    // relations
-    public function branch() { return $this->belongsTo(Branch::class); }
-    public function country() { return $this->belongsTo(Country::class); }
-    public function currency() { return $this->belongsTo(Currency::class); }
-    public function creator() { return $this->belongsTo(User::class, 'created_by'); }
-    public function approver() { return $this->belongsTo(User::class, 'approved_by'); }
-    public function rejecter() { return $this->belongsTo(User::class, 'rejected_by'); }
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
+    }
 
-    // scopes (speed)
-    public function scopeApproved($q) { return $q->where('status', 'approved'); }
-    public function scopePending($q) { return $q->where('status', 'pending'); }
-    public function scopeExpense($q) { return $q->where('type', 'expense'); }
-    public function scopeIncome($q) { return $q->where('type', 'income'); }
+    public function country(): BelongsTo
+    {
+        return $this->belongsTo(Country::class);
+    }
+
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class);
+    }
+
+    public function financeType(): BelongsTo
+    {
+        return $this->belongsTo(FinanceType::class);
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function scopeForBranch($query, $branchId)
+    {
+        return $query->where('branch_id', $branchId);
+    }
+
+    public function scopeForCurrency($query, $currencyId)
+    {
+        return $query->where('currency_id', $currencyId);
+    }
+
+    public function scopeForDateRange($query, $from, $to)
+    {
+        return $query->whereBetween('trx_date', [$from, $to]);
+    }
+
+    public function scopeIncome($query)
+    {
+        return $query->whereHas('financeType', function ($q) {
+            $q->where('kind', 'income');
+        });
+    }
+
+    public function scopeExpense($query)
+    {
+        return $query->whereHas('financeType', function ($q) {
+            $q->where('kind', 'expense');
+        });
+    }
 }

@@ -3,19 +3,22 @@
 namespace App\Filament\Resources\Finance\BranchTransactionResource\Pages;
 
 use App\Filament\Resources\Finance\BranchTransactionResource;
-use Filament\Resources\Pages\ListRecords;
-use Filament\Tables;
-use Filament\Tables\Table;
+use Filament\Actions;
+use Filament\Resources\Pages\EditRecord;
 
-class ListBranchTransactions extends ListRecords
+class EditBranchTransaction extends EditRecord
 {
     protected static string $resource = BranchTransactionResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Tables\Actions\CreateAction::make()
-                ->visible(fn () => auth()->user()?->can('finance.create_transactions') ?? false),
+            Actions\DeleteAction::make(),
         ];
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

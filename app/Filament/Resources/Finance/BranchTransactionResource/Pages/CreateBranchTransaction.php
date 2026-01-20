@@ -3,15 +3,20 @@
 namespace App\Filament\Resources\Finance\BranchTransactionResource\Pages;
 
 use App\Filament\Resources\Finance\BranchTransactionResource;
-use App\Services\Finance\BranchTransactionService;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateBranchTransaction extends CreateRecord
 {
     protected static string $resource = BranchTransactionResource::class;
 
-    protected function handleRecordCreation(array $data): \Illuminate\Database\Eloquent\Model
+    protected function mutateFormDataBeforeCreate(array $data): array
     {
-        return app(BranchTransactionService::class)->create($data);
+        $data['created_by'] = auth()->id();
+        return $data;
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }
