@@ -148,7 +148,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
     protected function getTableQuery(): Builder
     {
-        $data = $this->data;
+        $data = $this->form->getRawState();
         if (empty($data['date_from']) || empty($data['date_to'])) {
             return BranchTransaction::query()->whereRaw('1 = 0');
         }
@@ -193,7 +193,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
     public function table(Table $table): Table
     {
         return $table
-            ->query($this->getTableQuery())
+            ->query(fn () => $this->getTableQuery())
             ->columns([
                 Tables\Columns\TextColumn::make('trx_date')
                     ->label(tr('reports.expense.columns.date', [], null, 'dashboard') ?: 'Date')
@@ -299,7 +299,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
     public function getTotalExpenses(): float
     {
-        $data = $this->data;
+        $data = $this->form->getRawState();
         if (empty($data['date_from']) || empty($data['date_to'])) {
             return 0;
         }
@@ -315,7 +315,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
     public function getTransactionCount(): int
     {
-        $data = $this->data;
+        $data = $this->form->getRawState();
         if (empty($data['date_from']) || empty($data['date_to'])) {
             return 0;
         }
@@ -331,7 +331,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
     public function getGroupedByCategory(): Collection
     {
-        $data = $this->data;
+        $data = $this->form->getRawState();
         if (empty($data['date_from']) || empty($data['date_to'])) {
             return collect([]);
         }
@@ -359,7 +359,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
     protected function applyFiltersToQuery(Builder $query): void
     {
-        $data = $this->data;
+        $data = $this->form->getRawState();
 
         if (!empty($data['branch_id'])) {
             $query->where('branch_id', $data['branch_id']);
@@ -393,7 +393,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
     public function exportToExcelExpense()
     {
-        $data = $this->data;
+        $data = $this->form->getRawState();
         $tableQuery = $this->getTableQuery();
         $records = $tableQuery->get();
 
@@ -428,7 +428,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
     public function exportToPdfExpense()
     {
-        $data = $this->data;
+        $data = $this->form->getRawState();
         $tableQuery = $this->getTableQuery();
         $records = $tableQuery->get();
 
@@ -496,7 +496,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
     protected function getExportTitle(): ?string
     {
-        $data = $this->data;
+        $data = $this->form->getRawState();
         $from = $data['date_from'] ?? '';
         $to = $data['date_to'] ?? '';
         return tr('pages.finance.expense_report.title', [], null, 'dashboard') ?: 'Expense Report' . ' (' . $from . ' to ' . $to . ')';
@@ -510,10 +510,10 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
     protected function getExportMetadata(): array
     {
-        $data = $this->data;
+        $data = $this->form->getRawState();
         $metadata = [
             'exported_at' => now()->format('Y-m-d H:i:s'),
-            'exported_by' => auth()->user()?->name ?? 'System',
+            'exported_by' => Auth::user()?->name ?? 'System',
             'date_from' => $data['date_from'] ?? '',
             'date_to' => $data['date_to'] ?? '',
         ];
@@ -584,7 +584,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
     public static function canAccess(): bool
     {
-        $user = auth()->user();
+        $user = Auth::user();
         return $user?->hasRole('super_admin') || $user?->can('finance.reports.expense') || $user?->can('finance_reports.view') ?? false;
     }
 
