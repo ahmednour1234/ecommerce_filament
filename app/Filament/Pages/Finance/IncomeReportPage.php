@@ -58,7 +58,7 @@ class IncomeReportPage extends Page implements HasTable, HasForms
         ]);
     }
 
-    public function form(Forms\Form $form): Forms\Form
+    public function form(\Filament\Forms\Form $form): \Filament\Forms\Form
     {
         return $form
             ->schema([
