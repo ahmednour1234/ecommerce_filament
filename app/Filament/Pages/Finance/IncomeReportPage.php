@@ -15,6 +15,7 @@ use App\Models\Finance\FinanceType;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Infolists\Infolist;
 use Filament\Pages\Page;
 use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
@@ -58,7 +59,7 @@ class IncomeReportPage extends Page implements HasTable, HasForms
         ]);
     }
 
-    public function form(\Filament\Forms\Form $form): \Filament\Forms\Form
+    public function form(Forms\Form $form): Forms\Form
     {
         return $form
             ->schema([
@@ -145,6 +146,11 @@ class IncomeReportPage extends Page implements HasTable, HasForms
                     ->columns(3),
             ])
             ->statePath('data');
+    }
+
+    public function infolist(\Filament\Infolists\Infolist $infolist): \Filament\Infolists\Infolist
+    {
+        return $infolist;
     }
 
     protected function baseQuery(): Builder
