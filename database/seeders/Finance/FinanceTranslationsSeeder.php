@@ -48,6 +48,8 @@ class FinanceTranslationsSeeder extends Seeder
             // Reports
             'sidebar.finance.reports.branch_statement' => ['en' => 'Branch Statement', 'ar' => 'كشف حساب الفرع'],
             'sidebar.finance.reports.income_statement' => ['en' => 'Income Statement', 'ar' => 'قائمة الدخل'],
+            'sidebar.finance.branchstatement' => ['en' => 'Branch Statement', 'ar' => 'كشف حساب الفرع'],
+            'sidebar.finance.incomestatementbybranch' => ['en' => 'Income Statement by Branch', 'ar' => 'قائمة الدخل حسب الفرع'],
             'pages.finance.branch_statement.title' => ['en' => 'Branch Statement', 'ar' => 'كشف حساب الفرع'],
             'pages.finance.income_statement.title' => ['en' => 'Income Statement by Branch', 'ar' => 'قائمة الدخل حسب الفرع'],
         ];

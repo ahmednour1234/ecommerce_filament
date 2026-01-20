@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\Finance;
 
 use App\Filament\Concerns\FinanceModuleGate;
+use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\Finance\BranchTransaction;
 use App\Models\Finance\FinanceType;
 use App\Models\MainCore\Branch;
@@ -17,6 +18,7 @@ class IncomeStatementByBranchPage extends Page implements HasForms
 {
     use InteractsWithForms;
     use FinanceModuleGate;
+    use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
     protected static ?string $navigationGroup = 'Finance';

@@ -4,6 +4,7 @@ namespace App\Filament\Pages\Finance;
 
 use App\Filament\Concerns\ExportsTable;
 use App\Filament\Concerns\FinanceModuleGate;
+use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\Finance\BranchTransaction;
 use App\Models\MainCore\Branch;
 use App\Models\MainCore\Currency;
@@ -28,6 +29,7 @@ class BranchStatementPage extends Page implements HasTable, HasForms
     use InteractsWithForms;
     use ExportsTable;
     use FinanceModuleGate;
+    use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationGroup = 'Finance';
