@@ -345,7 +345,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
         return $query
             ->select('finance_type_id', DB::raw('COUNT(*) as count'), DB::raw('SUM(amount) as total_amount'))
             ->groupBy('finance_type_id')
-            ->with('financeType:id,name_text')
+            ->with('financeType:id,name')
             ->orderByDesc('total_amount')
             ->get()
             ->map(fn ($item) => [
