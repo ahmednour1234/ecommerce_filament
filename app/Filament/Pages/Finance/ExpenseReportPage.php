@@ -301,6 +301,7 @@ class ExpenseReportPage extends Page implements HasTable
     protected function ensureUtf8($value): string
     {
         if (is_null($value)) return '';
+        if (is_array($value)) return '';
         if (is_numeric($value) || is_bool($value)) return (string) $value;
         $value = is_string($value) ? $value : (string) $value;
         return mb_check_encoding($value, 'UTF-8') ? $value : mb_convert_encoding($value, 'UTF-8', 'auto');
