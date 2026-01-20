@@ -15,7 +15,7 @@ use App\Models\Finance\FinanceType;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Infolists\Infolist;
+use Filament\Infolists\Infolist as FilamentInfolist;
 use Filament\Pages\Page;
 use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
@@ -59,8 +59,20 @@ class IncomeReportPage extends Page implements HasTable, HasForms
         ]);
     }
 
-    public function form(Forms\Form $form): Forms\Form
+    /**
+     * @param Forms\Form|FilamentInfolist $form
+     * @return Forms\Form|FilamentInfolist
+     */
+    public function form($form)
     {
+        if ($form instanceof FilamentInfolist) {
+            return $form->schema([]);
+        }
+
+        if (!$form instanceof Forms\Form) {
+            return $form;
+        }
+
         return $form
             ->schema([
                 Forms\Components\Section::make(tr('reports.filters.title', [], null, 'dashboard') ?: 'Filters')
@@ -150,7 +162,7 @@ class IncomeReportPage extends Page implements HasTable, HasForms
 
     public function infolist(\Filament\Infolists\Infolist $infolist): \Filament\Infolists\Infolist
     {
-        return $infolist;
+        return $infolist->schema([]);
     }
 
     protected function baseQuery(): Builder
