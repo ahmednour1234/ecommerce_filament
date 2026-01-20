@@ -8,10 +8,11 @@ use App\Filament\Concerns\ExportsTable;
 use App\Filament\Concerns\FinanceModuleGate;
 use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\Finance\BranchTransaction;
+use App\Models\Finance\FinanceType;
 use App\Models\MainCore\Branch;
 use App\Models\MainCore\Country;
 use App\Models\MainCore\Currency;
-use App\Models\Finance\FinanceType;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -38,26 +39,27 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
     protected static ?string $navigationGroup = 'Finance';
     protected static ?int $navigationSort = 52;
     protected static string $view = 'filament.pages.finance.expense-report';
-
     protected static ?string $navigationTranslationKey = 'sidebar.finance.reports.expense';
 
     public ?array $data = [];
 
     public function mount(): void
     {
-        $this->form->fill([
-            'date_from' => now()->startOfYear()->format('Y-m-d'),
-            'date_to' => now()->format('Y-m-d'),
+        $this->data = [
+            'date_from' => now()->startOfYear()->toDateString(),
+            'date_to' => now()->toDateString(),
             'branch_id' => null,
             'country_id' => null,
             'currency_id' => null,
             'payment_method' => null,
             'finance_type_id' => null,
             'q' => null,
-        ]);
+        ];
+
+        $this->form->fill($this->data);
     }
 
-    public function form(\Filament\Forms\Form $form): \Filament\Forms\Form
+    public function form(Forms\Form $form): Forms\Form
     {
         return $form
             ->schema([
@@ -75,13 +77,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
                         Forms\Components\Select::make('branch_id')
                             ->label(tr('reports.expense.filters.branch', [], null, 'dashboard') ?: 'Branch')
-                            ->options(function () {
-                                return Branch::where('status', 'active')
-                                    ->get()
-                                    ->mapWithKeys(function ($branch) {
-                                        return [$branch->id => $this->ensureUtf8($branch->name ?? '')];
-                                    });
-                            })
+                            ->options(fn () => Branch::where('status', 'active')->pluck('name', 'id')->map(fn ($v) => $this->ensureUtf8($v))->toArray())
                             ->searchable()
                             ->preload()
                             ->nullable()
@@ -89,13 +85,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
                         Forms\Components\Select::make('country_id')
                             ->label(tr('reports.expense.filters.country', [], null, 'dashboard') ?: 'Country')
-                            ->options(function () {
-                                return Country::where('is_active', true)
-                                    ->get()
-                                    ->mapWithKeys(function ($country) {
-                                        return [$country->id => $this->ensureUtf8($country->name_text ?? '')];
-                                    });
-                            })
+                            ->options(fn () => Country::where('is_active', true)->pluck('name_text', 'id')->map(fn ($v) => $this->ensureUtf8($v))->toArray())
                             ->searchable()
                             ->preload()
                             ->nullable()
@@ -103,13 +93,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
                         Forms\Components\Select::make('currency_id')
                             ->label(tr('reports.expense.filters.currency', [], null, 'dashboard') ?: 'Currency')
-                            ->options(function () {
-                                return Currency::where('is_active', true)
-                                    ->get()
-                                    ->mapWithKeys(function ($currency) {
-                                        return [$currency->id => $this->ensureUtf8($currency->code ?? '')];
-                                    });
-                            })
+                            ->options(fn () => Currency::where('is_active', true)->pluck('code', 'id')->map(fn ($v) => $this->ensureUtf8($v))->toArray())
                             ->searchable()
                             ->preload()
                             ->nullable()
@@ -122,14 +106,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
                         Forms\Components\Select::make('finance_type_id')
                             ->label(tr('reports.expense.filters.category', [], null, 'dashboard') ?: 'Category')
-                            ->options(function () {
-                                return FinanceType::where('kind', 'expense')
-                                    ->where('is_active', true)
-                                    ->get()
-                                    ->mapWithKeys(function ($type) {
-                                        return [$type->id => $this->ensureUtf8($type->name_text ?? '')];
-                                    });
-                            })
+                            ->options(fn () => FinanceType::where('kind', 'expense')->where('is_active', true)->pluck('name_text', 'id')->map(fn ($v) => $this->ensureUtf8($v))->toArray())
                             ->searchable()
                             ->preload()
                             ->nullable()
@@ -146,48 +123,78 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
             ->statePath('data');
     }
 
-    protected function getTableQuery(): Builder
+    protected function getDateFrom(): ?Carbon
     {
-        $data = $this->form->getRawState();
-        if (empty($data['date_from']) || empty($data['date_to'])) {
-            return BranchTransaction::query()->whereRaw('1 = 0');
-        }
+        $from = $this->data['date_from'] ?? null;
+        return $from ? Carbon::parse($from)->startOfDay() : null;
+    }
+
+    protected function getDateTo(): ?Carbon
+    {
+        $to = $this->data['date_to'] ?? null;
+        return $to ? Carbon::parse($to)->endOfDay() : null;
+    }
+
+    protected function baseQuery(): Builder
+    {
+        $from = $this->getDateFrom();
+        $to = $this->getDateTo();
 
         $query = BranchTransaction::query()
-            ->whereHas('financeType', fn($q) => $q->where('kind', 'expense'))
-            ->whereBetween('trx_date', [$data['date_from'], $data['date_to']])
+            ->whereHas('financeType', fn (Builder $q) => $q->where('kind', 'expense'))
             ->with(['financeType', 'branch', 'country', 'currency', 'creator']);
 
-        if (!empty($data['branch_id'])) {
-            $query->where('branch_id', $data['branch_id']);
+        if ($from && $to) {
+            $query->whereBetween('trx_date', [$from, $to]);
+        } else {
+            $query->whereRaw('1=0');
         }
 
-        if (!empty($data['country_id'])) {
-            $query->where('country_id', $data['country_id']);
+        return $query;
+    }
+
+    protected function applyFormFilters(Builder $query): void
+    {
+        $d = $this->data;
+
+        if (!empty($d['branch_id'])) {
+            $query->where('branch_id', $d['branch_id']);
         }
 
-        if (!empty($data['currency_id'])) {
-            $query->where('currency_id', $data['currency_id']);
+        if (!empty($d['country_id'])) {
+            $query->where('country_id', $d['country_id']);
         }
 
-        if (!empty($data['payment_method'])) {
-            $query->where('payment_method', 'like', '%' . $data['payment_method'] . '%');
+        if (!empty($d['currency_id'])) {
+            $query->where('currency_id', $d['currency_id']);
         }
 
-        if (!empty($data['finance_type_id'])) {
-            $query->where('finance_type_id', $data['finance_type_id']);
+        if (!empty($d['payment_method'])) {
+            $query->where('payment_method', 'like', '%' . $d['payment_method'] . '%');
         }
 
-        if (!empty($data['q'])) {
-            $search = $data['q'];
-            $query->where(function ($q) use ($search) {
+        if (!empty($d['finance_type_id'])) {
+            $query->where('finance_type_id', $d['finance_type_id']);
+        }
+
+        if (!empty($d['q'])) {
+            $search = $d['q'];
+            $query->where(function (Builder $q) use ($search) {
                 $q->where('recipient_name', 'like', '%' . $search . '%')
                     ->orWhere('reference_no', 'like', '%' . $search . '%')
                     ->orWhere('notes', 'like', '%' . $search . '%');
             });
         }
+    }
 
-        return $query->orderBy('trx_date', 'desc')->orderBy('id', 'desc');
+    protected function getTableQuery(): Builder
+    {
+        $query = $this->baseQuery();
+        $this->applyFormFilters($query);
+
+        return $query
+            ->orderBy('trx_date', 'desc')
+            ->orderBy('id', 'desc');
     }
 
     public function table(Table $table): Table
@@ -202,22 +209,22 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
                 Tables\Columns\TextColumn::make('branch.name')
                     ->label(tr('reports.expense.columns.branch', [], null, 'dashboard') ?: 'Branch')
-                    ->getStateUsing(fn($record) => $this->ensureUtf8($record->branch?->name ?? ''))
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->branch?->name ?? ''))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('country.name_text')
                     ->label(tr('reports.expense.columns.country', [], null, 'dashboard') ?: 'Country')
-                    ->getStateUsing(fn($record) => $this->ensureUtf8($record->country?->name_text ?? ''))
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->country?->name_text ?? ''))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('currency.code')
                     ->label(tr('reports.expense.columns.currency', [], null, 'dashboard') ?: 'Currency')
-                    ->getStateUsing(fn($record) => $this->ensureUtf8($record->currency?->code ?? ''))
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->currency?->code ?? ''))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('financeType.name_text')
                     ->label(tr('reports.expense.columns.category', [], null, 'dashboard') ?: 'Category')
-                    ->getStateUsing(fn($record) => $this->ensureUtf8($record->financeType?->name_text ?? ''))
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->financeType?->name_text ?? ''))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('amount')
@@ -228,86 +235,39 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
                 Tables\Columns\TextColumn::make('payment_method')
                     ->label(tr('reports.expense.columns.payment_method', [], null, 'dashboard') ?: 'Payment Method')
-                    ->getStateUsing(fn($record) => $this->ensureUtf8($record->payment_method ?? ''))
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->payment_method ?? '')),
 
                 Tables\Columns\TextColumn::make('reference_no')
                     ->label(tr('reports.expense.columns.reference', [], null, 'dashboard') ?: 'Reference')
-                    ->getStateUsing(fn($record) => $this->ensureUtf8($record->reference_no ?? ''))
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->reference_no ?? ''))
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('recipient_name')
                     ->label(tr('reports.expense.columns.receiver', [], null, 'dashboard') ?: 'Receiver')
-                    ->getStateUsing(fn($record) => $this->ensureUtf8($record->recipient_name ?? ''))
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->recipient_name ?? ''))
                     ->searchable(),
 
                 Tables\Columns\IconColumn::make('attachment_path')
                     ->label(tr('reports.expense.columns.attachment', [], null, 'dashboard') ?: 'Attachment')
-                    ->icon(fn($record) => $record->attachment_path ? 'heroicon-o-paper-clip' : null)
-                    ->url(fn($record) => $record->attachment_path ? asset('storage/' . $record->attachment_path) : null)
+                    ->icon(fn ($record) => $record->attachment_path ? 'heroicon-o-paper-clip' : null)
+                    ->url(fn ($record) => $record->attachment_path ? asset('storage/' . $record->attachment_path) : null)
                     ->openUrlInNewTab(),
 
                 Tables\Columns\TextColumn::make('creator.name')
                     ->label(tr('reports.expense.columns.created_by', [], null, 'dashboard') ?: 'Created By')
-                    ->getStateUsing(fn($record) => $this->ensureUtf8($record->creator?->name ?? ''))
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->creator?->name ?? ''))
                     ->sortable(),
-            ])
-            ->filters([
-                Tables\Filters\Filter::make('date_range')
-                    ->label(tr('reports.filters.date_range', [], null, 'dashboard') ?: tr('tables.branch_transactions.filters.date_range', [], null, 'dashboard') ?: 'Date Range')
-                    ->form([
-                        Forms\Components\DatePicker::make('date_from')
-                            ->label(tr('reports.filters.from', [], null, 'dashboard') ?: 'From')
-                            ->reactive(),
-                        Forms\Components\DatePicker::make('date_to')
-                            ->label(tr('reports.filters.to', [], null, 'dashboard') ?: 'To')
-                            ->reactive(),
-                    ])
-                    ->query(function (Builder $query, array $data) {
-                        return $query
-                            ->when($data['date_from'] ?? null, fn (Builder $q, $date) => $q->whereDate('trx_date', '>=', $date))
-                            ->when($data['date_to'] ?? null, fn (Builder $q, $date) => $q->whereDate('trx_date', '<=', $date));
-                    }),
-
-                Tables\Filters\SelectFilter::make('branch_id')
-                    ->label(tr('reports.expense.filters.branch', [], null, 'dashboard') ?: 'Branch')
-                    ->options(function () {
-                        return Branch::where('status', 'active')
-                            ->get()
-                            ->mapWithKeys(function ($branch) {
-                                return [$branch->id => $this->ensureUtf8($branch->name ?? '')];
-                            });
-                    })
-                    ->searchable()
-                    ->preload(),
-
-                Tables\Filters\SelectFilter::make('finance_type_id')
-                    ->label(tr('reports.expense.filters.category', [], null, 'dashboard') ?: 'Category')
-                    ->options(function () {
-                        return FinanceType::where('kind', 'expense')
-                            ->where('is_active', true)
-                            ->get()
-                            ->mapWithKeys(function ($type) {
-                                return [$type->id => $this->ensureUtf8($type->name_text ?? '')];
-                            });
-                    })
-                    ->searchable()
-                    ->preload(),
             ])
             ->headerActions([
                 Tables\Actions\Action::make('export_excel')
                     ->label(tr('actions.export_excel', [], null, 'dashboard') ?: 'Export Excel')
                     ->icon('heroicon-o-arrow-down-tray')
-                    ->action(function () {
-                        return $this->exportToExcelExpense();
-                    }),
+                    ->action(fn () => $this->exportToExcelExpense()),
 
                 Tables\Actions\Action::make('export_pdf')
                     ->label(tr('actions.export_pdf', [], null, 'dashboard') ?: 'Export PDF')
                     ->icon('heroicon-o-document-arrow-down')
-                    ->action(function () {
-                        return $this->exportToPdfExpense();
-                    }),
+                    ->action(fn () => $this->exportToPdfExpense()),
             ])
             ->defaultSort('trx_date', 'desc')
             ->paginated([10, 25, 50, 100]);
@@ -315,161 +275,87 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
     public function getTotalExpenses(): float
     {
-        $data = $this->form->getRawState();
-        if (empty($data['date_from']) || empty($data['date_to'])) {
-            return 0;
-        }
-
-        $query = BranchTransaction::query()
-            ->whereHas('financeType', fn($q) => $q->where('kind', 'expense'))
-            ->whereBetween('trx_date', [$data['date_from'], $data['date_to']]);
-
-        $this->applyFiltersToQuery($query);
+        $query = $this->baseQuery();
+        $this->applyFormFilters($query);
 
         return (float) ($query->sum('amount') ?? 0);
     }
 
     public function getTransactionCount(): int
     {
-        $data = $this->form->getRawState();
-        if (empty($data['date_from']) || empty($data['date_to'])) {
-            return 0;
-        }
-
-        $query = BranchTransaction::query()
-            ->whereHas('financeType', fn($q) => $q->where('kind', 'expense'))
-            ->whereBetween('trx_date', [$data['date_from'], $data['date_to']]);
-
-        $this->applyFiltersToQuery($query);
+        $query = $this->baseQuery();
+        $this->applyFormFilters($query);
 
         return (int) $query->count();
     }
 
     public function getGroupedByCategory(): Collection
     {
-        $data = $this->form->getRawState();
-        if (empty($data['date_from']) || empty($data['date_to'])) {
-            return collect([]);
-        }
-
-        $query = BranchTransaction::query()
-            ->whereHas('financeType', fn($q) => $q->where('kind', 'expense'))
-            ->whereBetween('trx_date', [$data['date_from'], $data['date_to']]);
-
-        $this->applyFiltersToQuery($query);
+        $query = $this->baseQuery();
+        $this->applyFormFilters($query);
 
         return $query
             ->select('finance_type_id', DB::raw('COUNT(*) as count'), DB::raw('SUM(amount) as total_amount'))
             ->groupBy('finance_type_id')
-            ->with('financeType')
+            ->with('financeType:id,name_text')
             ->orderByDesc('total_amount')
             ->get()
-            ->map(function ($item) {
-                return [
-                    'category_name' => $this->ensureUtf8($item->financeType?->name_text ?? ''),
-                    'count' => $item->count,
-                    'total_amount' => (float) $item->total_amount,
-                ];
-            });
-    }
-
-    protected function applyFiltersToQuery(Builder $query): void
-    {
-        $data = $this->form->getRawState();
-
-        if (!empty($data['branch_id'])) {
-            $query->where('branch_id', $data['branch_id']);
-        }
-
-        if (!empty($data['country_id'])) {
-            $query->where('country_id', $data['country_id']);
-        }
-
-        if (!empty($data['currency_id'])) {
-            $query->where('currency_id', $data['currency_id']);
-        }
-
-        if (!empty($data['payment_method'])) {
-            $query->where('payment_method', 'like', '%' . $data['payment_method'] . '%');
-        }
-
-        if (!empty($data['finance_type_id'])) {
-            $query->where('finance_type_id', $data['finance_type_id']);
-        }
-
-        if (!empty($data['q'])) {
-            $search = $data['q'];
-            $query->where(function ($q) use ($search) {
-                $q->where('recipient_name', 'like', '%' . $search . '%')
-                    ->orWhere('reference_no', 'like', '%' . $search . '%')
-                    ->orWhere('notes', 'like', '%' . $search . '%');
-            });
-        }
+            ->map(fn ($item) => [
+                'category_name' => $this->ensureUtf8($item->financeType?->name_text ?? ''),
+                'count' => (int) $item->count,
+                'total_amount' => (float) $item->total_amount,
+            ]);
     }
 
     public function exportToExcelExpense()
     {
-        $data = $this->form->getRawState();
-        $tableQuery = $this->getTableQuery();
-        $records = $tableQuery->get();
+        $records = $this->getTableQuery()->get();
 
-        $detailedData = $records->map(function ($record) {
-            return [
-                'date' => $record->trx_date?->format('Y-m-d') ?? '',
-                'branch' => $this->ensureUtf8($record->branch?->name ?? ''),
-                'country' => $this->ensureUtf8($record->country?->name_text ?? ''),
-                'currency' => $this->ensureUtf8($record->currency?->code ?? ''),
-                'category' => $this->ensureUtf8($record->financeType?->name_text ?? ''),
-                'amount' => number_format((float) $record->amount, 2),
-                'payment_method' => $this->ensureUtf8($record->payment_method ?? ''),
-                'reference_no' => $this->ensureUtf8($record->reference_no ?? ''),
-                'receiver' => $this->ensureUtf8($record->recipient_name ?? ''),
-                'created_by' => $this->ensureUtf8($record->creator?->name ?? ''),
-            ];
-        });
+        $detailedData = $records->map(fn ($r) => [
+            'date' => $r->trx_date?->format('Y-m-d') ?? '',
+            'branch' => $this->ensureUtf8($r->branch?->name ?? ''),
+            'country' => $this->ensureUtf8($r->country?->name_text ?? ''),
+            'currency' => $this->ensureUtf8($r->currency?->code ?? ''),
+            'category' => $this->ensureUtf8($r->financeType?->name_text ?? ''),
+            'amount' => number_format((float) $r->amount, 2),
+            'payment_method' => $this->ensureUtf8($r->payment_method ?? ''),
+            'reference_no' => $this->ensureUtf8($r->reference_no ?? ''),
+            'receiver' => $this->ensureUtf8($r->recipient_name ?? ''),
+            'created_by' => $this->ensureUtf8($r->creator?->name ?? ''),
+        ]);
 
-        $summaryData = $this->getGroupedByCategory()->map(function ($item) {
-            return [
-                'category_name' => $item['category_name'],
-                'count' => $item['count'],
-                'total_amount' => number_format($item['total_amount'], 2),
-            ];
-        });
+        $summaryData = $this->getGroupedByCategory()->map(fn ($i) => [
+            'category_name' => $i['category_name'],
+            'count' => $i['count'],
+            'total_amount' => number_format($i['total_amount'], 2),
+        ]);
 
         $export = new ExpenseReportExcelExport($detailedData, $summaryData, $this->getExportTitle());
-        $filename = $this->getExportFilename('xlsx');
-
-        return Excel::download($export, $filename);
+        return Excel::download($export, $this->getExportFilename('xlsx'));
     }
 
     public function exportToPdfExpense()
     {
-        $data = $this->form->getRawState();
-        $tableQuery = $this->getTableQuery();
-        $records = $tableQuery->get();
+        $records = $this->getTableQuery()->get();
 
-        $detailedRows = $records->map(function ($record) {
-            return [
-                $record->trx_date?->format('Y-m-d') ?? '',
-                $this->ensureUtf8($record->branch?->name ?? ''),
-                $this->ensureUtf8($record->country?->name_text ?? ''),
-                $this->ensureUtf8($record->currency?->code ?? ''),
-                $this->ensureUtf8($record->financeType?->name_text ?? ''),
-                number_format((float) $record->amount, 2),
-                $this->ensureUtf8($record->payment_method ?? ''),
-                $this->ensureUtf8($record->reference_no ?? ''),
-                $this->ensureUtf8($record->recipient_name ?? ''),
-                $this->ensureUtf8($record->creator?->name ?? ''),
-            ];
-        })->toArray();
+        $detailedRows = $records->map(fn ($r) => [
+            $r->trx_date?->format('Y-m-d') ?? '',
+            $this->ensureUtf8($r->branch?->name ?? ''),
+            $this->ensureUtf8($r->country?->name_text ?? ''),
+            $this->ensureUtf8($r->currency?->code ?? ''),
+            $this->ensureUtf8($r->financeType?->name_text ?? ''),
+            number_format((float) $r->amount, 2),
+            $this->ensureUtf8($r->payment_method ?? ''),
+            $this->ensureUtf8($r->reference_no ?? ''),
+            $this->ensureUtf8($r->recipient_name ?? ''),
+            $this->ensureUtf8($r->creator?->name ?? ''),
+        ])->toArray();
 
-        $summaryRows = $this->getGroupedByCategory()->map(function ($item) {
-            return [
-                $item['category_name'],
-                $item['count'],
-                number_format($item['total_amount'], 2),
-            ];
-        })->toArray();
+        $summaryRows = $this->getGroupedByCategory()->map(fn ($i) => [
+            $i['category_name'],
+            $i['count'],
+            number_format($i['total_amount'], 2),
+        ])->toArray();
 
         $headers = [
             tr('reports.expense.columns.date', [], null, 'dashboard') ?: 'Date',
@@ -505,43 +391,37 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
         $export->setSummaryData(collect($summaryRows), $summaryHeaders);
 
-        $filename = $this->getExportFilename('pdf');
-
-        return $export->download($filename);
+        return $export->download($this->getExportFilename('pdf'));
     }
 
     protected function getExportTitle(): ?string
     {
-        $data = $this->form->getRawState();
-        $from = $data['date_from'] ?? '';
-        $to = $data['date_to'] ?? '';
-        return tr('pages.finance.expense_report.title', [], null, 'dashboard') ?: 'Expense Report' . ' (' . $from . ' to ' . $to . ')';
+        $from = $this->data['date_from'] ?? '';
+        $to = $this->data['date_to'] ?? '';
+        $base = tr('pages.finance.expense_report.title', [], null, 'dashboard') ?: 'Expense Report';
+        return $base . ' (' . $from . ' to ' . $to . ')';
     }
 
     protected function getExportFilename(string $extension = 'xlsx'): string
     {
-        $title = 'expense_report';
-        return strtolower($title) . '_' . date('Y-m-d_His') . '.' . $extension;
+        return 'expense_report_' . now()->format('Y-m-d_His') . '.' . $extension;
     }
 
     protected function getExportMetadata(): array
     {
-        $data = $this->form->getRawState();
         $metadata = [
             'exported_at' => now()->format('Y-m-d H:i:s'),
             'exported_by' => Auth::user()?->name ?? 'System',
-            'date_from' => $data['date_from'] ?? '',
-            'date_to' => $data['date_to'] ?? '',
+            'date_from' => $this->data['date_from'] ?? '',
+            'date_to' => $this->data['date_to'] ?? '',
         ];
 
-        if (!empty($data['branch_id'])) {
-            $branch = Branch::find($data['branch_id']);
-            $metadata['branch'] = $this->ensureUtf8($branch?->name ?? '');
+        if (!empty($this->data['branch_id'])) {
+            $metadata['branch'] = $this->ensureUtf8(Branch::find($this->data['branch_id'])?->name ?? '');
         }
 
-        if (!empty($data['currency_id'])) {
-            $currency = Currency::find($data['currency_id']);
-            $metadata['currency'] = $this->ensureUtf8($currency?->code ?? '');
+        if (!empty($this->data['currency_id'])) {
+            $metadata['currency'] = $this->ensureUtf8(Currency::find($this->data['currency_id'])?->code ?? '');
         }
 
         return $metadata;
@@ -549,43 +429,26 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
     protected function ensureUtf8($value): string
     {
-        if (is_null($value)) {
-            return '';
-        }
-
-        if (is_numeric($value) || is_bool($value)) {
-            return (string) $value;
-        }
-
-        if (!is_string($value)) {
-            $value = (string) $value;
-        }
-
-        if (mb_check_encoding($value, 'UTF-8')) {
-            return $value;
-        }
+        if (is_null($value)) return '';
+        if (is_numeric($value) || is_bool($value)) return (string) $value;
+        $value = is_string($value) ? $value : (string) $value;
+        if (mb_check_encoding($value, 'UTF-8')) return $value;
 
         $detected = mb_detect_encoding($value, ['UTF-8', 'ISO-8859-1', 'Windows-1256', 'ASCII'], true);
         if ($detected && $detected !== 'UTF-8') {
             $converted = mb_convert_encoding($value, 'UTF-8', $detected);
-            if ($converted !== false && mb_check_encoding($converted, 'UTF-8')) {
-                return $converted;
-            }
+            if ($converted !== false && mb_check_encoding($converted, 'UTF-8')) return $converted;
         }
 
         if (function_exists('iconv')) {
             $cleaned = @iconv('UTF-8', 'UTF-8//IGNORE', $value);
-            if ($cleaned !== false) {
-                return $cleaned;
-            }
+            if ($cleaned !== false) return $cleaned;
         }
 
         $cleaned = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
-        if (mb_check_encoding($cleaned, 'UTF-8')) {
-            return $cleaned;
-        }
-
-        return filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH) ?: '';
+        return mb_check_encoding($cleaned, 'UTF-8')
+            ? $cleaned
+            : (filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH) ?: '');
     }
 
     public function getTitle(): string
@@ -601,7 +464,9 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
     public static function canAccess(): bool
     {
         $user = Auth::user();
-        return $user?->hasRole('super_admin') || $user?->can('finance.reports.expense') || $user?->can('finance_reports.view') ?? false;
+        return $user?->hasRole('super_admin')
+            || $user?->can('finance.reports.expense')
+            || ($user?->can('finance_reports.view') ?? false);
     }
 
     public static function shouldRegisterNavigation(): bool
