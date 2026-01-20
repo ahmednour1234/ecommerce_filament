@@ -58,7 +58,13 @@ class BranchStatementPage extends Page implements HasTable, HasForms
                     ->schema([
                         Forms\Components\Select::make('branch_id')
                             ->label(tr('reports.branch_statement.filters.branch', [], null, 'dashboard') ?: 'Branch')
-                            ->options(Branch::where('status', 'active')->pluck('name', 'id'))
+                            ->options(function () {
+                                return Branch::where('status', 'active')
+                                    ->get()
+                                    ->mapWithKeys(function ($branch) {
+                                        return [$branch->id => $this->ensureUtf8($branch->name ?? '')];
+                                    });
+                            })
                             ->searchable()
                             ->preload()
                             ->required()
@@ -76,7 +82,13 @@ class BranchStatementPage extends Page implements HasTable, HasForms
 
                         Forms\Components\Select::make('currency_id')
                             ->label(tr('reports.branch_statement.filters.currency', [], null, 'dashboard') ?: 'Currency')
-                            ->options(Currency::where('is_active', true)->pluck('code', 'id'))
+                            ->options(function () {
+                                return Currency::where('is_active', true)
+                                    ->get()
+                                    ->mapWithKeys(function ($currency) {
+                                        return [$currency->id => $this->ensureUtf8($currency->code ?? '')];
+                                    });
+                            })
                             ->searchable()
                             ->preload()
                             ->required()
@@ -99,7 +111,10 @@ class BranchStatementPage extends Page implements HasTable, HasForms
                                 if ($get('kind')) {
                                     $query->where('kind', $get('kind'));
                                 }
-                                return $query->get()->pluck('name_text', 'id');
+                                return $query->get()
+                                    ->mapWithKeys(function ($type) {
+                                        return [$type->id => $this->ensureUtf8($type->name_text ?? '')];
+                                    });
                             })
                             ->searchable()
                             ->preload()
@@ -157,27 +172,31 @@ class BranchStatementPage extends Page implements HasTable, HasForms
                         'success' => 'income',
                         'danger' => 'expense',
                     ])
-                    ->formatStateUsing(fn ($state) => $state === 'income' 
+                    ->formatStateUsing(fn ($state) => $state === 'income'
                         ? (tr('forms.finance_types.kind_income', [], null, 'dashboard') ?: 'Income')
                         : (tr('forms.finance_types.kind_expense', [], null, 'dashboard') ?: 'Expense')),
 
                 Tables\Columns\TextColumn::make('financeType.name_text')
                     ->label(tr('tables.branch_transactions.type', [], null, 'dashboard') ?: 'Type')
-                    ->getStateUsing(fn ($record) => $record->financeType?->name_text),
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->financeType?->name_text ?? '')),
 
                 Tables\Columns\TextColumn::make('reference_no')
                     ->label(tr('tables.branch_transactions.reference_no', [], null, 'dashboard') ?: 'Reference')
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->reference_no ?? ''))
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('recipient_name')
-                    ->label(tr('tables.branch_transactions.recipient_name', [], null, 'dashboard') ?: 'Recipient'),
+                    ->label(tr('tables.branch_transactions.recipient_name', [], null, 'dashboard') ?: 'Recipient')
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->recipient_name ?? '')),
 
                 Tables\Columns\TextColumn::make('payment_method')
                     ->label(tr('tables.branch_transactions.payment_method', [], null, 'dashboard') ?: 'Payment Method')
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->payment_method ?? ''))
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('notes')
                     ->label(tr('forms.branch_transactions.notes', [], null, 'dashboard') ?: 'Notes')
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->notes ?? ''))
                     ->limit(50)
                     ->toggleable(isToggledHiddenByDefault: true),
 
@@ -245,7 +264,9 @@ class BranchStatementPage extends Page implements HasTable, HasForms
                     ->options(function () {
                         return FinanceType::where('is_active', true)
                             ->get()
-                            ->pluck('name_text', 'id');
+                            ->mapWithKeys(function ($type) {
+                                return [$type->id => $this->ensureUtf8($type->name_text ?? '')];
+                            });
                     })
                     ->searchable()
                     ->preload(),
@@ -357,7 +378,51 @@ class BranchStatementPage extends Page implements HasTable, HasForms
         $from = $this->data['from'] ?? '';
         $to = $this->data['to'] ?? '';
 
-        return 'Branch Statement - ' . ($branch?->name ?? '') . ' (' . $from . ' to ' . $to . ') - ' . ($currency?->code ?? '');
+        $branchName = $this->ensureUtf8($branch?->name ?? '');
+        $currencyCode = $this->ensureUtf8($currency?->code ?? '');
+
+        return 'Branch Statement - ' . $branchName . ' (' . $from . ' to ' . $to . ') - ' . $currencyCode;
+    }
+
+    protected function ensureUtf8($value): string
+    {
+        if (is_null($value)) {
+            return '';
+        }
+
+        if (is_numeric($value) || is_bool($value)) {
+            return (string) $value;
+        }
+
+        if (!is_string($value)) {
+            $value = (string) $value;
+        }
+
+        if (mb_check_encoding($value, 'UTF-8')) {
+            return $value;
+        }
+
+        $detected = mb_detect_encoding($value, ['UTF-8', 'ISO-8859-1', 'Windows-1256', 'ASCII'], true);
+        if ($detected && $detected !== 'UTF-8') {
+            $converted = mb_convert_encoding($value, 'UTF-8', $detected);
+            if ($converted !== false && mb_check_encoding($converted, 'UTF-8')) {
+                return $converted;
+            }
+        }
+
+        if (function_exists('iconv')) {
+            $cleaned = @iconv('UTF-8', 'UTF-8//IGNORE', $value);
+            if ($cleaned !== false) {
+                return $cleaned;
+            }
+        }
+
+        $cleaned = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+        if (mb_check_encoding($cleaned, 'UTF-8')) {
+            return $cleaned;
+        }
+
+        return filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH) ?: '';
     }
 
     public function getTitle(): string
@@ -373,7 +438,8 @@ class BranchStatementPage extends Page implements HasTable, HasForms
     protected function getExportFilename(string $extension = 'xlsx'): string
     {
         $branch = Branch::find($this->data['branch_id'] ?? null);
-        $sanitized = preg_replace('/[^a-z0-9]+/i', '_', $branch?->name ?? 'branch_statement');
+        $branchName = $this->ensureUtf8($branch?->name ?? 'branch_statement');
+        $sanitized = preg_replace('/[^a-z0-9]+/i', '_', $branchName);
         return strtolower($sanitized) . '_' . date('Y-m-d_His') . '.' . $extension;
     }
 
