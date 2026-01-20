@@ -17,7 +17,7 @@ class Dashboard extends BaseDashboard implements HasForms
     use InteractsWithForms;
 
     protected static ?string $navigationIcon = 'heroicon-o-home';
-    
+
     protected static string $view = 'filament.pages.dashboard';
 
     public ?string $dateRange = 'month';
@@ -29,7 +29,7 @@ class Dashboard extends BaseDashboard implements HasForms
         $this->dateRange = session()->get('dashboard_date_range', 'month');
         $this->dateFrom = session()->get('dashboard_date_from');
         $this->dateTo = session()->get('dashboard_date_to');
-        
+
         $this->form->fill([
             'dateRange' => $this->dateRange,
             'dateFrom' => $this->dateFrom,
@@ -85,7 +85,7 @@ class Dashboard extends BaseDashboard implements HasForms
     protected function getDateRange(): array
     {
         $dateRange = $this->dateRange ?? 'month';
-        
+
         if ($dateRange === 'today') {
             return [now()->startOfDay(), now()->endOfDay()];
         } elseif ($dateRange === 'month') {
@@ -109,7 +109,6 @@ class Dashboard extends BaseDashboard implements HasForms
         return [
             FinanceStatsWidget::class,
             HRStatsWidget::class,
-            SalesOperationsStatsWidget::class,
         ];
     }
 
@@ -117,7 +116,6 @@ class Dashboard extends BaseDashboard implements HasForms
     {
         return [
             FinanceTopTypesWidget::class,
-            OrdersByStatusChartWidget::class,
         ];
     }
 
