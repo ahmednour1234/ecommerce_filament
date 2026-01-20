@@ -47,22 +47,22 @@ class ExpenseReportPage extends Page implements HasTable
 
                 Tables\Columns\TextColumn::make('branch.name')
                     ->label(tr('reports.expense.columns.branch', [], null, 'dashboard') ?: 'Branch')
-                    ->getStateUsing(fn ($r) => $this->ensureUtf8($r->branch?->name ?? ''))
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->branch?->name ?? ''))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('country.name')
                     ->label(tr('reports.expense.columns.country', [], null, 'dashboard') ?: 'Country')
-                    ->getStateUsing(fn ($r) => $this->ensureUtf8($r->country?->name ?? ''))
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->country?->name ?? ''))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('currency.code')
                     ->label(tr('reports.expense.columns.currency', [], null, 'dashboard') ?: 'Currency')
-                    ->getStateUsing(fn ($r) => $this->ensureUtf8($r->currency?->code ?? ''))
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->currency?->code ?? ''))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('financeType.name')
                     ->label(tr('reports.expense.columns.category', [], null, 'dashboard') ?: 'Category')
-                    ->getStateUsing(fn ($r) => $this->ensureUtf8($r->financeType?->name ?? ''))
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->financeType?->name ?? ''))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('amount')
@@ -73,19 +73,19 @@ class ExpenseReportPage extends Page implements HasTable
 
                 Tables\Columns\TextColumn::make('payment_method')
                     ->label(tr('reports.expense.columns.payment_method', [], null, 'dashboard') ?: 'Payment Method')
-                    ->getStateUsing(fn ($r) => $this->ensureUtf8($r->payment_method ?? '')),
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->payment_method ?? '')),
 
                 Tables\Columns\TextColumn::make('reference_no')
                     ->label(tr('reports.expense.columns.reference', [], null, 'dashboard') ?: 'Reference')
-                    ->getStateUsing(fn ($r) => $this->ensureUtf8($r->reference_no ?? '')),
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->reference_no ?? '')),
 
                 Tables\Columns\TextColumn::make('recipient_name')
                     ->label(tr('reports.expense.columns.receiver', [], null, 'dashboard') ?: 'Receiver')
-                    ->getStateUsing(fn ($r) => $this->ensureUtf8($r->recipient_name ?? '')),
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->recipient_name ?? '')),
 
                 Tables\Columns\TextColumn::make('creator.name')
                     ->label(tr('reports.expense.columns.created_by', [], null, 'dashboard') ?: 'Created By')
-                    ->getStateUsing(fn ($r) => $this->ensureUtf8($r->creator?->name ?? ''))
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->creator?->name ?? ''))
                     ->sortable(),
             ])
             ->filters([
