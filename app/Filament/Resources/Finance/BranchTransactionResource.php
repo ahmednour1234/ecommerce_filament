@@ -9,7 +9,6 @@ use App\Models\Finance\BranchTransaction;
 use App\Models\Finance\FinanceType;
 use App\Models\MainCore\Branch;
 use App\Models\MainCore\Currency;
-use App\Services\MainCore\CurrencyService;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -36,6 +35,8 @@ class BranchStatementPage extends Page implements HasTable, HasForms
 
     public ?array $data = [];
 
+    private const DEFAULT_CURRENCY_ID = 3;
+
     public static function getNavigationGroup(): ?string
     {
         return tr('navigation.groups.finance', [], null, 'dashboard') ?: 'Finance';
@@ -58,13 +59,13 @@ class BranchStatementPage extends Page implements HasTable, HasForms
 
     public function mount(): void
     {
-        $defaultCurrencyId = app(CurrencyService::class)->defaultCurrency()?->id;
+        $currencyId = Currency::where('id', self::DEFAULT_CURRENCY_ID)->value('id') ?? null;
 
         $this->form->fill([
             'branch_id' => null,
             'from' => now()->startOfMonth()->format('Y-m-d'),
             'to' => now()->format('Y-m-d'),
-            'currency_id' => $defaultCurrencyId,
+            'currency_id' => $currencyId,
             'kind' => null,
             'finance_type_id' => null,
         ]);
@@ -103,6 +104,7 @@ class BranchStatementPage extends Page implements HasTable, HasForms
                             ->searchable()
                             ->preload()
                             ->required()
+                            ->default(self::DEFAULT_CURRENCY_ID)
                             ->live()
                             ->afterStateUpdated(fn () => $this->resetTable()),
 
@@ -143,21 +145,13 @@ class BranchStatementPage extends Page implements HasTable, HasForms
             ->statePath('data');
     }
 
-    protected function getTableQuery(): Builder
+    protected function guardReady(): bool
     {
         $data = $this->data ?? [];
-
-        if (empty($data['branch_id']) || empty($data['from']) || empty($data['to']) || empty($data['currency_id'])) {
-            return BranchTransaction::query()->whereRaw('1 = 0');
-        }
-
-        return $this->baseQuery()
-            ->with(['financeType', 'currency'])
-            ->orderBy('trx_date')
-            ->orderBy('id');
+        return !empty($data['branch_id']) && !empty($data['from']) && !empty($data['to']) && !empty($data['currency_id']);
     }
 
-    protected function baseQuery(): Builder
+    protected function baseRangeQuery(): Builder
     {
         $data = $this->data ?? [];
 
@@ -175,6 +169,18 @@ class BranchStatementPage extends Page implements HasTable, HasForms
         }
 
         return $query;
+    }
+
+    protected function getTableQuery(): Builder
+    {
+        if (!$this->guardReady()) {
+            return BranchTransaction::query()->whereRaw('1 = 0');
+        }
+
+        return $this->baseRangeQuery()
+            ->with(['financeType', 'currency'])
+            ->orderBy('trx_date')
+            ->orderBy('id');
     }
 
     public function table(Table $table): Table
@@ -247,12 +253,6 @@ class BranchStatementPage extends Page implements HasTable, HasForms
             ->paginated(false);
     }
 
-    protected function guardReady(): bool
-    {
-        $data = $this->data ?? [];
-        return !empty($data['branch_id']) && !empty($data['from']) && !empty($data['to']) && !empty($data['currency_id']);
-    }
-
     public function getOpeningBalance(): float
     {
         $data = $this->data ?? [];
@@ -286,6 +286,10 @@ class BranchStatementPage extends Page implements HasTable, HasForms
 
         $data = $this->data ?? [];
 
+        if (!empty($data['kind']) && $data['kind'] !== 'income') {
+            return 0;
+        }
+
         $query = BranchTransaction::query()
             ->where('branch_id', $data['branch_id'])
             ->where('currency_id', $data['currency_id'])
@@ -294,10 +298,6 @@ class BranchStatementPage extends Page implements HasTable, HasForms
 
         if (!empty($data['finance_type_id'])) {
             $query->where('finance_type_id', $data['finance_type_id']);
-        }
-
-        if (!empty($data['kind']) && $data['kind'] !== 'income') {
-            return 0;
         }
 
         return (float) $query->sum('amount');
@@ -311,6 +311,10 @@ class BranchStatementPage extends Page implements HasTable, HasForms
 
         $data = $this->data ?? [];
 
+        if (!empty($data['kind']) && $data['kind'] !== 'expense') {
+            return 0;
+        }
+
         $query = BranchTransaction::query()
             ->where('branch_id', $data['branch_id'])
             ->where('currency_id', $data['currency_id'])
@@ -319,10 +323,6 @@ class BranchStatementPage extends Page implements HasTable, HasForms
 
         if (!empty($data['finance_type_id'])) {
             $query->where('finance_type_id', $data['finance_type_id']);
-        }
-
-        if (!empty($data['kind']) && $data['kind'] !== 'expense') {
-            return 0;
         }
 
         return (float) $query->sum('amount');
