@@ -46,7 +46,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
     public function mount(): void
     {
         $this->form->fill([
-            'date_from' => now()->startOfMonth()->format('Y-m-d'),
+            'date_from' => now()->startOfYear()->format('Y-m-d'),
             'date_to' => now()->format('Y-m-d'),
             'branch_id' => null,
             'country_id' => null,
