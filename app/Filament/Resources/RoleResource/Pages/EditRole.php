@@ -17,6 +17,15 @@ class EditRole extends EditRecord
         ];
     }
 
+    protected function mutateFormData(array $data): array
+    {
+        if ($this->record && $this->record->exists) {
+            $data['permissions'] = $this->record->permissions->pluck('id')->toArray();
+        }
+
+        return $data;
+    }
+
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $permissions = $data['permissions'] ?? [];
