@@ -57,7 +57,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
         ]);
     }
 
-    public function form(Forms\Form $form): Forms\Form
+    public function form(\Filament\Forms\Form $form): \Filament\Forms\Form
     {
         return $form
             ->schema([
@@ -253,6 +253,22 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
                     ->sortable(),
             ])
             ->filters([
+                Tables\Filters\Filter::make('date_range')
+                    ->label(tr('reports.filters.date_range', [], null, 'dashboard') ?: tr('tables.branch_transactions.filters.date_range', [], null, 'dashboard') ?: 'Date Range')
+                    ->form([
+                        Forms\Components\DatePicker::make('date_from')
+                            ->label(tr('reports.filters.from', [], null, 'dashboard') ?: 'From')
+                            ->reactive(),
+                        Forms\Components\DatePicker::make('date_to')
+                            ->label(tr('reports.filters.to', [], null, 'dashboard') ?: 'To')
+                            ->reactive(),
+                    ])
+                    ->query(function (Builder $query, array $data) {
+                        return $query
+                            ->when($data['date_from'] ?? null, fn (Builder $q, $date) => $q->whereDate('trx_date', '>=', $date))
+                            ->when($data['date_to'] ?? null, fn (Builder $q, $date) => $q->whereDate('trx_date', '<=', $date));
+                    }),
+
                 Tables\Filters\SelectFilter::make('branch_id')
                     ->label(tr('reports.expense.filters.branch', [], null, 'dashboard') ?: 'Branch')
                     ->options(function () {
