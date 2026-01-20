@@ -201,6 +201,18 @@ class BranchStatementPage extends Page implements HasTable, HasForms
                     ->alignEnd(),
             ])
             ->filters([
+                Tables\Filters\SelectFilter::make('branch_id')
+                    ->label(tr('tables.branch_transactions.filters.branch', [], null, 'dashboard') ?: 'Branch')
+                    ->relationship('branch', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->query(function (Builder $query, array $data) {
+                        if (!empty($data['value'])) {
+                            $query->where('branch_id', $data['value']);
+                        }
+                        return $query;
+                    }),
+
                 Tables\Filters\SelectFilter::make('status')
                     ->label(tr('tables.branch_transactions.filters.status', [], null, 'dashboard') ?: 'Status')
                     ->options([
