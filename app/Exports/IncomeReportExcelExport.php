@@ -72,11 +72,11 @@ class IncomeReportDetailedSheet implements \Maatwebsite\Excel\Concerns\FromColle
             1 => [
                 'font' => ['bold' => true],
                 'fill' => [
-                    'fillType' => Fill::FILL_SOLID,
+                    'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                     'startColor' => ['rgb' => 'E0E0E0'],
                 ],
                 'alignment' => [
-                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
                 ],
             ],
         ];
