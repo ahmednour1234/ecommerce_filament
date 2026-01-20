@@ -34,6 +34,8 @@ class IncomeStatementByBranchPage extends Page implements HasForms
             'from' => now()->startOfMonth()->format('Y-m-d'),
             'to' => now()->format('Y-m-d'),
             'currency_id' => null,
+            'kind' => null,
+            'finance_type_id' => null,
         ]);
     }
 
@@ -68,8 +70,32 @@ class IncomeStatementByBranchPage extends Page implements HasForms
                             ->preload()
                             ->required()
                             ->reactive(),
+
+                        Forms\Components\Select::make('kind')
+                            ->label(tr('reports.income_statement.filters.kind', [], null, 'dashboard') ?: 'Kind (Optional)')
+                            ->options([
+                                'income' => tr('forms.finance_types.kind_income', [], null, 'dashboard') ?: 'Income',
+                                'expense' => tr('forms.finance_types.kind_expense', [], null, 'dashboard') ?: 'Expense',
+                            ])
+                            ->nullable()
+                            ->reactive()
+                            ->afterStateUpdated(fn ($state, callable $set) => $set('finance_type_id', null)),
+
+                        Forms\Components\Select::make('finance_type_id')
+                            ->label(tr('reports.income_statement.filters.type', [], null, 'dashboard') ?: 'Type (Optional)')
+                            ->options(function ($get) {
+                                $query = FinanceType::query()->where('is_active', true);
+                                if ($get('kind')) {
+                                    $query->where('kind', $get('kind'));
+                                }
+                                return $query->get()->pluck('name_text', 'id');
+                            })
+                            ->searchable()
+                            ->preload()
+                            ->nullable()
+                            ->visible(fn ($get) => $get('kind') !== null),
                     ])
-                    ->columns(4),
+                    ->columns(3),
             ])
             ->statePath('data');
     }
@@ -87,12 +113,29 @@ class IncomeStatementByBranchPage extends Page implements HasForms
             ->get();
 
         return $types->map(function ($type) use ($data) {
-            $total = BranchTransaction::query()
+            $query = BranchTransaction::query()
                 ->where('branch_id', $data['branch_id'])
                 ->where('currency_id', $data['currency_id'])
                 ->where('finance_type_id', $type->id)
-                ->whereBetween('trx_date', [$data['from'], $data['to']])
-                ->sum('amount') ?? 0;
+                ->whereBetween('trx_date', [$data['from'], $data['to']]);
+
+            if (!empty($data['kind']) && $data['kind'] !== 'income') {
+                return [
+                    'id' => $type->id,
+                    'name' => $type->name_text,
+                    'total' => 0.0,
+                ];
+            }
+
+            if (!empty($data['finance_type_id']) && $data['finance_type_id'] != $type->id) {
+                return [
+                    'id' => $type->id,
+                    'name' => $type->name_text,
+                    'total' => 0.0,
+                ];
+            }
+
+            $total = $query->sum('amount') ?? 0;
 
             return [
                 'id' => $type->id,
@@ -115,12 +158,29 @@ class IncomeStatementByBranchPage extends Page implements HasForms
             ->get();
 
         return $types->map(function ($type) use ($data) {
-            $total = BranchTransaction::query()
+            $query = BranchTransaction::query()
                 ->where('branch_id', $data['branch_id'])
                 ->where('currency_id', $data['currency_id'])
                 ->where('finance_type_id', $type->id)
-                ->whereBetween('trx_date', [$data['from'], $data['to']])
-                ->sum('amount') ?? 0;
+                ->whereBetween('trx_date', [$data['from'], $data['to']]);
+
+            if (!empty($data['kind']) && $data['kind'] !== 'expense') {
+                return [
+                    'id' => $type->id,
+                    'name' => $type->name_text,
+                    'total' => 0.0,
+                ];
+            }
+
+            if (!empty($data['finance_type_id']) && $data['finance_type_id'] != $type->id) {
+                return [
+                    'id' => $type->id,
+                    'name' => $type->name_text,
+                    'total' => 0.0,
+                ];
+            }
+
+            $total = $query->sum('amount') ?? 0;
 
             return [
                 'id' => $type->id,

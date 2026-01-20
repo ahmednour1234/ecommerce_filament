@@ -144,6 +144,7 @@ class FinanceTranslationsSeeder extends Seeder
             'reports.branch_statement.total_income' => ['en' => 'Total Income', 'ar' => 'إجمالي الإيرادات'],
             'reports.branch_statement.total_expense' => ['en' => 'Total Expense', 'ar' => 'إجمالي المصروفات'],
             'reports.branch_statement.net_change' => ['en' => 'Net Change', 'ar' => 'صافي التغيير'],
+            'reports.branch_statement.closing_balance' => ['en' => 'Closing Balance', 'ar' => 'الرصيد الختامي'],
             'reports.branch_statement.filters.branch' => ['en' => 'Branch', 'ar' => 'الفرع'],
             'reports.branch_statement.filters.from' => ['en' => 'From Date', 'ar' => 'من تاريخ'],
             'reports.branch_statement.filters.to' => ['en' => 'To Date', 'ar' => 'إلى تاريخ'],
@@ -169,6 +170,8 @@ class FinanceTranslationsSeeder extends Seeder
             'reports.income_statement.filters.from' => ['en' => 'From Date', 'ar' => 'من تاريخ'],
             'reports.income_statement.filters.to' => ['en' => 'To Date', 'ar' => 'إلى تاريخ'],
             'reports.income_statement.filters.currency' => ['en' => 'Currency', 'ar' => 'العملة'],
+            'reports.income_statement.filters.kind' => ['en' => 'Kind (Optional)', 'ar' => 'النوع (اختياري)'],
+            'reports.income_statement.filters.type' => ['en' => 'Type (Optional)', 'ar' => 'النوع (اختياري)'],
         ]);
 
         // ============================================

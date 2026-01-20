@@ -200,7 +200,44 @@ class BranchStatementPage extends Page implements HasTable, HasForms
                     })
                     ->alignEnd(),
             ])
-            ->filters([])
+            ->filters([
+                Tables\Filters\SelectFilter::make('status')
+                    ->label(tr('tables.branch_transactions.filters.status', [], null, 'dashboard') ?: 'Status')
+                    ->options([
+                        'pending' => tr('fields.status_pending', [], null, 'dashboard') ?: 'Pending',
+                        'approved' => tr('fields.status_approved', [], null, 'dashboard') ?: 'Approved',
+                        'rejected' => tr('fields.status_rejected', [], null, 'dashboard') ?: 'Rejected',
+                    ])
+                    ->query(function (Builder $query, array $data) {
+                        if (!empty($data['value'])) {
+                            $query->where('status', $data['value']);
+                        }
+                        return $query;
+                    }),
+
+                Tables\Filters\SelectFilter::make('kind')
+                    ->label(tr('tables.branch_transactions.filters.kind', [], null, 'dashboard') ?: 'Kind')
+                    ->options([
+                        'income' => tr('forms.finance_types.kind_income', [], null, 'dashboard') ?: 'Income',
+                        'expense' => tr('forms.finance_types.kind_expense', [], null, 'dashboard') ?: 'Expense',
+                    ])
+                    ->query(function (Builder $query, array $data) {
+                        if (!empty($data['value'])) {
+                            $query->whereHas('financeType', fn ($q) => $q->where('kind', $data['value']));
+                        }
+                        return $query;
+                    }),
+
+                Tables\Filters\SelectFilter::make('finance_type_id')
+                    ->label(tr('tables.branch_transactions.filters.type', [], null, 'dashboard') ?: 'Type')
+                    ->options(function () {
+                        return FinanceType::where('is_active', true)
+                            ->get()
+                            ->pluck('name_text', 'id');
+                    })
+                    ->searchable()
+                    ->preload(),
+            ])
             ->headerActions([
                 Tables\Actions\Action::make('export_excel')
                     ->label(tr('actions.export_excel', [], null, 'dashboard') ?: 'Export Excel')
@@ -241,6 +278,64 @@ class BranchStatementPage extends Page implements HasTable, HasForms
             ->sum('amount') ?? 0;
 
         return (float) $income - (float) $expense;
+    }
+
+    protected function getTotalIncome(): float
+    {
+        $data = $this->data;
+        if (empty($data['branch_id']) || empty($data['from']) || empty($data['to']) || empty($data['currency_id'])) {
+            return 0;
+        }
+
+        $query = BranchTransaction::query()
+            ->where('branch_id', $data['branch_id'])
+            ->where('currency_id', $data['currency_id'])
+            ->whereBetween('trx_date', [$data['from'], $data['to']])
+            ->whereHas('financeType', fn ($q) => $q->where('kind', 'income'));
+
+        if (!empty($data['kind']) && $data['kind'] !== 'income') {
+            return 0;
+        }
+
+        if (!empty($data['finance_type_id'])) {
+            $query->where('finance_type_id', $data['finance_type_id']);
+        }
+
+        return (float) ($query->sum('amount') ?? 0);
+    }
+
+    protected function getTotalExpense(): float
+    {
+        $data = $this->data;
+        if (empty($data['branch_id']) || empty($data['from']) || empty($data['to']) || empty($data['currency_id'])) {
+            return 0;
+        }
+
+        $query = BranchTransaction::query()
+            ->where('branch_id', $data['branch_id'])
+            ->where('currency_id', $data['currency_id'])
+            ->whereBetween('trx_date', [$data['from'], $data['to']])
+            ->whereHas('financeType', fn ($q) => $q->where('kind', 'expense'));
+
+        if (!empty($data['kind']) && $data['kind'] !== 'expense') {
+            return 0;
+        }
+
+        if (!empty($data['finance_type_id'])) {
+            $query->where('finance_type_id', $data['finance_type_id']);
+        }
+
+        return (float) ($query->sum('amount') ?? 0);
+    }
+
+    protected function getNetChange(): float
+    {
+        return $this->getTotalIncome() - $this->getTotalExpense();
+    }
+
+    protected function getClosingBalance(): float
+    {
+        return $this->getOpeningBalance() + $this->getNetChange();
     }
 
     protected function getExportTitle(): ?string
