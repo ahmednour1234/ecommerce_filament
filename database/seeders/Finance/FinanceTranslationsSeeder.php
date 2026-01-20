@@ -282,6 +282,9 @@ class FinanceTranslationsSeeder extends Seeder
             'pages.finance.import.error_report.reference_no' => ['en' => 'Reference No', 'ar' => 'رقم المرجع'],
             'pages.finance.import.error_report.error_message' => ['en' => 'Error Message', 'ar' => 'رسالة الخطأ'],
             'pages.finance.import.error_report.raw_values' => ['en' => 'Raw Values', 'ar' => 'القيم الأصلية'],
+            'forms.common.select_placeholder' => ['en' => 'Select', 'ar' => 'اختر'],
+            'forms.common.remove_item' => ['en' => 'Remove item', 'ar' => 'إزالة العنصر'],
+            'forms.common.no_file_chosen' => ['en' => 'No file chosen', 'ar' => 'لم يتم اختيار ملف'],
         ]);
 
         // ============================================

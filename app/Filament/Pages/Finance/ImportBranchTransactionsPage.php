@@ -70,6 +70,7 @@ class ImportBranchTransactionsPage extends Page implements HasForms
                     ->schema([
                         Forms\Components\Select::make('branch_id')
                             ->label(tr('forms.branch_transactions.branch_id', [], null, 'dashboard') ?: 'Branch')
+                            ->placeholder(tr('forms.common.select_placeholder', [], null, 'dashboard') ?: tr('forms.branch_transactions.select', [], null, 'dashboard') ?: 'Select')
                             ->options(function () {
                                 return Branch::where('status', 'active')
                                     ->get()
@@ -85,6 +86,7 @@ class ImportBranchTransactionsPage extends Page implements HasForms
 
                         Forms\Components\Select::make('kind')
                             ->label(tr('forms.finance_types.kind', [], null, 'dashboard') ?: 'Kind')
+                            ->placeholder(tr('forms.common.select_placeholder', [], null, 'dashboard') ?: tr('forms.branch_transactions.select', [], null, 'dashboard') ?: 'Select')
                             ->options([
                                 'income' => tr('forms.finance_types.kind_income', [], null, 'dashboard') ?: 'Income',
                                 'expense' => tr('forms.finance_types.kind_expense', [], null, 'dashboard') ?: 'Expense',
@@ -96,6 +98,7 @@ class ImportBranchTransactionsPage extends Page implements HasForms
 
                         Forms\Components\Select::make('finance_type_id')
                             ->label(tr('forms.branch_transactions.finance_type_id', [], null, 'dashboard') ?: 'Finance Type')
+                            ->placeholder(tr('forms.common.select_placeholder', [], null, 'dashboard') ?: tr('forms.branch_transactions.select', [], null, 'dashboard') ?: 'Select')
                             ->options(function (callable $get) {
                                 $kind = $get('kind');
                                 if (!$kind) {
@@ -114,6 +117,7 @@ class ImportBranchTransactionsPage extends Page implements HasForms
 
                         Forms\Components\Select::make('currency_code')
                             ->label(tr('forms.branch_transactions.currency_id', [], null, 'dashboard') ?: 'Currency')
+                            ->placeholder(tr('forms.common.select_placeholder', [], null, 'dashboard') ?: tr('forms.branch_transactions.select', [], null, 'dashboard') ?: 'Select')
                             ->options(function () {
                                 return Currency::where('is_active', true)
                                     ->get()
@@ -126,6 +130,7 @@ class ImportBranchTransactionsPage extends Page implements HasForms
 
                         Forms\Components\Select::make('country_id')
                             ->label(tr('forms.branch_transactions.country_id', [], null, 'dashboard') ?: 'Country')
+                            ->placeholder(tr('forms.common.select_placeholder', [], null, 'dashboard') ?: tr('forms.branch_transactions.select', [], null, 'dashboard') ?: 'Select')
                             ->options(function () {
                                 return Country::where('is_active', true)
                                     ->get()
@@ -159,6 +164,7 @@ class ImportBranchTransactionsPage extends Page implements HasForms
 
                         Forms\Components\Select::make('on_duplicate')
                             ->label(tr('pages.finance.import.on_duplicate', [], null, 'dashboard') ?: 'On Duplicate')
+                            ->placeholder(tr('forms.common.select_placeholder', [], null, 'dashboard') ?: tr('forms.branch_transactions.select', [], null, 'dashboard') ?: 'Select')
                             ->options([
                                 'skip' => tr('pages.finance.import.duplicate_skip', [], null, 'dashboard') ?: 'Skip',
                                 'update' => tr('pages.finance.import.duplicate_update', [], null, 'dashboard') ?: 'Update',
@@ -168,6 +174,7 @@ class ImportBranchTransactionsPage extends Page implements HasForms
 
                         Forms\Components\FileUpload::make('excel_file')
                             ->label(tr('pages.finance.import.excel_file', [], null, 'dashboard') ?: 'Excel File')
+                            ->placeholder(tr('forms.common.no_file_chosen', [], null, 'dashboard') ?: tr('forms.branch_transactions.no_file_chosen', [], null, 'dashboard') ?: 'No file chosen')
                             ->acceptedFileTypes(['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'])
                             ->disk('local')
                             ->directory('imports/finance')
