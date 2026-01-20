@@ -145,7 +145,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
     protected function applyFilters(Builder $query): void
     {
-        $d = $this->data;
+        $d = $this->form->getRawState();
 
         $from = !empty($d['date_from']) ? Carbon::parse($d['date_from'])->startOfDay() : null;
         $to = !empty($d['date_to']) ? Carbon::parse($d['date_to'])->endOfDay() : null;
@@ -201,7 +201,8 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
                 Tables\Columns\TextColumn::make('branch.name')
                     ->label(tr('reports.expense.columns.branch', [], null, 'dashboard') ?: 'Branch')
                     ->getStateUsing(fn ($record) => $this->ensureUtf8($record->branch?->name ?? ''))
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('country.name_text')
                     ->label(tr('reports.expense.columns.country', [], null, 'dashboard') ?: 'Country')
@@ -226,21 +227,86 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
                 Tables\Columns\TextColumn::make('payment_method')
                     ->label(tr('reports.expense.columns.payment_method', [], null, 'dashboard') ?: 'Payment Method')
-                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->payment_method ?? '')),
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->payment_method ?? ''))
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('reference_no')
                     ->label(tr('reports.expense.columns.reference', [], null, 'dashboard') ?: 'Reference')
-                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->reference_no ?? '')),
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->reference_no ?? ''))
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('recipient_name')
                     ->label(tr('reports.expense.columns.receiver', [], null, 'dashboard') ?: 'Receiver')
-                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->recipient_name ?? '')),
+                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->recipient_name ?? ''))
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('creator.name')
                     ->label(tr('reports.expense.columns.created_by', [], null, 'dashboard') ?: 'Created By')
                     ->getStateUsing(fn ($record) => $this->ensureUtf8($record->creator?->name ?? ''))
                     ->sortable(),
             ])
+            ->filters([
+                Tables\Filters\Filter::make('trx_date')
+                    ->label(tr('reports.expense.filters.date_range', [], null, 'dashboard') ?: 'Date Range')
+                    ->form([
+                        Forms\Components\DatePicker::make('date_from')
+                            ->label(tr('reports.expense.filters.date_from', [], null, 'dashboard') ?: 'From Date'),
+                        Forms\Components\DatePicker::make('date_to')
+                            ->label(tr('reports.expense.filters.date_to', [], null, 'dashboard') ?: 'To Date'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['date_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('trx_date', '>=', $date),
+                            )
+                            ->when(
+                                $data['date_to'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('trx_date', '<=', $date),
+                            );
+                    }),
+
+                Tables\Filters\SelectFilter::make('branch_id')
+                    ->label(tr('reports.expense.filters.branch', [], null, 'dashboard') ?: 'Branch')
+                    ->relationship('branch', 'name')
+                    ->searchable()
+                    ->preload(),
+
+                Tables\Filters\SelectFilter::make('country_id')
+                    ->label(tr('reports.expense.filters.country', [], null, 'dashboard') ?: 'Country')
+                    ->relationship('country', 'name_text')
+                    ->searchable()
+                    ->preload(),
+
+                Tables\Filters\SelectFilter::make('currency_id')
+                    ->label(tr('reports.expense.filters.currency', [], null, 'dashboard') ?: 'Currency')
+                    ->relationship('currency', 'code')
+                    ->searchable()
+                    ->preload(),
+
+                Tables\Filters\SelectFilter::make('finance_type_id')
+                    ->label(tr('reports.expense.filters.category', [], null, 'dashboard') ?: 'Category')
+                    ->relationship('financeType', 'name_text')
+                    ->searchable()
+                    ->preload(),
+
+                Tables\Filters\Filter::make('payment_method')
+                    ->label(tr('reports.expense.filters.payment_method', [], null, 'dashboard') ?: 'Payment Method')
+                    ->form([
+                        Forms\Components\TextInput::make('payment_method')
+                            ->label(tr('reports.expense.filters.payment_method', [], null, 'dashboard') ?: 'Payment Method'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['payment_method'],
+                                fn (Builder $query, $value): Builder => $query->where('payment_method', 'like', '%' . $value . '%'),
+                            );
+                    }),
+            ])
+            ->filtersLayout(Tables\Enums\FiltersLayout::AboveContent)
+            ->searchable()
+            ->searchPlaceholder(tr('reports.expense.filters.search_placeholder', [], null, 'dashboard') ?: 'Search by receiver, reference, notes...')
             ->headerActions([
                 Tables\Actions\Action::make('export_excel')
                     ->label(tr('actions.export_excel', [], null, 'dashboard') ?: 'Export Excel')
@@ -358,8 +424,9 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
     protected function getExportTitle(): string
     {
         $base = tr('pages.finance.expense_report.title', [], null, 'dashboard') ?: 'Expense Report';
-        $from = $this->data['date_from'] ?? null;
-        $to = $this->data['date_to'] ?? null;
+        $d = $this->form->getRawState();
+        $from = $d['date_from'] ?? null;
+        $to = $d['date_to'] ?? null;
 
         if (!$from && !$to) return $base;
 
@@ -373,19 +440,20 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
     protected function getExportMetadata(): array
     {
+        $d = $this->form->getRawState();
         $metadata = [
             'exported_at' => now()->format('Y-m-d H:i:s'),
             'exported_by' => Auth::user()?->name ?? 'System',
-            'date_from' => $this->data['date_from'] ?? '',
-            'date_to' => $this->data['date_to'] ?? '',
+            'date_from' => $d['date_from'] ?? '',
+            'date_to' => $d['date_to'] ?? '',
         ];
 
-        if (!empty($this->data['branch_id'])) {
-            $metadata['branch'] = $this->ensureUtf8(Branch::find($this->data['branch_id'])?->name ?? '');
+        if (!empty($d['branch_id'])) {
+            $metadata['branch'] = $this->ensureUtf8(Branch::find($d['branch_id'])?->name ?? '');
         }
 
-        if (!empty($this->data['currency_id'])) {
-            $metadata['currency'] = $this->ensureUtf8(Currency::find($this->data['currency_id'])?->code ?? '');
+        if (!empty($d['currency_id'])) {
+            $metadata['currency'] = $this->ensureUtf8(Currency::find($d['currency_id'])?->code ?? '');
         }
 
         return $metadata;
