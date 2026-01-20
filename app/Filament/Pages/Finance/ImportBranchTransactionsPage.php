@@ -6,6 +6,7 @@ use App\Exports\FinanceImportErrorExport;
 use App\Exports\FinanceImportTemplateExport;
 use App\Filament\Concerns\FinanceModuleGate;
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Models\Finance\BranchTransaction;
 use App\Models\Finance\FinanceType;
 use App\Models\MainCore\Branch;
 use App\Models\MainCore\Country;
@@ -34,6 +35,7 @@ class ImportBranchTransactionsPage extends Page implements HasForms
     protected static ?string $navigationTranslationKey = 'sidebar.finance.import';
 
     public ?array $data = [];
+    public array $lastImportedIds = [];
 
     public function mount(): void
     {
@@ -262,6 +264,8 @@ class ImportBranchTransactionsPage extends Page implements HasForms
             return Excel::download($errorExport, $errorFilename);
         }
 
+        $this->lastImportedIds = array_merge($result->importedIds, $result->updatedIds);
+
         $message = tr('pages.finance.import.success', [
             'imported' => $result->imported,
             'updated' => $result->updated,
@@ -277,6 +281,7 @@ class ImportBranchTransactionsPage extends Page implements HasForms
                 ->warning()
                 ->title(tr('pages.finance.import.partial_success', [], null, 'dashboard') ?: 'Partial Import Success')
                 ->body($message . ' ' . (tr('pages.finance.import.downloading_errors', [], null, 'dashboard') ?: 'Downloading error report...'))
+                ->actions($this->getApproveAction($this->lastImportedIds))
                 ->send();
 
             return Excel::download($errorExport, $errorFilename);
@@ -285,6 +290,7 @@ class ImportBranchTransactionsPage extends Page implements HasForms
                 ->success()
                 ->title(tr('pages.finance.import.import_success', [], null, 'dashboard') ?: 'Import Successful')
                 ->body($message)
+                ->actions($this->getApproveAction($this->lastImportedIds))
                 ->send();
         }
 
@@ -312,5 +318,85 @@ class ImportBranchTransactionsPage extends Page implements HasForms
     public function getHeading(): string
     {
         return tr('pages.finance.import.title', [], null, 'dashboard') ?: 'استيراد من Excel';
+    }
+
+    protected function getApproveAction(array $transactionIds): array
+    {
+        if (empty($transactionIds)) {
+            return [];
+        }
+
+        $user = auth()->user();
+        $canApprove = $user?->hasRole('super_admin') || $user?->can('finance.approve_transactions') ?? false;
+
+        if (!$canApprove) {
+            return [];
+        }
+
+        return [
+            \Filament\Notifications\Actions\Action::make('approve_all')
+                ->label(tr('pages.finance.import.approve_all', [], null, 'dashboard') ?: 'Approve All Imported')
+                ->action(function () use ($transactionIds) {
+                    $this->approveAllImported($transactionIds);
+                }),
+        ];
+    }
+
+    public function approveAllImported(array $transactionIds): void
+    {
+        if (empty($transactionIds)) {
+            return;
+        }
+
+        $user = auth()->user();
+        $canApprove = $user?->hasRole('super_admin') || $user?->can('finance.approve_transactions') ?? false;
+
+        if (!$canApprove) {
+            Notification::make()
+                ->danger()
+                ->title(tr('pages.finance.import.no_permission', [], null, 'dashboard') ?: 'Permission Denied')
+                ->body(tr('pages.finance.import.approve_permission_required', [], null, 'dashboard') ?: 'You do not have permission to approve transactions.')
+                ->send();
+            return;
+        }
+
+        $approved = 0;
+        $failed = 0;
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($transactionIds, &$approved, &$failed) {
+            foreach ($transactionIds as $id) {
+                $transaction = BranchTransaction::find($id);
+                if ($transaction && $transaction->status === 'pending') {
+                    try {
+                        $transaction->update([
+                            'status' => 'approved',
+                            'approved_by' => auth()->id(),
+                            'approved_at' => now(),
+                        ]);
+                        $approved++;
+                    } catch (\Exception $e) {
+                        $failed++;
+                    }
+                }
+            }
+        });
+
+        if ($approved > 0) {
+            Notification::make()
+                ->success()
+                ->title(tr('pages.finance.import.approved_success', [], null, 'dashboard') ?: 'Approval Successful')
+                ->body(tr('pages.finance.import.approved_count', ['count' => $approved], null, 'dashboard') ?: "Approved {$approved} transaction(s).")
+                ->send();
+        }
+
+        if ($failed > 0) {
+            Notification::make()
+                ->warning()
+                ->title(tr('pages.finance.import.approval_partial', [], null, 'dashboard') ?: 'Partial Approval')
+                ->body(tr('pages.finance.import.failed_count', ['count' => $failed], null, 'dashboard') ?: "Failed to approve {$failed} transaction(s).")
+                ->send();
+        }
+
+        $this->lastImportedIds = [];
     }
 }

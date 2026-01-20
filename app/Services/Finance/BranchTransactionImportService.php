@@ -96,12 +96,13 @@ class BranchTransactionImportService
                             ]);
                         });
                         $result->updated++;
+                        $result->updatedIds[] = $existing->id;
                         continue;
                     }
                 }
 
-                DB::transaction(function () use ($config, $rowData, $normalizedDate, $normalizedAmount, $notes) {
-                    BranchTransaction::create([
+                $transaction = DB::transaction(function () use ($config, $rowData, $normalizedDate, $normalizedAmount, $notes) {
+                    return BranchTransaction::create([
                         'trx_date' => $normalizedDate,
                         'branch_id' => $config['branch_id'],
                         'country_id' => $config['country_id'],
@@ -117,6 +118,7 @@ class BranchTransactionImportService
                 });
 
                 $result->imported++;
+                $result->importedIds[] = $transaction->id;
             }
         } catch (\Exception $e) {
             $result->failed++;
@@ -257,4 +259,6 @@ class ImportResult
     public int $skipped = 0;
     public int $failed = 0;
     public array $errors = [];
+    public array $importedIds = [];
+    public array $updatedIds = [];
 }
