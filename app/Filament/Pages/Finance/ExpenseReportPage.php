@@ -46,8 +46,8 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
     public function mount(): void
     {
         $this->data = [
-            'date_from' => now()->startOfYear()->toDateString(),
-            'date_to' => now()->toDateString(),
+            'date_from' => null,
+            'date_to' => null,
             'branch_id' => null,
             'country_id' => null,
             'currency_id' => null,
@@ -67,17 +67,20 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
                     ->schema([
                         Forms\Components\DatePicker::make('date_from')
                             ->label(tr('reports.expense.filters.date_from', [], null, 'dashboard') ?: 'From Date')
-                            ->required()
+                            ->nullable()
                             ->reactive(),
 
                         Forms\Components\DatePicker::make('date_to')
                             ->label(tr('reports.expense.filters.date_to', [], null, 'dashboard') ?: 'To Date')
-                            ->required()
+                            ->nullable()
                             ->reactive(),
 
                         Forms\Components\Select::make('branch_id')
                             ->label(tr('reports.expense.filters.branch', [], null, 'dashboard') ?: 'Branch')
-                            ->options(fn () => Branch::where('status', 'active')->pluck('name', 'id')->map(fn ($v) => $this->ensureUtf8($v))->toArray())
+                            ->options(fn () => Branch::where('status', 'active')
+                                ->pluck('name', 'id')
+                                ->map(fn ($v) => $this->ensureUtf8($v))
+                                ->toArray())
                             ->searchable()
                             ->preload()
                             ->nullable()
@@ -85,7 +88,10 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
                         Forms\Components\Select::make('country_id')
                             ->label(tr('reports.expense.filters.country', [], null, 'dashboard') ?: 'Country')
-                            ->options(fn () => Country::where('is_active', true)->pluck('name_text', 'id')->map(fn ($v) => $this->ensureUtf8($v))->toArray())
+                            ->options(fn () => Country::where('is_active', true)
+                                ->pluck('name_text', 'id')
+                                ->map(fn ($v) => $this->ensureUtf8($v))
+                                ->toArray())
                             ->searchable()
                             ->preload()
                             ->nullable()
@@ -93,7 +99,10 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
                         Forms\Components\Select::make('currency_id')
                             ->label(tr('reports.expense.filters.currency', [], null, 'dashboard') ?: 'Currency')
-                            ->options(fn () => Currency::where('is_active', true)->pluck('code', 'id')->map(fn ($v) => $this->ensureUtf8($v))->toArray())
+                            ->options(fn () => Currency::where('is_active', true)
+                                ->pluck('code', 'id')
+                                ->map(fn ($v) => $this->ensureUtf8($v))
+                                ->toArray())
                             ->searchable()
                             ->preload()
                             ->nullable()
@@ -106,7 +115,11 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
                         Forms\Components\Select::make('finance_type_id')
                             ->label(tr('reports.expense.filters.category', [], null, 'dashboard') ?: 'Category')
-                            ->options(fn () => FinanceType::where('kind', 'expense')->where('is_active', true)->pluck('name_text', 'id')->map(fn ($v) => $this->ensureUtf8($v))->toArray())
+                            ->options(fn () => FinanceType::where('kind', 'expense')
+                                ->where('is_active', true)
+                                ->pluck('name_text', 'id')
+                                ->map(fn ($v) => $this->ensureUtf8($v))
+                                ->toArray())
                             ->searchable()
                             ->preload()
                             ->nullable()
@@ -123,51 +136,31 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
             ->statePath('data');
     }
 
-    protected function getDateFrom(): ?Carbon
-    {
-        $from = $this->data['date_from'] ?? null;
-        return $from ? Carbon::parse($from)->startOfDay() : null;
-    }
-
-    protected function getDateTo(): ?Carbon
-    {
-        $to = $this->data['date_to'] ?? null;
-        return $to ? Carbon::parse($to)->endOfDay() : null;
-    }
-
     protected function baseQuery(): Builder
     {
-        $from = $this->getDateFrom();
-        $to = $this->getDateTo();
-
-        $query = BranchTransaction::query()
+        return BranchTransaction::query()
             ->whereHas('financeType', fn (Builder $q) => $q->where('kind', 'expense'))
             ->with(['financeType', 'branch', 'country', 'currency', 'creator']);
-
-        if ($from && $to) {
-            $query->whereBetween('trx_date', [$from, $to]);
-        } else {
-            $query->whereRaw('1=0');
-        }
-
-        return $query;
     }
 
-    protected function applyFormFilters(Builder $query): void
+    protected function applyFilters(Builder $query): void
     {
         $d = $this->data;
 
-        if (!empty($d['branch_id'])) {
-            $query->where('branch_id', $d['branch_id']);
+        $from = !empty($d['date_from']) ? Carbon::parse($d['date_from'])->startOfDay() : null;
+        $to = !empty($d['date_to']) ? Carbon::parse($d['date_to'])->endOfDay() : null;
+
+        if ($from && $to) {
+            $query->whereBetween('trx_date', [$from, $to]);
+        } elseif ($from) {
+            $query->where('trx_date', '>=', $from);
+        } elseif ($to) {
+            $query->where('trx_date', '<=', $to);
         }
 
-        if (!empty($d['country_id'])) {
-            $query->where('country_id', $d['country_id']);
-        }
-
-        if (!empty($d['currency_id'])) {
-            $query->where('currency_id', $d['currency_id']);
-        }
+        if (!empty($d['branch_id'])) $query->where('branch_id', $d['branch_id']);
+        if (!empty($d['country_id'])) $query->where('country_id', $d['country_id']);
+        if (!empty($d['currency_id'])) $query->where('currency_id', $d['currency_id']);
 
         if (!empty($d['payment_method'])) {
             $query->where('payment_method', 'like', '%' . $d['payment_method'] . '%');
@@ -190,11 +183,9 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
     protected function getTableQuery(): Builder
     {
         $query = $this->baseQuery();
-        $this->applyFormFilters($query);
+        $this->applyFilters($query);
 
-        return $query
-            ->orderBy('trx_date', 'desc')
-            ->orderBy('id', 'desc');
+        return $query->orderBy('trx_date', 'desc')->orderBy('id', 'desc');
     }
 
     public function table(Table $table): Table
@@ -209,22 +200,22 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
                 Tables\Columns\TextColumn::make('branch.name')
                     ->label(tr('reports.expense.columns.branch', [], null, 'dashboard') ?: 'Branch')
-                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->branch?->name ?? ''))
+                    ->getStateUsing(fn ($r) => $this->ensureUtf8($r->branch?->name ?? ''))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('country.name_text')
                     ->label(tr('reports.expense.columns.country', [], null, 'dashboard') ?: 'Country')
-                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->country?->name_text ?? ''))
+                    ->getStateUsing(fn ($r) => $this->ensureUtf8($r->country?->name_text ?? ''))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('currency.code')
                     ->label(tr('reports.expense.columns.currency', [], null, 'dashboard') ?: 'Currency')
-                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->currency?->code ?? ''))
+                    ->getStateUsing(fn ($r) => $this->ensureUtf8($r->currency?->code ?? ''))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('financeType.name_text')
                     ->label(tr('reports.expense.columns.category', [], null, 'dashboard') ?: 'Category')
-                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->financeType?->name_text ?? ''))
+                    ->getStateUsing(fn ($r) => $this->ensureUtf8($r->financeType?->name_text ?? ''))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('amount')
@@ -235,27 +226,19 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
                 Tables\Columns\TextColumn::make('payment_method')
                     ->label(tr('reports.expense.columns.payment_method', [], null, 'dashboard') ?: 'Payment Method')
-                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->payment_method ?? '')),
+                    ->getStateUsing(fn ($r) => $this->ensureUtf8($r->payment_method ?? '')),
 
                 Tables\Columns\TextColumn::make('reference_no')
                     ->label(tr('reports.expense.columns.reference', [], null, 'dashboard') ?: 'Reference')
-                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->reference_no ?? ''))
-                    ->searchable(),
+                    ->getStateUsing(fn ($r) => $this->ensureUtf8($r->reference_no ?? '')),
 
                 Tables\Columns\TextColumn::make('recipient_name')
                     ->label(tr('reports.expense.columns.receiver', [], null, 'dashboard') ?: 'Receiver')
-                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->recipient_name ?? ''))
-                    ->searchable(),
-
-                Tables\Columns\IconColumn::make('attachment_path')
-                    ->label(tr('reports.expense.columns.attachment', [], null, 'dashboard') ?: 'Attachment')
-                    ->icon(fn ($record) => $record->attachment_path ? 'heroicon-o-paper-clip' : null)
-                    ->url(fn ($record) => $record->attachment_path ? asset('storage/' . $record->attachment_path) : null)
-                    ->openUrlInNewTab(),
+                    ->getStateUsing(fn ($r) => $this->ensureUtf8($r->recipient_name ?? '')),
 
                 Tables\Columns\TextColumn::make('creator.name')
                     ->label(tr('reports.expense.columns.created_by', [], null, 'dashboard') ?: 'Created By')
-                    ->getStateUsing(fn ($record) => $this->ensureUtf8($record->creator?->name ?? ''))
+                    ->getStateUsing(fn ($r) => $this->ensureUtf8($r->creator?->name ?? ''))
                     ->sortable(),
             ])
             ->headerActions([
@@ -271,40 +254,6 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
             ])
             ->defaultSort('trx_date', 'desc')
             ->paginated([10, 25, 50, 100]);
-    }
-
-    public function getTotalExpenses(): float
-    {
-        $query = $this->baseQuery();
-        $this->applyFormFilters($query);
-
-        return (float) ($query->sum('amount') ?? 0);
-    }
-
-    public function getTransactionCount(): int
-    {
-        $query = $this->baseQuery();
-        $this->applyFormFilters($query);
-
-        return (int) $query->count();
-    }
-
-    public function getGroupedByCategory(): Collection
-    {
-        $query = $this->baseQuery();
-        $this->applyFormFilters($query);
-
-        return $query
-            ->select('finance_type_id', DB::raw('COUNT(*) as count'), DB::raw('SUM(amount) as total_amount'))
-            ->groupBy('finance_type_id')
-            ->with('financeType:id,name_text')
-            ->orderByDesc('total_amount')
-            ->get()
-            ->map(fn ($item) => [
-                'category_name' => $this->ensureUtf8($item->financeType?->name_text ?? ''),
-                'count' => (int) $item->count,
-                'total_amount' => (float) $item->total_amount,
-            ]);
     }
 
     public function exportToExcelExpense()
@@ -324,11 +273,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
             'created_by' => $this->ensureUtf8($r->creator?->name ?? ''),
         ]);
 
-        $summaryData = $this->getGroupedByCategory()->map(fn ($i) => [
-            'category_name' => $i['category_name'],
-            'count' => $i['count'],
-            'total_amount' => number_format($i['total_amount'], 2),
-        ]);
+        $summaryData = $this->getGroupedByCategory();
 
         $export = new ExpenseReportExcelExport($detailedData, $summaryData, $this->getExportTitle());
         return Excel::download($export, $this->getExportFilename('xlsx'));
@@ -351,12 +296,6 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
             $this->ensureUtf8($r->creator?->name ?? ''),
         ])->toArray();
 
-        $summaryRows = $this->getGroupedByCategory()->map(fn ($i) => [
-            $i['category_name'],
-            $i['count'],
-            number_format($i['total_amount'], 2),
-        ])->toArray();
-
         $headers = [
             tr('reports.expense.columns.date', [], null, 'dashboard') ?: 'Date',
             tr('reports.expense.columns.branch', [], null, 'dashboard') ?: 'Branch',
@@ -370,15 +309,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
             tr('reports.expense.columns.created_by', [], null, 'dashboard') ?: 'Created By',
         ];
 
-        $summaryHeaders = [
-            tr('reports.expense.summary.category', [], null, 'dashboard') ?: 'Category',
-            tr('reports.expense.summary.count', [], null, 'dashboard') ?: 'Count',
-            tr('reports.expense.summary.total_amount', [], null, 'dashboard') ?: 'Total Amount',
-        ];
-
         $metadata = $this->getExportMetadata();
-        $metadata['total_expenses'] = number_format($this->getTotalExpenses(), 2);
-        $metadata['transaction_count'] = $this->getTransactionCount();
 
         $export = new ReportPdfExport(
             collect($detailedRows),
@@ -389,17 +320,36 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
             'reports.expense-report-pdf'
         );
 
-        $export->setSummaryData(collect($summaryRows), $summaryHeaders);
-
         return $export->download($this->getExportFilename('pdf'));
     }
 
-    protected function getExportTitle(): ?string
+    public function getGroupedByCategory(): Collection
     {
-        $from = $this->data['date_from'] ?? '';
-        $to = $this->data['date_to'] ?? '';
+        $query = $this->baseQuery();
+        $this->applyFilters($query);
+
+        return $query
+            ->select('finance_type_id', DB::raw('COUNT(*) as count'), DB::raw('SUM(amount) as total_amount'))
+            ->groupBy('finance_type_id')
+            ->with('financeType:id,name_text')
+            ->orderByDesc('total_amount')
+            ->get()
+            ->map(fn ($item) => [
+                'category_name' => $this->ensureUtf8($item->financeType?->name_text ?? ''),
+                'count' => (int) $item->count,
+                'total_amount' => number_format((float) $item->total_amount, 2),
+            ]);
+    }
+
+    protected function getExportTitle(): string
+    {
         $base = tr('pages.finance.expense_report.title', [], null, 'dashboard') ?: 'Expense Report';
-        return $base . ' (' . $from . ' to ' . $to . ')';
+        $from = $this->data['date_from'] ?? null;
+        $to = $this->data['date_to'] ?? null;
+
+        if (!$from && !$to) return $base;
+
+        return $base . ' (' . ($from ?: '-') . ' to ' . ($to ?: '-') . ')';
     }
 
     protected function getExportFilename(string $extension = 'xlsx'): string
@@ -432,23 +382,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
         if (is_null($value)) return '';
         if (is_numeric($value) || is_bool($value)) return (string) $value;
         $value = is_string($value) ? $value : (string) $value;
-        if (mb_check_encoding($value, 'UTF-8')) return $value;
-
-        $detected = mb_detect_encoding($value, ['UTF-8', 'ISO-8859-1', 'Windows-1256', 'ASCII'], true);
-        if ($detected && $detected !== 'UTF-8') {
-            $converted = mb_convert_encoding($value, 'UTF-8', $detected);
-            if ($converted !== false && mb_check_encoding($converted, 'UTF-8')) return $converted;
-        }
-
-        if (function_exists('iconv')) {
-            $cleaned = @iconv('UTF-8', 'UTF-8//IGNORE', $value);
-            if ($cleaned !== false) return $cleaned;
-        }
-
-        $cleaned = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
-        return mb_check_encoding($cleaned, 'UTF-8')
-            ? $cleaned
-            : (filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH) ?: '');
+        return mb_check_encoding($value, 'UTF-8') ? $value : mb_convert_encoding($value, 'UTF-8', 'auto');
     }
 
     public function getTitle(): string
