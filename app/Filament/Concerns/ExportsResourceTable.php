@@ -142,15 +142,31 @@ trait ExportsResourceTable
             return $value;
         }
 
-        // Try to convert to UTF-8
-        $converted = mb_convert_encoding($value, 'UTF-8', mb_detect_encoding($value, ['UTF-8', 'ISO-8859-1', 'Windows-1256', 'ASCII'], true));
-        
-        // If conversion fails, remove invalid characters
-        if ($converted === false || !mb_check_encoding($converted, 'UTF-8')) {
-            $converted = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+        // Try to detect and convert encoding
+        $detected = mb_detect_encoding($value, ['UTF-8', 'ISO-8859-1', 'Windows-1256', 'ASCII'], true);
+        if ($detected && $detected !== 'UTF-8') {
+            $converted = mb_convert_encoding($value, 'UTF-8', $detected);
+            if ($converted !== false && mb_check_encoding($converted, 'UTF-8')) {
+                return $converted;
+            }
         }
 
-        return $converted;
+        // Remove invalid UTF-8 characters using iconv
+        if (function_exists('iconv')) {
+            $cleaned = @iconv('UTF-8', 'UTF-8//IGNORE', $value);
+            if ($cleaned !== false) {
+                return $cleaned;
+            }
+        }
+
+        // Fallback: use mb_convert_encoding with //IGNORE
+        $cleaned = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+        if (mb_check_encoding($cleaned, 'UTF-8')) {
+            return $cleaned;
+        }
+
+        // Last resort: filter out invalid bytes
+        return filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH) ?: '';
     }
 
     /**
