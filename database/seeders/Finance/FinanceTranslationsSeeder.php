@@ -249,6 +249,42 @@ class FinanceTranslationsSeeder extends Seeder
         ]);
 
         // ============================================
+        // Import Page
+        // ============================================
+        $this->command->info('Step 8.3: Creating Import page translations...');
+        $translations = array_merge($translations, [
+            'sidebar.finance.import' => ['en' => 'Import from Excel', 'ar' => 'استيراد من Excel'],
+            'pages.finance.import.title' => ['en' => 'Import from Excel', 'ar' => 'استيراد من Excel'],
+            'pages.finance.import.download_template' => ['en' => 'Download Excel Template', 'ar' => 'تحميل قالب Excel'],
+            'pages.finance.import.form_section' => ['en' => 'Import Settings', 'ar' => 'إعدادات الاستيراد'],
+            'pages.finance.import.default_transaction_date' => ['en' => 'Default Transaction Date', 'ar' => 'تاريخ العملية الافتراضي'],
+            'pages.finance.import.global_notes' => ['en' => 'Global Notes', 'ar' => 'ملاحظات عامة'],
+            'pages.finance.import.allow_partial' => ['en' => 'Allow Partial Import', 'ar' => 'السماح بالاستيراد الجزئي'],
+            'pages.finance.import.allow_partial_helper' => ['en' => 'Import valid rows even if some rows have errors', 'ar' => 'استيراد الصفوف الصحيحة حتى لو كان بعض الصفوف بها أخطاء'],
+            'pages.finance.import.on_duplicate' => ['en' => 'On Duplicate', 'ar' => 'عند التكرار'],
+            'pages.finance.import.duplicate_skip' => ['en' => 'Skip', 'ar' => 'تخطي'],
+            'pages.finance.import.duplicate_update' => ['en' => 'Update', 'ar' => 'تحديث'],
+            'pages.finance.import.excel_file' => ['en' => 'Excel File', 'ar' => 'ملف Excel'],
+            'pages.finance.import.excel_file_helper' => ['en' => 'Upload .xlsx or .xls file', 'ar' => 'قم بتحميل ملف .xlsx أو .xls'],
+            'pages.finance.import.submit' => ['en' => 'Import', 'ar' => 'استيراد'],
+            'pages.finance.import.select_kind_first' => ['en' => 'Please select Kind first', 'ar' => 'الرجاء اختيار النوع أولاً'],
+            'pages.finance.import.no_file' => ['en' => 'Please upload an Excel file', 'ar' => 'الرجاء تحميل ملف Excel'],
+            'pages.finance.import.invalid_currency' => ['en' => 'Invalid currency code', 'ar' => 'رمز العملة غير صحيح'],
+            'pages.finance.import.import_failed' => ['en' => 'Import Failed', 'ar' => 'فشل الاستيراد'],
+            'pages.finance.import.errors_found' => ['en' => 'Found :count errors.', 'ar' => 'تم العثور على :count أخطاء.'],
+            'pages.finance.import.download_errors' => ['en' => 'Download Error Report', 'ar' => 'تحميل تقرير الأخطاء'],
+            'pages.finance.import.partial_success' => ['en' => 'Partial Import Success', 'ar' => 'نجح الاستيراد جزئياً'],
+            'pages.finance.import.import_success' => ['en' => 'Import Successful', 'ar' => 'نجح الاستيراد'],
+            'pages.finance.import.success' => ['en' => 'Imported: :imported, Updated: :updated, Skipped: :skipped, Failed: :failed', 'ar' => 'تم الاستيراد: :imported، تم التحديث: :updated، تم التخطي: :skipped، فشل: :failed'],
+            'pages.finance.import.downloading_errors' => ['en' => 'Downloading error report...', 'ar' => 'جاري تحميل تقرير الأخطاء...'],
+            'pages.finance.import.error_report.title' => ['en' => 'Import Errors', 'ar' => 'أخطاء الاستيراد'],
+            'pages.finance.import.error_report.row_number' => ['en' => 'Row Number', 'ar' => 'رقم الصف'],
+            'pages.finance.import.error_report.reference_no' => ['en' => 'Reference No', 'ar' => 'رقم المرجع'],
+            'pages.finance.import.error_report.error_message' => ['en' => 'Error Message', 'ar' => 'رسالة الخطأ'],
+            'pages.finance.import.error_report.raw_values' => ['en' => 'Raw Values', 'ar' => 'القيم الأصلية'],
+        ]);
+
+        // ============================================
         // Common Actions
         // ============================================
         $this->command->info('Step 9: Creating common action translations...');
