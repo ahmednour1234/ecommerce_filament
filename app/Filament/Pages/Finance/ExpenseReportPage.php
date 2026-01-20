@@ -201,8 +201,7 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
                 Tables\Columns\TextColumn::make('branch.name')
                     ->label(tr('reports.expense.columns.branch', [], null, 'dashboard') ?: 'Branch')
                     ->getStateUsing(fn ($record) => $this->ensureUtf8($record->branch?->name ?? ''))
-                    ->sortable()
-                    ->searchable(),
+                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('country.name_text')
                     ->label(tr('reports.expense.columns.country', [], null, 'dashboard') ?: 'Country')
@@ -274,7 +273,10 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
                 Tables\Filters\SelectFilter::make('country_id')
                     ->label(tr('reports.expense.filters.country', [], null, 'dashboard') ?: 'Country')
-                    ->relationship('country', 'name_text')
+                    ->options(fn () => Country::where('is_active', true)
+                        ->get()
+                        ->mapWithKeys(fn ($country) => [$country->id => $this->ensureUtf8($country->name_text)])
+                        ->toArray())
                     ->searchable()
                     ->preload(),
 
@@ -286,7 +288,11 @@ class ExpenseReportPage extends Page implements HasTable, HasForms
 
                 Tables\Filters\SelectFilter::make('finance_type_id')
                     ->label(tr('reports.expense.filters.category', [], null, 'dashboard') ?: 'Category')
-                    ->relationship('financeType', 'name_text')
+                    ->options(fn () => FinanceType::where('kind', 'expense')
+                        ->where('is_active', true)
+                        ->get()
+                        ->mapWithKeys(fn ($type) => [$type->id => $this->ensureUtf8($type->name_text)])
+                        ->toArray())
                     ->searchable()
                     ->preload(),
 
