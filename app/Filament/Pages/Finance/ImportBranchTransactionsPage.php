@@ -193,8 +193,8 @@ class ImportBranchTransactionsPage extends Page implements HasForms
                 ->label(tr('pages.finance.import.download_template', [], null, 'dashboard') ?: 'تحميل قالب Excel')
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('success')
-                ->action(function (callable $get) {
-                    $kind = $get('kind');
+                ->action(function () {
+                    $kind = $this->form->getState()['kind'] ?? null;
                     if (!$kind) {
                         Notification::make()
                             ->warning()
