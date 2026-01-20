@@ -21,24 +21,31 @@ class TopBranchesNetBarChart extends ChartWidget
         $from = $this->from ? Carbon::parse($this->from)->startOfDay() : now()->startOfMonth();
         $to   = $this->to ? Carbon::parse($this->to)->endOfDay() : now();
 
-        $q = BranchTransaction::query()->with('branch')
-            ->whereBetween('transaction_date', [$from, $to]);
+        $q = BranchTransaction::query()
+            ->with('branch')
+            ->join('finance_types', 'finance_branch_transactions.finance_type_id', '=', 'finance_types.id')
+            ->whereBetween('finance_branch_transactions.trx_date', [$from, $to]);
 
-        if (! auth()->user()?->can('branch_tx.view_all_branches')) {
-            $q->where('branch_id', auth()->user()?->branch_id);
+        $user = auth()->user();
+        if ($user && !$user->hasRole('super_admin') && !$user->can('finance.view_all_branches')) {
+            $branchIds = $user->branches()->pluck('branches.id')->toArray();
+            if (!empty($branchIds)) {
+                $q->whereIn('finance_branch_transactions.branch_id', $branchIds);
+            } else {
+                $q->whereRaw('1 = 0');
+            }
         }
 
-        $q->when($this->country_id, fn($qq) => $qq->where('country_id', $this->country_id));
-        $q->when($this->currency_id, fn($qq) => $qq->where('currency_id', $this->currency_id));
-        $q->when($this->status, fn($qq) => $qq->where('status', $this->status));
+        $q->when($this->country_id, fn($qq) => $qq->where('finance_branch_transactions.country_id', $this->country_id));
+        $q->when($this->currency_id, fn($qq) => $qq->where('finance_branch_transactions.currency_id', $this->currency_id));
 
         $rows = $q->selectRaw("
-                branch_id,
-                SUM(CASE WHEN type='income' THEN amount ELSE 0 END) as income,
-                SUM(CASE WHEN type='expense' THEN amount ELSE 0 END) as expense
+                finance_branch_transactions.branch_id,
+                SUM(CASE WHEN finance_types.kind='income' THEN finance_branch_transactions.amount ELSE 0 END) as income,
+                SUM(CASE WHEN finance_types.kind='expense' THEN finance_branch_transactions.amount ELSE 0 END) as expense
             ")
-            ->groupBy('branch_id')
-            ->orderByRaw('(SUM(CASE WHEN type=\'income\' THEN amount ELSE 0 END) - SUM(CASE WHEN type=\'expense\' THEN amount ELSE 0 END)) DESC')
+            ->groupBy('finance_branch_transactions.branch_id')
+            ->orderByRaw('(SUM(CASE WHEN finance_types.kind=\'income\' THEN finance_branch_transactions.amount ELSE 0 END) - SUM(CASE WHEN finance_types.kind=\'expense\' THEN finance_branch_transactions.amount ELSE 0 END)) DESC')
             ->limit(10)
             ->get();
 

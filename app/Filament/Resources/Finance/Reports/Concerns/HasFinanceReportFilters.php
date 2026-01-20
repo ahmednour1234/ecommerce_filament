@@ -18,7 +18,6 @@ trait HasFinanceReportFilters
     public ?int $country_id = null;
     public ?int $currency_id = null;
 
-    public ?string $status = null;   // pending|approved|rejected|null
     public ?string $group_by = 'day'; // day|month
 
     public function initDefaultDates(): void
@@ -62,16 +61,6 @@ trait HasFinanceReportFilters
                 ->nullable()
                 ->live(),
 
-            Forms\Components\Select::make('status')
-                ->label(tr('reports.filters.status', [], null, 'dashboard'))
-                ->options([
-                    'pending'  => tr('tables.branch_tx.status_pending', [], null, 'dashboard'),
-                    'approved' => tr('tables.branch_tx.status_approved', [], null, 'dashboard'),
-                    'rejected' => tr('tables.branch_tx.status_rejected', [], null, 'dashboard'),
-                ])
-                ->nullable()
-                ->live(),
-
             Forms\Components\Select::make('group_by')
                 ->label(tr('reports.filters.group_by', [], null, 'dashboard'))
                 ->options([
@@ -79,7 +68,7 @@ trait HasFinanceReportFilters
                     'month' => tr('reports.filters.group_by_month', [], null, 'dashboard'),
                 ])
                 ->live(),
-        ])->columns(7);
+        ])->columns(6);
     }
 
     public function dateRange(): array

@@ -30,37 +30,37 @@ class FinanceTypeResource extends Resource
                 Forms\Components\Section::make()
                     ->schema([
                         Forms\Components\Select::make('kind')
-                            ->label('Kind')
+                            ->label(tr('forms.finance_types.kind', [], null, 'dashboard') ?: 'Kind')
                             ->options([
-                                'income' => 'Income',
-                                'expense' => 'Expense',
+                                'income' => tr('forms.finance_types.kind_income', [], null, 'dashboard') ?: 'Income',
+                                'expense' => tr('forms.finance_types.kind_expense', [], null, 'dashboard') ?: 'Expense',
                             ])
                             ->required()
                             ->native(false),
 
                         Forms\Components\TextInput::make('name.ar')
-                            ->label('Name (Arabic)')
+                            ->label(tr('forms.finance_types.name_ar', [], null, 'dashboard') ?: 'Name (Arabic)')
                             ->required()
                             ->maxLength(255),
 
                         Forms\Components\TextInput::make('name.en')
-                            ->label('Name (English)')
+                            ->label(tr('forms.finance_types.name_en', [], null, 'dashboard') ?: 'Name (English)')
                             ->maxLength(255),
 
                         Forms\Components\TextInput::make('code')
-                            ->label('Code')
+                            ->label(tr('forms.finance_types.code', [], null, 'dashboard') ?: 'Code')
                             ->maxLength(50)
                             ->unique(ignoreRecord: true, modifyRuleUsing: function ($rule, $get) {
                                 return $rule->where('kind', $get('kind'));
                             }),
 
                         Forms\Components\TextInput::make('sort')
-                            ->label('Sort Order')
+                            ->label(tr('forms.finance_types.sort', [], null, 'dashboard') ?: 'Sort Order')
                             ->numeric()
                             ->default(0),
 
                         Forms\Components\Toggle::make('is_active')
-                            ->label('Active')
+                            ->label(tr('forms.finance_types.is_active', [], null, 'dashboard') ?: 'Active')
                             ->default(true),
                     ])
                     ->columns(2),
@@ -72,15 +72,18 @@ class FinanceTypeResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\BadgeColumn::make('kind')
-                    ->label('Kind')
+                    ->label(tr('tables.finance_types.kind', [], null, 'dashboard') ?: 'Kind')
                     ->colors([
                         'success' => 'income',
                         'danger' => 'expense',
                     ])
+                    ->formatStateUsing(fn ($state) => $state === 'income' 
+                        ? (tr('forms.finance_types.kind_income', [], null, 'dashboard') ?: 'Income')
+                        : (tr('forms.finance_types.kind_expense', [], null, 'dashboard') ?: 'Expense'))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('name_text')
-                    ->label('Name')
+                    ->label(tr('tables.finance_types.name', [], null, 'dashboard') ?: 'Name')
                     ->getStateUsing(fn ($record) => $record->name_text)
                     ->searchable(query: function (Builder $query, string $search): Builder {
                         return $query->whereRaw("JSON_EXTRACT(name, '$.ar') LIKE ?", ["%{$search}%"])
@@ -89,40 +92,40 @@ class FinanceTypeResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('code')
-                    ->label('Code')
+                    ->label(tr('tables.finance_types.code', [], null, 'dashboard') ?: 'Code')
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('sort')
-                    ->label('Sort')
+                    ->label(tr('tables.finance_types.sort', [], null, 'dashboard') ?: 'Sort')
                     ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\IconColumn::make('is_active')
-                    ->label('Active')
+                    ->label(tr('tables.finance_types.is_active', [], null, 'dashboard') ?: 'Active')
                     ->boolean()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('transactions_count')
-                    ->label('Transactions')
+                    ->label(tr('tables.finance_types.transactions_count', [], null, 'dashboard') ?: 'Transactions')
                     ->counts('transactions')
                     ->sortable()
                     ->toggleable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('kind')
-                    ->label('Kind')
+                    ->label(tr('tables.finance_types.kind', [], null, 'dashboard') ?: 'Kind')
                     ->options([
-                        'income' => 'Income',
-                        'expense' => 'Expense',
+                        'income' => tr('forms.finance_types.kind_income', [], null, 'dashboard') ?: 'Income',
+                        'expense' => tr('forms.finance_types.kind_expense', [], null, 'dashboard') ?: 'Expense',
                     ]),
 
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Active')
-                    ->placeholder('All')
-                    ->trueLabel('Active only')
-                    ->falseLabel('Inactive only'),
+                    ->label(tr('tables.finance_types.is_active', [], null, 'dashboard') ?: 'Active')
+                    ->placeholder(tr('common.all', [], null, 'dashboard') ?: 'All')
+                    ->trueLabel(tr('common.active_only', [], null, 'dashboard') ?: 'Active only')
+                    ->falseLabel(tr('common.inactive_only', [], null, 'dashboard') ?: 'Inactive only'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

@@ -39,6 +39,7 @@ class FinanceTranslationsSeeder extends Seeder
             // Finance Types
             'navigation.finance_types' => ['en' => 'Finance Types', 'ar' => 'أنواع المالية'],
             'sidebar.finance.types' => ['en' => 'Finance Types', 'ar' => 'أنواع المالية'],
+            'sidebar.finance.financetype' => ['en' => 'Finance Types', 'ar' => 'أنواع المالية'],
 
             // Branch Transactions
             'navigation.finance_branch_transactions' => ['en' => 'Branch Transactions', 'ar' => 'معاملات الفروع'],
@@ -47,6 +48,8 @@ class FinanceTranslationsSeeder extends Seeder
             // Reports
             'sidebar.finance.reports.branch_statement' => ['en' => 'Branch Statement', 'ar' => 'كشف حساب الفرع'],
             'sidebar.finance.reports.income_statement' => ['en' => 'Income Statement', 'ar' => 'قائمة الدخل'],
+            'pages.finance.branch_statement.title' => ['en' => 'Branch Statement', 'ar' => 'كشف حساب الفرع'],
+            'pages.finance.income_statement.title' => ['en' => 'Income Statement by Branch', 'ar' => 'قائمة الدخل حسب الفرع'],
         ];
 
         // ============================================
@@ -62,6 +65,7 @@ class FinanceTranslationsSeeder extends Seeder
             'forms.finance_types.code' => ['en' => 'Code', 'ar' => 'الرمز'],
             'forms.finance_types.sort' => ['en' => 'Sort Order', 'ar' => 'ترتيب العرض'],
             'forms.finance_types.is_active' => ['en' => 'Active', 'ar' => 'نشط'],
+            'forms.finance_types.remove_item' => ['en' => 'Remove item', 'ar' => 'إزالة العنصر'],
         ]);
 
         // ============================================
@@ -94,6 +98,8 @@ class FinanceTranslationsSeeder extends Seeder
             'forms.branch_transactions.reference_no' => ['en' => 'Reference No', 'ar' => 'رقم المرجع'],
             'forms.branch_transactions.notes' => ['en' => 'Notes', 'ar' => 'ملاحظات'],
             'forms.branch_transactions.attachment_path' => ['en' => 'Attachment', 'ar' => 'مرفق'],
+            'forms.branch_transactions.no_file_chosen' => ['en' => 'No file chosen', 'ar' => 'لم يتم اختيار ملف'],
+            'forms.branch_transactions.select' => ['en' => 'Select', 'ar' => 'اختر'],
         ]);
 
         // ============================================
@@ -155,6 +161,8 @@ class FinanceTranslationsSeeder extends Seeder
             'reports.income_statement.net_profit' => ['en' => 'Net Profit', 'ar' => 'صافي الربح'],
             'reports.income_statement.income_section' => ['en' => 'INCOME', 'ar' => 'الإيرادات'],
             'reports.income_statement.expense_section' => ['en' => 'EXPENSE', 'ar' => 'المصروفات'],
+            'reports.income_statement.type' => ['en' => 'Type', 'ar' => 'النوع'],
+            'reports.income_statement.total' => ['en' => 'Total', 'ar' => 'الإجمالي'],
             'reports.income_statement.filters.branch' => ['en' => 'Branch', 'ar' => 'الفرع'],
             'reports.income_statement.filters.from' => ['en' => 'From Date', 'ar' => 'من تاريخ'],
             'reports.income_statement.filters.to' => ['en' => 'To Date', 'ar' => 'إلى تاريخ'],
@@ -169,12 +177,33 @@ class FinanceTranslationsSeeder extends Seeder
             'actions.export_excel' => ['en' => 'Export to Excel', 'ar' => 'تصدير إلى Excel'],
             'actions.export_pdf' => ['en' => 'Export to PDF', 'ar' => 'تصدير إلى PDF'],
             'actions.print' => ['en' => 'Print', 'ar' => 'طباعة'],
+            'actions.add' => ['en' => 'Add', 'ar' => 'إضافة'],
+            'actions.create' => ['en' => 'Create', 'ar' => 'إنشاء'],
+            'actions.search' => ['en' => 'Search', 'ar' => 'بحث'],
+            'actions.filter' => ['en' => 'Filter', 'ar' => 'تصفية'],
+            'actions.toggle_columns' => ['en' => 'Toggle Columns', 'ar' => 'تبديل الأعمدة'],
+            'actions.select_all' => ['en' => 'Select/Deselect all items for bulk actions', 'ar' => 'تحديد/إلغاء تحديد كافة العناصر للإجراءات الجماعية'],
+            'actions.select_item' => ['en' => 'Select/Deselect item {number} for bulk actions', 'ar' => 'تحديد/إلغاء تحديد العنصر {number} للإجراءات الجماعية'],
+        ]);
+
+        // ============================================
+        // Common Labels
+        // ============================================
+        $this->command->info('Step 10: Creating common label translations...');
+        $translations = array_merge($translations, [
+            'common.list' => ['en' => 'List', 'ar' => 'القائمة'],
+            'common.kind' => ['en' => 'Kind', 'ar' => 'النوع'],
+            'common.name' => ['en' => 'Name', 'ar' => 'الاسم'],
+            'common.code' => ['en' => 'Code', 'ar' => 'الرمز'],
+            'common.sort' => ['en' => 'Sort', 'ar' => 'الترتيب'],
+            'common.active' => ['en' => 'Active', 'ar' => 'نشط'],
+            'common.transactions' => ['en' => 'Transactions', 'ar' => 'المعاملات'],
         ]);
 
         // ============================================
         // Save translations to database
         // ============================================
-        $this->command->info('Step 10: Saving translations to database...');
+        $this->command->info('Step 11: Saving translations to database...');
         $created = 0;
 
         foreach ($translations as $key => $values) {
