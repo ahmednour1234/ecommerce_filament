@@ -83,6 +83,16 @@ class OrdersByStatusChartWidget extends ChartWidget
                 $data[] = 0;
             }
 
+            return [
+                'datasets' => [
+                    [
+                        'label' => 'الطلبات',
+                        'data' => $data,
+                        'backgroundColor' => array_slice(array_values($colors), 0, count($data)),
+                    ],
+                ],
+                'labels' => $labels,
+            ];
         });
     }
 
