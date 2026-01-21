@@ -354,12 +354,12 @@ class BranchTransactionResource extends Resource
                         && (auth()->user()?->hasRole('super_admin') || (auth()->user()?->can('finance.reject_transactions') ?? false))),
 
                 Tables\Actions\EditAction::make()
-                    ->visible(fn (BranchTransaction $record) => $record->status === 'pending'
-                        && (auth()->user()?->hasRole('super_admin') || (auth()->user()?->can('finance.update_transactions') ?? false))),
+                    ->visible(fn (BranchTransaction $record) =>
+                        (auth()->user()?->hasRole('super_admin') || (auth()->user()?->can('finance.update_transactions') ?? false))),
 
                 Tables\Actions\DeleteAction::make()
-                    ->visible(fn (BranchTransaction $record) => $record->status === 'pending'
-                        && (auth()->user()?->hasRole('super_admin') || (auth()->user()?->can('finance.delete_transactions') ?? false))),
+                    ->visible(fn (BranchTransaction $record) =>
+                        (auth()->user()?->hasRole('super_admin') || (auth()->user()?->can('finance.delete_transactions') ?? false))),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
