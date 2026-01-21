@@ -17,9 +17,10 @@ class WarehouseResource extends Resource
     use TranslatableNavigation;
 
     protected static ?string $model = Warehouse::class;
-    protected static ?string $navigationGroup = 'Integrations';
     protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
+    protected static ?string $navigationGroup = 'MainCore';
     protected static ?int $navigationSort = 50;
+    protected static bool $isGloballySearchable = false;
 
     public static function form(Form $form): Form
     {
