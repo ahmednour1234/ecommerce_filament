@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 
 class OrdersByStatusChartWidget extends ChartWidget
 {
+    protected static bool $isDiscovered = false;
+
     public ?string $from = null;
     public ?string $to = null;
     public ?int $branch_id = null;
