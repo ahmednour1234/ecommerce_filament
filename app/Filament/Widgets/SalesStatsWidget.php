@@ -11,6 +11,8 @@ use Illuminate\Support\Number;
 
 class SalesStatsWidget extends BaseWidget
 {
+    protected static bool $isDiscovered = false;
+
     protected function getStats(): array
     {
         $totalCustomers = Customer::where('is_active', true)->count();

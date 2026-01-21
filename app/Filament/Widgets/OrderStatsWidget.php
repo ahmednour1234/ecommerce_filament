@@ -9,6 +9,8 @@ use Illuminate\Support\Number;
 
 class OrderStatsWidget extends BaseWidget
 {
+    protected static bool $isDiscovered = false;
+
     protected function getStats(): array
     {
         $todayOrders = Order::whereDate('order_date', today())->count();
