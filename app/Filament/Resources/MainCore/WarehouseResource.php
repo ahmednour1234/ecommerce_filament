@@ -20,7 +20,7 @@ class WarehouseResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
     protected static ?string $navigationGroup = 'MainCore';
     protected static ?int $navigationSort = 50;
-    protected static bool $isGloballySearchable = false;
+    protected static bool $isDiscovered = false;
 
     public static function form(Form $form): Form
     {
