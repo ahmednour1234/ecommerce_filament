@@ -15,47 +15,47 @@ class FinanceTopTypesWidget extends ChartWidget
     public ?int $branch_id = null;
 
     protected static ?string $heading = 'أعلى أنواع الإيرادات والمصروفات';
-
     protected int|string|array $columnSpan = 'full';
-
     protected static ?int $sort = 4;
 
     protected function getData(): array
     {
         $dateRange = session()->get('dashboard_date_range', 'month');
-        $dateFrom = session()->get('dashboard_date_from');
-        $dateTo = session()->get('dashboard_date_to');
-        
+        $dateFrom  = session()->get('dashboard_date_from');
+        $dateTo    = session()->get('dashboard_date_to');
+
         if ($dateRange === 'today') {
             $from = now()->startOfDay();
-            $to = now()->endOfDay();
+            $to   = now()->endOfDay();
         } elseif ($dateRange === 'month') {
             $from = now()->startOfMonth()->startOfDay();
-            $to = now()->endOfDay();
+            $to   = now()->endOfDay();
         } else {
             $from = $dateFrom ? Carbon::parse($dateFrom)->startOfDay() : now()->startOfMonth()->startOfDay();
-            $to = $dateTo ? Carbon::parse($dateTo)->endOfDay() : now()->endOfDay();
+            $to   = $dateTo ? Carbon::parse($dateTo)->endOfDay() : now()->endOfDay();
         }
-        
-        $user = auth()->user();
-        $branchId = $user->branch_id ?? $this->branch_id ?? null;
 
+        $user     = auth()->user();
+        $branchId = $user->branch_id ?? $this->branch_id ?? null;
         $cacheKey = "dashboard_finance_top_types_{$branchId}_{$from->toDateString()}_{$to->toDateString()}";
 
         return Cache::remember($cacheKey, 300, function () use ($from, $to, $branchId) {
+            $locale = app()->getLocale();
+
             $query = BranchTransaction::query()
                 ->whereBetween('trx_date', [$from, $to])
                 ->join('finance_types', 'finance_branch_transactions.finance_type_id', '=', 'finance_types.id')
                 ->select(
                     'finance_types.kind',
-                    'finance_types.name',
+                    'finance_types.name as type_name',
                     'finance_branch_transactions.finance_type_id',
-                    DB::raw('SUM(finance_branch_transactions.amount) as total_amount'),
-                    DB::raw('COUNT(*) as count')
+                    DB::raw('SUM(finance_branch_transactions.amount) as total_amount')
                 )
                 ->groupBy('finance_types.kind', 'finance_types.name', 'finance_branch_transactions.finance_type_id');
 
             $user = auth()->user();
+
+            // صلاحيات الفروع
             if ($user && !$user->hasRole('super_admin') && !$user->can('finance.view_all_branches')) {
                 if (method_exists($user, 'branches')) {
                     $branchIds = $user->branches()->pluck('branches.id')->toArray();
@@ -75,24 +75,28 @@ class FinanceTopTypesWidget extends ChartWidget
 
             $results = $query->orderByDesc('total_amount')->get();
 
-            $incomeTypes = $results->where('kind', 'income')->take(5);
-            $expenseTypes = $results->where('kind', 'expense')->take(5);
+            $incomeTypes  = $results->where('kind', 'income')->values()->take(5);
+            $expenseTypes = $results->where('kind', 'expense')->values()->take(5);
 
-            $labels = [];
-            $incomeData = [];
-            $expenseData = [];
+            // labels = 10 عناصر (5 إيراد + 5 مصروف)
+            $incomeLabels = $incomeTypes->map(fn ($x) => $this->normalizeTypeName($x->type_name, $locale))->toArray();
+            $expenseLabels = $expenseTypes->map(fn ($x) => $this->normalizeTypeName($x->type_name, $locale))->toArray();
 
-            foreach ($incomeTypes as $item) {
-                $name = is_array($item->name) ? ($item->name['ar'] ?? $item->name['en'] ?? '') : $item->name;
-                $labels[] = $name . ' (إيراد)';
-                $incomeData[] = (float) $item->total_amount;
-            }
+            $labels = array_merge(
+                array_map(fn ($n) => "{$n} (إيراد)", $incomeLabels),
+                array_map(fn ($n) => "{$n} (مصروف)", $expenseLabels),
+            );
 
-            foreach ($expenseTypes as $item) {
-                $name = is_array($item->name) ? ($item->name['ar'] ?? $item->name['en'] ?? '') : $item->name;
-                $labels[] = $name . ' (مصروف)';
-                $expenseData[] = (float) $item->total_amount;
-            }
+            // لازم كل dataset يكون نفس طول labels (10)
+            $incomeData = array_merge(
+                $incomeTypes->map(fn ($x) => (float) $x->total_amount)->toArray(),
+                array_fill(0, count($expenseTypes), 0)
+            );
+
+            $expenseData = array_merge(
+                array_fill(0, count($incomeTypes), 0),
+                $expenseTypes->map(fn ($x) => (float) $x->total_amount)->toArray()
+            );
 
             return [
                 'labels' => $labels,
@@ -110,6 +114,34 @@ class FinanceTopTypesWidget extends ChartWidget
                 ],
             ];
         });
+    }
+
+    /**
+     * لأن join بيرجع JSON كـ string ومش بيطبق casts،
+     * بنحاول نفكّه لـ array ونجيب ترجمة ar/en صح.
+     */
+    private function normalizeTypeName($value, string $locale): string
+    {
+        if (is_array($value)) {
+            return (string) ($value[$locale] ?? $value['ar'] ?? $value['en'] ?? reset($value) ?? '');
+        }
+
+        if (is_string($value)) {
+            $trim = trim($value);
+
+            // لو جاي JSON string
+            if ($trim !== '' && (str_starts_with($trim, '{') || str_starts_with($trim, '['))) {
+                $decoded = json_decode($trim, true);
+
+                if (is_array($decoded)) {
+                    return (string) ($decoded[$locale] ?? $decoded['ar'] ?? $decoded['en'] ?? reset($decoded) ?? '');
+                }
+            }
+
+            return $value;
+        }
+
+        return '';
     }
 
     protected function getType(): string
