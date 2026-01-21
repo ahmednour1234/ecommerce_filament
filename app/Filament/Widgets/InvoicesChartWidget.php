@@ -8,6 +8,8 @@ use Illuminate\Support\Carbon;
 
 class InvoicesChartWidget extends ChartWidget
 {
+    protected static bool $isDiscovered = false;
+
     protected static ?int $sort = 4;
     
     public function getHeading(): string

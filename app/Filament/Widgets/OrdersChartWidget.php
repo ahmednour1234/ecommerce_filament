@@ -8,6 +8,8 @@ use Illuminate\Support\Carbon;
 
 class OrdersChartWidget extends ChartWidget
 {
+    protected static bool $isDiscovered = false;
+
     protected static ?int $sort = 3;
     
     public function getHeading(): string
