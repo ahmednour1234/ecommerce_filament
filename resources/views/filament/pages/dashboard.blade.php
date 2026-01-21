@@ -13,14 +13,8 @@
                 {{ $this->hrStatsWidget }}
             </div>
 
-            <div>
-                <h2 class="text-xl font-semibold mb-4">إحصائيات المبيعات والتشغيل</h2>
-                {{ $this->salesOperationsStatsWidget }}
-            </div>
-
             <div class="grid grid-cols-1 gap-6">
                 {{ $this->financeTopTypesWidget }}
-                {{ $this->ordersByStatusChartWidget }}
             </div>
         </div>
     </div>
