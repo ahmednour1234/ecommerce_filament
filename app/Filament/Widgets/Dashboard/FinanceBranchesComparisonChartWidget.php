@@ -43,20 +43,21 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
 
         $cacheKey = "dashboard_finance_branches_comparison_{$branchId}_{$financeTypeId}_{$from->toDateString()}_{$to->toDateString()}";
 
-        return Cache::remember($cacheKey, 300, function () use ($from, $to, $branchId, $financeTypeId, $user) {
-            $query = BranchTransaction::query()
-                ->whereBetween('trx_date', [$from, $to])
-                ->join('branches', 'finance_branch_transactions.branch_id', '=', 'branches.id')
-                ->join('finance_types', 'finance_branch_transactions.finance_type_id', '=', 'finance_types.id')
-                ->select(
-                    'branches.id as branch_id',
-                    'branches.name as branch_name',
-                    'finance_types.kind',
-                    DB::raw('SUM(finance_branch_transactions.amount) as total_amount')
-                )
-                ->groupBy('branches.id', 'branches.name', 'finance_types.kind');
+        try {
+            return Cache::remember($cacheKey, 300, function () use ($from, $to, $branchId, $financeTypeId, $user) {
+                $query = BranchTransaction::query()
+                    ->whereBetween('trx_date', [$from, $to])
+                    ->join('branches', 'finance_branch_transactions.branch_id', '=', 'branches.id')
+                    ->join('finance_types', 'finance_branch_transactions.finance_type_id', '=', 'finance_types.id')
+                    ->select(
+                        'branches.id as branch_id',
+                        'branches.name as branch_name',
+                        'finance_types.kind',
+                        DB::raw('SUM(finance_branch_transactions.amount) as total_amount')
+                    )
+                    ->groupBy('branches.id', 'branches.name', 'finance_types.kind');
 
-            if ($user && !$user->hasRole('super_admin') && !$user->can('finance.view_all_branches')) {
+                if ($user && !$user->hasRole('super_admin') && !$user->can('finance.view_all_branches')) {
                 if (method_exists($user, 'branches')) {
                     $branchIds = $user->branches()->pluck('branches.id')->toArray();
                     if (!empty($branchIds)) {
@@ -67,81 +68,108 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
                 } elseif ($user->branch_id) {
                     $query->where('finance_branch_transactions.branch_id', $user->branch_id);
                 }
-            }
+                }
 
-            if ($branchId) {
-                $query->where('finance_branch_transactions.branch_id', $branchId);
-            }
+                if ($branchId) {
+                    $query->where('finance_branch_transactions.branch_id', $branchId);
+                }
 
-            if ($financeTypeId) {
-                $query->where('finance_branch_transactions.finance_type_id', $financeTypeId);
-            }
+                if ($financeTypeId) {
+                    $query->where('finance_branch_transactions.finance_type_id', $financeTypeId);
+                }
 
-            $results = $query->get();
+                $results = $query->get();
 
-            $branches = Branch::query()
-                ->where('status', 'active')
-                ->when($user && !$user->hasRole('super_admin') && !$user->can('finance.view_all_branches'), function ($q) use ($user) {
-                    if (method_exists($user, 'branches')) {
-                        $branchIds = $user->branches()->pluck('branches.id')->toArray();
-                        if (!empty($branchIds)) {
-                            $q->whereIn('id', $branchIds);
-                        } else {
-                            $q->whereRaw('1 = 0');
-                        }
-                    } elseif ($user->branch_id) {
-                        $q->where('id', $user->branch_id);
+                $branchesQuery = Branch::query()
+                    ->where('status', 'active');
+
+                if ($user && !$user->hasRole('super_admin') && !$user->can('finance.view_all_branches')) {
+                if (method_exists($user, 'branches')) {
+                    $branchIds = $user->branches()->pluck('branches.id')->toArray();
+                    if (!empty($branchIds)) {
+                        $branchesQuery->whereIn('id', $branchIds);
+                    } else {
+                        $branchesQuery->whereRaw('1 = 0');
                     }
-                })
-                ->when($branchId, fn ($q) => $q->where('id', $branchId))
-                ->orderBy('name')
-                ->get();
+                } elseif ($user->branch_id) {
+                    $branchesQuery->where('id', $user->branch_id);
+                }
+                }
 
-            $labels = [];
-            $incomeData = [];
-            $expenseData = [];
+                if ($branchId) {
+                    $branchesQuery->where('id', $branchId);
+                }
 
-            foreach ($branches as $branch) {
-                $labels[] = $branch->name;
+                $branches = $branchesQuery->orderBy('name')->get();
 
-                $income = $results
-                    ->where('branch_id', $branch->id)
-                    ->where('kind', 'income')
-                    ->sum('total_amount');
+                $labels = [];
+                $incomeData = [];
+                $expenseData = [];
 
-                $expense = $results
-                    ->where('branch_id', $branch->id)
-                    ->where('kind', 'expense')
-                    ->sum('total_amount');
+                foreach ($branches as $branch) {
+                    $labels[] = $branch->name;
 
-                $incomeData[] = (float) $income;
-                $expenseData[] = (float) $expense;
-            }
+                    $branchResults = $results->where('branch_id', $branch->id);
 
-            if (empty($labels)) {
-                $labels[] = 'لا توجد بيانات';
-                $incomeData[] = 0;
-                $expenseData[] = 0;
-            }
+                    $income = $branchResults
+                        ->where('kind', 'income')
+                        ->sum(function ($item) {
+                            return (float) ($item->total_amount ?? 0);
+                        });
 
+                    $expense = $branchResults
+                        ->where('kind', 'expense')
+                        ->sum(function ($item) {
+                            return (float) ($item->total_amount ?? 0);
+                        });
+
+                    $incomeData[] = $income;
+                    $expenseData[] = $expense;
+                }
+
+                if (empty($labels)) {
+                    $labels[] = 'لا توجد بيانات';
+                    $incomeData[] = 0;
+                    $expenseData[] = 0;
+                }
+
+                return [
+                    'datasets' => [
+                        [
+                            'label' => 'الإيرادات',
+                            'data' => $incomeData,
+                            'backgroundColor' => 'rgba(34, 197, 94, 0.8)',
+                            'borderColor' => 'rgb(34, 197, 94)',
+                        ],
+                        [
+                            'label' => 'المصروفات',
+                            'data' => $expenseData,
+                            'backgroundColor' => 'rgba(239, 68, 68, 0.8)',
+                            'borderColor' => 'rgb(239, 68, 68)',
+                        ],
+                    ],
+                    'labels' => $labels,
+                ];
+            });
+        } catch (\Exception $e) {
             return [
                 'datasets' => [
                     [
                         'label' => 'الإيرادات',
-                        'data' => $incomeData,
+                        'data' => [0],
                         'backgroundColor' => 'rgba(34, 197, 94, 0.8)',
                         'borderColor' => 'rgb(34, 197, 94)',
                     ],
                     [
                         'label' => 'المصروفات',
-                        'data' => $expenseData,
+                        'data' => [0],
                         'backgroundColor' => 'rgba(239, 68, 68, 0.8)',
                         'borderColor' => 'rgb(239, 68, 68)',
                     ],
                 ],
-                'labels' => $labels,
+                'labels' => ['خطأ في تحميل البيانات'],
             ];
-        });
+        }
     }
 
     protected function getType(): string
