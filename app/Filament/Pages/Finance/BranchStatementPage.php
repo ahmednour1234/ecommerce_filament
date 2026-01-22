@@ -58,7 +58,7 @@ class BranchStatementPage extends Page implements HasTable, HasForms
                         Forms\Components\Select::make('branch_id')
                             ->label(tr('reports.branch_statement.filters.branch', [], null, 'dashboard') ?: 'Branch')
                             ->options(fn () => Branch::where('status', 'active')->get()
-                                ->mapWithKeys(fn ($branch) => [$branch->id => $this->ensureUtf8($branch->name ?? '')])
+                                ->mapWithKeys(fn ($b) => [$b->id => $this->ensureUtf8($b->name ?? '')])
                             )
                             ->searchable()
                             ->preload()
@@ -78,7 +78,7 @@ class BranchStatementPage extends Page implements HasTable, HasForms
                         Forms\Components\Select::make('currency_id')
                             ->label(tr('reports.branch_statement.filters.currency', [], null, 'dashboard') ?: 'Currency')
                             ->options(fn () => Currency::where('is_active', true)->get()
-                                ->mapWithKeys(fn ($currency) => [$currency->id => $this->ensureUtf8($currency->code ?? '')])
+                                ->mapWithKeys(fn ($c) => [$c->id => $this->ensureUtf8($c->code ?? '')])
                             )
                             ->searchable()
                             ->preload()
@@ -98,12 +98,11 @@ class BranchStatementPage extends Page implements HasTable, HasForms
                         Forms\Components\Select::make('finance_type_id')
                             ->label(tr('reports.branch_statement.filters.type', [], null, 'dashboard') ?: 'Type (Optional)')
                             ->options(function ($get) {
-                                $query = FinanceType::query()->where('is_active', true);
+                                $q = FinanceType::query()->where('is_active', true);
                                 if ($get('kind')) {
-                                    $query->where('kind', $get('kind'));
+                                    $q->where('kind', $get('kind'));
                                 }
-                                return $query->get()
-                                    ->mapWithKeys(fn ($type) => [$type->id => $this->ensureUtf8($type->name_text ?? '')]);
+                                return $q->get()->mapWithKeys(fn ($t) => [$t->id => $this->ensureUtf8($t->name_text ?? '')]);
                             })
                             ->searchable()
                             ->preload()
@@ -128,7 +127,7 @@ class BranchStatementPage extends Page implements HasTable, HasForms
             return BranchTransaction::query();
         }
 
-        $openingBalance = (float) $this->getOpeningBalance();
+        $opening = (float) $this->getOpeningBalance();
 
         $query = BranchTransaction::query()
             ->from('finance_branch_transactions as bt')
@@ -145,21 +144,16 @@ class BranchStatementPage extends Page implements HasTable, HasForms
             $query->where('bt.finance_type_id', $data['finance_type_id']);
         }
 
-        // signed_amount: المصروفات بالسالب، الإيرادات بالموجب
         $signedAmountSql = "CASE WHEN ft.kind = 'expense' THEN -bt.amount ELSE bt.amount END";
-
-        // running_balance: الرصيد الافتتاحي + مجموع المبالغ الموقعة بالتتابع داخل الفترة
-        // يحتاج MySQL 8+ (Window Functions)
-        $runningBalanceSql = "(" . $openingBalance . " + SUM($signedAmountSql) OVER (ORDER BY bt.trx_date, bt.id))";
+        $runningBalanceSql = "(" . $opening . " + SUM($signedAmountSql) OVER (ORDER BY bt.trx_date, bt.id))";
 
         return $query
             ->select([
                 'bt.*',
-                'ft.kind as ft_kind',
                 DB::raw("$signedAmountSql as signed_amount"),
                 DB::raw("$runningBalanceSql as running_balance"),
             ])
-            ->with(['financeType', 'currency'])
+            ->with(['financeType', 'currency', 'branch'])
             ->orderBy('bt.trx_date')
             ->orderBy('bt.id');
     }
@@ -183,12 +177,23 @@ class BranchStatementPage extends Page implements HasTable, HasForms
                     ])
                     ->formatStateUsing(fn ($state) => $state === 'income'
                         ? (tr('forms.finance_types.kind_income', [], null, 'dashboard') ?: 'Income')
-                        : (tr('forms.finance_types.kind_expense', [], null, 'dashboard') ?: 'Expense')
-                    ),
+                        : (tr('forms.finance_types.kind_expense', [], null, 'dashboard') ?: 'Expense')),
 
                 Tables\Columns\TextColumn::make('financeType.name_text')
                     ->label(tr('tables.branch_transactions.type', [], null, 'dashboard') ?: 'Type')
                     ->getStateUsing(fn ($record) => $this->ensureUtf8($record->financeType?->name_text ?? '')),
+
+                // ✅ المبلغ (موقعه بدري عشان يبان في RTL)
+                Tables\Columns\TextColumn::make('signed_amount')
+                    ->label(tr('tables.branch_transactions.amount', [], null, 'dashboard') ?: 'Amount')
+                    ->formatStateUsing(fn ($state) => number_format((float) $state, 2))
+                    ->alignEnd(),
+
+                // ✅ الرصيد الجاري (موقعه بدري عشان يبان في RTL)
+                Tables\Columns\TextColumn::make('running_balance')
+                    ->label(tr('tables.branch_transactions.running_balance', [], null, 'dashboard') ?: 'Running Balance')
+                    ->formatStateUsing(fn ($state) => number_format((float) $state, 2))
+                    ->alignEnd(),
 
                 Tables\Columns\TextColumn::make('reference_no')
                     ->label(tr('tables.branch_transactions.reference_no', [], null, 'dashboard') ?: 'Reference')
@@ -209,18 +214,6 @@ class BranchStatementPage extends Page implements HasTable, HasForms
                     ->getStateUsing(fn ($record) => $this->ensureUtf8($record->notes ?? ''))
                     ->limit(50)
                     ->toggleable(isToggledHiddenByDefault: true),
-
-                // amount (signed): الإيراد + / المصروف -
-                Tables\Columns\TextColumn::make('signed_amount')
-                    ->label(tr('tables.branch_transactions.amount', [], null, 'dashboard') ?: 'Amount')
-                    ->formatStateUsing(fn ($state) => number_format((float) $state, 2))
-                    ->alignEnd(),
-
-                // running_balance (includes opening balance)
-                Tables\Columns\TextColumn::make('running_balance')
-                    ->label(tr('tables.branch_transactions.running_balance', [], null, 'dashboard') ?: 'Running Balance')
-                    ->formatStateUsing(fn ($state) => number_format((float) $state, 2))
-                    ->alignEnd(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('branch_id')
@@ -265,7 +258,7 @@ class BranchStatementPage extends Page implements HasTable, HasForms
                 Tables\Filters\SelectFilter::make('finance_type_id')
                     ->label(tr('tables.branch_transactions.filters.type', [], null, 'dashboard') ?: 'Type')
                     ->options(fn () => FinanceType::where('is_active', true)->get()
-                        ->mapWithKeys(fn ($type) => [$type->id => $this->ensureUtf8($type->name_text ?? '')])
+                        ->mapWithKeys(fn ($t) => [$t->id => $this->ensureUtf8($t->name_text ?? '')])
                     )
                     ->searchable()
                     ->preload(),
@@ -284,9 +277,6 @@ class BranchStatementPage extends Page implements HasTable, HasForms
             ->paginated(false);
     }
 
-    /**
-     * الرصيد الافتتاحي = إجمالي إيرادات قبل from - إجمالي مصروفات قبل from
-     */
     protected function getOpeningBalance(): float
     {
         $data = $this->data;
@@ -311,9 +301,6 @@ class BranchStatementPage extends Page implements HasTable, HasForms
         return $income - $expense;
     }
 
-    /**
-     * إجمالي الإيرادات داخل الفترة
-     */
     protected function getTotalIncome(): float
     {
         $data = $this->data;
@@ -325,22 +312,19 @@ class BranchStatementPage extends Page implements HasTable, HasForms
             return 0;
         }
 
-        $query = BranchTransaction::query()
+        $q = BranchTransaction::query()
             ->where('branch_id', $data['branch_id'])
             ->where('currency_id', $data['currency_id'])
             ->whereBetween('trx_date', [$data['from'], $data['to']])
-            ->whereHas('financeType', fn ($q) => $q->where('kind', 'income'));
+            ->whereHas('financeType', fn ($x) => $x->where('kind', 'income'));
 
         if (!empty($data['finance_type_id'])) {
-            $query->where('finance_type_id', $data['finance_type_id']);
+            $q->where('finance_type_id', $data['finance_type_id']);
         }
 
-        return (float) ($query->sum('amount') ?? 0);
+        return (float) ($q->sum('amount') ?? 0);
     }
 
-    /**
-     * إجمالي المصروفات داخل الفترة (قيمة موجبة) — ويتم طرحها عند حساب الصافي
-     */
     protected function getTotalExpense(): float
     {
         $data = $this->data;
@@ -352,30 +336,24 @@ class BranchStatementPage extends Page implements HasTable, HasForms
             return 0;
         }
 
-        $query = BranchTransaction::query()
+        $q = BranchTransaction::query()
             ->where('branch_id', $data['branch_id'])
             ->where('currency_id', $data['currency_id'])
             ->whereBetween('trx_date', [$data['from'], $data['to']])
-            ->whereHas('financeType', fn ($q) => $q->where('kind', 'expense'));
+            ->whereHas('financeType', fn ($x) => $x->where('kind', 'expense'));
 
         if (!empty($data['finance_type_id'])) {
-            $query->where('finance_type_id', $data['finance_type_id']);
+            $q->where('finance_type_id', $data['finance_type_id']);
         }
 
-        return (float) ($query->sum('amount') ?? 0);
+        return (float) ($q->sum('amount') ?? 0);
     }
 
-    /**
-     * صافي التغير = الإيرادات - المصروفات
-     */
     protected function getNetChange(): float
     {
         return $this->getTotalIncome() - $this->getTotalExpense();
     }
 
-    /**
-     * الرصيد الختامي (آخر الفترة) = الرصيد الافتتاحي + صافي التغير
-     */
     protected function getClosingBalance(): float
     {
         return $this->getOpeningBalance() + $this->getNetChange();
