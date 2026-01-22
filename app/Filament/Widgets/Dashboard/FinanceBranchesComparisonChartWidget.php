@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class FinanceBranchesComparisonChartWidget extends ChartWidget
 {
-    protected static bool $isDiscovered = false;
+    protected static bool $isDiscovered = true;
 
     protected static ?string $heading = 'مقارنة الفروع المالية';
 
