@@ -3,6 +3,11 @@
         @php
             $currency = \App\Models\MainCore\Currency::find($this->data['currency_id'] ?? null);
             $currencyCode = $currency?->code ?? '';
+            $openingBalance = $this->getOpeningBalance();
+            $totalIncome = $this->getTotalIncome();
+            $totalExpense = $this->getTotalExpense();
+            $netChange = $this->getNetChange();
+            $closingBalance = $this->getClosingBalance();
         @endphp
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -16,7 +21,7 @@
                     </svg>
                 </div>
                 <p class="text-2xl font-bold text-blue-900 dark:text-blue-100">
-                    {{ number_format($this->opening_balance, 2) }} <span class="text-sm font-medium">{{ $currencyCode }}</span>
+                    {{ number_format($openingBalance, 2) }} <span class="text-sm font-medium">{{ $currencyCode }}</span>
                 </p>
             </div>
 
@@ -30,7 +35,7 @@
                     </svg>
                 </div>
                 <p class="text-2xl font-bold text-green-900 dark:text-green-100">
-                    {{ number_format($this->total_income, 2) }} <span class="text-sm font-medium">{{ $currencyCode }}</span>
+                    {{ number_format($totalIncome, 2) }} <span class="text-sm font-medium">{{ $currencyCode }}</span>
                 </p>
             </div>
 
@@ -44,7 +49,7 @@
                     </svg>
                 </div>
                 <p class="text-2xl font-bold text-red-900 dark:text-red-100">
-                    {{ number_format($this->total_expense, 2) }} <span class="text-sm font-medium">{{ $currencyCode }}</span>
+                    {{ number_format($totalExpense, 2) }} <span class="text-sm font-medium">{{ $currencyCode }}</span>
                 </p>
             </div>
 
@@ -57,8 +62,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
                     </svg>
                 </div>
-                <p class="text-2xl font-bold {{ $this->net_change >= 0 ? 'text-purple-900 dark:text-purple-100' : 'text-red-600 dark:text-red-400' }}">
-                    {{ number_format($this->net_change, 2) }} <span class="text-sm font-medium">{{ $currencyCode }}</span>
+                <p class="text-2xl font-bold {{ $netChange >= 0 ? 'text-purple-900 dark:text-purple-100' : 'text-red-600 dark:text-red-400' }}">
+                    {{ number_format($netChange, 2) }} <span class="text-sm font-medium">{{ $currencyCode }}</span>
                 </p>
             </div>
 
@@ -72,7 +77,7 @@
                     </svg>
                 </div>
                 <p class="text-2xl font-bold text-indigo-900 dark:text-indigo-100">
-                    {{ number_format($this->closing_balance, 2) }} <span class="text-sm font-medium">{{ $currencyCode }}</span>
+                    {{ number_format($closingBalance, 2) }} <span class="text-sm font-medium">{{ $currencyCode }}</span>
                 </p>
             </div>
         </div>
