@@ -43,7 +43,7 @@ class FinanceStatsWidget extends BaseWidget
 
         $cacheKey = "dashboard_finance_stats_{$branchId}_{$financeTypeId}_{$from->toDateString()}_{$to->toDateString()}";
 
-        return Cache::remember($cacheKey, 300, function () use ($from, $to, $branchId) {
+        return Cache::remember($cacheKey, 300, function () use ($from, $to, $branchId, $financeTypeId) {
             $query = BranchTransaction::query()
                 ->whereBetween('trx_date', [$from, $to]);
 

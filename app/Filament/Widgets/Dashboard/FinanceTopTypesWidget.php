@@ -41,7 +41,7 @@ class FinanceTopTypesWidget extends ChartWidget
         $financeTypeId = session()->get('dashboard_finance_type_id') ?? $this->finance_type_id ?? null;
         $cacheKey = "dashboard_finance_top_types_{$branchId}_{$financeTypeId}_{$from->toDateString()}_{$to->toDateString()}";
 
-        return Cache::remember($cacheKey, 300, function () use ($from, $to, $branchId) {
+        return Cache::remember($cacheKey, 300, function () use ($from, $to, $branchId, $financeTypeId) {
             $locale = app()->getLocale();
 
             $query = BranchTransaction::query()
