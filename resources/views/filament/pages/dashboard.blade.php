@@ -1,22 +1,18 @@
 <x-filament-panels::page>
     <div class="space-y-6">
+        {{-- Filters --}}
         {{ $this->form }}
 
-        <div class="space-y-6">
-            <div>
-                <h2 class="text-xl font-semibold mb-4">إحصائيات المالية</h2>
-                {{ $this->financeStatsWidget }}
-            </div>
+        {{-- Header Widgets (FinanceStats + HRStats) --}}
+        <x-filament-widgets::widgets
+            :widgets="$this->getHeaderWidgets()"
+            :columns="$this->getHeaderWidgetsColumns()"
+        />
 
-            <div>
-                <h2 class="text-xl font-semibold mb-4">إحصائيات الموارد البشرية</h2>
-                {{ $this->hrStatsWidget }}
-            </div>
-
-            <div class="grid grid-cols-1 gap-6">
-                {{ $this->financeTopTypesWidget }}
-            </div>
-        </div>
+        {{-- Footer Widgets (Top Types + Comparison Chart) --}}
+        <x-filament-widgets::widgets
+            :widgets="$this->getFooterWidgets()"
+            :columns="$this->getFooterWidgetsColumns()"
+        />
     </div>
 </x-filament-panels::page>
-
