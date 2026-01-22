@@ -82,7 +82,7 @@ class FinanceStatsWidget extends BaseWidget implements HasForms
                 ])
                 ->columns(2)
                 ->collapsible()
-                ->collapsed(false),
+                ->collapsed(true),
         ];
     }
 
