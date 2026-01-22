@@ -3,14 +3,21 @@
 namespace App\Filament\Widgets\Dashboard;
 
 use App\Models\Finance\BranchTransaction;
+use App\Models\Finance\FinanceType;
+use App\Models\MainCore\Branch;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Number;
 
-class FinanceStatsWidget extends BaseWidget
+class FinanceStatsWidget extends BaseWidget implements HasForms
 {
+    use InteractsWithForms;
+
     public ?string $from = null;
     public ?string $to = null;
     public ?int $branch_id = null;
@@ -20,12 +27,46 @@ class FinanceStatsWidget extends BaseWidget
 
     protected int|string|array $columnSpan = 'full';
 
+    protected static ?string $heading = 'إحصائيات المالية';
+
+    public function filtersForm(\Filament\Forms\Form $form): \Filament\Forms\Form
+    {
+        return $form
+            ->schema([
+                \Filament\Forms\Components\Select::make('branch_id')
+                    ->label('الفرع')
+                    ->options(fn () => Branch::where('status', 'active')->pluck('name', 'id'))
+                    ->searchable()
+                    ->preload()
+                    ->nullable()
+                    ->live()
+                    ->afterStateUpdated(function ($state) {
+                        $this->branch_id = $state;
+                        session()->put('dashboard_finance_branch_id', $state);
+                    }),
+
+                \Filament\Forms\Components\Select::make('finance_type_id')
+                    ->label('نوع المالية')
+                    ->options(fn () => FinanceType::where('is_active', true)->get()->pluck('name_text', 'id'))
+                    ->searchable()
+                    ->preload()
+                    ->nullable()
+                    ->live()
+                    ->afterStateUpdated(function ($state) {
+                        $this->finance_type_id = $state;
+                        session()->put('dashboard_finance_type_id', $state);
+                    }),
+            ])
+            ->columns(2)
+            ->statePath('filters');
+    }
+
     protected function getStats(): array
     {
         $dateRange = session()->get('dashboard_date_range', 'month');
         $dateFrom = session()->get('dashboard_date_from');
         $dateTo = session()->get('dashboard_date_to');
-        
+
         if ($dateRange === 'today') {
             $from = now()->startOfDay();
             $to = now()->endOfDay();
@@ -36,10 +77,10 @@ class FinanceStatsWidget extends BaseWidget
             $from = $dateFrom ? Carbon::parse($dateFrom)->startOfDay() : now()->startOfMonth()->startOfDay();
             $to = $dateTo ? Carbon::parse($dateTo)->endOfDay() : now()->endOfDay();
         }
-        
-        $user = auth()->user();
-        $branchId = session()->get('dashboard_finance_branch_id') ?? $user->branch_id ?? $this->branch_id ?? null;
-        $financeTypeId = session()->get('dashboard_finance_type_id') ?? $this->finance_type_id ?? null;
+
+        $user = Auth::user();
+        $branchId = $this->branch_id ?? session()->get('dashboard_finance_branch_id') ?? ($user?->branch_id) ?? null;
+        $financeTypeId = $this->finance_type_id ?? session()->get('dashboard_finance_type_id') ?? null;
 
         $cacheKey = "dashboard_finance_stats_{$branchId}_{$financeTypeId}_{$from->toDateString()}_{$to->toDateString()}";
 
@@ -47,7 +88,7 @@ class FinanceStatsWidget extends BaseWidget
             $query = BranchTransaction::query()
                 ->whereBetween('trx_date', [$from, $to]);
 
-            $user = auth()->user();
+            $user = Auth::user();
             if ($user && !$user->hasRole('super_admin') && !$user->can('finance.view_all_branches')) {
                 if (method_exists($user, 'branches')) {
                     $branchIds = $user->branches()->pluck('branches.id')->toArray();
