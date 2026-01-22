@@ -5,10 +5,13 @@ namespace App\Filament\Widgets\Dashboard;
 use App\Models\Finance\BranchTransaction;
 use App\Models\Finance\FinanceType;
 use App\Models\MainCore\Branch;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Form;
+use Filament\Widgets\StatsOverviewWidget as BaseWidget;
+use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -18,20 +21,18 @@ class FinanceStatsWidget extends BaseWidget implements HasForms
 {
     use InteractsWithForms;
 
-    public ?string $from = null;
-    public ?string $to = null;
     public ?int $branch_id = null;
     public ?int $finance_type_id = null;
 
     protected static ?int $sort = 1;
-
     protected int|string|array $columnSpan = 'full';
-
     protected ?string $heading = 'إحصائيات المالية';
 
     public function mount(): void
     {
-        $this->branch_id = session()->get('dashboard_finance_branch_id');
+        $user = Auth::user();
+
+        $this->branch_id = session()->get('dashboard_finance_branch_id') ?? ($user?->branch_id);
         $this->finance_type_id = session()->get('dashboard_finance_type_id');
 
         $this->form->fill([
@@ -40,34 +41,40 @@ class FinanceStatsWidget extends BaseWidget implements HasForms
         ]);
     }
 
-    public function form(\Filament\Forms\Form $form): \Filament\Forms\Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
-                \Filament\Forms\Components\Section::make('فلاتر المالية')
+                Section::make('فلاتر المالية')
                     ->schema([
-                        \Filament\Forms\Components\Select::make('branch_id')
+                        Select::make('branch_id')
                             ->label('الفرع')
-                            ->options(fn () => Branch::where('status', 'active')->pluck('name', 'id'))
+                            ->options(fn () => Branch::where('status', 'active')->pluck('name', 'id')->toArray())
                             ->searchable()
                             ->preload()
                             ->nullable()
                             ->live()
                             ->afterStateUpdated(function ($state) {
-                                $this->branch_id = $state;
-                                session()->put('dashboard_finance_branch_id', $state);
+                                $this->branch_id = $state ? (int) $state : null;
+                                session()->put('dashboard_finance_branch_id', $this->branch_id);
+
+                                $this->flushFinanceStatsCache();
+                                $this->dispatch('$refresh');
                             }),
 
-                        \Filament\Forms\Components\Select::make('finance_type_id')
+                        Select::make('finance_type_id')
                             ->label('نوع المالية')
-                            ->options(fn () => FinanceType::where('is_active', true)->get()->pluck('name_text', 'id'))
+                            ->options(fn () => FinanceType::where('is_active', true)->get()->pluck('name_text', 'id')->toArray())
                             ->searchable()
                             ->preload()
                             ->nullable()
                             ->live()
                             ->afterStateUpdated(function ($state) {
-                                $this->finance_type_id = $state;
-                                session()->put('dashboard_finance_type_id', $state);
+                                $this->finance_type_id = $state ? (int) $state : null;
+                                session()->put('dashboard_finance_type_id', $this->finance_type_id);
+
+                                $this->flushFinanceStatsCache();
+                                $this->dispatch('$refresh');
                             }),
                     ])
                     ->columns(2)
@@ -75,6 +82,31 @@ class FinanceStatsWidget extends BaseWidget implements HasForms
                     ->collapsed(false),
             ])
             ->statePath('filters');
+    }
+
+    protected function flushFinanceStatsCache(): void
+    {
+        $dateRange = session()->get('dashboard_date_range', 'month');
+        $dateFrom = session()->get('dashboard_date_from');
+        $dateTo = session()->get('dashboard_date_to');
+
+        if ($dateRange === 'today') {
+            $from = now()->startOfDay();
+            $to = now()->endOfDay();
+        } elseif ($dateRange === 'month') {
+            $from = now()->startOfMonth()->startOfDay();
+            $to = now()->endOfDay();
+        } else {
+            $from = $dateFrom ? Carbon::parse($dateFrom)->startOfDay() : now()->startOfMonth()->startOfDay();
+            $to = $dateTo ? Carbon::parse($dateTo)->endOfDay() : now()->endOfDay();
+        }
+
+        $user = Auth::user();
+        $branchId = $this->branch_id ?? session()->get('dashboard_finance_branch_id') ?? ($user?->branch_id) ?? null;
+        $financeTypeId = $this->finance_type_id ?? session()->get('dashboard_finance_type_id') ?? null;
+
+        $cacheKey = "dashboard_finance_stats_{$branchId}_{$financeTypeId}_{$from->toDateString()}_{$to->toDateString()}";
+        Cache::forget($cacheKey);
     }
 
     protected function getStats(): array
@@ -132,6 +164,7 @@ class FinanceStatsWidget extends BaseWidget implements HasForms
             $totalIncome = (float) $incomeQuery->sum('amount');
             $totalExpense = (float) $expenseQuery->sum('amount');
             $netProfit = $totalIncome - $totalExpense;
+
             $incomeCount = $incomeQuery->count();
             $expenseCount = $expenseQuery->count();
 
