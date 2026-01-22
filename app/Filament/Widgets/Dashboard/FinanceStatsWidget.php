@@ -27,7 +27,7 @@ class FinanceStatsWidget extends BaseWidget implements HasForms
 
     protected int|string|array $columnSpan = 'full';
 
-    protected static ?string $heading = 'إحصائيات المالية';
+    protected ?string $heading = 'إحصائيات المالية';
 
     public function filtersForm(\Filament\Forms\Form $form): \Filament\Forms\Form
     {
