@@ -130,7 +130,7 @@ class BranchStatementPage extends Page implements HasTable, HasForms
     {
         $data = $this->data;
         if (empty($data['branch_id']) || empty($data['from']) || empty($data['to']) || empty($data['currency_id'])) {
-            return BranchTransaction::query()->whereRaw('1 = 0');
+            return BranchTransaction::query();
         }
 
         $query = BranchTransaction::query()
