@@ -19,6 +19,7 @@ class HRStatsWidget extends BaseWidget
     public ?string $from = null;
     public ?string $to = null;
     public ?int $branch_id = null;
+    protected static bool $isDiscovered = false;
 
     protected static ?int $sort = 2;
 
@@ -29,7 +30,7 @@ class HRStatsWidget extends BaseWidget
         $dateRange = session()->get('dashboard_date_range', 'month');
         $dateFrom = session()->get('dashboard_date_from');
         $dateTo = session()->get('dashboard_date_to');
-        
+
         if ($dateRange === 'today') {
             $from = now()->startOfDay();
             $to = now()->endOfDay();
@@ -40,7 +41,7 @@ class HRStatsWidget extends BaseWidget
             $from = $dateFrom ? Carbon::parse($dateFrom)->startOfDay() : now()->startOfMonth()->startOfDay();
             $to = $dateTo ? Carbon::parse($dateTo)->endOfDay() : now()->endOfDay();
         }
-        
+
         $user = auth()->user();
         $branchId = $user->branch_id ?? $this->branch_id ?? null;
 
@@ -95,7 +96,7 @@ class HRStatsWidget extends BaseWidget
                 }
                 $presentToday = $attendanceQuery->clone()->present()->count();
                 $absentToday = $attendanceQuery->clone()->absent()->count();
-                
+
                 if ($presentToday > 0 || $absentToday > 0) {
                     $stats[] = Stat::make('الحضور اليوم', Number::format($presentToday) . ' / ' . Number::format($absentToday))
                         ->description('حاضر / غائب')
@@ -124,7 +125,7 @@ class HRStatsWidget extends BaseWidget
                 $pendingLeaves = $leaveQuery->clone()->pending()->count();
                 $approvedLeaves = $leaveQuery->clone()->approved()->count();
                 $rejectedLeaves = $leaveQuery->clone()->rejected()->count();
-                
+
                 $stats[] = Stat::make('عدد طلبات الإجازات', Number::format($pendingLeaves + $approvedLeaves + $rejectedLeaves))
                     ->description("معلق: {$pendingLeaves} | معتمد: {$approvedLeaves} | مرفوض: {$rejectedLeaves}")
                     ->descriptionIcon('heroicon-o-calendar-days')
@@ -144,7 +145,7 @@ class HRStatsWidget extends BaseWidget
                     $excuseQuery->whereIn('employee_id', $employeeIds);
                 }
                 $excuseCount = $excuseQuery->count();
-                
+
                 $stats[] = Stat::make('عدد الاستئذانات', Number::format($excuseCount))
                     ->description('في الفترة المحددة')
                     ->descriptionIcon('heroicon-o-clock')
@@ -163,10 +164,10 @@ class HRStatsWidget extends BaseWidget
                     $employeeIds = Employee::where('branch_id', $branchId)->pluck('id');
                     $loanQuery->whereIn('employee_id', $employeeIds);
                 }
-                
+
                 $activeLoans = $loanQuery->get();
                 $totalActiveLoans = $activeLoans->sum('base_amount');
-                
+
                 $remainingAmount = 0;
                 foreach ($activeLoans as $loan) {
                     $paidAmount = LoanInstallment::where('loan_id', $loan->id)
@@ -174,7 +175,7 @@ class HRStatsWidget extends BaseWidget
                         ->sum('amount');
                     $remainingAmount += ($loan->base_amount - $paidAmount);
                 }
-                
+
                 $stats[] = Stat::make('إجمالي القروض النشطة', Number::currency($totalActiveLoans))
                     ->description('المتبقي: ' . Number::currency($remainingAmount))
                     ->descriptionIcon('heroicon-o-banknotes')
