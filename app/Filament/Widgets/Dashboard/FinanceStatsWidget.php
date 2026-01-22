@@ -14,6 +14,7 @@ class FinanceStatsWidget extends BaseWidget
     public ?string $from = null;
     public ?string $to = null;
     public ?int $branch_id = null;
+    public ?int $finance_type_id = null;
 
     protected static ?int $sort = 1;
 
@@ -37,9 +38,10 @@ class FinanceStatsWidget extends BaseWidget
         }
         
         $user = auth()->user();
-        $branchId = $user->branch_id ?? $this->branch_id ?? null;
+        $branchId = session()->get('dashboard_finance_branch_id') ?? $user->branch_id ?? $this->branch_id ?? null;
+        $financeTypeId = session()->get('dashboard_finance_type_id') ?? $this->finance_type_id ?? null;
 
-        $cacheKey = "dashboard_finance_stats_{$branchId}_{$from->toDateString()}_{$to->toDateString()}";
+        $cacheKey = "dashboard_finance_stats_{$branchId}_{$financeTypeId}_{$from->toDateString()}_{$to->toDateString()}";
 
         return Cache::remember($cacheKey, 300, function () use ($from, $to, $branchId) {
             $query = BranchTransaction::query()
@@ -61,6 +63,10 @@ class FinanceStatsWidget extends BaseWidget
 
             if ($branchId) {
                 $query->where('branch_id', $branchId);
+            }
+
+            if ($financeTypeId) {
+                $query->where('finance_type_id', $financeTypeId);
             }
 
             $incomeQuery = (clone $query)->income();

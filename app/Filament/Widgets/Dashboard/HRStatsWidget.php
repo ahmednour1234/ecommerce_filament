@@ -16,10 +16,11 @@ use Illuminate\Support\Number;
 
 class HRStatsWidget extends BaseWidget
 {
+    protected static bool $isDiscovered = false;
+
     public ?string $from = null;
     public ?string $to = null;
     public ?int $branch_id = null;
-    protected static bool $isDiscovered = false;
 
     protected static ?int $sort = 2;
 

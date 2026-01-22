@@ -5,6 +5,8 @@ namespace App\Filament\Pages;
 use App\Filament\Widgets\Dashboard\FinanceStatsWidget;
 use App\Filament\Widgets\Dashboard\FinanceTopTypesWidget;
 use App\Filament\Widgets\Dashboard\HRStatsWidget;
+use App\Models\Finance\FinanceType;
+use App\Models\MainCore\Branch;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Dashboard as BaseDashboard;
@@ -21,17 +23,23 @@ class Dashboard extends BaseDashboard implements HasForms
     public ?string $dateRange = 'month';
     public ?string $dateFrom = null;
     public ?string $dateTo = null;
+    public ?int $finance_branch_id = null;
+    public ?int $finance_type_id = null;
 
     public function mount(): void
     {
         $this->dateRange = session()->get('dashboard_date_range', 'month');
         $this->dateFrom = session()->get('dashboard_date_from');
         $this->dateTo = session()->get('dashboard_date_to');
+        $this->finance_branch_id = session()->get('dashboard_finance_branch_id');
+        $this->finance_type_id = session()->get('dashboard_finance_type_id');
 
         $this->form->fill([
             'dateRange' => $this->dateRange,
             'dateFrom' => $this->dateFrom,
             'dateTo' => $this->dateTo,
+            'finance_branch_id' => $this->finance_branch_id,
+            'finance_type_id' => $this->finance_type_id,
         ]);
     }
 
@@ -72,8 +80,32 @@ class Dashboard extends BaseDashboard implements HasForms
                                 $this->dateTo = $state;
                                 session()->put('dashboard_date_to', $state);
                             }),
+
+                        \Filament\Forms\Components\Select::make('finance_branch_id')
+                            ->label('فرع المالية')
+                            ->options(fn () => Branch::where('status', 'active')->pluck('name', 'id'))
+                            ->searchable()
+                            ->preload()
+                            ->nullable()
+                            ->live()
+                            ->afterStateUpdated(function ($state) {
+                                $this->finance_branch_id = $state;
+                                session()->put('dashboard_finance_branch_id', $state);
+                            }),
+
+                        \Filament\Forms\Components\Select::make('finance_type_id')
+                            ->label('نوع المالية')
+                            ->options(fn () => FinanceType::where('is_active', true)->get()->pluck('name_text', 'id'))
+                            ->searchable()
+                            ->preload()
+                            ->nullable()
+                            ->live()
+                            ->afterStateUpdated(function ($state) {
+                                $this->finance_type_id = $state;
+                                session()->put('dashboard_finance_type_id', $state);
+                            }),
                     ])
-                    ->columns(3)
+                    ->columns(5)
                     ->collapsible(),
             ])
             ->statePath('data')
