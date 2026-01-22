@@ -29,35 +29,51 @@ class FinanceStatsWidget extends BaseWidget implements HasForms
 
     protected ?string $heading = 'إحصائيات المالية';
 
-    public function filtersForm(\Filament\Forms\Form $form): \Filament\Forms\Form
+    public function mount(): void
+    {
+        $this->branch_id = session()->get('dashboard_finance_branch_id');
+        $this->finance_type_id = session()->get('dashboard_finance_type_id');
+
+        $this->form->fill([
+            'branch_id' => $this->branch_id,
+            'finance_type_id' => $this->finance_type_id,
+        ]);
+    }
+
+    public function form(\Filament\Forms\Form $form): \Filament\Forms\Form
     {
         return $form
             ->schema([
-                \Filament\Forms\Components\Select::make('branch_id')
-                    ->label('الفرع')
-                    ->options(fn () => Branch::where('status', 'active')->pluck('name', 'id'))
-                    ->searchable()
-                    ->preload()
-                    ->nullable()
-                    ->live()
-                    ->afterStateUpdated(function ($state) {
-                        $this->branch_id = $state;
-                        session()->put('dashboard_finance_branch_id', $state);
-                    }),
+                \Filament\Forms\Components\Section::make('فلاتر المالية')
+                    ->schema([
+                        \Filament\Forms\Components\Select::make('branch_id')
+                            ->label('الفرع')
+                            ->options(fn () => Branch::where('status', 'active')->pluck('name', 'id'))
+                            ->searchable()
+                            ->preload()
+                            ->nullable()
+                            ->live()
+                            ->afterStateUpdated(function ($state) {
+                                $this->branch_id = $state;
+                                session()->put('dashboard_finance_branch_id', $state);
+                            }),
 
-                \Filament\Forms\Components\Select::make('finance_type_id')
-                    ->label('نوع المالية')
-                    ->options(fn () => FinanceType::where('is_active', true)->get()->pluck('name_text', 'id'))
-                    ->searchable()
-                    ->preload()
-                    ->nullable()
-                    ->live()
-                    ->afterStateUpdated(function ($state) {
-                        $this->finance_type_id = $state;
-                        session()->put('dashboard_finance_type_id', $state);
-                    }),
+                        \Filament\Forms\Components\Select::make('finance_type_id')
+                            ->label('نوع المالية')
+                            ->options(fn () => FinanceType::where('is_active', true)->get()->pluck('name_text', 'id'))
+                            ->searchable()
+                            ->preload()
+                            ->nullable()
+                            ->live()
+                            ->afterStateUpdated(function ($state) {
+                                $this->finance_type_id = $state;
+                                session()->put('dashboard_finance_type_id', $state);
+                            }),
+                    ])
+                    ->columns(2)
+                    ->collapsible()
+                    ->collapsed(false),
             ])
-            ->columns(2)
             ->statePath('filters');
     }
 
