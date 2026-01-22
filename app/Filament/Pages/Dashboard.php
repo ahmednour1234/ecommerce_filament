@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Widgets\Dashboard\FinanceBranchesComparisonChartWidget;
 use App\Filament\Widgets\Dashboard\FinanceStatsWidget;
 use App\Filament\Widgets\Dashboard\FinanceTopTypesWidget;
 use App\Filament\Widgets\Dashboard\HRStatsWidget;
@@ -146,6 +147,7 @@ class Dashboard extends BaseDashboard implements HasForms
     {
         return [
             FinanceTopTypesWidget::class,
+            FinanceBranchesComparisonChartWidget::class,
         ];
     }
 
