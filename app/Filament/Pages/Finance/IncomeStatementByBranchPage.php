@@ -325,7 +325,7 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
         }
 
         $unionQueries = [];
-        foreach ($allRows as $index => $row) {
+        foreach ($allRows as $row) {
             $unionQueries[] = DB::query()->selectRaw('? as id, ? as section, ? as type, ? as amount', [
                 $row['id'],
                 $row['section'],
@@ -344,7 +344,10 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
         }
 
         return $table
-            ->query($unionQuery)
+            ->query(fn () => BranchTransaction::query()
+                ->fromSub($unionQuery, 'income_statement_data')
+                ->select('income_statement_data.*')
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('section')
                     ->label(tr('reports.income_statement.section', [], null, 'dashboard') ?: 'Section')
