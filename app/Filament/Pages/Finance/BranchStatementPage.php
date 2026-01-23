@@ -546,7 +546,21 @@ class BranchStatementPage extends Page implements HasTable, HasForms
 
     public function downloadPdf()
     {
-        return $this->exportToPdf(null, $this->getExportFilename('pdf'));
+        $table = $this->table($this->makeTable());
+        $exportData = $this->getTableDataForExport($table);
+        $title = $this->getExportTitle() ?? 'Report';
+        $filename = $this->getExportFilename('pdf');
+        $metadata = $this->getExportMetadata();
+
+        session()->flash('branch_statement_pdf_export', [
+            'data' => $exportData['data']->toArray(),
+            'headers' => $exportData['headers'],
+            'title' => $title,
+            'filename' => $filename,
+            'metadata' => $metadata,
+        ]);
+
+        return redirect()->route('filament.exports.branch-statement-pdf');
     }
 
     public static function canAccess(): bool

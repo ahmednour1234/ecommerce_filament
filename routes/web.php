@@ -40,6 +40,9 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::get('/admin/reports/{report}/print', [App\Http\Controllers\ExportController::class, 'reportPrint'])
         ->name('reports.print');
+
+    Route::get('/admin/exports/branch-statement-pdf', [App\Http\Controllers\ExportController::class, 'branchStatementPdf'])
+        ->name('filament.exports.branch-statement-pdf');
 });
 
 Route::middleware(['web', 'auth'])

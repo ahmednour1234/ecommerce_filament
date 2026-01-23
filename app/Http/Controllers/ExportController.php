@@ -6,8 +6,10 @@ use App\Reports\DTOs\FilterDTO;
 use App\Services\Reports\TrialBalanceReportService;
 use App\Services\Reports\GeneralLedgerReportService;
 use App\Services\Reports\IncomeStatementReportService;
+use App\Exports\PdfExport;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Support\Collection;
 
 class ExportController extends Controller
 {
@@ -51,6 +53,20 @@ class ExportController extends Controller
         $viewName = "reports.{$report}-print";
 
         return view($viewName, $printData);
+    }
+
+    public function branchStatementPdf(Request $request)
+    {
+        $exportData = session('branch_statement_pdf_export');
+        
+        if (!$exportData) {
+            abort(404, 'Export data not found');
+        }
+
+        $data = new Collection($exportData['data']);
+        $export = new PdfExport($data, $exportData['headers'], $exportData['title'], $exportData['metadata']);
+        
+        return $export->download($exportData['filename']);
     }
 }
 
