@@ -12,11 +12,16 @@ use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
+use Filament\Tables;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Table;
 use Illuminate\Support\Facades\DB;
 
-class IncomeStatementByBranchPage extends Page implements HasForms
+class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
 {
     use InteractsWithForms;
+    use InteractsWithTable;
     use FinanceModuleGate;
     use TranslatableNavigation;
 
@@ -54,17 +59,20 @@ class IncomeStatementByBranchPage extends Page implements HasForms
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->reactive(),
+                            ->reactive()
+                            ->afterStateUpdated(fn () => $this->resetTable()),
 
                         Forms\Components\DatePicker::make('from')
                             ->label(tr('reports.income_statement.filters.from', [], null, 'dashboard') ?: 'From Date')
                             ->required()
-                            ->reactive(),
+                            ->reactive()
+                            ->afterStateUpdated(fn () => $this->resetTable()),
 
                         Forms\Components\DatePicker::make('to')
                             ->label(tr('reports.income_statement.filters.to', [], null, 'dashboard') ?: 'To Date')
                             ->required()
-                            ->reactive(),
+                            ->reactive()
+                            ->afterStateUpdated(fn () => $this->resetTable()),
 
                         Forms\Components\Select::make('currency_id')
                             ->label(tr('reports.income_statement.filters.currency', [], null, 'dashboard') ?: 'Currency')
@@ -72,7 +80,8 @@ class IncomeStatementByBranchPage extends Page implements HasForms
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->reactive(),
+                            ->reactive()
+                            ->afterStateUpdated(fn () => $this->resetTable()),
 
                         Forms\Components\Select::make('kind')
                             ->label(tr('reports.income_statement.filters.kind', [], null, 'dashboard') ?: 'Kind (Optional)')
@@ -82,7 +91,10 @@ class IncomeStatementByBranchPage extends Page implements HasForms
                             ])
                             ->nullable()
                             ->reactive()
-                            ->afterStateUpdated(fn ($state, callable $set) => $set('finance_type_id', null)),
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                $set('finance_type_id', null);
+                                $this->resetTable();
+                            }),
 
                         Forms\Components\Select::make('finance_type_id')
                             ->label(tr('reports.income_statement.filters.type', [], null, 'dashboard') ?: 'Type (Optional)')
@@ -96,7 +108,9 @@ class IncomeStatementByBranchPage extends Page implements HasForms
                             ->searchable()
                             ->preload()
                             ->nullable()
-                            ->visible(fn ($get) => $get('kind') !== null),
+                            ->visible(fn ($get) => $get('kind') !== null)
+                            ->reactive()
+                            ->afterStateUpdated(fn () => $this->resetTable()),
 
                         Forms\Components\Select::make('status')
                             ->label(tr('reports.income_statement.filters.status', [], null, 'dashboard') ?: 'Status (Optional)')
@@ -106,7 +120,8 @@ class IncomeStatementByBranchPage extends Page implements HasForms
                                 'rejected' => tr('forms.status.rejected', [], null, 'dashboard') ?: 'Rejected',
                             ])
                             ->nullable()
-                            ->reactive(),
+                            ->reactive()
+                            ->afterStateUpdated(fn () => $this->resetTable()),
 
                         Forms\Components\Select::make('payment_method')
                             ->label(tr('reports.income_statement.filters.payment_method', [], null, 'dashboard') ?: 'Payment Method (Optional)')
@@ -118,7 +133,8 @@ class IncomeStatementByBranchPage extends Page implements HasForms
                                 'other' => tr('forms.payment_methods.other', [], null, 'dashboard') ?: 'Other',
                             ])
                             ->nullable()
-                            ->reactive(),
+                            ->reactive()
+                            ->afterStateUpdated(fn () => $this->resetTable()),
 
                         Forms\Components\Select::make('country_id')
                             ->label(tr('reports.income_statement.filters.country', [], null, 'dashboard') ?: 'Country (Optional)')
@@ -126,7 +142,8 @@ class IncomeStatementByBranchPage extends Page implements HasForms
                             ->searchable()
                             ->preload()
                             ->nullable()
-                            ->reactive(),
+                            ->reactive()
+                            ->afterStateUpdated(fn () => $this->resetTable()),
                     ])
                     ->columns(3),
             ])
@@ -262,6 +279,92 @@ class IncomeStatementByBranchPage extends Page implements HasForms
     protected function getNetProfit(): float
     {
         return $this->getTotalIncome() - $this->getTotalExpense();
+    }
+
+    public function table(Table $table): Table
+    {
+        $data = $this->data;
+        $incomeTypes = $this->getIncomeTypes();
+        $expenseTypes = $this->getExpenseTypes();
+        $allRows = [];
+
+        foreach ($incomeTypes as $type) {
+            $allRows[] = [
+                'id' => 'income_' . $type['id'],
+                'section' => tr('reports.income_statement.income_section', [], null, 'dashboard') ?: 'INCOME',
+                'type' => $type['name'],
+                'amount' => $type['total'],
+            ];
+        }
+
+        if (!empty($incomeTypes)) {
+            $allRows[] = [
+                'id' => 'income_total',
+                'section' => tr('reports.income_statement.income_section', [], null, 'dashboard') ?: 'INCOME',
+                'type' => tr('reports.income_statement.total_income', [], null, 'dashboard') ?: 'Total Income',
+                'amount' => $this->getTotalIncome(),
+            ];
+        }
+
+        foreach ($expenseTypes as $type) {
+            $allRows[] = [
+                'id' => 'expense_' . $type['id'],
+                'section' => tr('reports.income_statement.expense_section', [], null, 'dashboard') ?: 'EXPENSE',
+                'type' => $type['name'],
+                'amount' => $type['total'],
+            ];
+        }
+
+        if (!empty($expenseTypes)) {
+            $allRows[] = [
+                'id' => 'expense_total',
+                'section' => tr('reports.income_statement.expense_section', [], null, 'dashboard') ?: 'EXPENSE',
+                'type' => tr('reports.income_statement.total_expense', [], null, 'dashboard') ?: 'Total Expense',
+                'amount' => $this->getTotalExpense(),
+            ];
+        }
+
+        $unionQueries = [];
+        foreach ($allRows as $index => $row) {
+            $unionQueries[] = DB::query()->selectRaw('? as id, ? as section, ? as type, ? as amount', [
+                $row['id'],
+                $row['section'],
+                $row['type'],
+                $row['amount'],
+            ]);
+        }
+
+        $unionQuery = null;
+        foreach ($unionQueries as $uq) {
+            $unionQuery = $unionQuery ? $unionQuery->unionAll($uq) : $uq;
+        }
+
+        if ($unionQuery === null) {
+            $unionQuery = DB::query()->selectRaw('NULL as id, NULL as section, NULL as type, 0 as amount');
+        }
+
+        return $table
+            ->query($unionQuery)
+            ->columns([
+                Tables\Columns\TextColumn::make('section')
+                    ->label(tr('reports.income_statement.section', [], null, 'dashboard') ?: 'Section')
+                    ->badge()
+                    ->color(fn ($record) => str_contains($record->section ?? '', 'INCOME') ? 'success' : 'danger')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('type')
+                    ->label(tr('reports.income_statement.type', [], null, 'dashboard') ?: 'Type')
+                    ->searchable()
+                    ->weight(fn ($record) => str_contains($record->type ?? '', 'Total') ? 'bold' : 'normal'),
+                Tables\Columns\TextColumn::make('amount')
+                    ->label(tr('reports.income_statement.total', [], null, 'dashboard') ?: 'Total')
+                    ->numeric(decimalPlaces: 2)
+                    ->suffix(fn () => ' ' . (Currency::find($data['currency_id'] ?? null)?->code ?? ''))
+                    ->color(fn ($record) => str_contains($record->section ?? '', 'INCOME') ? 'success' : 'danger')
+                    ->weight(fn ($record) => str_contains($record->type ?? '', 'Total') ? 'bold' : 'normal')
+                    ->alignEnd(),
+            ])
+            ->defaultSort('section')
+            ->paginated(false);
     }
 
     public function getTitle(): string
