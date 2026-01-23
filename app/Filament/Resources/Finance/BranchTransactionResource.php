@@ -363,6 +363,67 @@ class BranchTransactionResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('approve')
+                        ->label(tr('actions.approve_all', [], null, 'dashboard') ?: 'Approve Selected')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->form([
+                            Forms\Components\Textarea::make('notes')
+                                ->label(tr('forms.branch_transactions.approval_notes', [], null, 'dashboard') ?: 'Approval Notes')
+                                ->rows(3)
+                                ->nullable(),
+                        ])
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records, array $data) {
+                            $records->each(function (BranchTransaction $record) use ($data) {
+                                if ($record->status === 'pending') {
+                                    $record->update([
+                                        'status' => 'approved',
+                                        'approved_by' => auth()->id(),
+                                        'approved_at' => now(),
+                                    ]);
+                                }
+                            });
+
+                            \Filament\Notifications\Notification::make()
+                                ->success()
+                                ->title(tr('notifications.approved_all', [], null, 'dashboard') ?: 'Transactions approved')
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion()
+                        ->visible(fn () => auth()->user()?->hasRole('super_admin') || (auth()->user()?->can('finance.approve_transactions') ?? false)),
+
+                    Tables\Actions\BulkAction::make('reject')
+                        ->label(tr('actions.reject_all', [], null, 'dashboard') ?: 'Reject Selected')
+                        ->icon('heroicon-o-x-circle')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->form([
+                            Forms\Components\Textarea::make('rejection_reason')
+                                ->label(tr('forms.branch_transactions.rejection_reason', [], null, 'dashboard') ?: 'Rejection Reason')
+                                ->required()
+                                ->rows(3),
+                        ])
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records, array $data) {
+                            $records->each(function (BranchTransaction $record) use ($data) {
+                                if ($record->status === 'pending') {
+                                    $record->update([
+                                        'status' => 'rejected',
+                                        'rejected_by' => auth()->id(),
+                                        'rejected_at' => now(),
+                                        'rejection_reason' => $data['rejection_reason'],
+                                    ]);
+                                }
+                            });
+
+                            \Filament\Notifications\Notification::make()
+                                ->danger()
+                                ->title(tr('notifications.rejected_all', [], null, 'dashboard') ?: 'Transactions rejected')
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion()
+                        ->visible(fn () => auth()->user()?->hasRole('super_admin') || (auth()->user()?->can('finance.reject_transactions') ?? false)),
+
                     Tables\Actions\DeleteBulkAction::make()
                         ->visible(fn () => auth()->user()?->hasRole('super_admin') || (auth()->user()?->can('finance.delete_transactions') ?? false)),
                 ]),
