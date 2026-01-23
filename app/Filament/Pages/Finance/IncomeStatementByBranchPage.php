@@ -348,7 +348,6 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
                 ->fromSub($unionQuery, 'income_statement_data')
                 ->select('income_statement_data.*')
             )
-            ->recordKey('id')
             ->columns([
                 Tables\Columns\TextColumn::make('section')
                     ->label(tr('reports.income_statement.section', [], null, 'dashboard') ?: 'Section')
