@@ -172,6 +172,10 @@ class FinanceTranslationsSeeder extends Seeder
             'reports.income_statement.filters.currency' => ['en' => 'Currency', 'ar' => 'العملة'],
             'reports.income_statement.filters.kind' => ['en' => 'Kind (Optional)', 'ar' => 'النوع (اختياري)'],
             'reports.income_statement.filters.type' => ['en' => 'Type (Optional)', 'ar' => 'النوع (اختياري)'],
+            'reports.income_statement.filters.status' => ['en' => 'Status (Optional)', 'ar' => 'الحالة (اختياري)'],
+            'reports.income_statement.filters.payment_method' => ['en' => 'Payment Method (Optional)', 'ar' => 'طريقة الدفع (اختياري)'],
+            'reports.income_statement.filters.country' => ['en' => 'Country (Optional)', 'ar' => 'الدولة (اختياري)'],
+            'reports.income_statement.section' => ['en' => 'Section', 'ar' => 'القسم'],
         ]);
 
         // ============================================
@@ -333,6 +337,14 @@ class FinanceTranslationsSeeder extends Seeder
             'fields.status_pending' => ['en' => 'Pending', 'ar' => 'قيد الانتظار'],
             'fields.status_approved' => ['en' => 'Approved', 'ar' => 'معتمد'],
             'fields.status_rejected' => ['en' => 'Rejected', 'ar' => 'مرفوض'],
+            'forms.status.pending' => ['en' => 'Pending', 'ar' => 'قيد الانتظار'],
+            'forms.status.approved' => ['en' => 'Approved', 'ar' => 'معتمد'],
+            'forms.status.rejected' => ['en' => 'Rejected', 'ar' => 'مرفوض'],
+            'forms.payment_methods.cash' => ['en' => 'Cash', 'ar' => 'نقدي'],
+            'forms.payment_methods.bank_transfer' => ['en' => 'Bank Transfer', 'ar' => 'تحويل بنكي'],
+            'forms.payment_methods.cheque' => ['en' => 'Cheque', 'ar' => 'شيك'],
+            'forms.payment_methods.card' => ['en' => 'Card', 'ar' => 'بطاقة'],
+            'forms.payment_methods.other' => ['en' => 'Other', 'ar' => 'أخرى'],
             'forms.branch_transactions.approval_notes' => ['en' => 'Approval Notes', 'ar' => 'ملاحظات الموافقة'],
             'forms.branch_transactions.rejection_reason' => ['en' => 'Rejection Reason', 'ar' => 'سبب الرفض'],
             'tables.branch_transactions.status' => ['en' => 'Status', 'ar' => 'الحالة'],
