@@ -36,6 +36,9 @@ class IncomeStatementByBranchPage extends Page implements HasForms
             'currency_id' => null,
             'kind' => null,
             'finance_type_id' => null,
+            'status' => null,
+            'payment_method' => null,
+            'country_id' => null,
         ]);
     }
 
@@ -94,6 +97,36 @@ class IncomeStatementByBranchPage extends Page implements HasForms
                             ->preload()
                             ->nullable()
                             ->visible(fn ($get) => $get('kind') !== null),
+
+                        Forms\Components\Select::make('status')
+                            ->label(tr('reports.income_statement.filters.status', [], null, 'dashboard') ?: 'Status (Optional)')
+                            ->options([
+                                'pending' => tr('forms.status.pending', [], null, 'dashboard') ?: 'Pending',
+                                'approved' => tr('forms.status.approved', [], null, 'dashboard') ?: 'Approved',
+                                'rejected' => tr('forms.status.rejected', [], null, 'dashboard') ?: 'Rejected',
+                            ])
+                            ->nullable()
+                            ->reactive(),
+
+                        Forms\Components\Select::make('payment_method')
+                            ->label(tr('reports.income_statement.filters.payment_method', [], null, 'dashboard') ?: 'Payment Method (Optional)')
+                            ->options([
+                                'cash' => tr('forms.payment_methods.cash', [], null, 'dashboard') ?: 'Cash',
+                                'bank_transfer' => tr('forms.payment_methods.bank_transfer', [], null, 'dashboard') ?: 'Bank Transfer',
+                                'cheque' => tr('forms.payment_methods.cheque', [], null, 'dashboard') ?: 'Cheque',
+                                'card' => tr('forms.payment_methods.card', [], null, 'dashboard') ?: 'Card',
+                                'other' => tr('forms.payment_methods.other', [], null, 'dashboard') ?: 'Other',
+                            ])
+                            ->nullable()
+                            ->reactive(),
+
+                        Forms\Components\Select::make('country_id')
+                            ->label(tr('reports.income_statement.filters.country', [], null, 'dashboard') ?: 'Country (Optional)')
+                            ->options(\App\Models\MainCore\Country::where('is_active', true)->pluck('name', 'id'))
+                            ->searchable()
+                            ->preload()
+                            ->nullable()
+                            ->reactive(),
                     ])
                     ->columns(3),
             ])
@@ -118,6 +151,18 @@ class IncomeStatementByBranchPage extends Page implements HasForms
                 ->where('currency_id', $data['currency_id'])
                 ->where('finance_type_id', $type->id)
                 ->whereBetween('trx_date', [$data['from'], $data['to']]);
+
+            if (!empty($data['status'])) {
+                $query->where('status', $data['status']);
+            }
+
+            if (!empty($data['payment_method'])) {
+                $query->where('payment_method', $data['payment_method']);
+            }
+
+            if (!empty($data['country_id'])) {
+                $query->where('country_id', $data['country_id']);
+            }
 
             if (!empty($data['kind']) && $data['kind'] !== 'income') {
                 return [
@@ -160,7 +205,21 @@ class IncomeStatementByBranchPage extends Page implements HasForms
         return $types->map(function ($type) use ($data) {
             $query = BranchTransaction::query()
                 ->where('branch_id', $data['branch_id'])
-                ->where('finance_type_id', $type->id);
+                ->where('currency_id', $data['currency_id'])
+                ->where('finance_type_id', $type->id)
+                ->whereBetween('trx_date', [$data['from'], $data['to']]);
+
+            if (!empty($data['status'])) {
+                $query->where('status', $data['status']);
+            }
+
+            if (!empty($data['payment_method'])) {
+                $query->where('payment_method', $data['payment_method']);
+            }
+
+            if (!empty($data['country_id'])) {
+                $query->where('country_id', $data['country_id']);
+            }
 
             if (!empty($data['kind']) && $data['kind'] !== 'expense') {
                 return [
