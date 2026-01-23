@@ -156,6 +156,7 @@ class BranchStatementPage extends Page implements HasTable, HasForms
     {
         $openingBalance = $this->getOpeningBalance();
         $runningBalance = $openingBalance;
+        $processedRecords = [];
 
         return $table
             ->query($this->getTableQuery())
@@ -202,19 +203,30 @@ class BranchStatementPage extends Page implements HasTable, HasForms
 
                 Tables\Columns\TextColumn::make('amount')
                     ->label(tr('tables.branch_transactions.amount', [], null, 'dashboard') ?: 'Amount')
-                    ->formatStateUsing(function ($state, $record) use (&$runningBalance) {
+                    ->formatStateUsing(function ($state, $record) use (&$runningBalance, &$processedRecords) {
                         $amount = (float) $state;
                         if ($record->financeType?->kind === 'expense') {
                             $amount = -$amount;
                         }
-                        $runningBalance += $amount;
+                        if (!isset($processedRecords[$record->id])) {
+                            $runningBalance += $amount;
+                            $processedRecords[$record->id] = true;
+                        }
                         return number_format($amount, 2);
                     })
                     ->alignEnd(),
 
                 Tables\Columns\TextColumn::make('running_balance')
                     ->label(tr('tables.branch_transactions.running_balance', [], null, 'dashboard') ?: 'Running Balance')
-                    ->formatStateUsing(function ($state, $record) use (&$runningBalance) {
+                    ->getStateUsing(function ($record) use (&$runningBalance, &$processedRecords) {
+                        $amount = (float) $record->amount;
+                        if ($record->financeType?->kind === 'expense') {
+                            $amount = -$amount;
+                        }
+                        if (!isset($processedRecords[$record->id])) {
+                            $runningBalance += $amount;
+                            $processedRecords[$record->id] = true;
+                        }
                         return number_format($runningBalance, 2);
                     })
                     ->alignEnd(),
