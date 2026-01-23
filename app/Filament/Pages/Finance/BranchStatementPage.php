@@ -313,9 +313,7 @@ class BranchStatementPage extends Page implements HasTable, HasForms
                 Tables\Actions\Action::make('export_pdf')
                     ->label(tr('actions.export_pdf', [], null, 'dashboard') ?: 'Export PDF')
                     ->icon('heroicon-o-document-arrow-down')
-                    ->action(function () use ($table) {
-                        return $this->exportToPdf($table, $this->getExportFilename('pdf'));
-                    }),
+                    ->action('downloadPdf'),
             ])
             ->paginated(false);
     }
@@ -544,6 +542,11 @@ class BranchStatementPage extends Page implements HasTable, HasForms
         $branchName = $this->ensureUtf8($branch?->name ?? 'branch_statement');
         $sanitized = preg_replace('/[^a-z0-9]+/i', '_', $branchName);
         return strtolower($sanitized) . '_' . date('Y-m-d_His') . '.' . $extension;
+    }
+
+    public function downloadPdf()
+    {
+        return $this->exportToPdf(null, $this->getExportFilename('pdf'));
     }
 
     public static function canAccess(): bool
