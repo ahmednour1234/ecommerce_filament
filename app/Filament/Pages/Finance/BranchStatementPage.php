@@ -282,6 +282,25 @@ class BranchStatementPage extends Page implements HasTable, HasForms
                     })
                     ->searchable()
                     ->preload(),
+
+                Tables\Filters\Filter::make('trx_date')
+                    ->form([
+                        Forms\Components\DatePicker::make('from')
+                            ->label(tr('reports.branch_statement.filters.from', [], null, 'dashboard') ?: 'From Date'),
+                        Forms\Components\DatePicker::make('to')
+                            ->label(tr('reports.branch_statement.filters.to', [], null, 'dashboard') ?: 'To Date'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('trx_date', '>=', $date),
+                            )
+                            ->when(
+                                $data['to'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('trx_date', '<=', $date),
+                            );
+                    }),
             ])
             ->headerActions([
                 Tables\Actions\Action::make('export_excel')
