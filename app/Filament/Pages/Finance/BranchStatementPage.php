@@ -406,12 +406,8 @@ class BranchStatementPage extends Page implements HasTable, HasForms
     protected function getOpeningBalance(): float
     {
         $data = $this->data;
-        if (empty($data['branch_id']) ) {
-            return 0;
-        }
 
         $income = BranchTransaction::query()
-            ->where('branch_id', $data['branch_id'])
             ->whereHas('financeType', fn ($q) => $q->where('kind', 'income'))
             ->sum('amount') ?? 0;
 
@@ -426,12 +422,8 @@ class BranchStatementPage extends Page implements HasTable, HasForms
     protected function getTotalIncome(): float
     {
         $data = $this->data;
-        if (empty($data['branch_id'])) {
-            return 0;
-        }
 
         $query = BranchTransaction::query()
-            ->where('branch_id', $data['branch_id'])
             ->whereHas('financeType', fn ($q) => $q->where('kind', 'income'));
 
         if (!empty($data['kind']) && $data['kind'] !== 'income') {
@@ -448,12 +440,8 @@ class BranchStatementPage extends Page implements HasTable, HasForms
     protected function getTotalExpense(): float
     {
         $data = $this->data;
-        if (empty($data['branch_id']) ) {
-            return 0;
-        }
 
         $query = BranchTransaction::query()
-            ->where('branch_id', $data['branch_id'])
             ->whereHas('financeType', fn ($q) => $q->where('kind', 'expense'));
 
         if (!empty($data['kind']) && $data['kind'] !== 'expense') {
