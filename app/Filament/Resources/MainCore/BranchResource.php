@@ -141,6 +141,8 @@ class BranchResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Tables\Filters\TrashedFilter::make(),
+
                 Tables\Filters\SelectFilter::make('status')
                     ->label(tr('tables.branches.filters.status', [], null, 'dashboard'))
                     ->options([
@@ -159,10 +161,18 @@ class BranchResource extends Resource
                     ->visible(fn () => auth()->user()?->can('branches.update') ?? false),
                 Tables\Actions\DeleteAction::make()
                     ->visible(fn () => auth()->user()?->can('branches.delete') ?? false),
+                Tables\Actions\RestoreAction::make()
+                    ->visible(fn () => auth()->user()?->can('branches.delete') ?? false),
+                Tables\Actions\ForceDeleteAction::make()
+                    ->visible(fn () => auth()->user()?->can('branches.delete') ?? false),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
+                        ->visible(fn () => auth()->user()?->can('branches.delete') ?? false),
+                    Tables\Actions\RestoreBulkAction::make()
+                        ->visible(fn () => auth()->user()?->can('branches.delete') ?? false),
+                    Tables\Actions\ForceDeleteBulkAction::make()
                         ->visible(fn () => auth()->user()?->can('branches.delete') ?? false),
                 ]),
             ])
