@@ -103,7 +103,7 @@ class IncomeStatementByBranchPage extends Page implements HasForms
     protected function getIncomeTypes(): array
     {
         $data = $this->data;
-        if (empty($data['branch_id']) || empty($data['from']) || empty($data['to']) || empty($data['currency_id'])) {
+        if (empty($data['branch_id'])) {
             return [];
         }
 
@@ -148,7 +148,7 @@ class IncomeStatementByBranchPage extends Page implements HasForms
     protected function getExpenseTypes(): array
     {
         $data = $this->data;
-        if (empty($data['branch_id']) || empty($data['from']) || empty($data['to']) || empty($data['currency_id'])) {
+        if (empty($data['branch_id'])) {
             return [];
         }
 
@@ -160,9 +160,7 @@ class IncomeStatementByBranchPage extends Page implements HasForms
         return $types->map(function ($type) use ($data) {
             $query = BranchTransaction::query()
                 ->where('branch_id', $data['branch_id'])
-                ->where('currency_id', $data['currency_id'])
-                ->where('finance_type_id', $type->id)
-                ->whereBetween('trx_date', [$data['from'], $data['to']]);
+                ->where('finance_type_id', $type->id);
 
             if (!empty($data['kind']) && $data['kind'] !== 'expense') {
                 return [
