@@ -1,15 +1,44 @@
 @php
     $currentLang = $mcCurrentLang ?? app()->getLocale() ?? 'ar';
     $isRTL = in_array($currentLang, ['ar', 'he', 'fa', 'ur']);
+    $hasArabic = preg_match('/[\x{0600}-\x{06FF}]/u', $title . implode(' ', $headers ?? []));
+    $isRTL = $isRTL || $hasArabic;
     $direction = $isRTL ? 'rtl' : 'ltr';
+    $fontFamily = $isRTL ? "'Cairo', 'DejaVu Sans', Arial, sans-serif" : "'DejaVu Sans', Arial, sans-serif";
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $currentLang }}" dir="{{ $direction }}">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title }}</title>
     <style>
+        @font-face {
+            font-family: 'DejaVu Sans';
+            src: url('{{ public_path('fonts/DejaVuSans.ttf') }}') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'DejaVu Sans';
+            src: url('{{ public_path('fonts/DejaVuSans-Bold.ttf') }}') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Cairo';
+            src: url('{{ public_path('fonts/Cairo-Regular.ttf') }}') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Cairo';
+            src: url('{{ public_path('fonts/Cairo-Bold.ttf') }}') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -17,11 +46,12 @@
         }
         
         body {
-            font-family: 'DejaVu Sans', sans-serif;
+            font-family: {{ $fontFamily }};
             font-size: 10px;
             color: #333;
             padding: 20px;
             direction: {{ $direction }};
+            unicode-bidi: embed;
         }
         
         .header {
@@ -34,6 +64,9 @@
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 5px;
+            font-family: {{ $fontFamily }};
+            direction: {{ $direction }};
+            unicode-bidi: embed;
         }
         
         .metadata {
@@ -63,6 +96,9 @@
             font-weight: bold;
             border: 1px solid #ddd;
             font-size: 9px;
+            font-family: {{ $fontFamily }};
+            direction: {{ $direction }};
+            unicode-bidi: embed;
         }
         
         td {
@@ -70,6 +106,9 @@
             border: 1px solid #ddd;
             font-size: 9px;
             text-align: {{ $isRTL ? 'right' : 'left' }};
+            font-family: {{ $fontFamily }};
+            direction: {{ $direction }};
+            unicode-bidi: embed;
         }
         
         tbody tr:nth-child(even) {

@@ -43,6 +43,9 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::get('/admin/exports/branch-statement-pdf', [App\Http\Controllers\ExportController::class, 'branchStatementPdf'])
         ->name('filament.exports.branch-statement-pdf');
+
+    Route::get('/admin/exports/test-arabic-pdf', [App\Http\Controllers\ExportController::class, 'testArabicPdf'])
+        ->name('filament.exports.test-arabic-pdf');
 });
 
 Route::middleware(['web', 'auth'])

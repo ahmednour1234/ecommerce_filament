@@ -23,20 +23,41 @@ class PdfExport
     public function download(string $filename = 'export.pdf'): \Illuminate\Http\Response
     {
         $viewData = $this->getViewData();
+        $isRtl = $this->detectRtl($viewData);
         
         $pdf = Pdf::loadView('exports.table-pdf', $viewData);
         $pdf->setPaper('a4', 'landscape');
         $pdf->setOption('isHtml5ParserEnabled', true);
         $pdf->setOption('isRemoteEnabled', true);
+        $pdf->setOption('enable-local-file-access', true);
+        $pdf->setOption('defaultFont', $isRtl ? 'Cairo' : 'DejaVu Sans');
+        $pdf->setOption('fontDir', [
+            public_path('fonts'),
+            resource_path('fonts'),
+            storage_path('fonts'),
+        ]);
+        $pdf->setOption('fontCache', storage_path('fonts'));
         
         return $pdf->download($filename);
     }
 
     public function stream(string $filename = 'export.pdf'): \Illuminate\Http\Response
     {
-        $pdf = Pdf::loadView('exports.table-pdf', $this->getViewData());
-
+        $viewData = $this->getViewData();
+        $isRtl = $this->detectRtl($viewData);
+        
+        $pdf = Pdf::loadView('exports.table-pdf', $viewData);
         $pdf->setPaper('a4', 'landscape');
+        $pdf->setOption('isHtml5ParserEnabled', true);
+        $pdf->setOption('isRemoteEnabled', true);
+        $pdf->setOption('enable-local-file-access', true);
+        $pdf->setOption('defaultFont', $isRtl ? 'Cairo' : 'DejaVu Sans');
+        $pdf->setOption('fontDir', [
+            public_path('fonts'),
+            resource_path('fonts'),
+            storage_path('fonts'),
+        ]);
+        $pdf->setOption('fontCache', storage_path('fonts'));
         
         return $pdf->stream($filename);
     }
@@ -119,6 +140,12 @@ class PdfExport
         // Last resort: remove invalid UTF-8 bytes
         $cleaned = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $value);
         return mb_convert_encoding($cleaned, 'UTF-8', 'UTF-8') ?: '';
+    }
+
+    protected function detectRtl(array $viewData): bool
+    {
+        $text = $viewData['title'] . implode(' ', $viewData['headers']);
+        return (bool) preg_match('/[\x{0600}-\x{06FF}]/u', $text);
     }
 }
 

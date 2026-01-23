@@ -10,6 +10,7 @@ use App\Exports\PdfExport;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Collection;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ExportController extends Controller
 {
@@ -67,6 +68,26 @@ class ExportController extends Controller
         $export = new PdfExport($data, $exportData['headers'], $exportData['title'], $exportData['metadata']);
         
         return $export->download($exportData['filename']);
+    }
+
+    public function testArabicPdf()
+    {
+        $testData = collect([
+            ['التاريخ' => '2024-01-15', 'النوع' => 'دخل', 'المبلغ' => '1,000.00', 'الرصيد' => '5,000.00'],
+            ['التاريخ' => '2024-01-16', 'النوع' => 'مصروف', 'المبلغ' => '-500.00', 'الرصيد' => '4,500.00'],
+            ['التاريخ' => '2024-01-17', 'النوع' => 'دخل', 'المبلغ' => '2,000.00', 'الرصيد' => '6,500.00'],
+        ]);
+
+        $headers = ['التاريخ', 'النوع', 'المبلغ', 'الرصيد'];
+        $title = 'تقرير كشف حساب الفرع - اختبار';
+        $metadata = [
+            'exported_at' => now()->format('Y-m-d H:i:s'),
+            'exported_by' => 'System Test',
+        ];
+
+        $export = new PdfExport($testData, $headers, $title, $metadata);
+        
+        return $export->download('test-arabic-' . date('Y-m-d-His') . '.pdf');
     }
 }
 
