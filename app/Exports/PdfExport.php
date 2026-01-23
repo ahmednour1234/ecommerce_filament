@@ -22,9 +22,12 @@ class PdfExport
 
     public function download(string $filename = 'export.pdf'): \Illuminate\Http\Response
     {
-        $pdf = Pdf::loadView('exports.table-pdf', $this->getViewData());
-
+        $viewData = $this->getViewData();
+        
+        $pdf = Pdf::loadView('exports.table-pdf', $viewData);
         $pdf->setPaper('a4', 'landscape');
+        $pdf->setOption('isHtml5ParserEnabled', true);
+        $pdf->setOption('isRemoteEnabled', true);
         
         return $pdf->download($filename);
     }
@@ -44,14 +47,23 @@ class PdfExport
             if (is_array($row)) {
                 return array_values(array_map([$this, 'ensureUtf8'], $row));
             }
-            $array = (array) $row;
-            return array_values(array_map([$this, 'ensureUtf8'], $array));
+            if (is_object($row)) {
+                $array = (array) $row;
+                return array_values(array_map([$this, 'ensureUtf8'], $array));
+            }
+            return [$this->ensureUtf8($row)];
         })->toArray();
 
         $cleanHeaders = array_map([$this, 'ensureUtf8'], $this->headers);
         $cleanTitle = $this->ensureUtf8($this->title);
         $cleanMetadata = array_map(function($value) {
-            return is_string($value) ? $this->ensureUtf8($value) : $value;
+            if (is_string($value)) {
+                return $this->ensureUtf8($value);
+            }
+            if (is_array($value)) {
+                return array_map([$this, 'ensureUtf8'], $value);
+            }
+            return $value;
         }, $this->metadata);
 
         return [
@@ -104,8 +116,9 @@ class PdfExport
             return $cleaned;
         }
 
-        // Last resort: filter out invalid bytes
-        return filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH) ?: '';
+        // Last resort: remove invalid UTF-8 bytes
+        $cleaned = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $value);
+        return mb_convert_encoding($cleaned, 'UTF-8', 'UTF-8') ?: '';
     }
 }
 

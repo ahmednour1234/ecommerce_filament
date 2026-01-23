@@ -301,6 +301,89 @@ class BranchStatementPage extends Page implements HasTable, HasForms
             ->paginated(false);
     }
 
+    protected function getTableDataForExport(Table $table): array
+    {
+        $tableQuery = $table->getQuery();
+        $columns = $this->extractTableColumns($table);
+
+        $records = $tableQuery->get();
+        $openingBalance = $this->getOpeningBalance();
+        $runningBalance = $openingBalance;
+        $processedRecords = [];
+
+        $formattedData = $records->map(function ($record) use ($columns, &$runningBalance, &$processedRecords) {
+            $row = [];
+            foreach ($columns as $column) {
+                $key = $column['name'];
+                $label = $column['label'];
+                $value = $this->getExportColumnValue($record, $key, $column, $runningBalance, $processedRecords);
+                $row[$label] = $this->ensureUtf8($value);
+            }
+            return $row;
+        });
+
+        $headers = array_map([$this, 'ensureUtf8'], array_column($columns, 'label'));
+
+        return [
+            'data' => $formattedData,
+            'headers' => $headers,
+        ];
+    }
+
+    protected function getExportColumnValue($record, string $key, array $column, &$runningBalance, &$processedRecords): mixed
+    {
+        if ($key === 'running_balance') {
+            $amount = (float) $record->amount;
+            if ($record->financeType?->kind === 'expense') {
+                $amount = -$amount;
+            }
+            if (!isset($processedRecords[$record->id])) {
+                $runningBalance += $amount;
+                $processedRecords[$record->id] = true;
+            }
+            return number_format($runningBalance, 2);
+        }
+
+        if ($key === 'amount') {
+            $amount = (float) $record->amount;
+            if ($record->financeType?->kind === 'expense') {
+                $amount = -$amount;
+            }
+            if (!isset($processedRecords[$record->id])) {
+                $runningBalance += $amount;
+                $processedRecords[$record->id] = true;
+            }
+            return number_format($amount, 2);
+        }
+
+        if (str_contains($key, '.')) {
+            $parts = explode('.', $key);
+            $value = $record;
+            foreach ($parts as $part) {
+                if (is_object($value) && isset($value->$part)) {
+                    $value = $value->$part;
+                } elseif (is_array($value) && isset($value[$part])) {
+                    $value = $value[$part];
+                } else {
+                    return '';
+                }
+            }
+            return $value ?? '';
+        }
+
+        if (is_object($record)) {
+            $value = $record->$key ?? $record->getAttribute($key) ?? '';
+
+            if ($value instanceof \DateTime || $value instanceof \Carbon\Carbon) {
+                return $value->format('Y-m-d');
+            }
+
+            return $value;
+        }
+
+        return $record[$key] ?? '';
+    }
+
     protected function getOpeningBalance(): float
     {
         $data = $this->data;
