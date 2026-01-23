@@ -406,21 +406,17 @@ class BranchStatementPage extends Page implements HasTable, HasForms
     protected function getOpeningBalance(): float
     {
         $data = $this->data;
-        if (empty($data['branch_id']) || empty($data['from']) || empty($data['currency_id'])) {
+        if (empty($data['branch_id']) ) {
             return 0;
         }
 
         $income = BranchTransaction::query()
             ->where('branch_id', $data['branch_id'])
-            ->where('currency_id', $data['currency_id'])
-            ->where('trx_date', '<', $data['from'])
             ->whereHas('financeType', fn ($q) => $q->where('kind', 'income'))
             ->sum('amount') ?? 0;
 
         $expense = BranchTransaction::query()
             ->where('branch_id', $data['branch_id'])
-            ->where('currency_id', $data['currency_id'])
-            ->where('trx_date', '<', $data['from'])
             ->whereHas('financeType', fn ($q) => $q->where('kind', 'expense'))
             ->sum('amount') ?? 0;
 
@@ -430,14 +426,12 @@ class BranchStatementPage extends Page implements HasTable, HasForms
     protected function getTotalIncome(): float
     {
         $data = $this->data;
-        if (empty($data['branch_id']) || empty($data['from']) || empty($data['to']) || empty($data['currency_id'])) {
+        if (empty($data['branch_id'])) {
             return 0;
         }
 
         $query = BranchTransaction::query()
             ->where('branch_id', $data['branch_id'])
-            ->where('currency_id', $data['currency_id'])
-            ->whereBetween('trx_date', [$data['from'], $data['to']])
             ->whereHas('financeType', fn ($q) => $q->where('kind', 'income'));
 
         if (!empty($data['kind']) && $data['kind'] !== 'income') {
@@ -454,14 +448,12 @@ class BranchStatementPage extends Page implements HasTable, HasForms
     protected function getTotalExpense(): float
     {
         $data = $this->data;
-        if (empty($data['branch_id']) || empty($data['from']) || empty($data['to']) || empty($data['currency_id'])) {
+        if (empty($data['branch_id']) ) {
             return 0;
         }
 
         $query = BranchTransaction::query()
             ->where('branch_id', $data['branch_id'])
-            ->where('currency_id', $data['currency_id'])
-            ->whereBetween('trx_date', [$data['from'], $data['to']])
             ->whereHas('financeType', fn ($q) => $q->where('kind', 'expense'));
 
         if (!empty($data['kind']) && $data['kind'] !== 'expense') {
