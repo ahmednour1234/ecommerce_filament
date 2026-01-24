@@ -195,13 +195,23 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
         return [
             'scales' => [
                 'y' => [
-                    'beginAtZero' => true,
+                    'beginAtZero' => false,
                     'title' => [
                         'display' => true,
                         'text' => 'المبلغ',
                     ],
+                    'grid' => [
+                        'drawBorder' => true,
+                    ],
+                ],
+            ],
+            'plugins' => [
+                'legend' => [
+                    'display' => true,
+                    'position' => 'top',
                 ],
             ],
         ];
     }
+
 }
