@@ -398,7 +398,10 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
                         $status = $data['status'] ?? 'approved';
                         $params['tableFilters[status][value]'] = $status;
 
-                        return $url . '?' . http_build_query($params);
+                        $queryString = http_build_query($params);
+                        $fullUrl = $url . ($queryString ? '?' . $queryString : '');
+
+                        return '/public' . $fullUrl;
                     })
                     ->openUrlInNewTab(false)
                     ->color('primary')
