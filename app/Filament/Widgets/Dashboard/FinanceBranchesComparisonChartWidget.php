@@ -27,18 +27,28 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
         $dateFrom  = session()->get('dashboard_date_from');
         $dateTo    = session()->get('dashboard_date_to');
 
-
+        if ($dateRange === 'today') {
+            $from = now()->startOfDay();
+            $to   = now()->endOfDay();
+        } elseif ($dateRange === 'month') {
+            $from = now()->startOfMonth()->startOfDay();
+            $to   = now()->endOfDay();
+        } else {
+            $from = $dateFrom ? Carbon::parse($dateFrom)->startOfDay() : now()->startOfMonth()->startOfDay();
+            $to   = $dateTo ? Carbon::parse($dateTo)->endOfDay() : now()->endOfDay();
+        }
 
         $user = Auth::user();
         $branchId      = session()->get('dashboard_finance_branch_id') ?? $user?->branch_id ?? null;
         $financeTypeId = session()->get('dashboard_finance_type_id') ?? null;
 
         // ✅ change cache key version to avoid old cached data
-        $cacheKey = "dashboard_finance_branches_comparison_v3_{$branchId}_{$financeTypeId}";
+        $cacheKey = "dashboard_finance_branches_comparison_v3_{$branchId}_{$financeTypeId}_{$from->toDateString()}_{$to->toDateString()}";
 
         try {
-            return Cache::remember($cacheKey, 300, function () use ( $branchId, $financeTypeId, $user) {
+            return Cache::remember($cacheKey, 300, function () use ($from, $to, $branchId, $financeTypeId, $user) {
                 $query = BranchTransaction::query()
+                    ->whereBetween('finance_branch_transactions.trx_date', [$from, $to])
                     ->where('finance_branch_transactions.status', 'approved')
                     ->join('branches', 'finance_branch_transactions.branch_id', '=', 'branches.id')
                     ->join('finance_types', 'finance_branch_transactions.finance_type_id', '=', 'finance_types.id')
