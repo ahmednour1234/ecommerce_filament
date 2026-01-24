@@ -9,6 +9,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class FinanceBranchesComparisonChartWidget extends ChartWidget
 {
@@ -42,13 +43,13 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
         $financeTypeId = session()->get('dashboard_finance_type_id') ?? null;
 
         // ✅ change cache key version to avoid old cached data
-        $cacheKey = "dashboard_finance_branches_comparison_v2_{$branchId}_{$financeTypeId}_{$from->toDateString()}_{$to->toDateString()}";
+        $cacheKey = "dashboard_finance_branches_comparison_v3_{$branchId}_{$financeTypeId}_{$from->toDateString()}_{$to->toDateString()}";
 
         try {
             return Cache::remember($cacheKey, 300, function () use ($from, $to, $branchId, $financeTypeId, $user) {
                 $query = BranchTransaction::query()
-                    ->whereBetween('trx_date', [$from, $to])
-                    ->where('status', 'approved')
+                    ->whereBetween('finance_branch_transactions.trx_date', [$from, $to])
+                    ->where('finance_branch_transactions.status', 'approved')
                     ->join('branches', 'finance_branch_transactions.branch_id', '=', 'branches.id')
                     ->join('finance_types', 'finance_branch_transactions.finance_type_id', '=', 'finance_types.id')
                     ->select(
@@ -160,6 +161,10 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
                 ];
             });
         } catch (\Exception $e) {
+            Log::error('FinanceBranchesComparisonChartWidget Error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return [
                 'datasets' => [
                     [
