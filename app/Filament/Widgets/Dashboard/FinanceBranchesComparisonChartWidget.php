@@ -57,17 +57,18 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
                     )
                     ->groupBy('branches.id', 'branches.name', 'finance_types.kind');
 
+                // Permissions / branch visibility
                 if ($user && !$user->hasRole('super_admin') && !$user->can('finance.view_all_branches')) {
-                if (method_exists($user, 'branches')) {
-                    $branchIds = $user->branches()->pluck('branches.id')->toArray();
-                    if (!empty($branchIds)) {
-                        $query->whereIn('finance_branch_transactions.branch_id', $branchIds);
-                    } else {
-                        $query->whereRaw('1 = 0');
+                    if (method_exists($user, 'branches')) {
+                        $branchIds = $user->branches()->pluck('branches.id')->toArray();
+                        if (!empty($branchIds)) {
+                            $query->whereIn('finance_branch_transactions.branch_id', $branchIds);
+                        } else {
+                            $query->whereRaw('1 = 0');
+                        }
+                    } elseif ($user->branch_id) {
+                        $query->where('finance_branch_transactions.branch_id', $user->branch_id);
                     }
-                } elseif ($user->branch_id) {
-                    $query->where('finance_branch_transactions.branch_id', $user->branch_id);
-                }
                 }
 
                 if ($branchId) {
@@ -80,20 +81,19 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
 
                 $results = $query->get();
 
-                $branchesQuery = Branch::query()
-                    ->where('status', 'active');
+                $branchesQuery = Branch::query()->where('status', 'active');
 
                 if ($user && !$user->hasRole('super_admin') && !$user->can('finance.view_all_branches')) {
-                if (method_exists($user, 'branches')) {
-                    $branchIds = $user->branches()->pluck('branches.id')->toArray();
-                    if (!empty($branchIds)) {
-                        $branchesQuery->whereIn('id', $branchIds);
-                    } else {
-                        $branchesQuery->whereRaw('1 = 0');
+                    if (method_exists($user, 'branches')) {
+                        $branchIds = $user->branches()->pluck('branches.id')->toArray();
+                        if (!empty($branchIds)) {
+                            $branchesQuery->whereIn('id', $branchIds);
+                        } else {
+                            $branchesQuery->whereRaw('1 = 0');
+                        }
+                    } elseif ($user->branch_id) {
+                        $branchesQuery->where('id', $user->branch_id);
                     }
-                } elseif ($user->branch_id) {
-                    $branchesQuery->where('id', $user->branch_id);
-                }
                 }
 
                 if ($branchId) {
@@ -105,32 +105,33 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
                 $labels = [];
                 $incomeData = [];
                 $expenseData = [];
+                $diffData = []; // NEW: difference (income - expense)
 
                 foreach ($branches as $branch) {
                     $labels[] = $branch->name;
 
                     $branchResults = $results->where('branch_id', $branch->id);
 
-                    $income = $branchResults
+                    $income = (float) $branchResults
                         ->where('kind', 'income')
-                        ->sum(function ($item) {
-                            return (float) ($item->total_amount ?? 0);
-                        });
+                        ->sum(fn ($item) => (float) ($item->total_amount ?? 0));
 
-                    $expense = $branchResults
+                    $expense = (float) $branchResults
                         ->where('kind', 'expense')
-                        ->sum(function ($item) {
-                            return (float) ($item->total_amount ?? 0);
-                        });
+                        ->sum(fn ($item) => (float) ($item->total_amount ?? 0));
+
+                    $diff = $income - $expense;
 
                     $incomeData[] = $income;
                     $expenseData[] = $expense;
+                    $diffData[] = $diff;
                 }
 
                 if (empty($labels)) {
                     $labels[] = 'لا توجد بيانات';
                     $incomeData[] = 0;
                     $expenseData[] = 0;
+                    $diffData[] = 0;
                 }
 
                 return [
@@ -146,6 +147,12 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
                             'data' => $expenseData,
                             'backgroundColor' => 'rgba(239, 68, 68, 0.8)',
                             'borderColor' => 'rgb(239, 68, 68)',
+                        ],
+                        [
+                            'label' => 'الفرق (إيرادات - مصروفات)',
+                            'data' => $diffData,
+                            'backgroundColor' => 'rgba(59, 130, 246, 0.8)', // Blue
+                            'borderColor' => 'rgb(59, 130, 246)',
                         ],
                     ],
                     'labels' => $labels,
@@ -165,6 +172,12 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
                         'data' => [0],
                         'backgroundColor' => 'rgba(239, 68, 68, 0.8)',
                         'borderColor' => 'rgb(239, 68, 68)',
+                    ],
+                    [
+                        'label' => 'الفرق (إيرادات - مصروفات)',
+                        'data' => [0],
+                        'backgroundColor' => 'rgba(59, 130, 246, 0.8)',
+                        'borderColor' => 'rgb(59, 130, 246)',
                     ],
                 ],
                 'labels' => ['خطأ في تحميل البيانات'],
