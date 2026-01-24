@@ -298,6 +298,7 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
                 'section' => tr('reports.income_statement.income_section', [], null, 'dashboard') ?: 'INCOME',
                 'type' => $type['name'],
                 'amount' => $type['total'],
+                'finance_type_id' => $type['id'],
             ];
         }
 
@@ -307,6 +308,7 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
                 'section' => tr('reports.income_statement.income_section', [], null, 'dashboard') ?: 'INCOME',
                 'type' => tr('reports.income_statement.total_income', [], null, 'dashboard') ?: 'Total Income',
                 'amount' => $this->getTotalIncome(),
+                'finance_type_id' => null,
             ];
         }
 
@@ -316,6 +318,7 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
                 'section' => tr('reports.income_statement.expense_section', [], null, 'dashboard') ?: 'EXPENSE',
                 'type' => $type['name'],
                 'amount' => $type['total'],
+                'finance_type_id' => $type['id'],
             ];
         }
 
@@ -325,16 +328,18 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
                 'section' => tr('reports.income_statement.expense_section', [], null, 'dashboard') ?: 'EXPENSE',
                 'type' => tr('reports.income_statement.total_expense', [], null, 'dashboard') ?: 'Total Expense',
                 'amount' => $this->getTotalExpense(),
+                'finance_type_id' => null,
             ];
         }
 
         $unionQueries = [];
         foreach ($allRows as $row) {
-            $unionQueries[] = DB::query()->selectRaw('? as id, ? as section, ? as type, ? as amount', [
+            $unionQueries[] = DB::query()->selectRaw('? as id, ? as section, ? as type, ? as amount, ? as finance_type_id', [
                 $row['id'],
                 $row['section'],
                 $row['type'],
                 $row['amount'],
+                $row['finance_type_id'],
             ]);
         }
 
@@ -344,7 +349,7 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
         }
 
         if ($unionQuery === null) {
-            $unionQuery = DB::query()->selectRaw("'empty' as id, NULL as section, NULL as type, 0 as amount");
+            $unionQuery = DB::query()->selectRaw("'empty' as id, NULL as section, NULL as type, 0 as amount, NULL as finance_type_id");
         }
 
         return $table
@@ -361,7 +366,44 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
                 Tables\Columns\TextColumn::make('type')
                     ->label(tr('reports.income_statement.type', [], null, 'dashboard') ?: 'Type')
                     ->searchable()
-                    ->weight(fn ($record) => str_contains($record->type ?? '', 'Total') ? 'bold' : 'normal'),
+                    ->weight(fn ($record) => str_contains($record->type ?? '', 'Total') ? 'bold' : 'normal')
+                    ->url(function ($record) use ($data) {
+                        if (empty($record->finance_type_id) || str_contains($record->type ?? '', 'Total')) {
+                            return null;
+                        }
+
+                        $url = \App\Filament\Resources\Finance\BranchTransactionResource::getUrl('index');
+                        $params = [];
+
+                        if (!empty($record->finance_type_id)) {
+                            $params['tableFilters[finance_type_id][value]'] = $record->finance_type_id;
+                        }
+
+                        if (!empty($data['branch_id'])) {
+                            $params['tableFilters[branch_id][value]'] = $data['branch_id'];
+                        }
+
+                        if (!empty($data['currency_id'])) {
+                            $params['tableFilters[currency_id][value]'] = $data['currency_id'];
+                        }
+
+                        if (!empty($data['from'])) {
+                            $params['tableFilters[trx_date][from]'] = $data['from'];
+                        }
+
+                        if (!empty($data['to'])) {
+                            $params['tableFilters[trx_date][to]'] = $data['to'];
+                        }
+
+                        $status = $data['status'] ?? 'approved';
+                        $params['tableFilters[status][value]'] = $status;
+
+                        return $url . '?' . http_build_query($params);
+                    })
+                    ->openUrlInNewTab(false)
+                    ->color('primary')
+                    ->icon(fn ($record) => !empty($record->finance_type_id) && !str_contains($record->type ?? '', 'Total') ? 'heroicon-o-arrow-top-right-on-square' : null)
+                    ->tooltip(fn ($record) => !empty($record->finance_type_id) && !str_contains($record->type ?? '', 'Total') ? tr('reports.income_statement.view_transactions', [], null, 'dashboard') ?: 'View Transactions' : null),
                 Tables\Columns\TextColumn::make('amount')
                     ->label(tr('reports.income_statement.total', [], null, 'dashboard') ?: 'Total')
                     ->numeric(decimalPlaces: 2)
