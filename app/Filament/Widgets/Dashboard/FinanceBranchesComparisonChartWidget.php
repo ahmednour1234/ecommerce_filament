@@ -48,7 +48,7 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
             return Cache::remember($cacheKey, 300, function () use ($from, $to, $branchId, $financeTypeId, $user) {
                 $query = BranchTransaction::query()
                     ->whereBetween('trx_date', [$from, $to])
-                    ->where('status', 'approve')
+                    ->where('status', 'approved')
                     ->join('branches', 'finance_branch_transactions.branch_id', '=', 'branches.id')
                     ->join('finance_types', 'finance_branch_transactions.finance_type_id', '=', 'finance_types.id')
                     ->select(
