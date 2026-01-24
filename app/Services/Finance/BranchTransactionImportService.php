@@ -101,8 +101,9 @@ class BranchTransactionImportService
                     }
                 }
 
-                $transaction = DB::transaction(function () use ($config, $rowData, $normalizedDate, $normalizedAmount, $notes) {
-                    return BranchTransaction::create([
+                $defaultStatus = $config['default_status'] ?? 'approved';
+                $transaction = DB::transaction(function () use ($config, $rowData, $normalizedDate, $normalizedAmount, $notes, $defaultStatus) {
+                    $transactionData = [
                         'trx_date' => $normalizedDate,
                         'branch_id' => $config['branch_id'],
                         'country_id' => $config['country_id'],
@@ -113,8 +114,15 @@ class BranchTransactionImportService
                         'reference_no' => $rowData['reference_no'],
                         'notes' => $notes,
                         'created_by' => auth()->id(),
-                        'status' => 'pending',
-                    ]);
+                        'status' => $defaultStatus,
+                    ];
+
+                    if ($defaultStatus === 'approved') {
+                        $transactionData['approved_by'] = auth()->id();
+                        $transactionData['approved_at'] = now();
+                    }
+
+                    return BranchTransaction::create($transactionData);
                 });
 
                 $result->imported++;

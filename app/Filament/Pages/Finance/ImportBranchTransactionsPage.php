@@ -54,6 +54,7 @@ class ImportBranchTransactionsPage extends Page implements HasForms
             'payment_method' => null,
             'default_transaction_date' => now()->format('Y-m-d'),
             'global_notes' => null,
+            'default_status' => 'approved',
             'allow_partial' => false,
             'on_duplicate' => 'skip',
             'excel_file' => null,
@@ -159,6 +160,16 @@ class ImportBranchTransactionsPage extends Page implements HasForms
                             ->rows(3)
                             ->nullable(),
 
+                        Forms\Components\Select::make('default_status')
+                            ->label(tr('pages.finance.import.default_status', [], null, 'dashboard') ?: 'Default Status')
+                            ->options([
+                                'pending' => tr('forms.status.pending', [], null, 'dashboard') ?: 'Pending',
+                                'approved' => tr('forms.status.approved', [], null, 'dashboard') ?: 'Approved',
+                            ])
+                            ->default('approved')
+                            ->required()
+                            ->reactive(),
+
                         Forms\Components\Toggle::make('allow_partial')
                             ->label(tr('pages.finance.import.allow_partial', [], null, 'dashboard') ?: 'Allow Partial Import')
                             ->helperText(tr('pages.finance.import.allow_partial_helper', [], null, 'dashboard') ?: 'Import valid rows even if some rows have errors')
@@ -202,11 +213,11 @@ class ImportBranchTransactionsPage extends Page implements HasForms
                     } catch (\Exception $e) {
                         $kind = 'expense';
                     }
-                    
+
                     if (!in_array($kind, ['income', 'expense'])) {
                         $kind = 'expense';
                     }
-                    
+
                     return route('finance.import.template', ['kind' => $kind]);
                 })
                 ->openUrlInNewTab(false),
@@ -244,6 +255,7 @@ class ImportBranchTransactionsPage extends Page implements HasForms
             'payment_method' => $data['payment_method'] ?? null,
             'default_transaction_date' => $data['default_transaction_date'] ?? null,
             'global_notes' => $data['global_notes'] ?? null,
+            'default_status' => $data['default_status'] ?? 'approved',
             'allow_partial' => $data['allow_partial'] ?? false,
             'on_duplicate' => $data['on_duplicate'] ?? 'skip',
         ];

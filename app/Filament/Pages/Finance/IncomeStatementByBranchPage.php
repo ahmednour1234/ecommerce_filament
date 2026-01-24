@@ -41,7 +41,7 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
             'currency_id' => null,
             'kind' => null,
             'finance_type_id' => null,
-            'status' => null,
+            'status' => 'approved',
             'payment_method' => null,
             'country_id' => null,
         ]);
@@ -171,6 +171,8 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
 
             if (!empty($data['status'])) {
                 $query->where('status', $data['status']);
+            } else {
+                $query->where('status', 'approved');
             }
 
             if (!empty($data['payment_method'])) {
@@ -228,6 +230,8 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
 
             if (!empty($data['status'])) {
                 $query->where('status', $data['status']);
+            } else {
+                $query->where('status', 'approved');
             }
 
             if (!empty($data['payment_method'])) {
