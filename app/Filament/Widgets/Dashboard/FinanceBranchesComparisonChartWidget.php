@@ -23,25 +23,26 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
     protected function getData(): array
     {
         $dateRange = session()->get('dashboard_date_range', 'month');
-        $dateFrom = session()->get('dashboard_date_from');
-        $dateTo = session()->get('dashboard_date_to');
+        $dateFrom  = session()->get('dashboard_date_from');
+        $dateTo    = session()->get('dashboard_date_to');
 
         if ($dateRange === 'today') {
             $from = now()->startOfDay();
-            $to = now()->endOfDay();
+            $to   = now()->endOfDay();
         } elseif ($dateRange === 'month') {
             $from = now()->startOfMonth()->startOfDay();
-            $to = now()->endOfDay();
+            $to   = now()->endOfDay();
         } else {
             $from = $dateFrom ? Carbon::parse($dateFrom)->startOfDay() : now()->startOfMonth()->startOfDay();
-            $to = $dateTo ? Carbon::parse($dateTo)->endOfDay() : now()->endOfDay();
+            $to   = $dateTo ? Carbon::parse($dateTo)->endOfDay() : now()->endOfDay();
         }
 
         $user = Auth::user();
-        $branchId = session()->get('dashboard_finance_branch_id') ?? $user?->branch_id ?? null;
+        $branchId      = session()->get('dashboard_finance_branch_id') ?? $user?->branch_id ?? null;
         $financeTypeId = session()->get('dashboard_finance_type_id') ?? null;
 
-        $cacheKey = "dashboard_finance_branches_comparison_{$branchId}_{$financeTypeId}_{$from->toDateString()}_{$to->toDateString()}";
+        // ✅ change cache key version to avoid old cached data
+        $cacheKey = "dashboard_finance_branches_comparison_v2_{$branchId}_{$financeTypeId}_{$from->toDateString()}_{$to->toDateString()}";
 
         try {
             return Cache::remember($cacheKey, 300, function () use ($from, $to, $branchId, $financeTypeId, $user) {
@@ -57,7 +58,6 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
                     )
                     ->groupBy('branches.id', 'branches.name', 'finance_types.kind');
 
-                // Permissions / branch visibility
                 if ($user && !$user->hasRole('super_admin') && !$user->can('finance.view_all_branches')) {
                     if (method_exists($user, 'branches')) {
                         $branchIds = $user->branches()->pluck('branches.id')->toArray();
@@ -105,7 +105,7 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
                 $labels = [];
                 $incomeData = [];
                 $expenseData = [];
-                $diffData = []; // NEW: difference (income - expense)
+                $diffData = [];
 
                 foreach ($branches as $branch) {
                     $labels[] = $branch->name;
@@ -120,7 +120,7 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
                         ->where('kind', 'expense')
                         ->sum(fn ($item) => (float) ($item->total_amount ?? 0));
 
-                    $diff = $income - $expense;
+                    $diff = $income - $expense; // can be negative ✅
 
                     $incomeData[] = $income;
                     $expenseData[] = $expense;
@@ -151,7 +151,7 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
                         [
                             'label' => 'الفرق (إيرادات - مصروفات)',
                             'data' => $diffData,
-                            'backgroundColor' => 'rgba(59, 130, 246, 0.8)', // Blue
+                            'backgroundColor' => 'rgba(59, 130, 246, 0.8)',
                             'borderColor' => 'rgb(59, 130, 246)',
                         ],
                     ],
@@ -195,13 +195,11 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
         return [
             'scales' => [
                 'y' => [
+                    // ✅ allow negative values to show below zero
                     'beginAtZero' => false,
                     'title' => [
                         'display' => true,
                         'text' => 'المبلغ',
-                    ],
-                    'grid' => [
-                        'drawBorder' => true,
                     ],
                 ],
             ],
@@ -213,5 +211,4 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
             ],
         ];
     }
-
 }
