@@ -215,8 +215,7 @@ class ClientResource extends Resource
 
                                     $set('full_address_ar', $addressAr);
                                     $set('full_address_en', $addressEn);
-                                })
-                                ->columnSpanFull(),
+                                }),
                         ])
                             ->columnSpanFull(),
                     ])
