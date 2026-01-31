@@ -31,24 +31,39 @@ class ViewPackage extends ViewRecord
         $package = $this->record;
         $package->load(['country', 'packageDetails.profession', 'packageDetails.country']);
 
-        $pdf = Pdf::loadView('pdf.package', [
+        $viewData = [
             'package' => $package,
-        ]);
+        ];
 
-        $pdf->setPaper('a4', 'portrait');
-        $pdf->setOption('isHtml5ParserEnabled', true);
-        $pdf->setOption('isRemoteEnabled', true);
-        $pdf->setOption('enable-local-file-access', true);
-        $pdf->setOption('defaultFont', 'Cairo');
-        $pdf->setOption('fontDir', [
-            public_path('fonts'),
-            resource_path('fonts'),
-            storage_path('fonts'),
-        ]);
-        $pdf->setOption('fontCache', storage_path('fonts'));
+        try {
+            $html = view('pdf.package', $viewData)->render();
 
-        $filename = 'package_' . $package->id . '_' . now()->format('Y-m-d') . '.pdf';
+            if (!mb_check_encoding($html, 'UTF-8')) {
+                $html = mb_convert_encoding($html, 'UTF-8', mb_detect_encoding($html, 'UTF-8, ISO-8859-1', true));
+            }
 
-        return $pdf->download($filename);
+            $pdf = Pdf::loadHTML($html, 'UTF-8');
+
+            $pdf->setPaper('a4', 'portrait');
+            $pdf->setOption('isHtml5ParserEnabled', true);
+            $pdf->setOption('isRemoteEnabled', true);
+            $pdf->setOption('enable-local-file-access', true);
+            $pdf->setOption('defaultFont', 'Cairo');
+            $pdf->setOption('fontDir', [
+                public_path('fonts'),
+                resource_path('fonts'),
+                storage_path('fonts'),
+            ]);
+            $pdf->setOption('fontCache', storage_path('fonts'));
+            $pdf->setOption('isPhpEnabled', true);
+            $pdf->setOption('chroot', base_path());
+
+            $filename = 'package_' . $package->id . '_' . now()->format('Y-m-d') . '.pdf';
+
+            return $pdf->download($filename);
+        } catch (\Exception $e) {
+            \Log::error('PDF Export Error: ' . $e->getMessage());
+            throw $e;
+        }
     }
 }

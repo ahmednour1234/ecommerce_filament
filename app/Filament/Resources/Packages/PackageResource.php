@@ -263,6 +263,12 @@ class PackageResource extends Resource
                 Tables\Actions\EditAction::make()
                     ->label(tr('common.edit', [], null, 'dashboard'))
                     ->visible(fn (Package $record) => static::canEdit($record)),
+                Tables\Actions\Action::make('export_pdf')
+                    ->label(tr('buttons.export_pdf', [], null, 'packages'))
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->url(fn (Package $record) => PackageResource::getUrl('view', ['record' => $record]) . '?export=pdf')
+                    ->openUrlInNewTab()
+                    ->visible(fn (Package $record) => auth()->user()?->hasRole('super_admin') || auth()->user()?->can('packages.export_pdf') ?? false),
                 Tables\Actions\DeleteAction::make()
                     ->label(tr('common.delete', [], null, 'dashboard'))
                     ->visible(fn (Package $record) => static::canDelete($record)),
