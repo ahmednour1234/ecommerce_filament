@@ -21,7 +21,6 @@ class PackagesTranslationsSeeder extends Seeder
         $translations = [
             'navigation.offers' => ['en' => 'Packages', 'ar' => 'باقات العروض'],
             'navigation.recruitment' => ['en' => 'Recruitment Packages', 'ar' => 'باقات الاستقدام'],
-            'navigation.rental' => ['en' => 'Rental Packages', 'ar' => 'باقات التأجير'],
             'navigation.service_transfer' => ['en' => 'Service Transfer Packages', 'ar' => 'باقات نقل الخدمات'],
 
             'fields.name' => ['en' => 'Name', 'ar' => 'الاسم'],

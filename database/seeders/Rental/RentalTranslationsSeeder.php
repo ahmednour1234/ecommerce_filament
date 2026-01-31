@@ -28,6 +28,7 @@ class RentalTranslationsSeeder extends Seeder
         $this->command->info('Step 1: Creating navigation translations...');
         $translations = array_merge($translations, [
             'sidebar.rental' => ['en' => 'Rental', 'ar' => 'قسم التأجير'],
+            'navigation.rental' => ['en' => 'Rental Packages', 'ar' => 'باقات التأجير'],
             'navigation.rental_contracts' => ['en' => 'Rental Contracts', 'ar' => 'عقود التأجير'],
             'navigation.rental_requests' => ['en' => 'Rental Requests', 'ar' => 'طلبات التأجير'],
             'navigation.rental_cancel_refund' => ['en' => 'Cancel/Refund Requests', 'ar' => 'طلبات الإلغاء/الاسترجاع'],
