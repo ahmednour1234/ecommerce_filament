@@ -97,6 +97,17 @@ class RentalTranslationsSeeder extends Seeder
             'rental.requests.status.approved' => ['en' => 'Approved', 'ar' => 'موافق عليه'],
             'rental.requests.status.rejected' => ['en' => 'Rejected', 'ar' => 'مرفوض'],
             'rental.requests.status.converted' => ['en' => 'Converted', 'ar' => 'محول'],
+            'rental.fields.worker_gender' => ['en' => 'Worker Gender', 'ar' => 'جنس العامل'],
+            'rental.fields.worker_gender.male' => ['en' => 'Male', 'ar' => 'ذكر'],
+            'rental.fields.worker_gender.female' => ['en' => 'Female', 'ar' => 'أنثى'],
+            'rental.fields.admin_note' => ['en' => 'Admin Note', 'ar' => 'ملاحظة المسؤول'],
+            'rental.requests.stats.all' => ['en' => 'All Requests', 'ar' => 'جميع الطلبات'],
+            'rental.requests.stats.total' => ['en' => 'Total requests', 'ar' => 'إجمالي الطلبات'],
+            'rental.requests.stats.awaiting_review' => ['en' => 'Awaiting review', 'ar' => 'في انتظار المراجعة'],
+            'rental.requests.stats.being_reviewed' => ['en' => 'Being reviewed', 'ar' => 'قيد المراجعة'],
+            'rental.requests.stats.ready_to_convert' => ['en' => 'Ready to convert', 'ar' => 'جاهز للتحويل'],
+            'rental.requests.stats.rejected_requests' => ['en' => 'Rejected requests', 'ar' => 'الطلبات المرفوضة'],
+            'rental.requests.stats.converted_to_contracts' => ['en' => 'Converted to contracts', 'ar' => 'محول إلى عقود'],
         ]);
 
         $this->command->info('Step 4: Creating cancel/refund translations...');
@@ -136,6 +147,8 @@ class RentalTranslationsSeeder extends Seeder
             'rental.reports.customers' => ['en' => 'Customers Report', 'ar' => 'تقرير العملاء'],
             'rental.reports.cancellation_refund' => ['en' => 'Cancellation/Refund', 'ar' => 'الإلغاء/الاسترجاع'],
             'rental.reports.payments' => ['en' => 'Payments Report', 'ar' => 'تقرير المدفوعات'],
+            'rental.reports.view_report' => ['en' => 'View report', 'ar' => 'عرض التقرير'],
+            'rental.reports.requests' => ['en' => 'requests', 'ar' => 'طلبات'],
         ]);
 
         $this->command->info('Step 8: Creating actions translations...');

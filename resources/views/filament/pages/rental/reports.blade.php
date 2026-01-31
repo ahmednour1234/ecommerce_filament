@@ -33,28 +33,28 @@
         <x-filament::card>
             <div class="p-4">
                 <h3 class="text-lg font-semibold mb-2">{{ tr('rental.reports.worker_performance', [], null, 'dashboard') ?: 'Worker Performance' }}</h3>
-                <p class="text-sm text-gray-600">View report</p>
+                <p class="text-sm text-gray-600">{{ tr('rental.reports.view_report', [], null, 'dashboard') ?: 'View report' }}</p>
             </div>
         </x-filament::card>
 
         <x-filament::card>
             <div class="p-4">
                 <h3 class="text-lg font-semibold mb-2">{{ tr('rental.reports.customers', [], null, 'dashboard') ?: 'Customers Report' }}</h3>
-                <p class="text-sm text-gray-600">View report</p>
+                <p class="text-sm text-gray-600">{{ tr('rental.reports.view_report', [], null, 'dashboard') ?: 'View report' }}</p>
             </div>
         </x-filament::card>
 
         <x-filament::card>
             <div class="p-4">
                 <h3 class="text-lg font-semibold mb-2">{{ tr('rental.reports.cancellation_refund', [], null, 'dashboard') ?: 'Cancellation/Refund' }}</h3>
-                <p class="text-sm text-gray-600">{{ \App\Models\Rental\RentalCancelRefundRequest::count() }} requests</p>
+                <p class="text-sm text-gray-600">{{ \App\Models\Rental\RentalCancelRefundRequest::count() }} {{ tr('rental.reports.requests', [], null, 'dashboard') ?: 'requests' }}</p>
             </div>
         </x-filament::card>
 
         <x-filament::card>
             <div class="p-4">
                 <h3 class="text-lg font-semibold mb-2">{{ tr('rental.reports.payments', [], null, 'dashboard') ?: 'Payments Report' }}</h3>
-                <p class="text-sm text-gray-600">View report</p>
+                <p class="text-sm text-gray-600">{{ tr('rental.reports.view_report', [], null, 'dashboard') ?: 'View report' }}</p>
             </div>
         </x-filament::card>
     </div>

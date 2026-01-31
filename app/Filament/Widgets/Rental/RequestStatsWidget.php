@@ -11,23 +11,23 @@ class RequestStatsWidget extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('All Requests', RentalContractRequest::count())
-                ->description('Total requests')
+            Stat::make(tr('rental.requests.stats.all', [], null, 'dashboard') ?: 'All Requests', RentalContractRequest::count())
+                ->description(tr('rental.requests.stats.total', [], null, 'dashboard') ?: 'Total requests')
                 ->color('gray'),
-            Stat::make('Pending', RentalContractRequest::where('status', 'pending')->count())
-                ->description('Awaiting review')
+            Stat::make(tr('rental.requests.status.pending', [], null, 'dashboard') ?: 'Pending', RentalContractRequest::where('status', 'pending')->count())
+                ->description(tr('rental.requests.stats.awaiting_review', [], null, 'dashboard') ?: 'Awaiting review')
                 ->color('warning'),
-            Stat::make('Under Review', RentalContractRequest::where('status', 'under_review')->count())
-                ->description('Being reviewed')
+            Stat::make(tr('rental.requests.status.under_review', [], null, 'dashboard') ?: 'Under Review', RentalContractRequest::where('status', 'under_review')->count())
+                ->description(tr('rental.requests.stats.being_reviewed', [], null, 'dashboard') ?: 'Being reviewed')
                 ->color('info'),
-            Stat::make('Approved', RentalContractRequest::where('status', 'approved')->count())
-                ->description('Ready to convert')
+            Stat::make(tr('rental.requests.status.approved', [], null, 'dashboard') ?: 'Approved', RentalContractRequest::where('status', 'approved')->count())
+                ->description(tr('rental.requests.stats.ready_to_convert', [], null, 'dashboard') ?: 'Ready to convert')
                 ->color('success'),
-            Stat::make('Rejected', RentalContractRequest::where('status', 'rejected')->count())
-                ->description('Rejected requests')
+            Stat::make(tr('rental.requests.status.rejected', [], null, 'dashboard') ?: 'Rejected', RentalContractRequest::where('status', 'rejected')->count())
+                ->description(tr('rental.requests.stats.rejected_requests', [], null, 'dashboard') ?: 'Rejected requests')
                 ->color('danger'),
-            Stat::make('Converted', RentalContractRequest::where('status', 'converted')->count())
-                ->description('Converted to contracts')
+            Stat::make(tr('rental.requests.status.converted', [], null, 'dashboard') ?: 'Converted', RentalContractRequest::where('status', 'converted')->count())
+                ->description(tr('rental.requests.stats.converted_to_contracts', [], null, 'dashboard') ?: 'Converted to contracts')
                 ->color('gray'),
         ];
     }

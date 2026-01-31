@@ -75,8 +75,11 @@ class RentalRequestsResource extends Resource
                     ->searchable(),
 
                 Forms\Components\Select::make('worker_gender')
-                    ->label('Worker Gender')
-                    ->options(['male' => 'Male', 'female' => 'Female']),
+                    ->label(tr('rental.fields.worker_gender', [], null, 'dashboard') ?: 'Worker Gender')
+                    ->options([
+                        'male' => tr('rental.fields.worker_gender.male', [], null, 'dashboard') ?: 'Male',
+                        'female' => tr('rental.fields.worker_gender.female', [], null, 'dashboard') ?: 'Female',
+                    ]),
 
                 Forms\Components\DatePicker::make('start_date')
                     ->label(tr('rental.fields.start_date', [], null, 'dashboard') ?: 'Start Date')
@@ -112,7 +115,7 @@ class RentalRequestsResource extends Resource
                     ->default('pending'),
 
                 Forms\Components\Textarea::make('admin_note')
-                    ->label('Admin Note')
+                    ->label(tr('rental.fields.admin_note', [], null, 'dashboard') ?: 'Admin Note')
                     ->rows(3),
             ]);
     }

@@ -80,7 +80,7 @@ class CancelRefundRequestsResource extends Resource
                 Tables\Columns\TextColumn::make('refund_amount')
                     ->label(tr('rental.cancel_refund.refund_amount', [], null, 'dashboard') ?: 'Refund Amount')
                     ->money('SAR')
-                    ->visible(fn ($record) => $record->type === 'refund'),
+                    ->visible(fn ($record) => $record && $record->type === 'refund'),
 
                 Tables\Columns\BadgeColumn::make('status')
                     ->label(tr('rental.fields.status', [], null, 'dashboard') ?: 'Status')
