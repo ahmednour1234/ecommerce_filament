@@ -46,6 +46,19 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::get('/admin/exports/test-arabic-pdf', [App\Http\Controllers\ExportController::class, 'testArabicPdf'])
         ->name('filament.exports.test-arabic-pdf');
+
+    // Rental Contract PDF Routes
+    Route::get('/rental/contracts/{contract}/print', function ($contract) {
+        $contract = \App\Models\Rental\RentalContract::findOrFail($contract);
+        $service = app(\App\Services\Rental\RentalContractPrintService::class);
+        return $service->contractPdf($contract)->download("contract_{$contract->contract_no}.pdf");
+    })->name('rental.contracts.print');
+
+    Route::get('/rental/contracts/{contract}/invoice', function ($contract) {
+        $contract = \App\Models\Rental\RentalContract::findOrFail($contract);
+        $service = app(\App\Services\Rental\RentalContractPrintService::class);
+        return $service->invoicePdf($contract)->download("invoice_{$contract->contract_no}.pdf");
+    })->name('rental.contracts.invoice');
 });
 
 Route::middleware(['web', 'auth'])
