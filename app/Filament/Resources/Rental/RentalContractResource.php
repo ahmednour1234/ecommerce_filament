@@ -28,7 +28,7 @@ class RentalContractResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationGroup = 'قسم التأجير';
     protected static ?int $navigationSort = 1;
-    protected static ?string $navigationTranslationKey = 'navigation.rental_contracts';
+    protected static ?string $navigationTranslationKey = 'navigation.rental_reports';
 
     public static function form(Form $form): Form
     {
