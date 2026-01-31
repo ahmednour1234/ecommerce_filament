@@ -2,12 +2,12 @@
 
 namespace App\Filament\Pages\Rental;
 
-use App\Filament\Pages\TranslatablePage;
+use App\Filament\Concerns\TranslatableNavigation;
 use Filament\Pages\Page;
 
 class RentalReportsPage extends Page
 {
-    use TranslatablePage;
+    use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
     protected static ?string $navigationGroup = 'Rental';
