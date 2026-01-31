@@ -13,6 +13,8 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Facades\FilamentView;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets;
 use App\Filament\Resources\HR\DepartmentResource;
 use App\Filament\Resources\HR\EmployeeResource;
@@ -188,5 +190,15 @@ class AdminPanelProvider extends PanelProvider
                     ->icon('heroicon-o-chart-bar')
                     ->visible(fn() => auth()->user()?->can('hr_attendance_monthly.view') ?? false),
             ]);
+    }
+
+    public function register(): void
+    {
+        parent::register();
+
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::HEADER_END,
+            fn (): string => view('filament.components.sidebar-search')->render(),
+        );
     }
 }
