@@ -16,7 +16,7 @@ class ArchivedContractsResource extends Resource
     protected static ?string $model = RentalContract::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-archive-box';
-    protected static ?string $navigationGroup = 'قسم التأجير';
+    protected static ?string $navigationGroup = 'Rental';
     protected static ?int $navigationSort = 5;
     protected static ?string $navigationTranslationKey = 'navigation.rental_archived';
 

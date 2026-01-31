@@ -20,7 +20,7 @@ class RentalRequestsResource extends Resource
     protected static ?string $model = RentalContractRequest::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
-    protected static ?string $navigationGroup = 'قسم التأجير';
+    protected static ?string $navigationGroup = 'Rental';
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationTranslationKey = 'navigation.rental_requests';
 

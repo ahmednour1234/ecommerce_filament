@@ -16,7 +16,7 @@ class ReturnedContractsResource extends Resource
     protected static ?string $model = RentalContract::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-arrow-uturn-left';
-    protected static ?string $navigationGroup = 'قسم التأجير';
+    protected static ?string $navigationGroup = 'Rental';
     protected static ?int $navigationSort = 4;
     protected static ?string $navigationTranslationKey = 'navigation.rental_returned';
 

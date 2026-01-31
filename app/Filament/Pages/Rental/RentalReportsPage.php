@@ -10,7 +10,7 @@ class RentalReportsPage extends Page
     use TranslatablePage;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
-    protected static ?string $navigationGroup = 'قسم التأجير';
+    protected static ?string $navigationGroup = 'Rental';
     protected static ?int $navigationSort = 6;
     protected static ?string $navigationTranslationKey = 'navigation.rental_reports';
 

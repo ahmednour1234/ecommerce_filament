@@ -26,9 +26,9 @@ class RentalContractResource extends Resource
     protected static ?string $model = RentalContract::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
-    protected static ?string $navigationGroup = 'قسم التأجير';
+    protected static ?string $navigationGroup = 'Rental';
     protected static ?int $navigationSort = 1;
-    protected static ?string $navigationTranslationKey = 'navigation.rental_reports';
+    protected static ?string $navigationTranslationKey = 'navigation.rental_contracts';
 
     public static function form(Form $form): Form
     {
