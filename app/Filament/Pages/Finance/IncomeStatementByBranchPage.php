@@ -401,6 +401,15 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
                         $queryString = http_build_query($params);
                         $fullUrl = $url . ($queryString ? '?' . $queryString : '');
 
+                        if (str_starts_with($fullUrl, 'http://') || str_starts_with($fullUrl, 'https://')) {
+                            $parsed = parse_url($fullUrl);
+                            $scheme = $parsed['scheme'] ?? 'https';
+                            $host = $parsed['host'] ?? '';
+                            $path = $parsed['path'] ?? '';
+                            $query = $parsed['query'] ?? '';
+                            return $scheme . '://' . $host . '/public' . $path . ($query ? '?' . $query : '');
+                        }
+
                         return '/public' . $fullUrl;
                     })
                     ->openUrlInNewTab(false)
