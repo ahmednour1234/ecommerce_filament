@@ -440,14 +440,8 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
                     ->label(tr('actions.export_pdf', [], null, 'dashboard') ?: 'Export PDF')
                     ->icon('heroicon-o-document-arrow-down')
                     ->action(function () {
-                        try {
-                            $table = $this->table($this->makeTable());
-                            $response = $this->exportToPdf($table, $this->getExportFilename('pdf'));
-                            return $response;
-                        } catch (\Exception $e) {
-                            Log::error('PDF Export Error: ' . $e->getMessage());
-                            throw $e;
-                        }
+                        $table = $this->table($this->makeTable());
+                        return $this->exportToPdf($table, $this->getExportFilename('pdf'));
                     }),
             ])
             ->defaultSort('section')
@@ -482,7 +476,8 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
 
     protected function getExportTitle(): ?string
     {
-        return tr('reports.income_statement.title', [], null, 'dashboard') ?: 'Income Statement by Branch';
+        $title = tr('reports.income_statement.title', [], null, 'dashboard') ?: 'Income Statement by Branch';
+        return $this->sanitizeUtf8($title);
     }
 
     protected function getExportFilename(string $extension = 'xlsx'): string
@@ -524,18 +519,50 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
         }
 
         if (!empty($data['status'])) {
-            $metadata['status'] = $data['status'];
+            $metadata['status'] = $this->sanitizeUtf8($data['status']);
         }
 
         if (!empty($data['payment_method'])) {
-            $metadata['payment_method'] = $data['payment_method'];
+            $metadata['payment_method'] = $this->sanitizeUtf8($data['payment_method']);
         }
 
         if (!empty($data['kind'])) {
-            $metadata['kind'] = $data['kind'];
+            $metadata['kind'] = $this->sanitizeUtf8($data['kind']);
         }
 
-        return $metadata;
+        return array_map(function($value) {
+            if (is_string($value)) {
+                return $this->sanitizeUtf8($value);
+            }
+            if (is_array($value)) {
+                return array_map([$this, 'sanitizeUtf8'], $value);
+            }
+            return $value;
+        }, $metadata);
+    }
+
+    public function exportToPdf(?\Filament\Tables\Table $table = null, string $filename = null): \Illuminate\Http\Response
+    {
+        try {
+            $table = $table ?? $this->table($this->makeTable());
+            $exportData = $this->getTableDataForExport($table);
+            $title = $this->sanitizeUtf8($this->getExportTitle() ?? 'Report');
+            $filename = $filename ?? $this->getExportFilename('pdf');
+            $metadata = $this->getExportMetadata();
+
+            $sanitizedData = $exportData['data']->map(function($row) {
+                return array_map([$this, 'sanitizeUtf8'], $row);
+            });
+
+            $sanitizedHeaders = array_map([$this, 'sanitizeUtf8'], $exportData['headers']);
+
+            $export = new \App\Exports\PdfExport($sanitizedData, $sanitizedHeaders, $title, $metadata);
+
+            return $export->download($filename);
+        } catch (\Exception $e) {
+            Log::error('PDF Export Error: ' . $e->getMessage() . PHP_EOL . $e->getTraceAsString());
+            throw $e;
+        }
     }
 
     protected function getTableDataForExport(\Filament\Tables\Table $table): array
@@ -612,31 +639,60 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
             $value = (string) $value;
         }
 
+        if (empty($value)) {
+            return '';
+        }
+
         if (mb_check_encoding($value, 'UTF-8')) {
-            return $value;
-        }
-
-        $detected = mb_detect_encoding($value, ['UTF-8', 'ISO-8859-1', 'Windows-1256', 'ASCII'], true);
-        if ($detected && $detected !== 'UTF-8') {
-            $converted = mb_convert_encoding($value, 'UTF-8', $detected);
-            if ($converted !== false && mb_check_encoding($converted, 'UTF-8')) {
-                return $converted;
-            }
-        }
-
-        if (function_exists('iconv')) {
-            $cleaned = @iconv('UTF-8', 'UTF-8//IGNORE', $value);
-            if ($cleaned !== false) {
+            $cleaned = $this->removeInvalidUtf8($value);
+            if (mb_check_encoding($cleaned, 'UTF-8')) {
                 return $cleaned;
             }
         }
 
-        $cleaned = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
-        if (mb_check_encoding($cleaned, 'UTF-8')) {
-            return $cleaned;
+        $detected = mb_detect_encoding($value, ['UTF-8', 'ISO-8859-1', 'Windows-1256', 'ASCII'], true);
+        if ($detected && $detected !== 'UTF-8') {
+            $converted = @mb_convert_encoding($value, 'UTF-8', $detected);
+            if ($converted !== false && mb_check_encoding($converted, 'UTF-8')) {
+                return $this->removeInvalidUtf8($converted);
+            }
         }
 
-        $cleaned = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $value);
-        return mb_convert_encoding($cleaned, 'UTF-8', 'UTF-8') ?: '';
+        if (function_exists('iconv')) {
+            $cleaned = @iconv('UTF-8', 'UTF-8//IGNORE//TRANSLIT', $value);
+            if ($cleaned !== false && mb_check_encoding($cleaned, 'UTF-8')) {
+                return $cleaned;
+            }
+        }
+
+        $cleaned = $this->removeInvalidUtf8($value);
+        $converted = @mb_convert_encoding($cleaned, 'UTF-8', 'UTF-8');
+        if ($converted !== false && mb_check_encoding($converted, 'UTF-8')) {
+            return $converted;
+        }
+
+        return preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/u', '', $value) ?: '';
+    }
+
+    protected function removeInvalidUtf8(string $value): string
+    {
+        if (function_exists('mb_convert_encoding')) {
+            $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+        }
+
+        if (function_exists('iconv')) {
+            $value = @iconv('UTF-8', 'UTF-8//IGNORE', $value);
+            if ($value === false) {
+                $value = '';
+            }
+        }
+
+        $value = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $value);
+
+        if (!mb_check_encoding($value, 'UTF-8')) {
+            $value = utf8_encode($value);
+        }
+
+        return $value ?: '';
     }
 }
