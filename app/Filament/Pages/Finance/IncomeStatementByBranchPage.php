@@ -36,7 +36,7 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
     {
         $this->form->fill([
             'branch_id' => null,
-            'from' => now()->startOfMonth()->format('Y-m-d'),
+            'from' => now()->startOfYear()->format('Y-m-d'),
             'to' => now()->format('Y-m-d'),
             'currency_id' => null,
             'kind' => null,

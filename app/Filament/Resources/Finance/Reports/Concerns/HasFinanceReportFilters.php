@@ -22,7 +22,7 @@ trait HasFinanceReportFilters
 
     public function initDefaultDates(): void
     {
-        $this->from = now()->startOfMonth()->toDateString();
+        $this->from = now()->startOfYear()->toDateString();
         $this->to   = now()->toDateString();
     }
 
@@ -75,7 +75,7 @@ trait HasFinanceReportFilters
     {
         $from = $this->from
             ? Carbon::parse($this->from)->startOfDay()
-            : now()->startOfMonth()->startOfDay();
+            : now()->startOfYear()->startOfDay();
 
         $to = $this->to
             ? Carbon::parse($this->to)->endOfDay()
