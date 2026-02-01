@@ -18,6 +18,7 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
 {
@@ -439,8 +440,14 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
                     ->label(tr('actions.export_pdf', [], null, 'dashboard') ?: 'Export PDF')
                     ->icon('heroicon-o-document-arrow-down')
                     ->action(function () {
-                        $table = $this->table($this->makeTable());
-                        return $this->exportToPdf($table, $this->getExportFilename('pdf'));
+                        try {
+                            $table = $this->table($this->makeTable());
+                            $response = $this->exportToPdf($table, $this->getExportFilename('pdf'));
+                            return $response;
+                        } catch (\Exception $e) {
+                            Log::error('PDF Export Error: ' . $e->getMessage());
+                            throw $e;
+                        }
                     }),
             ])
             ->defaultSort('section')
@@ -505,15 +512,15 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
 
         $metadata = [
             'exported_at' => now()->format('Y-m-d H:i:s'),
-            'exported_by' => auth()->user()?->name ?? 'System',
-            'branch' => $branch?->name ?? 'N/A',
-            'currency' => $currency?->code ?? 'N/A',
+            'exported_by' => $this->sanitizeUtf8(auth()->user()?->name ?? 'System'),
+            'branch' => $this->sanitizeUtf8($branch?->name ?? 'N/A'),
+            'currency' => $this->sanitizeUtf8($currency?->code ?? 'N/A'),
             'from_date' => $data['from'] ?? 'N/A',
             'to_date' => $data['to'] ?? 'N/A',
         ];
 
         if ($financeType) {
-            $metadata['finance_type'] = $financeType->name_text;
+            $metadata['finance_type'] = $this->sanitizeUtf8($financeType->name_text);
         }
 
         if (!empty($data['status'])) {
@@ -529,5 +536,107 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
         }
 
         return $metadata;
+    }
+
+    protected function getTableDataForExport(\Filament\Tables\Table $table): array
+    {
+        $tableQuery = $table->getQuery();
+        $columns = $this->extractTableColumns($table);
+
+        $records = $tableQuery->get();
+
+        $formattedData = $records->map(function ($record) use ($columns) {
+            $row = [];
+            foreach ($columns as $column) {
+                $key = $column['name'];
+                $label = $this->sanitizeUtf8($column['label']);
+                $value = $this->getColumnValue($record, $key, $column);
+                $row[$label] = $this->sanitizeUtf8($value);
+            }
+            return $row;
+        });
+
+        $headers = array_map([$this, 'sanitizeUtf8'], array_column($columns, 'label'));
+
+        return [
+            'data' => $formattedData,
+            'headers' => $headers,
+        ];
+    }
+
+    protected function getColumnValue($record, string $key, array $column): mixed
+    {
+        if (str_contains($key, '.')) {
+            $parts = explode('.', $key);
+            $value = $record;
+            foreach ($parts as $part) {
+                if (is_object($value) && isset($value->$part)) {
+                    $value = $value->$part;
+                } elseif (is_array($value) && isset($value[$part])) {
+                    $value = $value[$part];
+                } else {
+                    return '';
+                }
+            }
+            return $value ?? '';
+        }
+
+        if (is_object($record)) {
+            $value = $record->$key ?? $record->getAttribute($key) ?? '';
+
+            if (is_numeric($value) && (str_contains($key, 'total') || str_contains($key, 'amount') || str_contains($key, 'price'))) {
+                return number_format((float) $value, 2);
+            }
+
+            if ($value instanceof \DateTime || $value instanceof \Carbon\Carbon) {
+                return $value->format('Y-m-d');
+            }
+
+            return $value;
+        }
+
+        return $record[$key] ?? '';
+    }
+
+    protected function sanitizeUtf8($value): string
+    {
+        if (is_null($value)) {
+            return '';
+        }
+
+        if (is_numeric($value) || is_bool($value)) {
+            return (string) $value;
+        }
+
+        if (!is_string($value)) {
+            $value = (string) $value;
+        }
+
+        if (mb_check_encoding($value, 'UTF-8')) {
+            return $value;
+        }
+
+        $detected = mb_detect_encoding($value, ['UTF-8', 'ISO-8859-1', 'Windows-1256', 'ASCII'], true);
+        if ($detected && $detected !== 'UTF-8') {
+            $converted = mb_convert_encoding($value, 'UTF-8', $detected);
+            if ($converted !== false && mb_check_encoding($converted, 'UTF-8')) {
+                return $converted;
+            }
+        }
+
+        if (function_exists('iconv')) {
+            $cleaned = @iconv('UTF-8', 'UTF-8//IGNORE', $value);
+            if ($cleaned !== false) {
+                return $cleaned;
+            }
+        }
+
+        $cleaned = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+        if (mb_check_encoding($cleaned, 'UTF-8')) {
+            return $cleaned;
+        }
+
+        $cleaned = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $value);
+        return mb_convert_encoding($cleaned, 'UTF-8', 'UTF-8') ?: '';
     }
 }
