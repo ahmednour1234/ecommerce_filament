@@ -15,7 +15,7 @@ class AuthenticateDeviceKey
         $apiKey = $request->header('X-DEVICE-KEY');
 
         if (!$apiKey) {
-            Log::warning('DeviceKey Auth: Missing header');
+            Log::warning('Biometric auth: Missing X-DEVICE-KEY header');
             return response()->json([
                 'status' => 'error',
                 'message' => 'Missing X-DEVICE-KEY',
@@ -24,10 +24,16 @@ class AuthenticateDeviceKey
 
         $apiKey = trim($apiKey);
 
+        if (config('app.env') !== 'production') {
+            Log::info('Biometric auth attempt', [
+                'key_prefix' => substr($apiKey, 0, 8),
+            ]);
+        }
+
         $device = BiometricDevice::where('api_key', $apiKey)->first();
 
         if (!$device) {
-            Log::warning('DeviceKey Auth: Invalid key', [
+            Log::warning('Biometric auth: Device not found', [
                 'key_tail' => substr($apiKey, -8),
             ]);
             return response()->json([
@@ -36,10 +42,11 @@ class AuthenticateDeviceKey
             ], 401);
         }
 
-        if (!$device->status) {
-            Log::warning('DeviceKey Auth: Inactive device', [
+        if ($device->status !== true) {
+            Log::warning('Biometric auth: Device is inactive', [
                 'device_id' => $device->id,
                 'key_tail' => substr($apiKey, -8),
+                'status' => $device->status,
             ]);
             return response()->json([
                 'status' => 'error',
@@ -47,11 +54,13 @@ class AuthenticateDeviceKey
             ], 403);
         }
 
-        Log::info('DeviceKey Auth', [
-            'key_tail' => substr($apiKey, -8),
-            'device_id' => $device->id,
-            'status' => $device->status,
-        ]);
+        if (config('app.env') !== 'production') {
+            Log::info('Biometric auth: Success', [
+                'key_prefix' => substr($apiKey, 0, 8),
+                'device_id' => $device->id,
+                'status' => $device->status,
+            ]);
+        }
 
         $request->attributes->set('device', $device);
 

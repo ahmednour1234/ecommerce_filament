@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Api\V1;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreBiometricLogsRequest extends FormRequest
 {
@@ -22,5 +24,16 @@ class StoreBiometricLogsRequest extends FormRequest
             'logs.*.state' => 'nullable|integer',
             'logs.*.type' => 'nullable|integer',
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 400)
+        );
     }
 }
