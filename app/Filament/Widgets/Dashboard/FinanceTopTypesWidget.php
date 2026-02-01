@@ -21,18 +21,18 @@ class FinanceTopTypesWidget extends ChartWidget
 
     protected function getData(): array
     {
-        $dateRange = session()->get('dashboard_date_range', 'month');
+        $dateRange = session()->get('dashboard_date_range', 'year');
         $dateFrom  = session()->get('dashboard_date_from');
         $dateTo    = session()->get('dashboard_date_to');
 
         if ($dateRange === 'today') {
             $from = now()->startOfDay();
             $to   = now()->endOfDay();
-        } elseif ($dateRange === 'month') {
-            $from = now()->startOfMonth()->startOfDay();
+        } elseif ($dateRange === 'year') {
+            $from = now()->startOfYear()->startOfDay();
             $to   = now()->endOfDay();
         } else {
-            $from = $dateFrom ? Carbon::parse($dateFrom)->startOfDay() : now()->startOfMonth()->startOfDay();
+            $from = $dateFrom ? Carbon::parse($dateFrom)->startOfDay() : now()->startOfYear()->startOfDay();
             $to   = $dateTo ? Carbon::parse($dateTo)->endOfDay() : now()->endOfDay();
         }
 
