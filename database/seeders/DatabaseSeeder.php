@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\MainCore\CountriesSeeder::class,
             \Database\Seeders\ClientsPermissionsSeeder::class, // Clients module permissions
             \Database\Seeders\ClientsTranslationsSeeder::class, // Clients module translations
+            \Database\Seeders\Biometric\BiometricTranslationsSeeder::class, // Biometric module translations
             SuperAdminSeeder::class, // Create super_admin role with ALL permissions (must be last)
         ]);
 
