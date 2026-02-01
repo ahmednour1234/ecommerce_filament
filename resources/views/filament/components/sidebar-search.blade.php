@@ -56,7 +56,7 @@
             });
         }
     }"
-    class="flex items-center gap-2"
+    class="flex items-center gap-1"
 >
     <div class="relative flex-1 max-w-md">
         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -71,5 +71,10 @@
             placeholder="Search"
             class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent sm:text-sm"
         />
+    </div>
+    <div class="flex items-center pointer-events-none">
+        <svg class="h-3 w-3 text-gray-600" fill="currentColor" viewBox="0 0 12 12">
+            <path d="M6 4L2 8h8L6 4z" />
+        </svg>
     </div>
 </div>
