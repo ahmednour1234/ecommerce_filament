@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages\Finance;
 
+use App\Filament\Concerns\ExportsTable;
 use App\Filament\Concerns\FinanceModuleGate;
 use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\Finance\BranchTransaction;
@@ -24,6 +25,7 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
     use InteractsWithTable;
     use FinanceModuleGate;
     use TranslatableNavigation;
+    use ExportsTable;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
     protected static ?string $navigationGroup = 'Finance';
@@ -424,6 +426,23 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
                     ->weight(fn ($record) => str_contains($record->type ?? '', 'Total') ? 'bold' : 'normal')
                     ->alignEnd(),
             ])
+            ->headerActions([
+                Tables\Actions\Action::make('export_excel')
+                    ->label(tr('actions.export_excel', [], null, 'dashboard') ?: 'Export Excel')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->action(function () {
+                        $table = $this->table($this->makeTable());
+                        return $this->exportToExcel($table, $this->getExportFilename('xlsx'));
+                    }),
+
+                Tables\Actions\Action::make('export_pdf')
+                    ->label(tr('actions.export_pdf', [], null, 'dashboard') ?: 'Export PDF')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->action(function () {
+                        $table = $this->table($this->makeTable());
+                        return $this->exportToPdf($table, $this->getExportFilename('pdf'));
+                    }),
+            ])
             ->defaultSort('section')
             ->paginated(false);
     }
@@ -452,5 +471,63 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
     public static function shouldRegisterNavigation(): bool
     {
         return static::canAccess();
+    }
+
+    protected function getExportTitle(): ?string
+    {
+        return tr('reports.income_statement.title', [], null, 'dashboard') ?: 'Income Statement by Branch';
+    }
+
+    protected function getExportFilename(string $extension = 'xlsx'): string
+    {
+        $data = $this->data;
+        $branch = Branch::find($data['branch_id'] ?? null);
+        $currency = Currency::find($data['currency_id'] ?? null);
+
+        $parts = ['income_statement'];
+        if ($branch) {
+            $parts[] = strtolower(preg_replace('/[^a-z0-9]+/i', '_', $branch->name));
+        }
+        if ($currency) {
+            $parts[] = $currency->code;
+        }
+        $parts[] = date('Y-m-d_His');
+
+        return implode('_', $parts) . '.' . $extension;
+    }
+
+    protected function getExportMetadata(): array
+    {
+        $data = $this->data;
+        $branch = Branch::find($data['branch_id'] ?? null);
+        $currency = Currency::find($data['currency_id'] ?? null);
+        $financeType = !empty($data['finance_type_id']) ? FinanceType::find($data['finance_type_id']) : null;
+
+        $metadata = [
+            'exported_at' => now()->format('Y-m-d H:i:s'),
+            'exported_by' => auth()->user()?->name ?? 'System',
+            'branch' => $branch?->name ?? 'N/A',
+            'currency' => $currency?->code ?? 'N/A',
+            'from_date' => $data['from'] ?? 'N/A',
+            'to_date' => $data['to'] ?? 'N/A',
+        ];
+
+        if ($financeType) {
+            $metadata['finance_type'] = $financeType->name_text;
+        }
+
+        if (!empty($data['status'])) {
+            $metadata['status'] = $data['status'];
+        }
+
+        if (!empty($data['payment_method'])) {
+            $metadata['payment_method'] = $data['payment_method'];
+        }
+
+        if (!empty($data['kind'])) {
+            $metadata['kind'] = $data['kind'];
+        }
+
+        return $metadata;
     }
 }
