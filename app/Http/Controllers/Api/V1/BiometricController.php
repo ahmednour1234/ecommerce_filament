@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\StoreBiometricLogsRequest;
-use App\Models\Biometric\BiometricDevice;
 use App\Services\Biometric\BiometricLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,27 +18,9 @@ class BiometricController extends Controller
         $this->logService = $logService;
     }
 
-    protected function authenticateDevice(Request $request): ?BiometricDevice
-    {
-        $apiKey = $request->header('X-DEVICE-KEY');
-
-        if (!$apiKey) {
-            return null;
-        }
-
-        return BiometricDevice::byApiKey($apiKey)->active()->first();
-    }
-
     public function ping(Request $request): JsonResponse
     {
-        $device = $this->authenticateDevice($request);
-
-        if (!$device) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Invalid or inactive device',
-            ], 401);
-        }
+        $device = $request->attributes->get('device');
 
         return response()->json([
             'status' => 'ok',
@@ -50,14 +31,7 @@ class BiometricController extends Controller
 
     public function storeLogs(StoreBiometricLogsRequest $request): JsonResponse
     {
-        $device = $this->authenticateDevice($request);
-
-        if (!$device) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Invalid or inactive device',
-            ], 401);
-        }
+        $device = $request->attributes->get('device');
 
         try {
             $result = $this->logService->storeLogs($device, $request->validated());
