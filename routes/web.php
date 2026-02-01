@@ -31,6 +31,14 @@ Route::prefix('api')->middleware(['web'])->group(function () {
     // HR Attendance Device Log API (no CSRF for device push)
     Route::post('/hr/attendance/device-log', [App\Http\Controllers\Api\Hr\DeviceLogController::class, 'store'])
         ->middleware('throttle:60,1');
+
+    // Biometric API v1
+    Route::prefix('v1/biometric')->group(function () {
+        Route::get('/ping', [App\Http\Controllers\Api\V1\BiometricController::class, 'ping'])
+            ->middleware('throttle:60,1');
+        Route::post('/logs', [App\Http\Controllers\Api\V1\BiometricController::class, 'storeLogs'])
+            ->middleware(['throttle:30,1', 'max_request_size']);
+    });
 });
 
 // Export Routes

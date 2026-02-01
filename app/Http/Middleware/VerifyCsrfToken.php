@@ -13,5 +13,6 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         // Filament handles CSRF properly, no need to exclude admin/login
+        'api/v1/biometric/*',
     ];
 }

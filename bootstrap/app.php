@@ -13,6 +13,9 @@ $app = Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         // خليه فاضي دلوقتي، هنسيب الإعدادات الافتراضية للّارافيل
         // لو احتجنا نضيف middlewares بعدين نضيفهم هنا واحدة واحدة
+        $middleware->alias([
+            'max_request_size' => \App\Http\Middleware\MaxRequestSizeMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
