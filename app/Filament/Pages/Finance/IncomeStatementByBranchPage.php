@@ -439,6 +439,7 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
                 Tables\Actions\Action::make('export_pdf')
                     ->label(tr('actions.export_pdf', [], null, 'dashboard') ?: 'Export PDF')
                     ->icon('heroicon-o-document-arrow-down')
+                    ->requiresConfirmation(false)
                     ->action(function () {
                         $table = $this->table($this->makeTable());
                         return $this->exportToPdf($table, $this->getExportFilename('pdf'));
@@ -547,16 +548,47 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
             $table = $table ?? $this->table($this->makeTable());
             $exportData = $this->getTableDataForExport($table);
             $title = $this->sanitizeUtf8($this->getExportTitle() ?? 'Report');
-            $filename = $filename ?? $this->getExportFilename('pdf');
+            $filename = $this->sanitizeUtf8($filename ?? $this->getExportFilename('pdf'));
             $metadata = $this->getExportMetadata();
 
-            $sanitizedData = $exportData['data']->map(function($row) {
-                return array_map([$this, 'sanitizeUtf8'], $row);
-            });
+            $sanitizedDataArray = [];
+            foreach ($exportData['data'] as $row) {
+                $sanitizedRow = [];
+                foreach ($row as $key => $value) {
+                    $cleanKey = $this->sanitizeUtf8($key);
+                    $cleanValue = $this->sanitizeUtf8($value);
+                    $sanitizedRow[$cleanKey] = $cleanValue;
+                }
+                $sanitizedDataArray[] = $sanitizedRow;
+            }
 
-            $sanitizedHeaders = array_map([$this, 'sanitizeUtf8'], $exportData['headers']);
+            $sanitizedHeaders = [];
+            foreach ($exportData['headers'] as $header) {
+                $sanitizedHeaders[] = $this->sanitizeUtf8($header);
+            }
 
-            $export = new \App\Exports\PdfExport($sanitizedData, $sanitizedHeaders, $title, $metadata);
+            $sanitizedMetadata = [];
+            foreach ($metadata as $key => $value) {
+                $sanitizedKey = $this->sanitizeUtf8($key);
+                if (is_string($value)) {
+                    $sanitizedMetadata[$sanitizedKey] = $this->sanitizeUtf8($value);
+                } elseif (is_array($value)) {
+                    $sanitizedMetadata[$sanitizedKey] = array_map([$this, 'sanitizeUtf8'], $value);
+                } else {
+                    $sanitizedMetadata[$sanitizedKey] = is_numeric($value) ? $value : $this->sanitizeUtf8((string)$value);
+                }
+            }
+
+            json_encode($sanitizedDataArray, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+            json_encode($sanitizedHeaders, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+            json_encode($sanitizedMetadata, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+
+            $export = new \App\Exports\PdfExport(
+                collect($sanitizedDataArray),
+                $sanitizedHeaders,
+                $title,
+                $sanitizedMetadata
+            );
 
             return $export->download($filename);
         } catch (\Exception $e) {
@@ -572,7 +604,8 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
 
         $records = $tableQuery->get();
 
-        $formattedData = $records->map(function ($record) use ($columns) {
+        $formattedData = [];
+        foreach ($records as $record) {
             $row = [];
             foreach ($columns as $column) {
                 $key = $column['name'];
@@ -580,13 +613,16 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
                 $value = $this->getColumnValue($record, $key, $column);
                 $row[$label] = $this->sanitizeUtf8($value);
             }
-            return $row;
-        });
+            $formattedData[] = $row;
+        }
 
-        $headers = array_map([$this, 'sanitizeUtf8'], array_column($columns, 'label'));
+        $headers = [];
+        foreach (array_column($columns, 'label') as $header) {
+            $headers[] = $this->sanitizeUtf8($header);
+        }
 
         return [
-            'data' => $formattedData,
+            'data' => collect($formattedData),
             'headers' => $headers,
         ];
     }
