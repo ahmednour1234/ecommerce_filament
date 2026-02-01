@@ -56,8 +56,15 @@ class DeviceResource extends Resource
                         Forms\Components\TextInput::make('api_key')
                             ->label(tr('fields.api_key', [], null, 'dashboard') ?: 'API Key')
                             ->maxLength(255)
-                            ->disabled()
-                            ->dehydrated()
+                            ->nullable()
+                            ->suffixAction(
+                                Forms\Components\Actions\Action::make('generateApiKey')
+                                    ->icon('heroicon-o-key')
+                                    ->label(tr('fields.generate_api_key', [], null, 'dashboard') ?: 'Generate')
+                                    ->action(function (Forms\Set $set) {
+                                        $set('api_key', bin2hex(random_bytes(32)));
+                                    })
+                            )
                             ->helperText(tr('fields.api_key_helper', [], null, 'dashboard') ?: 'Auto-generated if left empty'),
 
                         Forms\Components\Toggle::make('status')
