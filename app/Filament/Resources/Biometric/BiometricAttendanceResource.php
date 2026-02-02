@@ -145,7 +145,6 @@ class BiometricAttendanceResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
             ])
-            ->search(false)
             ->defaultSort('log_datetime', 'desc');
     }
 

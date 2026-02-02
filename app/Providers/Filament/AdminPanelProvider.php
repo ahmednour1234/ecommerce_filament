@@ -205,5 +205,22 @@ class AdminPanelProvider extends PanelProvider
             PanelsRenderHook::TOPBAR_BEFORE,
             fn (): string => view('filament.components.global-search')->render(),
         );
+
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::HEAD_END,
+            fn (): string => '<style>
+                /* Hide Filament table search input - using global search instead */
+                .fi-ta-header-actions > div:has(input[type="search"]),
+                .fi-ta-header-actions > div:has(input[placeholder*="Search"]),
+                .fi-ta-header-actions > div:has(input[placeholder*="بحث"]),
+                .fi-ta-header-actions input[type="search"],
+                .fi-ta-header-actions input[placeholder*="Search"],
+                .fi-ta-header-actions input[placeholder*="بحث"],
+                [data-search-field],
+                .fi-ta-search-field {
+                    display: none !important;
+                }
+            </style>',
+        );
     }
 }
