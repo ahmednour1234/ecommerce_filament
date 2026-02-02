@@ -46,9 +46,9 @@
     class="relative flex items-center"
     dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}"
 >
-    <div class="relative w-72 flex-shrink-0">
+    <div class="relative w-72 flex-shrink-0" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
         <div class="relative flex items-center group">
-            <div class="absolute inset-y-0 {{ app()->getLocale() === 'ar' ? 'right-0 pr-3' : 'left-0 pl-3' }} flex items-center pointer-events-none z-10">
+            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none z-10">
                 <svg class="h-4 w-4 text-gray-400 dark:text-gray-500 group-focus-within:text-primary-500 dark:group-focus-within:text-primary-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
@@ -60,13 +60,14 @@
                 @focus="isOpen = results.length > 0"
                 @click.away="isOpen = false"
                 placeholder="{{ tr('search.placeholder', [], null, 'dashboard') ?: (app()->getLocale() === 'ar' ? 'بحث...' : 'Search...') }}"
-                class="block w-full {{ app()->getLocale() === 'ar' ? 'pr-10' : 'pl-10' }} {{ $query ? (app()->getLocale() === 'ar' ? 'pl-10' : 'pr-10') : '' }} h-9 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:border-primary-400 hover:border-gray-400 dark:hover:border-gray-500"
+                dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}"
+                class="block w-full ps-10 {{ $query ? 'pe-10' : '' }} h-9 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:border-primary-400 hover:border-gray-400 dark:hover:border-gray-500"
             />
             @if($query)
                 <button
                     type="button"
                     wire:click="clear"
-                    class="absolute inset-y-0 {{ app()->getLocale() === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3' }} flex items-center z-10 hover:opacity-70 transition-opacity group/clear"
+                    class="absolute inset-y-0 end-0 flex items-center pe-3 z-10 hover:opacity-70 transition-opacity group/clear"
                     title="{{ app()->getLocale() === 'ar' ? 'مسح' : 'Clear' }}"
                 >
                     <svg class="h-4 w-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,7 +86,8 @@
                 x-transition:leave="transition ease-in duration-75"
                 x-transition:leave-start="opacity-100 scale-100"
                 x-transition:leave-end="opacity-0 scale-95"
-                class="absolute z-50 mt-1 {{ app()->getLocale() === 'ar' ? 'right-0' : 'left-0' }} w-[480px] rounded-lg shadow-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden"
+                class="absolute z-50 mt-1 start-0 w-[480px] rounded-lg shadow-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden"
+                dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}"
                 style="max-height: 400px; overflow-y: auto; top: 100%;"
             >
                 @php
@@ -93,7 +95,7 @@
                 @endphp
                 @foreach($groupedResults as $group => $groupResults)
                     <div>
-                        <div class="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 {{ app()->getLocale() === 'ar' ? 'text-right' : 'text-left' }}">
+                        <div class="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 text-start">
                             {{ $group }}
                         </div>
                         @foreach($groupResults as $index => $result)
@@ -107,19 +109,19 @@
                                 wire:key="result-{{ $globalIndex }}"
                                 x-ref="result-{{ $globalIndex }}"
                                 @click.prevent="$wire.selectResult({{ $globalIndex }})"
-                                class="flex items-start gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-gray-700 transition-colors {{ $selectedIndex === $globalIndex ? 'bg-primary-50 dark:bg-gray-700' : '' }} {{ app()->getLocale() === 'ar' ? 'flex-row-reverse text-right' : 'text-left' }}"
+                                class="flex items-start gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-gray-700 transition-colors {{ $selectedIndex === $globalIndex ? 'bg-primary-50 dark:bg-gray-700' : '' }} text-start"
                             >
                                 @if($result['icon'])
                                     <x-filament::icon
                                         :icon="$result['icon']"
-                                        class="h-5 w-5 flex-shrink-0 mt-0.5 text-gray-400 dark:text-gray-500"
+                                        class="h-5 w-5 flex-shrink-0 mt-0.5 text-gray-400 dark:text-gray-500 order-2"
                                     />
                                 @else
-                                    <svg class="h-5 w-5 flex-shrink-0 mt-0.5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="h-5 w-5 flex-shrink-0 mt-0.5 text-gray-400 dark:text-gray-500 order-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
                                 @endif
-                                <div class="flex-1 min-w-0">
+                                <div class="flex-1 min-w-0 order-1">
                                     <div class="font-medium truncate">{{ $result['title'] }}</div>
                                     @if($result['subtitle'])
                                         <div class="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">{{ $result['subtitle'] }}</div>
@@ -139,7 +141,8 @@
                 x-transition:leave="transition ease-in duration-75"
                 x-transition:leave-start="opacity-100 scale-100"
                 x-transition:leave-end="opacity-0 scale-95"
-                class="absolute z-50 mt-1 {{ app()->getLocale() === 'ar' ? 'right-0' : 'left-0' }} w-[480px] rounded-lg shadow-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden"
+                class="absolute z-50 mt-1 start-0 w-[480px] rounded-lg shadow-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden"
+                dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}"
                 style="top: 100%;"
             >
                 <div class="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
