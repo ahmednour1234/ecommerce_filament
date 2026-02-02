@@ -253,7 +253,7 @@ class FinanceBranchesTableWidget extends BaseWidget implements HasForms
                     ->numeric(decimalPlaces: 2)
                     ->formatStateUsing(fn ($state) => Number::format($state, 2))
                     ->alignEnd()
-                    ->color(fn ($record) => {
+                    ->color(function ($record) {
                         if ($record->id === 'total') {
                             return 'danger';
                         }
