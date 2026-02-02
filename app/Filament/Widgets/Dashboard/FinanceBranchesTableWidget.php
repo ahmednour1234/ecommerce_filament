@@ -26,7 +26,7 @@ class FinanceBranchesTableWidget extends BaseWidget implements HasForms
 
     protected static ?int $sort = 2;
     protected int|string|array $columnSpan = 'full';
-    protected ?string $heading = 'ملخص المالية حسب الفروع';
+    protected static ?string $heading = 'ملخص المالية حسب الفروع';
 
     public function mount(): void
     {
