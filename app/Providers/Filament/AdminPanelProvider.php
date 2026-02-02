@@ -220,7 +220,20 @@ class AdminPanelProvider extends PanelProvider
                 .fi-topbar > div:last-child {
                     display: flex !important;
                     align-items: center !important;
-                    gap: 1rem !important;
+                    gap: 0.75rem !important;
+                }
+
+                /* Style the global search container */
+                .fi-topbar [wire\\:id*="global-search"],
+                .fi-topbar > div:last-child > div:first-child {
+                    margin-right: 0.5rem;
+                }
+
+                /* Ensure proper spacing in RTL */
+                [dir="rtl"] .fi-topbar [wire\\:id*="global-search"],
+                [dir="rtl"] .fi-topbar > div:last-child > div:first-child {
+                    margin-right: 0;
+                    margin-left: 0.5rem;
                 }
             </style>',
         );
