@@ -216,25 +216,37 @@ class AdminPanelProvider extends PanelProvider
                     display: none !important;
                 }
 
-                /* Ensure search is inline with user menu in topbar */
+                /* Topbar container - ensure flex layout */
                 .fi-topbar > div:last-child {
                     display: flex !important;
                     align-items: center !important;
                     gap: 0.75rem !important;
                 }
 
-                /* Style the global search container */
+                /* Search component - order 1 (comes before profile) */
                 .fi-topbar [wire\\:id*="global-search"],
-                .fi-topbar > div:last-child > div:first-child {
-                    margin-right: 0.5rem;
+                .fi-topbar > div:last-child > div:has([wire\\:id*="global-search"]),
+                .fi-topbar > div:last-child > div:first-child:has([wire\\:id*="global-search"]) {
+                    order: 1 !important;
                 }
 
-                /* Ensure proper spacing in RTL */
-                [dir="rtl"] .fi-topbar [wire\\:id*="global-search"],
-                [dir="rtl"] .fi-topbar > div:last-child > div:first-child {
-                    margin-right: 0;
-                    margin-left: 0.5rem;
+                /* Profile menu - always last (order 99) */
+                .fi-topbar [data-user-menu],
+                .fi-topbar button[aria-label*="user"],
+                .fi-topbar button[aria-label*="User"],
+                .fi-topbar [aria-label*="user menu"],
+                .fi-topbar > div:last-child > button:last-child,
+                .fi-topbar > div:last-child > *:last-child:not([wire\\:id*="global-search"]):not(:has([wire\\:id*="global-search"])) {
+                    order: 99 !important;
                 }
+
+                /* RTL support - reverse flex direction so Profile appears on far left (last in RTL) */
+                [dir="rtl"] .fi-topbar > div:last-child {
+                    flex-direction: row-reverse;
+                }
+
+                /* In RTL with row-reverse: Search (order 1) appears first/left, Profile (order 99) appears last/right */
+                /* No need to override orders in RTL - row-reverse handles the visual positioning */
             </style>',
         );
     }
