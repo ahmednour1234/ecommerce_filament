@@ -43,13 +43,13 @@
             }
         }
     }"
-    class="relative"
+    class="relative flex items-center"
     dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}"
 >
-    <div class="relative w-full max-w-md">
+    <div class="relative w-64 flex-shrink-0">
         <div class="relative flex items-center">
-            <div class="absolute inset-y-0 {{ app()->getLocale() === 'ar' ? 'right-0 pr-3' : 'left-0 pl-3' }} flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="absolute inset-y-0 {{ app()->getLocale() === 'ar' ? 'right-0 pr-2' : 'left-0 pl-2' }} flex items-center pointer-events-none">
+                <svg class="h-4 w-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
             </div>
@@ -60,15 +60,15 @@
                 @focus="isOpen = results.length > 0"
                 @click.away="isOpen = false"
                 placeholder="{{ tr('search.placeholder', [], null, 'dashboard') ?: (app()->getLocale() === 'ar' ? 'بحث...' : 'Search...') }}"
-                class="block w-full {{ app()->getLocale() === 'ar' ? 'pr-10' : 'pl-10' }} {{ $query ? (app()->getLocale() === 'ar' ? 'pl-10' : 'pr-10') : '' }} py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:border-primary-400 sm:text-sm"
+                class="block w-full {{ app()->getLocale() === 'ar' ? 'pr-8' : 'pl-8' }} {{ $query ? (app()->getLocale() === 'ar' ? 'pl-8' : 'pr-8') : '' }} py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:border-primary-400"
             />
             @if($query)
                 <button
                     type="button"
                     wire:click="clear"
-                    class="absolute inset-y-0 {{ app()->getLocale() === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3' }} flex items-center hover:opacity-70 transition-opacity"
+                    class="absolute inset-y-0 {{ app()->getLocale() === 'ar' ? 'left-0 pl-2' : 'right-0 pr-2' }} flex items-center hover:opacity-70 transition-opacity"
                 >
-                    <svg class="h-5 w-5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="h-4 w-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
@@ -85,7 +85,7 @@
                 x-transition:leave-start="opacity-100 scale-100"
                 x-transition:leave-end="opacity-0 scale-95"
                 class="absolute z-50 mt-1 {{ app()->getLocale() === 'ar' ? 'right-0' : 'left-0' }} w-[480px] rounded-lg shadow-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden"
-                style="max-height: 400px; overflow-y: auto;"
+                style="max-height: 400px; overflow-y: auto; top: 100%;"
             >
                 @php
                     $groupedResults = collect($results)->groupBy('group');
@@ -139,6 +139,7 @@
                 x-transition:leave-start="opacity-100 scale-100"
                 x-transition:leave-end="opacity-0 scale-95"
                 class="absolute z-50 mt-1 {{ app()->getLocale() === 'ar' ? 'right-0' : 'left-0' }} w-[480px] rounded-lg shadow-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden"
+                style="top: 100%;"
             >
                 <div class="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
                     {{ app()->getLocale() === 'ar' ? 'لا توجد نتائج' : (tr('search.no_results', [], null, 'dashboard') ?: 'No results found') }}

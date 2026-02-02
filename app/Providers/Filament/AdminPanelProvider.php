@@ -202,7 +202,7 @@ class AdminPanelProvider extends PanelProvider
         );
 
         FilamentView::registerRenderHook(
-            PanelsRenderHook::TOPBAR_BEFORE,
+            PanelsRenderHook::TOPBAR_END,
             fn (): string => view('filament.components.global-search')->render(),
         );
 
@@ -219,6 +219,13 @@ class AdminPanelProvider extends PanelProvider
                 [data-search-field],
                 .fi-ta-search-field {
                     display: none !important;
+                }
+                
+                /* Ensure search is inline with user menu in topbar */
+                .fi-topbar > div:last-child {
+                    display: flex !important;
+                    align-items: center !important;
+                    gap: 1rem !important;
                 }
             </style>',
         );
