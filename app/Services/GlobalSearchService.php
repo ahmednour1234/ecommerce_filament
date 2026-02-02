@@ -62,28 +62,31 @@ class GlobalSearchService
             }
 
             try {
-                $label = method_exists($resourceClass, 'getNavigationLabel')
+                $rawLabel = method_exists($resourceClass, 'getNavigationLabel')
                     ? $resourceClass::getNavigationLabel()
                     : ($resourceClass::$navigationLabel ?? class_basename($resourceClass));
 
-                $group = method_exists($resourceClass, 'getNavigationGroup')
+                $rawGroup = method_exists($resourceClass, 'getNavigationGroup')
                     ? ($resourceClass::getNavigationGroup() ?? 'Resources')
                     : ($resourceClass::$navigationGroup ?? 'Resources');
 
+                $label = $this->translateLabel($rawLabel);
+                $group = $this->translateLabel($rawGroup);
+
                 $icon = $resourceClass::$navigationIcon ?? 'heroicon-o-document-text';
 
-                if ($this->matchesQuery($label, $query) || $this->matchesQuery($group, $query)) {
+                if ($this->matchesQuery($rawLabel, $query) || $this->matchesQuery($rawGroup, $query)) {
                     $url = method_exists($resourceClass, 'getUrl')
                         ? $resourceClass::getUrl()
                         : null;
 
                     if ($url) {
                         $results[] = $this->formatResult(
-                            title: $label,
+                            title: $rawLabel,
                             subtitle: null,
                             icon: $icon,
                             url: $url,
-                            group: $group ?? 'Resources'
+                            group: $rawGroup ?? 'Resources'
                         );
                     }
                 }
@@ -121,28 +124,31 @@ class GlobalSearchService
             }
 
             try {
-                $label = method_exists($pageClass, 'getNavigationLabel')
+                $rawLabel = method_exists($pageClass, 'getNavigationLabel')
                     ? $pageClass::getNavigationLabel()
                     : ($pageClass::$navigationLabel ?? ($pageClass::$title ?? class_basename($pageClass)));
 
-                $group = method_exists($pageClass, 'getNavigationGroup')
+                $rawGroup = method_exists($pageClass, 'getNavigationGroup')
                     ? ($pageClass::getNavigationGroup() ?? 'Pages')
                     : ($pageClass::$navigationGroup ?? 'Pages');
 
+                $label = $this->translateLabel($rawLabel);
+                $group = $this->translateLabel($rawGroup);
+
                 $icon = $pageClass::$navigationIcon ?? 'heroicon-o-document';
 
-                if ($this->matchesQuery($label, $query) || $this->matchesQuery($group, $query)) {
+                if ($this->matchesQuery($rawLabel, $query) || $this->matchesQuery($rawGroup, $query)) {
                     $url = method_exists($pageClass, 'getUrl')
                         ? $pageClass::getUrl()
                         : null;
 
                     if ($url) {
                         $results[] = $this->formatResult(
-                            title: $label,
+                            title: $rawLabel,
                             subtitle: null,
                             icon: $icon,
                             url: $url,
-                            group: $group ?? 'Pages'
+                            group: $rawGroup ?? 'Pages'
                         );
                     }
                 }
@@ -172,8 +178,8 @@ class GlobalSearchService
             }
 
             try {
-                $label = is_callable($item->getLabel()) ? ($item->getLabel())() : $item->getLabel();
-                $group = is_callable($item->getGroup()) ? ($item->getGroup())() : $item->getGroup();
+                $rawLabel = is_callable($item->getLabel()) ? ($item->getLabel())() : $item->getLabel();
+                $rawGroup = is_callable($item->getGroup()) ? ($item->getGroup())() : $item->getGroup();
                 $icon = $item->getIcon();
                 $url = is_callable($item->getUrl()) ? ($item->getUrl())() : $item->getUrl();
 
@@ -185,13 +191,16 @@ class GlobalSearchService
                     continue;
                 }
 
-                if ($this->matchesQuery($label, $query) || $this->matchesQuery($group ?? '', $query)) {
+                $label = $this->translateLabel($rawLabel);
+                $group = $this->translateLabel($rawGroup ?? 'Navigation');
+
+                if ($this->matchesQuery($rawLabel, $query) || $this->matchesQuery($rawGroup ?? '', $query)) {
                     $results[] = $this->formatResult(
-                        title: $label,
+                        title: $rawLabel,
                         subtitle: null,
                         icon: $icon,
                         url: $url,
-                        group: $group ?? 'Navigation'
+                        group: $rawGroup ?? 'Navigation'
                     );
                 }
             } catch (\Exception $e) {
@@ -205,16 +214,38 @@ class GlobalSearchService
     protected function formatResult(string $title, ?string $subtitle, ?string $icon, string $url, string $group): array
     {
         return [
-            'title' => $title,
-            'subtitle' => $subtitle,
+            'title' => $this->translateLabel($title),
+            'subtitle' => $subtitle ? $this->translateLabel($subtitle) : null,
             'icon' => $icon,
             'url' => $url,
-            'group' => $group,
+            'group' => $this->translateLabel($group),
         ];
+    }
+
+    protected function translateLabel(string $label): string
+    {
+        if (empty($label)) {
+            return $label;
+        }
+
+        if (str_contains($label, '.')) {
+            $translated = tr($label, [], null, 'dashboard');
+            if ($translated !== $label) {
+                return $translated;
+            }
+        }
+
+        $translated = tr($label, [], null, 'dashboard');
+        if ($translated !== $label) {
+            return $translated;
+        }
+
+        return $label;
     }
 
     protected function matchesQuery(string $text, string $query): bool
     {
-        return Str::contains(strtolower($text), $query);
+        $translatedText = $this->translateLabel($text);
+        return Str::contains(strtolower($translatedText), $query) || Str::contains(strtolower($text), $query);
     }
 }
