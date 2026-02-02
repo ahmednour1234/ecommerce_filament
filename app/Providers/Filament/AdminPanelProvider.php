@@ -196,15 +196,6 @@ class AdminPanelProvider extends PanelProvider
     {
         parent::register();
 
-        FilamentView::registerRenderHook(
-            PanelsRenderHook::TOPBAR_AFTER,
-            fn (): string => view('filament.components.sidebar-search')->render(),
-        );
-
-        FilamentView::registerRenderHook(
-            PanelsRenderHook::TOPBAR_END,
-            fn (): string => view('filament.components.global-search')->render(),
-        );
 
         FilamentView::registerRenderHook(
             PanelsRenderHook::HEAD_END,
