@@ -4,18 +4,18 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\StoreBiometricLogsRequest;
-use App\Services\Biometric\BiometricLogService;
+use App\Services\HR\DeviceLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class BiometricController extends Controller
 {
-    protected BiometricLogService $logService;
+    protected DeviceLogService $deviceLogService;
 
-    public function __construct(BiometricLogService $logService)
+    public function __construct(DeviceLogService $deviceLogService)
     {
-        $this->logService = $logService;
+        $this->deviceLogService = $deviceLogService;
     }
 
     public function ping(Request $request): JsonResponse
@@ -32,26 +32,51 @@ class BiometricController extends Controller
     public function storeLogs(StoreBiometricLogsRequest $request): JsonResponse
     {
         $device = $request->attributes->get('device');
+        $validated = $request->validated();
 
-        try {
-            $result = $this->logService->storeLogs($device, $request->validated());
+        $inserted = 0;
+        $skipped = 0;
 
-            return response()->json([
-                'status' => 'success',
-                'inserted' => $result['inserted'],
-                'skipped' => $result['skipped'],
-            ], 201);
-        } catch (\Exception $e) {
-            Log::error('Biometric log storage failed', [
-                'device_id' => $device->id,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
+        foreach ($validated['logs'] as $log) {
+            try {
+                $logData = [
+                    'device_serial' => $validated['serial_number'] ?? null,
+                    'employee_code' => (string) $log['user_id'],
+                    'timestamp' => $log['timestamp'],
+                    'event' => 'auto',
+                    'payload' => [
+                        'state' => $log['state'] ?? null,
+                        'type' => $log['type'] ?? null,
+                        'ip_address' => $validated['ip_address'] ?? null,
+                        'raw_data' => $log,
+                    ],
+                ];
 
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to store logs',
-            ], 500);
+                $this->deviceLogService->ingestDeviceLog($logData, $device);
+                $inserted++;
+            } catch (\Exception $e) {
+                if (str_contains($e->getMessage(), 'Employee not found')) {
+                    $skipped++;
+                    Log::warning('Biometric log skipped - employee not found', [
+                        'device_id' => $device->id,
+                        'user_id' => $log['user_id'],
+                        'timestamp' => $log['timestamp'],
+                    ]);
+                } else {
+                    Log::error('Biometric log storage failed', [
+                        'device_id' => $device->id,
+                        'user_id' => $log['user_id'],
+                        'error' => $e->getMessage(),
+                    ]);
+                    $skipped++;
+                }
+            }
         }
+
+        return response()->json([
+            'status' => 'success',
+            'inserted' => $inserted,
+            'skipped' => $skipped,
+        ], 201);
     }
 }

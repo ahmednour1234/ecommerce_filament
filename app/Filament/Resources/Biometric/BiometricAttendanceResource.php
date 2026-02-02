@@ -4,7 +4,7 @@ namespace App\Filament\Resources\Biometric;
 
 use App\Filament\Resources\Biometric\BiometricAttendanceResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
-use App\Models\Biometric\BiometricAttendance;
+use App\Models\HR\AttendanceLog;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -15,7 +15,7 @@ class BiometricAttendanceResource extends Resource
 {
     use TranslatableNavigation;
 
-    protected static ?string $model = BiometricAttendance::class;
+    protected static ?string $model = AttendanceLog::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clock';
     protected static ?string $navigationGroup = 'الموارد البشرية';
@@ -28,42 +28,44 @@ class BiometricAttendanceResource extends Resource
             ->schema([
                 Forms\Components\Section::make()
                     ->schema([
-                        Forms\Components\Select::make('device_id')
-                            ->label(tr('fields.device', [], null, 'dashboard') ?: 'Device')
-                            ->relationship('device', 'name')
+                        Forms\Components\Select::make('employee_id')
+                            ->label(tr('fields.employee', [], null, 'dashboard') ?: 'Employee')
+                            ->relationship('employee', 'employee_number')
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->employee_number . ' - ' . $record->full_name)
                             ->required()
                             ->searchable()
                             ->preload(),
 
-                        Forms\Components\TextInput::make('user_id')
-                            ->label(tr('tables.biometric_attendances.user_id', [], null, 'dashboard') ?: 'User ID')
-                            ->required()
-                            ->maxLength(255),
+                        Forms\Components\Select::make('device_id')
+                            ->label(tr('fields.device', [], null, 'dashboard') ?: 'Device')
+                            ->relationship('device', 'name')
+                            ->nullable()
+                            ->searchable()
+                            ->preload(),
 
-                        Forms\Components\DateTimePicker::make('attended_at')
-                            ->label(tr('tables.biometric_attendances.attended_at', [], null, 'dashboard') ?: 'Attended At')
+                        Forms\Components\DateTimePicker::make('log_datetime')
+                            ->label(tr('tables.biometric_attendances.attended_at', [], null, 'dashboard') ?: 'Log DateTime')
                             ->required()
                             ->native(false)
                             ->displayFormat('d/m/Y H:i'),
 
-                        Forms\Components\TextInput::make('state')
-                            ->label(tr('tables.biometric_attendances.state', [], null, 'dashboard') ?: 'State')
-                            ->numeric()
-                            ->nullable(),
-
-                        Forms\Components\TextInput::make('type')
+                        Forms\Components\Select::make('type')
                             ->label(tr('tables.biometric_attendances.type', [], null, 'dashboard') ?: 'Type')
-                            ->numeric()
-                            ->nullable(),
+                            ->options([
+                                'check_in' => 'Check In',
+                                'check_out' => 'Check Out',
+                            ])
+                            ->required(),
 
-                        Forms\Components\TextInput::make('ip_address')
-                            ->label(tr('fields.ip_address', [], null, 'dashboard') ?: 'IP Address')
-                            ->ip()
-                            ->nullable(),
-
-                        Forms\Components\Toggle::make('processed')
-                            ->label(tr('tables.biometric_attendances.processed', [], null, 'dashboard') ?: 'Processed')
-                            ->disabled(),
+                        Forms\Components\Select::make('source')
+                            ->label(tr('fields.source', [], null, 'dashboard') ?: 'Source')
+                            ->options([
+                                'manual' => 'Manual',
+                                'device' => 'Device',
+                                'api' => 'API',
+                            ])
+                            ->default('api')
+                            ->required(),
                     ])
                     ->columns(2),
             ]);
@@ -73,33 +75,37 @@ class BiometricAttendanceResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('employee.employee_number')
+                    ->label(tr('fields.employee', [], null, 'dashboard') ?: 'Employee')
+                    ->formatStateUsing(fn ($record) => $record->employee->employee_number . ' - ' . $record->employee->full_name)
+                    ->searchable(['employee.employee_number', 'employee.first_name', 'employee.last_name'])
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('device.name')
                     ->label(tr('fields.device', [], null, 'dashboard') ?: 'Device')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
-                Tables\Columns\TextColumn::make('user_id')
-                    ->label(tr('tables.biometric_attendances.user_id', [], null, 'dashboard') ?: 'User ID')
-                    ->searchable()
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('attended_at')
-                    ->label(tr('tables.biometric_attendances.attended_at', [], null, 'dashboard') ?: 'Attended At')
+                Tables\Columns\TextColumn::make('log_datetime')
+                    ->label(tr('tables.biometric_attendances.attended_at', [], null, 'dashboard') ?: 'Log DateTime')
                     ->dateTime('d/m/Y H:i')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('state')
-                    ->label(tr('tables.biometric_attendances.state', [], null, 'dashboard') ?: 'State')
-                    ->toggleable(),
-
                 Tables\Columns\TextColumn::make('type')
                     ->label(tr('tables.biometric_attendances.type', [], null, 'dashboard') ?: 'Type')
-                    ->toggleable(),
-
-                Tables\Columns\IconColumn::make('processed')
-                    ->label(tr('tables.biometric_attendances.processed', [], null, 'dashboard') ?: 'Processed')
-                    ->boolean()
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'check_in' => 'success',
+                        'check_out' => 'warning',
+                        default => 'gray',
+                    })
                     ->sortable(),
+
+                Tables\Columns\TextColumn::make('source')
+                    ->label(tr('fields.source', [], null, 'dashboard') ?: 'Source')
+                    ->badge()
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(tr('tables.common.created_at', [], null, 'dashboard') ?: 'Created At')
@@ -108,22 +114,38 @@ class BiometricAttendanceResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Tables\Filters\SelectFilter::make('employee_id')
+                    ->label(tr('fields.employee', [], null, 'dashboard') ?: 'Employee')
+                    ->relationship('employee', 'employee_number')
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->employee_number . ' - ' . $record->full_name)
+                    ->searchable()
+                    ->preload(),
+
                 Tables\Filters\SelectFilter::make('device_id')
                     ->label(tr('fields.device', [], null, 'dashboard') ?: 'Device')
                     ->relationship('device', 'name')
                     ->searchable()
                     ->preload(),
 
-                Tables\Filters\TernaryFilter::make('processed')
-                    ->label(tr('tables.biometric_attendances.processed', [], null, 'dashboard') ?: 'Processed')
-                    ->placeholder('All')
-                    ->trueLabel('Processed only')
-                    ->falseLabel('Unprocessed only'),
+                Tables\Filters\SelectFilter::make('type')
+                    ->label(tr('tables.biometric_attendances.type', [], null, 'dashboard') ?: 'Type')
+                    ->options([
+                        'check_in' => 'Check In',
+                        'check_out' => 'Check Out',
+                    ]),
+
+                Tables\Filters\SelectFilter::make('source')
+                    ->label(tr('fields.source', [], null, 'dashboard') ?: 'Source')
+                    ->options([
+                        'manual' => 'Manual',
+                        'device' => 'Device',
+                        'api' => 'API',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
             ])
-            ->defaultSort('attended_at', 'desc');
+            ->defaultSort('log_datetime', 'desc');
     }
 
     public static function getPages(): array

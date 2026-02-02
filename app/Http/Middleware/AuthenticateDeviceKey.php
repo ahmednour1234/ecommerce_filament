@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Biometric\BiometricDevice;
+use App\Models\HR\Device;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -30,7 +30,7 @@ class AuthenticateDeviceKey
             ]);
         }
 
-        $device = BiometricDevice::where('api_key', $apiKey)->first();
+        $device = Device::where('api_key', $apiKey)->first();
 
         if (!$device) {
             Log::warning('Biometric auth: Device not found', [

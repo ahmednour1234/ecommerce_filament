@@ -107,6 +107,12 @@ class DeviceResource extends Resource
                     ->boolean()
                     ->sortable(),
 
+                Tables\Columns\TextColumn::make('attendanceLogs_count')
+                    ->label(tr('tables.biometric_devices.attendances_count', [], null, 'dashboard') ?: 'Logs Count')
+                    ->counts('attendanceLogs')
+                    ->sortable()
+                    ->toggleable(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(tr('tables.common.created_at', [], null, 'dashboard') ?: 'Created At')
                     ->dateTime()
