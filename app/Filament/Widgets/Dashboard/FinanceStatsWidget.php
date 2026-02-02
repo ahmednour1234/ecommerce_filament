@@ -164,6 +164,8 @@ class FinanceStatsWidget extends BaseWidget implements HasForms
                 $query->where('finance_type_id', $financeTypeId);
             }
 
+            $query->where('status', 'approved');
+
             $incomeQuery = (clone $query)->income();
             $expenseQuery = (clone $query)->expense();
 
