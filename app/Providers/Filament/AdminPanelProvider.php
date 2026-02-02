@@ -16,6 +16,14 @@ use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
 use Filament\Widgets;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Session\Middleware\StartSession;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
+
+// HR Resources / Pages
 use App\Filament\Resources\HR\DepartmentResource;
 use App\Filament\Resources\HR\EmployeeResource;
 use App\Filament\Resources\HR\WorkScheduleResource;
@@ -25,12 +33,6 @@ use App\Filament\Resources\HR\SalaryComponentResource;
 use App\Filament\Resources\HR\ExcuseRequestResource;
 use App\Filament\Pages\HR\LeaveReportPage;
 use App\Filament\Pages\HR\MonthlyAttendanceReportPage;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
-use Illuminate\Routing\Middleware\SubstituteBindings;
-use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -39,15 +41,12 @@ class AdminPanelProvider extends PanelProvider
         /** @var ThemeService $themeService */
         $themeService = app(ThemeService::class);
 
-        // Theme الافتراضي من السيرفس (اللي فيه primary_color, secondary_color, accent_color, logo_light, ...)
         $theme = $themeService->defaultTheme();
 
-        // 🟡 ألوان جايّة من الداتابيز (ColorPicker)
-        $primaryHex   = $theme?->primary_color   ?: '#F59E0B'; // Amber
-        $secondaryHex = $theme?->secondary_color ?: '#0EA5E9'; // Sky
-        $accentHex    = $theme?->accent_color    ?: '#22C55E'; // Green
+        $primaryHex   = $theme?->primary_color   ?: '#F59E0B';
+        $secondaryHex = $theme?->secondary_color ?: '#0EA5E9';
+        $accentHex    = $theme?->accent_color    ?: '#22C55E';
 
-        // 🧠 brandName من setting
         $brandName = setting('app.name', 'MainCore Dashboard');
 
         return $panel
@@ -56,13 +55,9 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
 
-            // 🏷️ اسم اللوحة
             ->brandName($brandName)
-
-            // 🖼️ اللوجو الخفيف (light) من الـ theme
             ->brandLogo(fn () => $theme?->logo_light_url ?? null)
 
-            // 🎨 ألوان Filament
             ->colors([
                 'primary'   => Color::hex($primaryHex),
                 'secondary' => Color::hex($secondaryHex),
@@ -73,13 +68,11 @@ class AdminPanelProvider extends PanelProvider
                 'danger'    => Color::Rose,
             ])
 
-            // Resources
             ->discoverResources(
                 in: app_path('Filament/Resources'),
                 for: 'App\\Filament\\Resources',
             )
 
-            // Pages
             ->discoverPages(
                 in: app_path('Filament/Pages'),
                 for: 'App\\Filament\\Pages',
@@ -89,7 +82,6 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Resources\Finance\Reports\Pages\FinanceIncomeExpenseReport::class,
             ])
 
-            // Widgets
             ->discoverWidgets(
                 in: app_path('Filament/Widgets'),
                 for: 'App\\Filament\\Widgets',
@@ -98,7 +90,7 @@ class AdminPanelProvider extends PanelProvider
                 Widgets\AccountWidget::class,
             ])
 
-            // User Menu Items (Navbar)
+            // ✅ User menu items (Profile) - stays in user menu, but we will force it visually LAST via CSS.
             ->userMenuItems([
                 MenuItem::make()
                     ->label(fn () => app(\App\Services\MainCore\TranslationService::class)
@@ -108,7 +100,6 @@ class AdminPanelProvider extends PanelProvider
                     ->sort(10),
             ])
 
-            // Middleware
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -122,73 +113,82 @@ class AdminPanelProvider extends PanelProvider
                 \App\Http\Middleware\SetLocale::class,
             ])
 
-            // Auth Middleware
             ->authMiddleware([
                 Authenticate::class,
             ])
+
             ->navigationItems([
                 NavigationItem::make('section-basic-settings')
                     ->label('الإعدادات الأساسية')
                     ->group('الموارد البشرية')
                     ->sort(105)
-                    ->url(fn() => DepartmentResource::getUrl())
+                    ->url(fn () => DepartmentResource::getUrl())
                     ->icon(null),
+
                 NavigationItem::make('section-employee-management')
                     ->label('إدارة الموظفين')
                     ->group('الموارد البشرية')
                     ->sort(205)
-                    ->url(fn() => EmployeeResource::getUrl())
+                    ->url(fn () => EmployeeResource::getUrl())
                     ->icon(null),
+
                 NavigationItem::make('section-attendance')
                     ->label('الحضور والانصراف')
                     ->group('الموارد البشرية')
                     ->sort(305)
-                    ->url(fn() => WorkScheduleResource::getUrl())
+                    ->url(fn () => WorkScheduleResource::getUrl())
                     ->icon(null),
+
                 NavigationItem::make('section-leaves-holidays')
                     ->label('الإجازات والعطلات')
                     ->group('الموارد البشرية')
                     ->sort(405)
-                    ->url(fn() => LeaveTypeResource::getUrl())
+                    ->url(fn () => LeaveTypeResource::getUrl())
                     ->icon(null),
+
                 NavigationItem::make('section-loans')
                     ->label('القروض والسلف')
                     ->group('الموارد البشرية')
                     ->sort(505)
-                    ->url(fn() => LoanTypeResource::getUrl())
+                    ->url(fn () => LoanTypeResource::getUrl())
                     ->icon(null),
+
                 NavigationItem::make('section-salaries')
                     ->label('الرواتب والمستحقات')
                     ->group('الموارد البشرية')
                     ->sort(605)
-                    ->url(fn() => SalaryComponentResource::getUrl())
+                    ->url(fn () => SalaryComponentResource::getUrl())
                     ->icon(null),
+
                 NavigationItem::make('section-requests')
                     ->label('الطلبات')
                     ->group('الموارد البشرية')
                     ->sort(705)
-                    ->url(fn() => ExcuseRequestResource::getUrl())
+                    ->url(fn () => ExcuseRequestResource::getUrl())
                     ->icon(null),
+
                 NavigationItem::make('section-reports')
                     ->label('التقارير')
                     ->group('الموارد البشرية')
                     ->sort(805)
-                    ->url(fn() => LeaveReportPage::getUrl())
+                    ->url(fn () => LeaveReportPage::getUrl())
                     ->icon(null),
+
                 NavigationItem::make('leave-report-reports')
-                    ->label(fn() => tr('navigation.hr_leave_report', [], null, 'dashboard') ?: 'تقرير الإجازات')
+                    ->label(fn () => tr('navigation.hr_leave_report', [], null, 'dashboard') ?: 'تقرير الإجازات')
                     ->group('الموارد البشرية')
                     ->sort(810)
-                    ->url(fn() => LeaveReportPage::getUrl())
+                    ->url(fn () => LeaveReportPage::getUrl())
                     ->icon('heroicon-o-chart-bar')
-                    ->visible(fn() => auth()->user()?->can('hr_leave_reports.view') ?? false),
+                    ->visible(fn () => auth()->user()?->can('hr_leave_reports.view') ?? false),
+
                 NavigationItem::make('monthly-attendance-report-reports')
-                    ->label(fn() => tr('navigation.hr_monthly_attendance_report', [], null, 'dashboard') ?: 'تقرير الحضور الشهري')
+                    ->label(fn () => tr('navigation.hr_monthly_attendance_report', [], null, 'dashboard') ?: 'تقرير الحضور الشهري')
                     ->group('الموارد البشرية')
                     ->sort(820)
-                    ->url(fn() => MonthlyAttendanceReportPage::getUrl())
+                    ->url(fn () => MonthlyAttendanceReportPage::getUrl())
                     ->icon('heroicon-o-chart-bar')
-                    ->visible(fn() => auth()->user()?->can('hr_attendance_monthly.view') ?? false),
+                    ->visible(fn () => auth()->user()?->can('hr_attendance_monthly.view') ?? false),
             ]);
     }
 
@@ -196,58 +196,74 @@ class AdminPanelProvider extends PanelProvider
     {
         parent::register();
 
+        /**
+         * ✅ Insert Global Search into topbar actions.
+         * We keep it in TOPBAR_END so it stays near the user menu,
+         * then we force ordering via CSS so Profile becomes LAST visually.
+         */
         FilamentView::registerRenderHook(
             PanelsRenderHook::TOPBAR_END,
             fn (): string => view('filament.components.global-search')->render(),
         );
 
+        /**
+         * ✅ Global styling fixes:
+         * - Hide table search (temporary) – better to disable per Resource later.
+         * - Make topbar actions a flex row with RTL row-reverse.
+         * - Ensure Search comes first, Profile comes last (in both LTR/RTL).
+         */
         FilamentView::registerRenderHook(
             PanelsRenderHook::HEAD_END,
-            fn (): string => '<style>
-                /* Hide Filament table search input - using global search instead */
-                .fi-ta-header-actions > div:has(input[type="search"]),
-                .fi-ta-header-actions > div:has(input[placeholder*="Search"]),
-                .fi-ta-header-actions > div:has(input[placeholder*="بحث"]),
-                .fi-ta-header-actions input[type="search"],
-                .fi-ta-header-actions input[placeholder*="Search"],
-                .fi-ta-header-actions input[placeholder*="بحث"],
-                [data-search-field],
-                .fi-ta-search-field {
-                    display: none !important;
-                }
+            fn (): string => <<<'HTML'
+<style>
+/* -------------------------------------------------------
+   1) Hide Filament table search (prefer disabling per Resource)
+-------------------------------------------------------- */
+.fi-ta-search-field,
+.fi-ta-header-actions .fi-input-wrp input[type="search"],
+.fi-ta-header-actions input[type="search"],
+.fi-ta-header-actions input[placeholder*="Search"],
+.fi-ta-header-actions input[placeholder*="بحث"] {
+    display: none !important;
+}
 
-                /* Topbar container - ensure flex layout */
-                .fi-topbar > div:last-child {
-                    display: flex !important;
-                    align-items: center !important;
-                    gap: 0.75rem !important;
-                }
+/* -------------------------------------------------------
+   2) Topbar actions layout
+   Use stable class: .fi-topbar-actions (Filament v3)
+-------------------------------------------------------- */
+.fi-topbar .fi-topbar-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: .75rem !important;
+}
 
-                /* Search component - order 1 (comes before profile) */
-                .fi-topbar [wire\\:id*="global-search"],
-                .fi-topbar > div:last-child > div:has([wire\\:id*="global-search"]),
-                .fi-topbar > div:last-child > div:first-child:has([wire\\:id*="global-search"]) {
-                    order: 1 !important;
-                }
+/* RTL: reverse visual flow so the "last" item is on the far left */
+[dir="rtl"] .fi-topbar .fi-topbar-actions {
+    flex-direction: row-reverse !important;
+}
 
-                /* Profile menu - always last (order 99) */
-                .fi-topbar [data-user-menu],
-                .fi-topbar button[aria-label*="user"],
-                .fi-topbar button[aria-label*="User"],
-                .fi-topbar [aria-label*="user menu"],
-                .fi-topbar > div:last-child > button:last-child,
-                .fi-topbar > div:last-child > *:last-child:not([wire\\:id*="global-search"]):not(:has([wire\\:id*="global-search"])) {
-                    order: 99 !important;
-                }
+/* -------------------------------------------------------
+   3) Force ordering:
+   - Global search should come BEFORE profile (order:1)
+   - Profile menu should be visually LAST (order:99)
+   Notes:
+   - In RTL, row-reverse makes LAST appear on the far left (as requested).
+-------------------------------------------------------- */
 
-                /* RTL support - reverse flex direction so Profile appears on far left (last in RTL) */
-                [dir="rtl"] .fi-topbar > div:last-child {
-                    flex-direction: row-reverse;
-                }
+/* Our global search wrapper in topbar */
+.fi-topbar .fi-topbar-actions [data-global-search] {
+    order: 1 !important;
+}
 
-                /* In RTL with row-reverse: Search (order 1) appears first/left, Profile (order 99) appears last/right */
-                /* No need to override orders in RTL - row-reverse handles the visual positioning */
-            </style>',
+/* Try to catch Filament user menu button/container */
+.fi-topbar .fi-topbar-actions [data-user-menu],
+.fi-topbar .fi-topbar-actions button[aria-label*="user"],
+.fi-topbar .fi-topbar-actions button[aria-label*="User"],
+.fi-topbar .fi-topbar-actions [aria-label*="user menu"] {
+    order: 99 !important;
+}
+</style>
+HTML
         );
     }
 }
