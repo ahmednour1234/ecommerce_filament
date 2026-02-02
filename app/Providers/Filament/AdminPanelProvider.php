@@ -200,5 +200,10 @@ class AdminPanelProvider extends PanelProvider
             PanelsRenderHook::TOPBAR_AFTER,
             fn (): string => view('filament.components.sidebar-search')->render(),
         );
+
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::TOPBAR_BEFORE,
+            fn (): string => view('filament.components.global-search')->render(),
+        );
     }
 }
