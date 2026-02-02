@@ -184,7 +184,7 @@ class FinanceBranchesTableWidget extends BaseWidget implements HasForms
                 $totalExpense += $expense;
 
                 $rows[] = [
-                    'id' => 'branch_' . $branch->id,
+                    'id' => 'branch_' . str_pad($branch->id, 10, '0', STR_PAD_LEFT),
                     'branch_name' => $branch->name,
                     'income' => $income,
                     'expense' => $expense,
@@ -193,7 +193,7 @@ class FinanceBranchesTableWidget extends BaseWidget implements HasForms
             }
 
             $rows[] = [
-                'id' => 'total',
+                'id' => 'zzz_total',
                 'branch_name' => 'صافي الربح',
                 'income' => $totalIncome,
                 'expense' => $totalExpense,
@@ -232,36 +232,36 @@ class FinanceBranchesTableWidget extends BaseWidget implements HasForms
                 TextColumn::make('branch_name')
                     ->label('بيان')
                     ->searchable()
-                    ->weight(fn ($record) => $record->id === 'total' ? 'bold' : 'normal')
-                    ->color(fn ($record) => $record->id === 'total' ? 'danger' : null),
+                    ->weight(fn ($record) => str_contains($record->id ?? '', 'total') ? 'bold' : 'normal')
+                    ->color(fn ($record) => str_contains($record->id ?? '', 'total') ? 'danger' : null),
                 TextColumn::make('income')
                     ->label('الايراد')
                     ->numeric(decimalPlaces: 2)
                     ->formatStateUsing(fn ($state) => Number::format($state, 2))
                     ->alignEnd()
-                    ->weight(fn ($record) => $record->id === 'total' ? 'bold' : 'normal')
-                    ->color(fn ($record) => $record->id === 'total' ? 'danger' : null),
+                    ->weight(fn ($record) => str_contains($record->id ?? '', 'total') ? 'bold' : 'normal')
+                    ->color(fn ($record) => str_contains($record->id ?? '', 'total') ? 'danger' : null),
                 TextColumn::make('expense')
                     ->label('المصروف')
                     ->numeric(decimalPlaces: 2)
                     ->formatStateUsing(fn ($state) => Number::format($state, 2))
                     ->alignEnd()
-                    ->weight(fn ($record) => $record->id === 'total' ? 'bold' : 'normal')
-                    ->color(fn ($record) => $record->id === 'total' ? 'danger' : null),
+                    ->weight(fn ($record) => str_contains($record->id ?? '', 'total') ? 'bold' : 'normal')
+                    ->color(fn ($record) => str_contains($record->id ?? '', 'total') ? 'danger' : null),
                 TextColumn::make('net')
                     ->label('الصافي')
                     ->numeric(decimalPlaces: 2)
                     ->formatStateUsing(fn ($state) => Number::format($state, 2))
                     ->alignEnd()
                     ->color(function ($record) {
-                        if ($record->id === 'total') {
+                        if (str_contains($record->id ?? '', 'total')) {
                             return 'danger';
                         }
                         return $record->net >= 0 ? 'success' : 'danger';
                     })
-                    ->weight(fn ($record) => $record->id === 'total' ? 'bold' : 'normal'),
+                    ->weight(fn ($record) => str_contains($record->id ?? '', 'total') ? 'bold' : 'normal'),
             ])
-            ->defaultSort('branch_name')
+            ->defaultSort('id')
             ->paginated(false);
     }
 
