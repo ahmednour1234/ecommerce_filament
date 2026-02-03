@@ -36,6 +36,9 @@ use App\Filament\Pages\HR\MonthlyAttendanceReportPage;
 
 // Recruitment Contracts
 use App\Filament\Resources\Recruitment\RecruitmentContractResource;
+use App\Filament\Pages\Recruitment\ReceivedWorkersPage;
+use App\Filament\Pages\Recruitment\ExpiredContractsPage;
+use App\Filament\Pages\Recruitment\RecruitmentContractsReportsPage;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -221,7 +224,7 @@ class AdminPanelProvider extends PanelProvider
                     ->label(fn () => tr('recruitment_contract.menu.received_workers', [], null, 'dashboard') ?: 'العمالة المستلمة')
                     ->group('عقود الاستقدام')
                     ->sort(103)
-                    ->url(fn () => RecruitmentContractResource::getUrl() . '?status=worker_received')
+                    ->url(fn () => ReceivedWorkersPage::getUrl())
                     ->icon('heroicon-o-arrow-down-tray')
                     ->visible(fn () => auth()->user()?->can('recruitment_contracts.view_any') ?? false),
 
@@ -229,7 +232,7 @@ class AdminPanelProvider extends PanelProvider
                     ->label(fn () => tr('recruitment_contract.menu.expired_contracts', [], null, 'dashboard') ?: 'العقود المنتهية')
                     ->group('عقود الاستقدام')
                     ->sort(104)
-                    ->url(fn () => RecruitmentContractResource::getUrl() . '?status=closed')
+                    ->url(fn () => ExpiredContractsPage::getUrl())
                     ->icon('heroicon-o-trash')
                     ->visible(fn () => auth()->user()?->can('recruitment_contracts.view_any') ?? false),
 
@@ -237,7 +240,7 @@ class AdminPanelProvider extends PanelProvider
                     ->label(fn () => tr('recruitment_contract.menu.reports', [], null, 'dashboard') ?: 'التقارير')
                     ->group('عقود الاستقدام')
                     ->sort(105)
-                    ->url('#')
+                    ->url(fn () => RecruitmentContractsReportsPage::getUrl())
                     ->icon('heroicon-o-chart-bar')
                     ->visible(fn () => auth()->user()?->can('recruitment_contracts.view_any') ?? false),
             ]);

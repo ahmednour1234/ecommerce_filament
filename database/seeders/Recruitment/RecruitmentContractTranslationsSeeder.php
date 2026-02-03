@@ -105,6 +105,17 @@ class RecruitmentContractTranslationsSeeder extends Seeder
             'recruitment_contract.menu.received_workers' => ['en' => 'Received Workers', 'ar' => 'العمالة المستلمة'],
             'recruitment_contract.menu.expired_contracts' => ['en' => 'Expired Contracts', 'ar' => 'العقود المنتهية'],
             'recruitment_contract.menu.reports' => ['en' => 'Reports', 'ar' => 'التقارير'],
+
+            'recruitment_contract.reports.total_contracts' => ['en' => 'Total Contracts', 'ar' => 'إجمالي العقود'],
+            'recruitment_contract.reports.total_cost' => ['en' => 'Total Cost', 'ar' => 'إجمالي التكلفة'],
+            'recruitment_contract.reports.paid_total' => ['en' => 'Paid Total', 'ar' => 'المبلغ المدفوع'],
+            'recruitment_contract.reports.remaining_total' => ['en' => 'Remaining Total', 'ar' => 'المبلغ المتبقي'],
+            'recruitment_contract.reports.received_workers' => ['en' => 'Received Workers', 'ar' => 'العمالة المستلمة'],
+            'recruitment_contract.reports.closed_contracts' => ['en' => 'Closed Contracts', 'ar' => 'العقود المغلقة'],
+
+            'common.date_from' => ['en' => 'From Date', 'ar' => 'من تاريخ'],
+            'common.date_to' => ['en' => 'To Date', 'ar' => 'إلى تاريخ'],
+            'common.view_all' => ['en' => 'View All', 'ar' => 'عرض الكل'],
         ];
 
         $created = 0;
