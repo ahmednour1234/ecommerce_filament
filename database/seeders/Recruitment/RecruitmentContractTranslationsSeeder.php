@@ -97,6 +97,14 @@ class RecruitmentContractTranslationsSeeder extends Seeder
             'recruitment_contract.tabs.status_logs' => ['en' => 'Status Logs', 'ar' => 'سجل الأحداث'],
 
             'recruitment_contract.actions.create' => ['en' => 'Create Contract', 'ar' => 'إنشاء عقد'],
+
+            'sidebar.عقود_الاستقدام' => ['en' => 'Recruitment Contracts', 'ar' => 'عقود الاستقدام'],
+            'sidebar.عقود_الاستقدام.recruitment_contract' => ['en' => 'Recruitment Contracts', 'ar' => 'عقود الاستقدام'],
+            'recruitment_contract.menu.list' => ['en' => 'Recruitment Contracts', 'ar' => 'عقود الاستقدام'],
+            'recruitment_contract.menu.add_new' => ['en' => 'Add New Contract', 'ar' => 'إضافة عقد جديد'],
+            'recruitment_contract.menu.received_workers' => ['en' => 'Received Workers', 'ar' => 'العمالة المستلمة'],
+            'recruitment_contract.menu.expired_contracts' => ['en' => 'Expired Contracts', 'ar' => 'العقود المنتهية'],
+            'recruitment_contract.menu.reports' => ['en' => 'Reports', 'ar' => 'التقارير'],
         ];
 
         $created = 0;

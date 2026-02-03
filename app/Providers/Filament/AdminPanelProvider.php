@@ -34,6 +34,9 @@ use App\Filament\Resources\HR\ExcuseRequestResource;
 use App\Filament\Pages\HR\LeaveReportPage;
 use App\Filament\Pages\HR\MonthlyAttendanceReportPage;
 
+// Recruitment Contracts
+use App\Filament\Resources\Recruitment\RecruitmentContractResource;
+
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -189,6 +192,54 @@ class AdminPanelProvider extends PanelProvider
                     ->url(fn () => MonthlyAttendanceReportPage::getUrl())
                     ->icon('heroicon-o-chart-bar')
                     ->visible(fn () => auth()->user()?->can('hr_attendance_monthly.view') ?? false),
+
+                // عقود الاستقدام
+                NavigationItem::make('recruitment-contracts-section')
+                    ->label('عقود الاستقدام')
+                    ->group('عقود الاستقدام')
+                    ->sort(100)
+                    ->url(fn () => RecruitmentContractResource::getUrl())
+                    ->icon('heroicon-o-document-text'),
+
+                NavigationItem::make('recruitment-contracts-list')
+                    ->label(fn () => tr('recruitment_contract.menu.list', [], null, 'dashboard') ?: 'عقود الاستقدام')
+                    ->group('عقود الاستقدام')
+                    ->sort(101)
+                    ->url(fn () => RecruitmentContractResource::getUrl())
+                    ->icon('heroicon-o-list-bullet')
+                    ->visible(fn () => auth()->user()?->can('recruitment_contracts.view_any') ?? false),
+
+                NavigationItem::make('recruitment-contracts-add-new')
+                    ->label(fn () => tr('recruitment_contract.menu.add_new', [], null, 'dashboard') ?: 'إضافة عقد جديد')
+                    ->group('عقود الاستقدام')
+                    ->sort(102)
+                    ->url(fn () => RecruitmentContractResource::getUrl('create'))
+                    ->icon('heroicon-o-plus')
+                    ->visible(fn () => auth()->user()?->can('recruitment_contracts.create') ?? false),
+
+                NavigationItem::make('recruitment-contracts-received-workers')
+                    ->label(fn () => tr('recruitment_contract.menu.received_workers', [], null, 'dashboard') ?: 'العمالة المستلمة')
+                    ->group('عقود الاستقدام')
+                    ->sort(103)
+                    ->url(fn () => RecruitmentContractResource::getUrl() . '?status=worker_received')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->visible(fn () => auth()->user()?->can('recruitment_contracts.view_any') ?? false),
+
+                NavigationItem::make('recruitment-contracts-expired')
+                    ->label(fn () => tr('recruitment_contract.menu.expired_contracts', [], null, 'dashboard') ?: 'العقود المنتهية')
+                    ->group('عقود الاستقدام')
+                    ->sort(104)
+                    ->url(fn () => RecruitmentContractResource::getUrl() . '?status=closed')
+                    ->icon('heroicon-o-trash')
+                    ->visible(fn () => auth()->user()?->can('recruitment_contracts.view_any') ?? false),
+
+                NavigationItem::make('recruitment-contracts-reports')
+                    ->label(fn () => tr('recruitment_contract.menu.reports', [], null, 'dashboard') ?: 'التقارير')
+                    ->group('عقود الاستقدام')
+                    ->sort(105)
+                    ->url('#')
+                    ->icon('heroicon-o-chart-bar')
+                    ->visible(fn () => auth()->user()?->can('recruitment_contracts.view_any') ?? false),
             ]);
     }
 
