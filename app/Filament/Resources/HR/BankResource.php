@@ -36,7 +36,7 @@ class BankResource extends Resource
 
                         Forms\Components\TextInput::make('iban_prefix')
                             ->label(tr('forms.hr_banks.iban_prefix.label', [], null, 'dashboard') ?: 'IBAN Prefix')
-                            ->maxLength(10)
+                            ->maxLength(50)
                             ->nullable()
                             ->helperText(tr('forms.hr_banks.iban_prefix.helper', [], null, 'dashboard') ?: 'Optional IBAN prefix code'),
 

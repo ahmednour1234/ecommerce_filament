@@ -66,7 +66,7 @@ class BankService
     {
         $rules = [
             'name' => 'required|string|max:255',
-            'iban_prefix' => 'nullable|string|max:10',
+            'iban_prefix' => 'nullable|string|max:50',
             'active' => 'boolean',
         ];
 
