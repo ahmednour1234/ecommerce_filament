@@ -25,27 +25,53 @@ class BankResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make()
-                    ->schema([
-                        Forms\Components\TextInput::make('name')
-                            ->label(tr('forms.hr_banks.name.label', [], null, 'dashboard') ?: 'Name')
-                            ->required()
-                            ->maxLength(255),
+        return $form->schema([
+            Forms\Components\Section::make()
+                ->schema([
+                    Forms\Components\TextInput::make('name')
+                        ->label(tr('forms.hr_banks.name.label', [], null, 'dashboard') ?: 'Name')
+                        ->required()
+                        ->maxLength(255),
 
-                        Forms\Components\TextInput::make('iban_prefix')
-                            ->label(tr('forms.hr_banks.iban_prefix.label', [], null, 'dashboard') ?: 'IBAN Prefix')
-                            ->maxLength(50)
-                            ->nullable()
-                            ->helperText(tr('forms.hr_banks.iban_prefix.helper', [], null, 'dashboard') ?: 'Optional IBAN prefix code'),
+                    /**
+                     * NOTE:
+                     * Column name is still `iban_prefix` in DB (as in your code),
+                     * but we validate it as a FULL IBAN (example: SA7080000537608016041719).
+                     * If you later rename the column to `iban`, update here & in the table columns.
+                     */
+                    Forms\Components\TextInput::make('iban_prefix')
+                        ->label(tr('forms.hr_banks.iban_prefix.label', [], null, 'dashboard') ?: 'IBAN')
+                        ->helperText(
+                            tr('forms.hr_banks.iban_prefix.helper', [], null, 'dashboard')
+                            ?: 'Enter full IBAN (e.g. SA7080000537608016041719). Spaces are allowed and will be removed.'
+                        )
+                        ->maxLength(34) // global IBAN max
+                        ->nullable()
+                        ->dehydrateStateUsing(function (?string $state) {
+                            // remove spaces + uppercase
+                            $state = $state ? strtoupper(preg_replace('/\s+/', '', $state)) : null;
+                            return $state ?: null;
+                        })
+                        ->formatStateUsing(function (?string $state) {
+                            // show without spaces but uppercase
+                            return $state ? strtoupper(preg_replace('/\s+/', '', $state)) : null;
+                        })
+                        ->rule('regex:/^[A-Z]{2}[0-9A-Z]{13,32}$/') // generic IBAN shape
+                        ->validationMessages([
+                            'regex' => 'Invalid IBAN format. Example: SA7080000537608016041719',
+                        ])
+                        // Optional: Saudi-specific rule (enable if you ONLY accept SA)
+                        ->rule('regex:/^SA[0-9]{22}$/')
+                        ->validationMessages([
+                            'regex' => 'Saudi IBAN must start with SA and contain 24 characters total (e.g. SA7080000537608016041719).',
+                        ]),
 
-                        Forms\Components\Toggle::make('active')
-                            ->label(tr('forms.hr_banks.active.label', [], null, 'dashboard') ?: 'Active')
-                            ->default(true),
-                    ])
-                    ->columns(2),
-            ]);
+                    Forms\Components\Toggle::make('active')
+                        ->label(tr('forms.hr_banks.active.label', [], null, 'dashboard') ?: 'Active')
+                        ->default(true),
+                ])
+                ->columns(2),
+        ]);
     }
 
     public static function table(Table $table): Table
@@ -58,10 +84,11 @@ class BankResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('iban_prefix')
-                    ->label(tr('tables.hr_banks.iban_prefix', [], null, 'dashboard') ?: 'IBAN Prefix')
+                    ->label(tr('tables.hr_banks.iban_prefix', [], null, 'dashboard') ?: 'IBAN')
                     ->searchable()
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable()
+                    ->formatStateUsing(fn (?string $state) => $state ? strtoupper(preg_replace('/\s+/', '', $state)) : null),
 
                 Tables\Columns\IconColumn::make('active')
                     ->label(tr('tables.hr_banks.active', [], null, 'dashboard') ?: 'Active')
@@ -90,6 +117,7 @@ class BankResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->visible(fn () => auth()->user()?->can('hr_banks.update') ?? false),
+
                 Tables\Actions\DeleteAction::make()
                     ->visible(fn () => auth()->user()?->can('hr_banks.delete') ?? false),
             ])
@@ -104,9 +132,7 @@ class BankResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
@@ -148,4 +174,3 @@ class BankResource extends Resource
         return static::canViewAny();
     }
 }
-
