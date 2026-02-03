@@ -14,5 +14,6 @@ return [
     'security' => env('MODULE_SECURITY', true),
     'environmental' => env('MODULE_ENVIRONMENTAL', false),
     'integrations' => env('MODULE_INTEGRATIONS', false),
+    'recruitment_contracts' => env('MODULE_RECRUITMENT_CONTRACTS', true),
 
 ];
