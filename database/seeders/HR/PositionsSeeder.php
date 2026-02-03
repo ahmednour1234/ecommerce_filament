@@ -344,4 +344,39 @@ class PositionsSeeder extends Seeder
 
         $this->command->info('✓ HR positions seeding completed');
     }
+
+    /**
+     * Generate a unique slug from Arabic name (same logic as DepartmentsSeeder)
+     */
+    protected function makeSlug(string $arName, ?string $parentSlug = null): string
+    {
+        $slug = $arName;
+
+        $slug = str_replace('ـ', '', $slug);
+
+        $slug = preg_replace('/[^\p{Arabic}\p{N}\s-]/u', '', $slug);
+
+        $slug = preg_replace('/\s+/', ' ', $slug);
+        $slug = trim($slug);
+
+        $slug = str_replace(' ', '-', $slug);
+
+        if ($parentSlug) {
+            $slug = $parentSlug . '-' . $slug;
+        }
+
+        return $slug;
+    }
+
+    /**
+     * Get department slug by traversing the tree path
+     */
+    protected function getDepartmentSlug(array $path): string
+    {
+        $slug = null;
+        foreach ($path as $name) {
+            $slug = $this->makeSlug($name, $slug);
+        }
+        return $slug;
+    }
 }
