@@ -217,10 +217,10 @@ class AdminPanelProvider extends PanelProvider
          * ✅ Custom Sidebar Navigation
          * Replace default Filament sidebar with custom nested menu
          */
-        FilamentView::registerRenderHook(
-            PanelsRenderHook::SIDEBAR_NAV_START,
-            fn (): string => view('filament.components.custom-sidebar')->render(),
-        );
+        // FilamentView::registerRenderHook(
+        //     PanelsRenderHook::SIDEBAR_NAV_START,
+        //     fn (): string => view('filament.components.custom-sidebar')->render(),
+        // );
 
         /**
          * ✅ Global styling fixes:
