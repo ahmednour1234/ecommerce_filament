@@ -13,6 +13,11 @@ class ReceivedWorkersPage extends Page
     protected static ?string $navigationIcon = 'heroicon-o-arrow-down-tray';
     protected static ?string $navigationGroup = 'عقود الاستقدام';
     protected static ?int $navigationSort = 103;
+    
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()?->can('recruitment_contracts.view_any') ?? false;
+    }
     protected static ?string $navigationTranslationKey = 'recruitment_contract.menu.received_workers';
     protected static string $view = 'filament.pages.recruitment.received-workers';
 

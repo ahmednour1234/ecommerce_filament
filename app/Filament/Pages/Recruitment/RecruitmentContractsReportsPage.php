@@ -17,6 +17,11 @@ class RecruitmentContractsReportsPage extends Page implements HasForms
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
     protected static ?string $navigationGroup = 'عقود الاستقدام';
     protected static ?int $navigationSort = 105;
+    
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()?->can('recruitment_contracts.view_any') ?? false;
+    }
     protected static ?string $navigationTranslationKey = 'recruitment_contract.menu.reports';
     protected static string $view = 'filament.pages.recruitment.reports';
 
