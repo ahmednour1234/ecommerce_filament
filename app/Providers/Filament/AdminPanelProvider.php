@@ -214,10 +214,20 @@ class AdminPanelProvider extends PanelProvider
         );
 
         /**
+         * ✅ Custom Sidebar Navigation
+         * Replace default Filament sidebar with custom nested menu
+         */
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::SIDEBAR_NAV_START,
+            fn (): string => view('filament.components.custom-sidebar')->render(),
+        );
+
+        /**
          * ✅ Global styling fixes:
          * - Hide table search (temporary) – better to disable per Resource later.
          * - Make topbar actions a flex row with RTL row-reverse.
          * - Ensure Search comes first, Profile comes last (in both LTR/RTL).
+         * - Hide default Filament navigation items, show only custom sidebar.
          */
         FilamentView::registerRenderHook(
             PanelsRenderHook::HEAD_END,
@@ -268,6 +278,13 @@ class AdminPanelProvider extends PanelProvider
 .fi-topbar .fi-topbar-actions button[aria-label*="User"],
 .fi-topbar .fi-topbar-actions [aria-label*="user menu"] {
     order: 99 !important;
+}
+
+/* -------------------------------------------------------
+   4) Hide default Filament navigation items, show only custom sidebar
+-------------------------------------------------------- */
+.fi-sidebar-nav-items > li:not(.custom-sidebar-item) {
+    display: none !important;
 }
 </style>
 HTML
