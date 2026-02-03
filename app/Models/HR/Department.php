@@ -3,6 +3,7 @@
 namespace App\Models\HR;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Department extends Model
@@ -11,12 +12,30 @@ class Department extends Model
 
     protected $fillable = [
         'name',
+        'slug',
+        'parent_id',
         'active',
     ];
 
     protected $casts = [
         'active' => 'boolean',
     ];
+
+    /**
+     * Get the parent department
+     */
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Department::class, 'parent_id');
+    }
+
+    /**
+     * Get child departments
+     */
+    public function children(): HasMany
+    {
+        return $this->hasMany(Department::class, 'parent_id');
+    }
 
     /**
      * Get all positions in this department
