@@ -23,7 +23,6 @@ class EmployeeGroupResource extends Resource
     protected static ?string $navigationGroup = 'hr';
     protected static ?int $navigationSort = 23;
     protected static ?string $navigationTranslationKey = 'sidebar.hr.employees.employee_groups';
-    protected static ?string $navigationTranslationKey = 'navigation.hr_employee_groups';
 
     public static function form(Form $form): Form
     {

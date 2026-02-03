@@ -22,7 +22,6 @@ class PositionResource extends Resource
     protected static ?string $navigationGroup = 'hr';
     protected static ?int $navigationSort = 11;
     protected static ?string $navigationTranslationKey = 'sidebar.hr.settings.positions';
-    protected static ?string $navigationTranslationKey = 'navigation.hr_positions';
 
     public static function form(Form $form): Form
     {

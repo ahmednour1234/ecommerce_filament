@@ -22,7 +22,6 @@ class BloodTypeResource extends Resource
     protected static ?string $navigationGroup = 'hr';
     protected static ?int $navigationSort = 13;
     protected static ?string $navigationTranslationKey = 'sidebar.hr.settings.blood_types';
-    protected static ?string $navigationTranslationKey = 'navigation.hr_blood_types';
 
     public static function form(Form $form): Form
     {

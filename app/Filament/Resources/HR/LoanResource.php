@@ -30,7 +30,6 @@ class LoanResource extends Resource
     protected static ?string $navigationGroup = 'hr';
     protected static ?int $navigationSort = 50;
     protected static ?string $navigationTranslationKey = 'sidebar.hr.loans.loans';
-    protected static ?string $navigationTranslationKey = 'navigation.hr_loans';
 
     public static function form(Form $form): Form
     {

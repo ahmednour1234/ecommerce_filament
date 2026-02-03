@@ -22,7 +22,6 @@ class WorkScheduleResource extends Resource
     protected static ?string $navigationGroup = 'hr';
     protected static ?int $navigationSort = 32;
     protected static ?string $navigationTranslationKey = 'sidebar.hr.attendance.work_schedules';
-    protected static ?string $navigationTranslationKey = 'navigation.hr_work_schedules';
 
     public static function form(Form $form): Form
     {

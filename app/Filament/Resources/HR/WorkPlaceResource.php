@@ -22,7 +22,6 @@ class WorkPlaceResource extends Resource
     protected static ?string $navigationGroup = 'hr';
     protected static ?int $navigationSort = 15;
     protected static ?string $navigationTranslationKey = 'sidebar.hr.settings.work_places';
-    protected static ?string $navigationTranslationKey = 'navigation.hr_work_places';
 
     public static function form(Form $form): Form
     {

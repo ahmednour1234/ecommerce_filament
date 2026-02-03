@@ -22,7 +22,6 @@ class DeviceResource extends Resource
     protected static ?string $navigationGroup = 'hr';
     protected static ?int $navigationSort = 30;
     protected static ?string $navigationTranslationKey = 'sidebar.hr.attendance.devices';
-    protected static ?string $navigationTranslationKey = 'navigation.hr_devices';
 
     public static function form(Form $form): Form
     {

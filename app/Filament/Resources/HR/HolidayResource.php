@@ -22,7 +22,6 @@ class HolidayResource extends Resource
     protected static ?string $navigationGroup = 'hr';
     protected static ?int $navigationSort = 18;
     protected static ?string $navigationTranslationKey = 'sidebar.hr.settings.holidays';
-    protected static ?string $navigationTranslationKey = 'navigation.hr_holidays';
 
     public static function form(Form $form): Form
     {

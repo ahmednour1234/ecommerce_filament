@@ -23,7 +23,6 @@ class SalaryComponentResource extends Resource
     protected static ?string $navigationGroup = 'hr';
     protected static ?int $navigationSort = 21;
     protected static ?string $navigationTranslationKey = 'sidebar.hr.settings.salary_components';
-    protected static ?string $navigationTranslationKey = 'sidebar.hr.salary_components';
 
     public static function form(Form $form): Form
     {
