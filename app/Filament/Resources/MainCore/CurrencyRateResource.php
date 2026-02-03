@@ -22,9 +22,9 @@ class CurrencyRateResource extends Resource
     protected static ?string $model = CurrencyRate::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-arrow-path-rounded-square';
-    protected static ?string $navigationGroup = 'Settings';
-    protected static ?string $navigationTranslationKey = 'menu.settings.currencies';
-    protected static ?int $navigationSort = 25;
+    protected static ?string $navigationGroup = 'general_settings';
+    protected static ?int $navigationSort = 9;
+    protected static ?string $navigationTranslationKey = 'sidebar.general_settings.currency_rates';
 
     public static function form(Form $form): Form
     {

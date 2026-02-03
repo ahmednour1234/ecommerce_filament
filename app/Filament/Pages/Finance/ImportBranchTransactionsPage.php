@@ -28,11 +28,10 @@ class ImportBranchTransactionsPage extends Page implements HasForms
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-arrow-up-tray';
-    protected static ?string $navigationGroup = 'Finance';
-    protected static ?int $navigationSort = 10;
+    protected static ?string $navigationGroup = 'finance';
+    protected static ?int $navigationSort = 8;
     protected static string $view = 'filament.pages.finance.import-branch-transactions';
-
-    protected static ?string $navigationTranslationKey = 'sidebar.finance.import';
+    protected static ?string $navigationTranslationKey = 'sidebar.finance.import_excel';
 
     public ?array $data = [];
     public array $lastImportedIds = [];

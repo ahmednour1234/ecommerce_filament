@@ -22,8 +22,9 @@ class EmployeeFinancialProfileResource extends Resource
     protected static ?string $model = EmployeeFinancialProfile::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
-    protected static ?string $navigationGroup = 'الموارد البشرية';
-    protected static ?int $navigationSort = 230;
+    protected static ?string $navigationGroup = 'hr';
+    protected static ?int $navigationSort = 24;
+    protected static ?string $navigationTranslationKey = 'sidebar.hr.employees.employee_financial';
     protected static ?string $navigationTranslationKey = 'sidebar.hr.employee_financial_profiles';
 
     public static function form(Form $form): Form

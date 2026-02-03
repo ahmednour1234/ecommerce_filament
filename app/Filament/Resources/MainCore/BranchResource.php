@@ -19,9 +19,9 @@ class BranchResource extends Resource
     protected static ?string $model = Branch::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
-    protected static ?string $navigationGroup = 'Settings';
-    protected static ?int $navigationSort = 5;
-    protected static ?string $navigationTranslationKey = 'menu.settings.branches';
+    protected static ?string $navigationGroup = 'general_settings';
+    protected static ?int $navigationSort = 3;
+    protected static ?string $navigationTranslationKey = 'sidebar.general_settings.branches';
 
     public static function form(Form $form): Form
     {

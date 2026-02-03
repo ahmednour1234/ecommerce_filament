@@ -26,9 +26,9 @@ class RecruitmentContractResource extends Resource
     protected static ?string $model = RecruitmentContract::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
-    protected static ?string $navigationGroup = 'عقود الاستقدام';
-    protected static ?int $navigationSort = 101;
-    protected static ?string $navigationTranslationKey = 'recruitment_contract.menu.list';
+    protected static ?string $navigationGroup = 'recruitment';
+    protected static ?int $navigationSort = 9;
+    protected static ?string $navigationTranslationKey = 'sidebar.recruitment.contracts';
 
     public static function form(Form $form): Form
     {

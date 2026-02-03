@@ -23,23 +23,6 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
-// HR Resources / Pages
-use App\Filament\Resources\HR\DepartmentResource;
-use App\Filament\Resources\HR\EmployeeResource;
-use App\Filament\Resources\HR\WorkScheduleResource;
-use App\Filament\Resources\HR\LeaveTypeResource;
-use App\Filament\Resources\HR\LoanTypeResource;
-use App\Filament\Resources\HR\SalaryComponentResource;
-use App\Filament\Resources\HR\ExcuseRequestResource;
-use App\Filament\Pages\HR\LeaveReportPage;
-use App\Filament\Pages\HR\MonthlyAttendanceReportPage;
-
-// Recruitment Contracts
-use App\Filament\Resources\Recruitment\RecruitmentContractResource;
-use App\Filament\Pages\Recruitment\ReceivedWorkersPage;
-use App\Filament\Pages\Recruitment\ExpiredContractsPage;
-use App\Filament\Pages\Recruitment\RecruitmentContractsReportsPage;
-
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -123,79 +106,31 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
 
-            ->navigationItems([
-                NavigationItem::make('section-basic-settings')
-                    ->label('الإعدادات الأساسية')
-                    ->group('الموارد البشرية')
-                    ->sort(105)
-                    ->url(fn () => DepartmentResource::getUrl())
-                    ->icon(null),
-
-                NavigationItem::make('section-employee-management')
-                    ->label('إدارة الموظفين')
-                    ->group('الموارد البشرية')
-                    ->sort(205)
-                    ->url(fn () => EmployeeResource::getUrl())
-                    ->icon(null),
-
-                NavigationItem::make('section-attendance')
-                    ->label('الحضور والانصراف')
-                    ->group('الموارد البشرية')
-                    ->sort(305)
-                    ->url(fn () => WorkScheduleResource::getUrl())
-                    ->icon(null),
-
-                NavigationItem::make('section-leaves-holidays')
-                    ->label('الإجازات والعطلات')
-                    ->group('الموارد البشرية')
-                    ->sort(405)
-                    ->url(fn () => LeaveTypeResource::getUrl())
-                    ->icon(null),
-
-                NavigationItem::make('section-loans')
-                    ->label('القروض والسلف')
-                    ->group('الموارد البشرية')
-                    ->sort(505)
-                    ->url(fn () => LoanTypeResource::getUrl())
-                    ->icon(null),
-
-                NavigationItem::make('section-salaries')
-                    ->label('الرواتب والمستحقات')
-                    ->group('الموارد البشرية')
-                    ->sort(605)
-                    ->url(fn () => SalaryComponentResource::getUrl())
-                    ->icon(null),
-
-                NavigationItem::make('section-requests')
-                    ->label('الطلبات')
-                    ->group('الموارد البشرية')
-                    ->sort(705)
-                    ->url(fn () => ExcuseRequestResource::getUrl())
-                    ->icon(null),
-
-                NavigationItem::make('section-reports')
-                    ->label('التقارير')
-                    ->group('الموارد البشرية')
-                    ->sort(805)
-                    ->url(fn () => LeaveReportPage::getUrl())
-                    ->icon(null),
-
-                NavigationItem::make('leave-report-reports')
-                    ->label(fn () => tr('navigation.hr_leave_report', [], null, 'dashboard') ?: 'تقرير الإجازات')
-                    ->group('الموارد البشرية')
-                    ->sort(810)
-                    ->url(fn () => LeaveReportPage::getUrl())
-                    ->icon('heroicon-o-chart-bar')
-                    ->visible(fn () => auth()->user()?->can('hr_leave_reports.view') ?? false),
-
-                NavigationItem::make('monthly-attendance-report-reports')
-                    ->label(fn () => tr('navigation.hr_monthly_attendance_report', [], null, 'dashboard') ?: 'تقرير الحضور الشهري')
-                    ->group('الموارد البشرية')
-                    ->sort(820)
-                    ->url(fn () => MonthlyAttendanceReportPage::getUrl())
-                    ->icon('heroicon-o-chart-bar')
-                    ->visible(fn () => auth()->user()?->can('hr_attendance_monthly.view') ?? false),
-
+            ->navigationGroups([
+                \Filament\Navigation\NavigationGroup::make()
+                    ->label(fn () => tr('sidebar.dashboard', [], null, 'dashboard') ?: 'لوحة التحكم')
+                    ->collapsible(false),
+                \Filament\Navigation\NavigationGroup::make()
+                    ->label(fn () => tr('sidebar.general_settings', [], null, 'dashboard') ?: 'الإعدادات العامة')
+                    ->collapsible(false),
+                \Filament\Navigation\NavigationGroup::make()
+                    ->label(fn () => tr('sidebar.clients', [], null, 'dashboard') ?: 'العملاء')
+                    ->collapsible(false),
+                \Filament\Navigation\NavigationGroup::make()
+                    ->label(fn () => tr('sidebar.finance', [], null, 'dashboard') ?: 'المالية')
+                    ->collapsible(false),
+                \Filament\Navigation\NavigationGroup::make()
+                    ->label(fn () => tr('sidebar.recruitment', [], null, 'dashboard') ?: 'التوظيف / الاستقدام')
+                    ->collapsible(false),
+                \Filament\Navigation\NavigationGroup::make()
+                    ->label(fn () => tr('sidebar.rental', [], null, 'dashboard') ?: 'قسم التأجير')
+                    ->collapsible(false),
+                \Filament\Navigation\NavigationGroup::make()
+                    ->label(fn () => tr('sidebar.system', [], null, 'dashboard') ?: 'النظام')
+                    ->collapsible(false),
+                \Filament\Navigation\NavigationGroup::make()
+                    ->label(fn () => tr('sidebar.hr', [], null, 'dashboard') ?: 'الموارد البشرية')
+                    ->collapsible(false),
             ]);
     }
 

@@ -15,14 +15,14 @@ class RecruitmentContractsReportsPage extends Page implements HasForms
     use InteractsWithForms;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
-    protected static ?string $navigationGroup = 'عقود الاستقدام';
-    protected static ?int $navigationSort = 105;
+    protected static ?string $navigationGroup = 'recruitment';
+    protected static ?int $navigationSort = 12;
+    protected static ?string $navigationTranslationKey = 'sidebar.recruitment.contracts_reports';
 
     public static function shouldRegisterNavigation(): bool
     {
         return auth()->user()?->can('recruitment_contracts.view_any') ?? false;
     }
-    protected static ?string $navigationTranslationKey = 'recruitment_contract.menu.reports';
     protected static string $view = 'filament.pages.recruitment.reports';
 
     protected static ?string $title = null;

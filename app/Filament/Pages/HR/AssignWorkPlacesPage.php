@@ -24,8 +24,9 @@ class AssignWorkPlacesPage extends Page implements HasForms, HasTable
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-map-pin';
-    protected static ?string $navigationGroup = 'الموارد البشرية';
-    protected static ?int $navigationSort = 170;
+    protected static ?string $navigationGroup = 'hr';
+    protected static ?int $navigationSort = 16;
+    protected static ?string $navigationTranslationKey = 'sidebar.hr.settings.assign_work_places';
     protected static string $view = 'filament.pages.hr.assign-work-places';
 
     public ?int $departmentId = null;

@@ -21,9 +21,9 @@ class CurrencyResource extends Resource
     protected static ?string $model = Currency::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
-    protected static ?string $navigationGroup = 'Settings';
-    protected static ?string $navigationTranslationKey = 'menu.settings.currencies';
-    protected static ?int $navigationSort = 20;
+    protected static ?string $navigationGroup = 'general_settings';
+    protected static ?int $navigationSort = 5;
+    protected static ?string $navigationTranslationKey = 'sidebar.general_settings.currencies';
 
     public static function form(Form $form): Form
     {

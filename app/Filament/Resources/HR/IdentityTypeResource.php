@@ -19,8 +19,9 @@ class IdentityTypeResource extends Resource
     protected static ?string $model = IdentityType::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-identification';
-    protected static ?string $navigationGroup = 'الموارد البشرية';
-    protected static ?int $navigationSort = 130;
+    protected static ?string $navigationGroup = 'hr';
+    protected static ?int $navigationSort = 12;
+    protected static ?string $navigationTranslationKey = 'sidebar.hr.settings.identity_types';
     protected static ?string $navigationTranslationKey = 'navigation.hr_identity_types';
 
     public static function form(Form $form): Form

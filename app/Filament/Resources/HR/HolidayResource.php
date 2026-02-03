@@ -19,8 +19,9 @@ class HolidayResource extends Resource
     protected static ?string $model = Holiday::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
-    protected static ?string $navigationGroup = 'الموارد البشرية';
-    protected static ?int $navigationSort = 440;
+    protected static ?string $navigationGroup = 'hr';
+    protected static ?int $navigationSort = 18;
+    protected static ?string $navigationTranslationKey = 'sidebar.hr.settings.holidays';
     protected static ?string $navigationTranslationKey = 'navigation.hr_holidays';
 
     public static function form(Form $form): Form

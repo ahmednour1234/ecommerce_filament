@@ -30,10 +30,10 @@ class ExpenseReportPage extends Page implements HasTable
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-arrow-trending-down';
-    protected static ?string $navigationGroup = 'Finance';
-    protected static ?int $navigationSort = 52;
+    protected static ?string $navigationGroup = 'finance';
+    protected static ?int $navigationSort = 7;
     protected static string $view = 'filament.pages.finance.expense-report';
-    protected static ?string $navigationTranslationKey = 'sidebar.finance.reports.expense';
+    protected static ?string $navigationTranslationKey = 'sidebar.finance.expense_report';
 
     public function table(Table $table): Table
     {

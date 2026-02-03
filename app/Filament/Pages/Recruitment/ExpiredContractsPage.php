@@ -11,14 +11,14 @@ class ExpiredContractsPage extends Page
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-trash';
-    protected static ?string $navigationGroup = 'عقود الاستقدام';
-    protected static ?int $navigationSort = 104;
+    protected static ?string $navigationGroup = 'recruitment';
+    protected static ?int $navigationSort = 11;
+    protected static ?string $navigationTranslationKey = 'sidebar.recruitment.expired_contracts';
 
     public static function shouldRegisterNavigation(): bool
     {
         return auth()->user()?->can('recruitment_contracts.view_any') ?? false;
     }
-    protected static ?string $navigationTranslationKey = 'recruitment_contract.menu.expired_contracts';
     protected static string $view = 'filament.pages.recruitment.expired-contracts';
 
     protected static ?string $title = null;

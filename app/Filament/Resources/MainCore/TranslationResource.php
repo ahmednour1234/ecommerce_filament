@@ -21,10 +21,9 @@ class TranslationResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-language';
 
-    protected static ?string $navigationGroup = 'Settings';
-    protected static ?string $navigationTranslationKey = 'menu.settings.translations';
-
-    protected static ?string $navigationLabel = 'Translations';
+    protected static ?string $navigationGroup = 'general_settings';
+    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationTranslationKey = 'sidebar.general_settings.translations';
 
     public static function form(Form $form): Form
     {

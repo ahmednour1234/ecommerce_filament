@@ -19,8 +19,9 @@ class DepartmentResource extends Resource
     protected static ?string $model = Department::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
-    protected static ?string $navigationGroup = 'الموارد البشرية';
-    protected static ?int $navigationSort = 110;
+    protected static ?string $navigationGroup = 'hr';
+    protected static ?int $navigationSort = 10;
+    protected static ?string $navigationTranslationKey = 'sidebar.hr.settings.departments';
     protected static ?string $navigationTranslationKey = 'navigation.hr_departments';
 
     public static function form(Form $form): Form

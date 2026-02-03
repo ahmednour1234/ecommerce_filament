@@ -19,9 +19,9 @@ class CancelRefundRequestsResource extends Resource
     protected static ?string $model = RentalCancelRefundRequest::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-x-circle';
-    protected static ?string $navigationGroup = 'Rental';
+    protected static ?string $navigationGroup = 'rental';
     protected static ?int $navigationSort = 3;
-    protected static ?string $navigationTranslationKey = 'navigation.rental_cancel_refund';
+    protected static ?string $navigationTranslationKey = 'sidebar.rental.cancel_refund_requests';
 
     public static function form(Form $form): Form
     {

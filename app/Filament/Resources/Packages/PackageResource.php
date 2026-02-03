@@ -21,9 +21,9 @@ class PackageResource extends Resource
     protected static ?string $model = Package::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-gift';
-    protected static ?string $navigationGroup = 'Recruitment';
-    protected static ?int $navigationSort = 10;
-    protected static ?string $navigationTranslationKey = 'navigation.offers';
+    protected static ?string $navigationGroup = 'recruitment';
+    protected static ?int $navigationSort = 8;
+    protected static ?string $navigationTranslationKey = 'sidebar.recruitment.packages';
 
     public static function form(Form $form): Form
     {

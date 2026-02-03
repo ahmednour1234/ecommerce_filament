@@ -19,8 +19,9 @@ class LoanTypeResource extends Resource
     protected static ?string $model = LoanType::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
-    protected static ?string $navigationGroup = 'الموارد البشرية';
-    protected static ?int $navigationSort = 510;
+    protected static ?string $navigationGroup = 'hr';
+    protected static ?int $navigationSort = 20;
+    protected static ?string $navigationTranslationKey = 'sidebar.hr.settings.loan_types';
     protected static ?string $navigationTranslationKey = 'navigation.hr_loan_types';
 
     public static function form(Form $form): Form

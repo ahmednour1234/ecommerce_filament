@@ -37,11 +37,10 @@ class IncomeReportPage extends Page implements HasTable, HasForms
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-arrow-trending-up';
-    protected static ?string $navigationGroup = 'Finance';
-    protected static ?int $navigationSort = 51;
+    protected static ?string $navigationGroup = 'finance';
+    protected static ?int $navigationSort = 6;
     protected static string $view = 'filament.pages.finance.income-report';
-
-    protected static ?string $navigationTranslationKey = 'sidebar.finance.reports.income';
+    protected static ?string $navigationTranslationKey = 'sidebar.finance.income_report';
 
     public ?array $data = [];
 

@@ -18,9 +18,9 @@ class NationalityResource extends Resource
     protected static ?string $model = Nationality::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-flag';
-    protected static ?string $navigationGroup = 'Recruitment';
-    protected static ?int $navigationSort = 3;
-    protected static ?string $navigationTranslationKey = 'navigation.recruitment_nationalities';
+    protected static ?string $navigationGroup = 'recruitment';
+    protected static ?int $navigationSort = 4;
+    protected static ?string $navigationTranslationKey = 'sidebar.recruitment.nationalities';
 
     public static function form(Form $form): Form
     {

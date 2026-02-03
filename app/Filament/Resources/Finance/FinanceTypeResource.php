@@ -20,8 +20,9 @@ class FinanceTypeResource extends Resource
     protected static ?string $model = FinanceType::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
-    protected static ?string $navigationGroup = 'Finance';
-    protected static ?int $navigationSort = 1;
+    protected static ?string $navigationGroup = 'finance';
+    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationTranslationKey = 'sidebar.finance.types';
 
     public static function form(Form $form): Form
     {

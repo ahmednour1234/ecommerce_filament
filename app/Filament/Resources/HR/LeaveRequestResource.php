@@ -23,8 +23,9 @@ class LeaveRequestResource extends Resource
     protected static ?string $model = LeaveRequest::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
-    protected static ?string $navigationGroup = 'الموارد البشرية';
-    protected static ?int $navigationSort = 430;
+    protected static ?string $navigationGroup = 'hr';
+    protected static ?int $navigationSort = 41;
+    protected static ?string $navigationTranslationKey = 'sidebar.hr.leaves_holidays.leave_requests';
     protected static ?string $navigationTranslationKey = 'navigation.hr_leave_requests';
 
     public static function form(Form $form): Form

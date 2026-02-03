@@ -19,8 +19,9 @@ class BankResource extends Resource
     protected static ?string $model = Bank::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-library';
-    protected static ?string $navigationGroup = 'الموارد البشرية';
-    protected static ?int $navigationSort = 150;
+    protected static ?string $navigationGroup = 'hr';
+    protected static ?int $navigationSort = 14;
+    protected static ?string $navigationTranslationKey = 'sidebar.hr.settings.banks';
     protected static ?string $navigationTranslationKey = 'navigation.hr_banks';
 
     public static function form(Form $form): Form

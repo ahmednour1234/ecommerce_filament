@@ -22,8 +22,9 @@ class PayrollRunResource extends Resource
     protected static ?string $model = PayrollRun::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
-    protected static ?string $navigationGroup = 'الموارد البشرية';
-    protected static ?int $navigationSort = 620;
+    protected static ?string $navigationGroup = 'hr';
+    protected static ?int $navigationSort = 60;
+    protected static ?string $navigationTranslationKey = 'sidebar.hr.payroll.payroll';
     protected static ?string $navigationTranslationKey = 'sidebar.hr.payroll';
 
     public static function form(Form $form): Form

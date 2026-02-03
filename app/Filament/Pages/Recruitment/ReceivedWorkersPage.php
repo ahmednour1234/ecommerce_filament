@@ -11,14 +11,14 @@ class ReceivedWorkersPage extends Page
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-arrow-down-tray';
-    protected static ?string $navigationGroup = 'عقود الاستقدام';
-    protected static ?int $navigationSort = 103;
+    protected static ?string $navigationGroup = 'recruitment';
+    protected static ?int $navigationSort = 10;
+    protected static ?string $navigationTranslationKey = 'sidebar.recruitment.received_workers';
 
     public static function shouldRegisterNavigation(): bool
     {
         return auth()->user()?->can('recruitment_contracts.view_any') ?? false;
     }
-    protected static ?string $navigationTranslationKey = 'recruitment_contract.menu.received_workers';
     protected static string $view = 'filament.pages.recruitment.received-workers';
 
     protected static ?string $title = null;

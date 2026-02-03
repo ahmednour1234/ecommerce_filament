@@ -16,9 +16,9 @@ class ArchivedContractsResource extends Resource
     protected static ?string $model = RentalContract::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-archive-box';
-    protected static ?string $navigationGroup = 'Rental';
+    protected static ?string $navigationGroup = 'rental';
     protected static ?int $navigationSort = 5;
-    protected static ?string $navigationTranslationKey = 'navigation.rental_archived';
+    protected static ?string $navigationTranslationKey = 'sidebar.rental.archived_contracts';
 
     public static function table(Table $table): Table
     {

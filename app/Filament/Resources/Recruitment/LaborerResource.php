@@ -25,9 +25,9 @@ class LaborerResource extends Resource
     protected static ?string $model = Laborer::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
-    protected static ?string $navigationGroup = 'Recruitment';
-    protected static ?int $navigationSort = 5;
-    protected static ?string $navigationTranslationKey = 'navigation.recruitment_laborers';
+    protected static ?string $navigationGroup = 'recruitment';
+    protected static ?int $navigationSort = 6;
+    protected static ?string $navigationTranslationKey = 'sidebar.recruitment.laborers';
 
     public static function form(Form $form): Form
     {

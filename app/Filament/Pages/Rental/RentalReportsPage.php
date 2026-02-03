@@ -10,9 +10,9 @@ class RentalReportsPage extends Page
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
-    protected static ?string $navigationGroup = 'Rental';
+    protected static ?string $navigationGroup = 'rental';
     protected static ?int $navigationSort = 6;
-    protected static ?string $navigationTranslationKey = 'navigation.rental_reports';
+    protected static ?string $navigationTranslationKey = 'sidebar.rental.reports';
 
     protected static string $view = 'filament.pages.rental.reports';
 
