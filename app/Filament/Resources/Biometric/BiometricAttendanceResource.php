@@ -21,7 +21,6 @@ class BiometricAttendanceResource extends Resource
     protected static ?string $navigationGroup = 'hr';
     protected static ?int $navigationSort = 31;
     protected static ?string $navigationTranslationKey = 'sidebar.hr.attendance.biometric_attendance';
-    protected static ?string $navigationTranslationKey = 'navigation.biometric_attendances';
 
     public static function form(Form $form): Form
     {
