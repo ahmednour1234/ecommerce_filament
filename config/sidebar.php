@@ -39,12 +39,6 @@ return [
             'permission' => null,
             'badge' => null,
             'children' => [
-                [
-                    'title' => 'sidebar.finance',
-                    'icon' => 'heroicon-o-currency-dollar',
-                    'url' => null,
-                    'permission' => null,
-                    'children' => [
                         [
                             'title' => 'sidebar.finance.types',
                             'icon' => 'heroicon-o-tag',
@@ -87,8 +81,6 @@ return [
                             'url' => fn() => \App\Filament\Pages\Finance\ExpenseReportPage::getUrl(),
                             'permission' => 'finance_reports.view',
                         ],
-                    ],
-                ],
             ],
         ],
         [
@@ -98,12 +90,6 @@ return [
             'permission' => null,
             'badge' => null,
             'children' => [
-                [
-                    'title' => 'sidebar.employment',
-                    'icon' => 'heroicon-o-briefcase',
-                    'url' => null,
-                    'permission' => null,
-                    'children' => [
                         [
                             'title' => 'sidebar.employment.agents',
                             'icon' => 'heroicon-o-user-circle',
@@ -146,14 +132,12 @@ return [
                             'url' => fn() => PackageResource::getUrl(),
                             'permission' => 'packages.view_any',
                         ],
-                    ],
-                ],
-                [
-                    'title' => 'sidebar.recruitment_contracts',
-                    'icon' => 'heroicon-o-document-text',
-                    'url' => fn() => RecruitmentContractResource::getUrl(),
-                    'permission' => 'recruitment_contracts.view_any',
-                ],
+                        [
+                            'title' => 'sidebar.recruitment_contracts',
+                            'icon' => 'heroicon-o-document-text',
+                            'url' => fn() => RecruitmentContractResource::getUrl(),
+                            'permission' => 'recruitment_contracts.view_any',
+                        ],
             ],
         ],
         [
@@ -163,12 +147,6 @@ return [
             'permission' => null,
             'badge' => null,
             'children' => [
-                [
-                    'title' => 'sidebar.rent_section',
-                    'icon' => 'heroicon-o-home-modern',
-                    'url' => null,
-                    'permission' => null,
-                    'children' => [
                         [
                             'title' => 'sidebar.rental.contracts',
                             'icon' => 'heroicon-o-document-text',
@@ -206,15 +184,13 @@ return [
                             'url' => fn() => \App\Filament\Pages\Rental\RentalReportsPage::getUrl(),
                             'permission' => 'rental_reports.view',
                         ],
-                    ],
-                ],
-                [
-                    'title' => 'sidebar.available_workers',
-                    'icon' => 'heroicon-o-user-group',
-                    'url' => fn() => LaborerResource::getUrl(),
-                    'permission' => 'laborers.view_any',
-                    'badge' => 'available_workers_count',
-                ],
+                        [
+                            'title' => 'sidebar.available_workers',
+                            'icon' => 'heroicon-o-user-group',
+                            'url' => fn() => LaborerResource::getUrl(),
+                            'permission' => 'laborers.view_any',
+                            'badge' => 'available_workers_count',
+                        ],
             ],
         ],
         [
@@ -224,12 +200,6 @@ return [
             'permission' => null,
             'badge' => null,
             'children' => [
-                [
-                    'title' => 'sidebar.system',
-                    'icon' => 'heroicon-o-cog-6-tooth',
-                    'url' => null,
-                    'permission' => null,
-                    'children' => [
                         [
                             'title' => 'sidebar.system.users',
                             'icon' => 'heroicon-o-users',
@@ -248,15 +218,7 @@ return [
                             'url' => fn() => \App\Filament\Resources\PermissionResource::getUrl(),
                             'permission' => 'permissions.view_any',
                         ],
-                    ],
-                ],
             ],
-        ],
-        [
-            'title' => 'sidebar.recruitment_contracts',
-            'icon' => 'heroicon-o-document-text',
-            'url' => fn() => RecruitmentContractResource::getUrl(),
-            'permission' => 'recruitment_contracts.view_any',
         ],
         [
             'title' => 'sidebar.hr',
