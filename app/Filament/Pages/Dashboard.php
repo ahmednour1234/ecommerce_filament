@@ -22,6 +22,8 @@ class Dashboard extends BaseDashboard implements HasForms
 
     protected static string $view = 'filament.pages.dashboard';
 
+    public ?array $data = [];
+
     public ?string $dateRange = 'year';
     public ?string $dateFrom = null;
     public ?string $dateTo = null;
@@ -30,19 +32,23 @@ class Dashboard extends BaseDashboard implements HasForms
 
     public function mount(): void
     {
+        parent::mount();
+
         $this->dateRange = session()->get('dashboard_date_range', 'year');
         $this->dateFrom = session()->get('dashboard_date_from');
         $this->dateTo = session()->get('dashboard_date_to');
         $this->finance_branch_id = session()->get('dashboard_finance_branch_id');
         $this->finance_type_id = session()->get('dashboard_finance_type_id');
 
-        $this->form->fill([
+        $this->data = [
             'dateRange' => $this->dateRange,
             'dateFrom' => $this->dateFrom,
             'dateTo' => $this->dateTo,
             'finance_branch_id' => $this->finance_branch_id,
             'finance_type_id' => $this->finance_type_id,
-        ]);
+        ];
+
+        $this->form->fill($this->data);
     }
 
     public function form(\Filament\Forms\Form $form): \Filament\Forms\Form
@@ -60,7 +66,7 @@ class Dashboard extends BaseDashboard implements HasForms
                             ])
                             ->default('year')
                             ->live()
-                            ->afterStateUpdated(function ($state) {
+                            ->afterStateUpdated(function ($state, $set) {
                                 $this->dateRange = $state;
                                 session()->put('dashboard_date_range', $state);
                                 $this->dispatch('$refresh');
@@ -70,7 +76,7 @@ class Dashboard extends BaseDashboard implements HasForms
                             ->label('من تاريخ')
                             ->visible(fn ($get) => $get('dateRange') === 'custom')
                             ->live()
-                            ->afterStateUpdated(function ($state) {
+                            ->afterStateUpdated(function ($state, $set) {
                                 $this->dateFrom = $state;
                                 session()->put('dashboard_date_from', $state);
                                 $this->dispatch('$refresh');
@@ -80,7 +86,7 @@ class Dashboard extends BaseDashboard implements HasForms
                             ->label('إلى تاريخ')
                             ->visible(fn ($get) => $get('dateRange') === 'custom')
                             ->live()
-                            ->afterStateUpdated(function ($state) {
+                            ->afterStateUpdated(function ($state, $set) {
                                 $this->dateTo = $state;
                                 session()->put('dashboard_date_to', $state);
                                 $this->dispatch('$refresh');
@@ -93,7 +99,7 @@ class Dashboard extends BaseDashboard implements HasForms
                             ->preload()
                             ->nullable()
                             ->live()
-                            ->afterStateUpdated(function ($state) {
+                            ->afterStateUpdated(function ($state, $set) {
                                 $this->finance_branch_id = $state;
                                 session()->put('dashboard_finance_branch_id', $state);
                                 $this->dispatch('$refresh');
@@ -106,7 +112,7 @@ class Dashboard extends BaseDashboard implements HasForms
                             ->preload()
                             ->nullable()
                             ->live()
-                            ->afterStateUpdated(function ($state) {
+                            ->afterStateUpdated(function ($state, $set) {
                                 $this->finance_type_id = $state;
                                 session()->put('dashboard_finance_type_id', $state);
                                 $this->dispatch('$refresh');

@@ -1,7 +1,9 @@
 <x-filament-panels::page>
     <div class="space-y-6">
         {{-- Filters --}}
-        {{ $this->form }}
+        <form wire:ignore.self>
+            {{ $this->form }}
+        </form>
 
         {{-- Header Widgets (FinanceStats + HRStats) --}}
         <x-filament-widgets::widgets
