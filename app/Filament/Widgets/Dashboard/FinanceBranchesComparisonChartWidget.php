@@ -42,7 +42,7 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
         $branchId      = session()->get('dashboard_finance_branch_id') ?? $user?->branch_id ?? null;
         $financeTypeId = session()->get('dashboard_finance_type_id') ?? null;
 
-        $cacheKey = "dashboard_finance_branches_comparison_v3_{$branchId}_{$financeTypeId}_{$from->toDateString()}_{$to->toDateString()}";
+        $cacheKey = "dashboard_finance_branches_comparison_v4_{$branchId}_{$financeTypeId}_{$from->toDateString()}_{$to->toDateString()}";
 
         try {
             return Cache::remember($cacheKey, 300, function () use ($from, $to, $branchId, $financeTypeId, $user) {

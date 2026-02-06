@@ -13,6 +13,7 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 class Dashboard extends BaseDashboard implements HasForms
 {
@@ -69,6 +70,7 @@ class Dashboard extends BaseDashboard implements HasForms
                             ->afterStateUpdated(function ($state, $set) {
                                 $this->dateRange = $state;
                                 session()->put('dashboard_date_range', $state);
+                                $this->flushWidgetsCache();
                                 $this->dispatch('$refresh');
                             }),
 
@@ -79,6 +81,7 @@ class Dashboard extends BaseDashboard implements HasForms
                             ->afterStateUpdated(function ($state, $set) {
                                 $this->dateFrom = $state;
                                 session()->put('dashboard_date_from', $state);
+                                $this->flushWidgetsCache();
                                 $this->dispatch('$refresh');
                             }),
 
@@ -89,6 +92,7 @@ class Dashboard extends BaseDashboard implements HasForms
                             ->afterStateUpdated(function ($state, $set) {
                                 $this->dateTo = $state;
                                 session()->put('dashboard_date_to', $state);
+                                $this->flushWidgetsCache();
                                 $this->dispatch('$refresh');
                             }),
 
@@ -97,11 +101,13 @@ class Dashboard extends BaseDashboard implements HasForms
                             ->options(fn () => Branch::where('status', 'active')->pluck('name', 'id'))
                             ->searchable()
                             ->preload()
+                            ->placeholder('جميع الفروع')
                             ->nullable()
                             ->live()
                             ->afterStateUpdated(function ($state, $set) {
                                 $this->finance_branch_id = $state;
                                 session()->put('dashboard_finance_branch_id', $state);
+                                $this->flushWidgetsCache();
                                 $this->dispatch('$refresh');
                             }),
 
@@ -115,6 +121,7 @@ class Dashboard extends BaseDashboard implements HasForms
                             ->afterStateUpdated(function ($state, $set) {
                                 $this->finance_type_id = $state;
                                 session()->put('dashboard_finance_type_id', $state);
+                                $this->flushWidgetsCache();
                                 $this->dispatch('$refresh');
                             }),
                     ])
@@ -146,6 +153,38 @@ class Dashboard extends BaseDashboard implements HasForms
     {
         $user = auth()->user();
         return $user->branch_id ?? null;
+    }
+
+    protected function flushWidgetsCache(): void
+    {
+        $dateRange = $this->dateRange ?? session()->get('dashboard_date_range', 'year');
+        $dateFrom = $this->dateFrom ?? session()->get('dashboard_date_from');
+        $dateTo = $this->dateTo ?? session()->get('dashboard_date_to');
+
+        if ($dateRange === 'today') {
+            $from = now()->startOfDay();
+            $to = now()->endOfDay();
+        } elseif ($dateRange === 'year') {
+            $from = now()->startOfYear()->startOfDay();
+            $to = now()->endOfDay();
+        } else {
+            $from = $dateFrom ? Carbon::parse($dateFrom)->startOfDay() : now()->startOfYear()->startOfDay();
+            $to = $dateTo ? Carbon::parse($dateTo)->endOfDay() : now()->endOfDay();
+        }
+
+        $branchId = $this->finance_branch_id ?? session()->get('dashboard_finance_branch_id') ?? null;
+        $financeTypeId = $this->finance_type_id ?? session()->get('dashboard_finance_type_id') ?? null;
+
+        $cacheKeys = [
+            "dashboard_finance_stats_{$branchId}_{$financeTypeId}_{$from->toDateString()}_{$to->toDateString()}",
+            "dashboard_finance_branches_comparison_v4_{$branchId}_{$financeTypeId}_{$from->toDateString()}_{$to->toDateString()}",
+            "dashboard_finance_branches_table_{$branchId}_{$financeTypeId}_{$from->toDateString()}_{$to->toDateString()}",
+            "dashboard_finance_top_types_{$branchId}_{$financeTypeId}_{$from->toDateString()}_{$to->toDateString()}",
+        ];
+
+        foreach ($cacheKeys as $key) {
+            Cache::forget($key);
+        }
     }
 
     protected function getHeaderWidgets(): array
