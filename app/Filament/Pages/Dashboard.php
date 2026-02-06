@@ -22,7 +22,7 @@ class Dashboard extends BaseDashboard implements HasForms
 
     protected static string $view = 'filament.pages.dashboard';
 
-    public ?string $dateRange = 'month';
+    public ?string $dateRange = 'year';
     public ?string $dateFrom = null;
     public ?string $dateTo = null;
     public ?int $finance_branch_id = null;
@@ -30,7 +30,7 @@ class Dashboard extends BaseDashboard implements HasForms
 
     public function mount(): void
     {
-        $this->dateRange = session()->get('dashboard_date_range', 'month');
+        $this->dateRange = session()->get('dashboard_date_range', 'year');
         $this->dateFrom = session()->get('dashboard_date_from');
         $this->dateTo = session()->get('dashboard_date_to');
         $this->finance_branch_id = session()->get('dashboard_finance_branch_id');
@@ -55,14 +55,15 @@ class Dashboard extends BaseDashboard implements HasForms
                             ->label('الفترة الزمنية')
                             ->options([
                                 'today' => 'اليوم',
-                                'month' => 'هذا الشهر',
+                                'year' => 'هذا العام',
                                 'custom' => 'مخصص',
                             ])
-                            ->default('month')
+                            ->default('year')
                             ->live()
                             ->afterStateUpdated(function ($state) {
                                 $this->dateRange = $state;
                                 session()->put('dashboard_date_range', $state);
+                                $this->dispatch('$refresh');
                             }),
 
                         \Filament\Forms\Components\DatePicker::make('dateFrom')
@@ -72,6 +73,7 @@ class Dashboard extends BaseDashboard implements HasForms
                             ->afterStateUpdated(function ($state) {
                                 $this->dateFrom = $state;
                                 session()->put('dashboard_date_from', $state);
+                                $this->dispatch('$refresh');
                             }),
 
                         \Filament\Forms\Components\DatePicker::make('dateTo')
@@ -81,6 +83,7 @@ class Dashboard extends BaseDashboard implements HasForms
                             ->afterStateUpdated(function ($state) {
                                 $this->dateTo = $state;
                                 session()->put('dashboard_date_to', $state);
+                                $this->dispatch('$refresh');
                             }),
 
                         \Filament\Forms\Components\Select::make('finance_branch_id')
@@ -93,6 +96,7 @@ class Dashboard extends BaseDashboard implements HasForms
                             ->afterStateUpdated(function ($state) {
                                 $this->finance_branch_id = $state;
                                 session()->put('dashboard_finance_branch_id', $state);
+                                $this->dispatch('$refresh');
                             }),
 
                         \Filament\Forms\Components\Select::make('finance_type_id')
@@ -105,10 +109,12 @@ class Dashboard extends BaseDashboard implements HasForms
                             ->afterStateUpdated(function ($state) {
                                 $this->finance_type_id = $state;
                                 session()->put('dashboard_finance_type_id', $state);
+                                $this->dispatch('$refresh');
                             }),
                     ])
                     ->columns(5)
-                    ->collapsible(),
+                    ->collapsible()
+                    ->collapsed(false),
             ])
             ->statePath('data')
             ->live();
@@ -116,7 +122,7 @@ class Dashboard extends BaseDashboard implements HasForms
 
     protected function getDateRange(): array
     {
-        $dateRange = $this->dateRange ?? 'month';
+        $dateRange = $this->dateRange ?? 'year';
 
         if ($dateRange === 'today') {
             return [now()->startOfDay(), now()->endOfDay()];
