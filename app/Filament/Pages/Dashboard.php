@@ -57,6 +57,7 @@ class Dashboard extends BaseDashboard implements HasForms
         return $form
             ->schema([
                 \Filament\Forms\Components\Section::make('الفلاتر')
+                    ->description('استخدم الفلاتر أدناه لتصفية البيانات المالية')
                     ->schema([
                         \Filament\Forms\Components\Select::make('dateRange')
                             ->label('الفترة الزمنية')
@@ -66,9 +67,11 @@ class Dashboard extends BaseDashboard implements HasForms
                                 'custom' => 'مخصص',
                             ])
                             ->default('year')
+                            ->required()
                             ->live()
                             ->afterStateUpdated(function ($state, $set) {
                                 $this->dateRange = $state;
+                                $this->data['dateRange'] = $state;
                                 session()->put('dashboard_date_range', $state);
                                 $this->flushWidgetsCache();
                                 $this->dispatch('$refresh');
@@ -80,6 +83,7 @@ class Dashboard extends BaseDashboard implements HasForms
                             ->live()
                             ->afterStateUpdated(function ($state, $set) {
                                 $this->dateFrom = $state;
+                                $this->data['dateFrom'] = $state;
                                 session()->put('dashboard_date_from', $state);
                                 $this->flushWidgetsCache();
                                 $this->dispatch('$refresh');
@@ -91,6 +95,7 @@ class Dashboard extends BaseDashboard implements HasForms
                             ->live()
                             ->afterStateUpdated(function ($state, $set) {
                                 $this->dateTo = $state;
+                                $this->data['dateTo'] = $state;
                                 session()->put('dashboard_date_to', $state);
                                 $this->flushWidgetsCache();
                                 $this->dispatch('$refresh');
@@ -106,6 +111,7 @@ class Dashboard extends BaseDashboard implements HasForms
                             ->live()
                             ->afterStateUpdated(function ($state, $set) {
                                 $this->finance_branch_id = $state;
+                                $this->data['finance_branch_id'] = $state;
                                 session()->put('dashboard_finance_branch_id', $state);
                                 $this->flushWidgetsCache();
                                 $this->dispatch('$refresh');
@@ -116,10 +122,12 @@ class Dashboard extends BaseDashboard implements HasForms
                             ->options(fn () => FinanceType::where('is_active', true)->get()->pluck('name_text', 'id'))
                             ->searchable()
                             ->preload()
+                            ->placeholder('جميع الأنواع')
                             ->nullable()
                             ->live()
                             ->afterStateUpdated(function ($state, $set) {
                                 $this->finance_type_id = $state;
+                                $this->data['finance_type_id'] = $state;
                                 session()->put('dashboard_finance_type_id', $state);
                                 $this->flushWidgetsCache();
                                 $this->dispatch('$refresh');
@@ -127,7 +135,8 @@ class Dashboard extends BaseDashboard implements HasForms
                     ])
                     ->columns(5)
                     ->collapsible()
-                    ->collapsed(false),
+                    ->collapsed(false)
+                    ->persistentCollapsed(false),
             ])
             ->statePath('data')
             ->live();
