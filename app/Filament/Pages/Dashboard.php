@@ -13,41 +13,45 @@ use App\Models\Finance\FinanceType;
 use App\Models\MainCore\Branch;
 use App\Models\MainCore\Currency;
 use Filament\Actions\Action;
-use Filament\Forms\Components\Actions\Action as FormAction;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Cache;
 
-class Dashboard extends BaseDashboard implements HasForms
+class Dashboard extends BaseDashboard
 {
-    use InteractsWithForms;
-
     protected static ?string $navigationIcon = 'heroicon-o-home';
-
     protected static string $view = 'filament.pages.dashboard';
 
-    public ?array $data = [];
+    /**
+     * Used by the modal form (Filament Action form state)
+     */
+    public array $formState = [];
+
+    /**
+     * Parsed + validated filters used by widgets
+     */
     public array $filters = [];
-    public bool $isFiltersModalOpen = false;
 
     public function mount(): void
     {
         parent::mount();
 
+        // Parse from query string (request)
         $this->filters = DashboardFilterHelper::parseFiltersFromRequest();
+        $this->filters = DashboardFilterHelper::validateDateRange($this->filters);
 
-        $this->data = [
+        // Prepare modal form state
+        $this->formState = [
             'date_from' => $this->filters['date_from']?->format('Y-m-d'),
             'date_to' => $this->filters['date_to']?->format('Y-m-d'),
             'branch_id' => $this->filters['branch_id'],
-            'transaction_type' => $this->filters['transaction_type'],
+            'transaction_type' => $this->filters['transaction_type'] ?? 'all',
             'finance_type_id' => $this->filters['finance_type_id'],
             'revenue_type_id' => $this->filters['revenue_type_id'],
             'expense_type_id' => $this->filters['expense_type_id'],
             'currency_id' => $this->filters['currency_id'],
-            'order_status' => $this->filters['order_status'],
+            'order_status' => $this->filters['order_status'] ?? 'all',
         ];
     }
 
@@ -56,158 +60,172 @@ class Dashboard extends BaseDashboard implements HasForms
         return $this->filters;
     }
 
-
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('filters')
-                ->label('تحديد الفترة')
+            Action::make('openFilters')
+                ->label('الفلاتر')
                 ->icon('heroicon-o-funnel')
                 ->color('primary')
                 ->button()
-                ->outlined(false)
                 ->modalHeading('فلاتر لوحة التحكم')
-                ->modalDescription('استخدم الفلاتر أدناه لتصفية البيانات')
-                ->modalSubmitActionLabel('تطبيق')
-                ->modalCancelActionLabel('إلغاء')
+                ->modalDescription('اختر الفترة والفروع/الأنواع لتصفية كل الإحصائيات والجداول والشارتات.')
                 ->modalWidth('4xl')
-                ->form([
-                    \Filament\Forms\Components\DatePicker::make('date_from')
-                        ->label('من تاريخ')
-                        ->default(fn () => $this->data['date_from'] ?? now()->startOfMonth()->format('Y-m-d'))
-                        ->required()
-                        ->live(),
-
-                    \Filament\Forms\Components\DatePicker::make('date_to')
-                        ->label('إلى تاريخ')
-                        ->default(fn () => $this->data['date_to'] ?? now()->endOfMonth()->format('Y-m-d'))
-                        ->required()
-                        ->live(),
-
-                    \Filament\Forms\Components\Select::make('branch_id')
-                        ->label('الفرع')
-                        ->options(fn () => Branch::where('status', 'active')->pluck('name', 'id'))
-                        ->searchable()
-                        ->preload()
-                        ->placeholder('جميع الفروع')
-                        ->nullable()
-                        ->default(fn () => $this->data['branch_id'] ?? null)
-                        ->live(),
-
-                    \Filament\Forms\Components\Select::make('transaction_type')
-                        ->label('نوع المعاملة')
-                        ->options([
-                            'all' => 'الكل',
-                            'revenue' => 'إيرادات',
-                            'expense' => 'مصروفات',
-                        ])
-                        ->default(fn () => $this->data['transaction_type'] ?? 'all')
-                        ->live(),
-
-                    \Filament\Forms\Components\Select::make('finance_type_id')
-                        ->label('نوع المالية')
-                        ->options(fn () => FinanceType::where('is_active', true)->get()->pluck('name_text', 'id'))
-                        ->searchable()
-                        ->preload()
-                        ->placeholder('جميع الأنواع')
-                        ->nullable()
-                        ->default(fn () => $this->data['finance_type_id'] ?? null)
-                        ->live(),
-
-                    \Filament\Forms\Components\Select::make('revenue_type_id')
-                        ->label('نوع الإيراد')
-                        ->options(fn () => FinanceType::where('is_active', true)->where('kind', 'income')->get()->pluck('name_text', 'id'))
-                        ->searchable()
-                        ->preload()
-                        ->placeholder('جميع أنواع الإيرادات')
-                        ->nullable()
-                        ->visible(fn ($get) => $get('transaction_type') === 'revenue' || $get('transaction_type') === 'all')
-                        ->default(fn () => $this->data['revenue_type_id'] ?? null)
-                        ->live(),
-
-                    \Filament\Forms\Components\Select::make('expense_type_id')
-                        ->label('نوع المصروف')
-                        ->options(fn () => FinanceType::where('is_active', true)->where('kind', 'expense')->get()->pluck('name_text', 'id'))
-                        ->searchable()
-                        ->preload()
-                        ->placeholder('جميع أنواع المصروفات')
-                        ->nullable()
-                        ->visible(fn ($get) => $get('transaction_type') === 'expense' || $get('transaction_type') === 'all')
-                        ->default(fn () => $this->data['expense_type_id'] ?? null)
-                        ->live(),
-
-                    \Filament\Forms\Components\Select::make('currency_id')
-                        ->label('العملة')
-                        ->options(fn () => Currency::where('is_active', true)->pluck('name', 'id'))
-                        ->searchable()
-                        ->preload()
-                        ->placeholder('جميع العملات')
-                        ->nullable()
-                        ->default(fn () => $this->data['currency_id'] ?? null)
-                        ->live(),
-
-                    \Filament\Forms\Components\Select::make('order_status')
-                        ->label('حالة الطلب')
-                        ->options([
-                            'all' => 'الكل',
-                            'pending' => 'قيد الانتظار',
-                            'processing' => 'قيد المعالجة',
-                            'completed' => 'مكتمل',
-                            'cancelled' => 'ملغي',
-                            'refunded' => 'مسترد',
-                        ])
-                        ->default(fn () => $this->data['order_status'] ?? 'all')
-                        ->live(),
-                ])
-                ->fillForm(function () {
-                    return $this->data;
-                })
+                ->modalSubmitActionLabel('تطبيق')
+                ->modalCancelActionLabel('إغلاق')
+                ->fillForm(fn () => $this->formState)
+                ->form($this->filtersSchema())
                 ->action(function (array $data) {
-                    $this->data = $data;
-                    $this->updateFilters();
+                    $this->applyFilters($data);
                 })
                 ->extraModalFooterActions([
-                    Action::make('reset')
-                        ->label('إعادة تعيين')
+                    Action::make('resetFilters')
+                        ->label('Reset')
                         ->color('gray')
                         ->action(function () {
-                            $defaults = DashboardFilterHelper::getDefaultFilters();
-                            $this->data = [
-                                'date_from' => $defaults['date_from']->format('Y-m-d'),
-                                'date_to' => $defaults['date_to']->format('Y-m-d'),
-                                'branch_id' => null,
-                                'transaction_type' => 'all',
-                                'finance_type_id' => null,
-                                'revenue_type_id' => null,
-                                'expense_type_id' => null,
-                                'currency_id' => null,
-                                'order_status' => null,
-                            ];
-                            $this->updateFilters();
+                            $this->resetToDefaults();
                         }),
                 ]),
         ];
     }
 
-    public function updateFilters(): void
+    private function filtersSchema(): array
     {
+        return [
+            DatePicker::make('date_from')
+                ->label('من تاريخ')
+                ->required()
+                ->default(fn () => $this->formState['date_from'] ?? now()->startOfMonth()->format('Y-m-d'))
+                ->live(),
+
+            DatePicker::make('date_to')
+                ->label('إلى تاريخ')
+                ->required()
+                ->default(fn () => $this->formState['date_to'] ?? now()->endOfMonth()->format('Y-m-d'))
+                ->live(),
+
+            Select::make('branch_id')
+                ->label('الفرع')
+                ->options(fn () => Branch::where('status', 'active')->pluck('name', 'id'))
+                ->searchable()
+                ->preload()
+                ->placeholder('جميع الفروع')
+                ->nullable()
+                ->default(fn () => $this->formState['branch_id'] ?? null)
+                ->live(),
+
+            Select::make('transaction_type')
+                ->label('نوع المعاملة')
+                ->options([
+                    'all' => 'الكل',
+                    'revenue' => 'إيرادات',
+                    'expense' => 'مصروفات',
+                ])
+                ->default(fn () => $this->formState['transaction_type'] ?? 'all')
+                ->live(),
+
+            Select::make('finance_type_id')
+                ->label('نوع المالية')
+                ->options(fn () => FinanceType::where('is_active', true)->pluck('name_text', 'id'))
+                ->searchable()
+                ->preload()
+                ->placeholder('جميع الأنواع')
+                ->nullable()
+                ->default(fn () => $this->formState['finance_type_id'] ?? null)
+                ->live(),
+
+            Select::make('revenue_type_id')
+                ->label('نوع الإيراد')
+                ->options(fn () => FinanceType::where('is_active', true)->where('kind', 'income')->pluck('name_text', 'id'))
+                ->searchable()
+                ->preload()
+                ->placeholder('جميع أنواع الإيرادات')
+                ->nullable()
+                ->visible(fn ($get) => in_array($get('transaction_type'), ['revenue', 'all']))
+                ->default(fn () => $this->formState['revenue_type_id'] ?? null)
+                ->live(),
+
+            Select::make('expense_type_id')
+                ->label('نوع المصروف')
+                ->options(fn () => FinanceType::where('is_active', true)->where('kind', 'expense')->pluck('name_text', 'id'))
+                ->searchable()
+                ->preload()
+                ->placeholder('جميع أنواع المصروفات')
+                ->nullable()
+                ->visible(fn ($get) => in_array($get('transaction_type'), ['expense', 'all']))
+                ->default(fn () => $this->formState['expense_type_id'] ?? null)
+                ->live(),
+
+            Select::make('currency_id')
+                ->label('العملة')
+                ->options(fn () => Currency::where('is_active', true)->pluck('name', 'id'))
+                ->searchable()
+                ->preload()
+                ->placeholder('جميع العملات')
+                ->nullable()
+                ->default(fn () => $this->formState['currency_id'] ?? null)
+                ->live(),
+
+            Select::make('order_status')
+                ->label('حالة الطلب')
+                ->options([
+                    'all' => 'الكل',
+                    'pending' => 'قيد الانتظار',
+                    'processing' => 'قيد المعالجة',
+                    'completed' => 'مكتمل',
+                    'cancelled' => 'ملغي',
+                    'refunded' => 'مسترد',
+                ])
+                ->default(fn () => $this->formState['order_status'] ?? 'all')
+                ->live(),
+        ];
+    }
+
+    private function applyFilters(array $data): void
+    {
+        // Save form state
+        $this->formState = $data;
+
+        // Build internal filters
         $this->filters = [
-            'date_from' => $this->data['date_from'] ? Carbon::parse($this->data['date_from'])->startOfDay() : null,
-            'date_to' => $this->data['date_to'] ? Carbon::parse($this->data['date_to'])->endOfDay() : null,
-            'branch_id' => $this->data['branch_id'] ? (int) $this->data['branch_id'] : null,
-            'transaction_type' => $this->data['transaction_type'] ?? 'all',
-            'finance_type_id' => $this->data['finance_type_id'] ? (int) $this->data['finance_type_id'] : null,
-            'revenue_type_id' => $this->data['revenue_type_id'] ? (int) $this->data['revenue_type_id'] : null,
-            'expense_type_id' => $this->data['expense_type_id'] ? (int) $this->data['expense_type_id'] : null,
-            'currency_id' => $this->data['currency_id'] ? (int) $this->data['currency_id'] : null,
-            'order_status' => $this->data['order_status'] && $this->data['order_status'] !== 'all' ? $this->data['order_status'] : null,
+            'date_from' => !empty($data['date_from']) ? Carbon::parse($data['date_from'])->startOfDay() : null,
+            'date_to' => !empty($data['date_to']) ? Carbon::parse($data['date_to'])->endOfDay() : null,
+            'branch_id' => !empty($data['branch_id']) ? (int) $data['branch_id'] : null,
+            'transaction_type' => $data['transaction_type'] ?? 'all',
+            'finance_type_id' => !empty($data['finance_type_id']) ? (int) $data['finance_type_id'] : null,
+            'revenue_type_id' => !empty($data['revenue_type_id']) ? (int) $data['revenue_type_id'] : null,
+            'expense_type_id' => !empty($data['expense_type_id']) ? (int) $data['expense_type_id'] : null,
+            'currency_id' => !empty($data['currency_id']) ? (int) $data['currency_id'] : null,
+            'order_status' => (!empty($data['order_status']) && $data['order_status'] !== 'all') ? $data['order_status'] : null,
         ];
 
         $this->filters = DashboardFilterHelper::validateDateRange($this->filters);
 
         $queryString = DashboardFilterHelper::buildFilterQueryString($this->filters);
 
-        $this->redirect(route('filament.admin.pages.dashboard') . ($queryString ? '?' . $queryString : ''), navigate: true);
+        $this->redirect(
+            route('filament.admin.pages.dashboard') . ($queryString ? '?' . $queryString : ''),
+            navigate: true
+        );
+    }
+
+    private function resetToDefaults(): void
+    {
+        $defaults = DashboardFilterHelper::getDefaultFilters();
+
+        $data = [
+            'date_from' => $defaults['date_from']->format('Y-m-d'),
+            'date_to' => $defaults['date_to']->format('Y-m-d'),
+            'branch_id' => null,
+            'transaction_type' => 'all',
+            'finance_type_id' => null,
+            'revenue_type_id' => null,
+            'expense_type_id' => null,
+            'currency_id' => null,
+            'order_status' => 'all',
+        ];
+
+        $this->applyFilters($data);
     }
 
     protected function getHeaderWidgets(): array
@@ -233,4 +251,3 @@ class Dashboard extends BaseDashboard implements HasForms
         return tr('menu.dashboard', 'لوحة التحكم');
     }
 }
-
