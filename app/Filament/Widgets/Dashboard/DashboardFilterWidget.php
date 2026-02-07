@@ -3,12 +3,8 @@
 namespace App\Filament\Widgets\Dashboard;
 
 use App\Helpers\DashboardFilterHelper;
-use App\Models\Finance\FinanceType;
-use App\Models\MainCore\Branch;
-use App\Models\MainCore\Currency;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Widgets\Widget;
@@ -50,26 +46,27 @@ class DashboardFilterWidget extends Widget implements HasForms
         ];
     }
 
-    protected function getFilterFormSchema(): array
+    public function filterForm(\Filament\Forms\Form $form): \Filament\Forms\Form
     {
-        return [
-            Grid::make(2)
-                ->schema([
-                    DatePicker::make('date_from')
-                        ->label('Start date')
-                        ->required()
-                        ->default(fn () => $this->formState['date_from'] ?? now()->startOfMonth()->format('Y-m-d'))
-                        ->displayFormat('d/m/Y')
-                        ->native(false),
+        return $form
+            ->schema([
+                Grid::make(2)
+                    ->schema([
+                        DatePicker::make('date_from')
+                            ->label('Start date')
+                            ->required()
+                            ->default(fn () => $this->formState['date_from'] ?? now()->startOfMonth()->format('Y-m-d'))
+                            ->displayFormat('d/m/Y')
+                            ->native(false),
 
-                    DatePicker::make('date_to')
-                        ->label('End date')
-                        ->required()
-                        ->default(fn () => $this->formState['date_to'] ?? now()->endOfMonth()->format('Y-m-d'))
-                        ->displayFormat('d/m/Y')
-                        ->native(false),
-                ]),
-        ];
+                        DatePicker::make('date_to')
+                            ->label('End date')
+                            ->required()
+                            ->default(fn () => $this->formState['date_to'] ?? now()->endOfMonth()->format('Y-m-d'))
+                            ->displayFormat('d/m/Y')
+                            ->native(false),
+                    ]),
+            ]);
     }
 
     public function applyFilters(): void
