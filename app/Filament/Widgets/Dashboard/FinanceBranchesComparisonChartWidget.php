@@ -18,13 +18,7 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
 
     protected function getData(): array
     {
-        $dashboard = $this->getOwner();
-        
-        if (!$dashboard instanceof Dashboard) {
-            return $this->getEmptyData();
-        }
-
-        $filters = $dashboard->getFilters();
+        $filters = \App\Helpers\DashboardFilterHelper::parseFiltersFromRequest();
         $service = app(DashboardService::class);
         
         try {

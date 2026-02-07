@@ -16,13 +16,7 @@ class OrderStatsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $dashboard = $this->getOwner();
-        
-        if (!$dashboard instanceof Dashboard) {
-            return [];
-        }
-
-        $filters = $dashboard->getFilters();
+        $filters = \App\Helpers\DashboardFilterHelper::parseFiltersFromRequest();
         $service = app(DashboardService::class);
         $stats = $service->getOrderStats($filters);
 

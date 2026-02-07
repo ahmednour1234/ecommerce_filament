@@ -17,13 +17,7 @@ class FinanceStatsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $dashboard = $this->getOwner();
-        
-        if (!$dashboard instanceof Dashboard) {
-            return [];
-        }
-
-        $filters = $dashboard->getFilters();
+        $filters = \App\Helpers\DashboardFilterHelper::parseFiltersFromRequest();
         $service = app(DashboardService::class);
         $kpis = $service->getFinancialKpis($filters);
 

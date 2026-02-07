@@ -20,13 +20,7 @@ class FinanceBranchesTableWidget extends BaseWidget
 
     public function table(Table $table): Table
     {
-        $dashboard = $this->getOwner();
-        
-        if (!$dashboard instanceof Dashboard) {
-            return $table->query(fn () => BranchTransaction::query()->whereRaw('1 = 0'));
-        }
-
-        $filters = $dashboard->getFilters();
+        $filters = \App\Helpers\DashboardFilterHelper::parseFiltersFromRequest();
         $service = app(DashboardService::class);
         $branchesData = $service->getBranchFinancialSummary($filters);
 

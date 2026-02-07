@@ -28,19 +28,10 @@ class HRStatsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $dashboard = $this->getOwner();
-        
-        if ($dashboard instanceof \App\Filament\Pages\Dashboard) {
-            $filters = $dashboard->getFilters();
-            $from = $filters['date_from'] ?? now()->startOfMonth();
-            $to = $filters['date_to'] ?? now()->endOfMonth();
-            $branchId = $filters['branch_id'] ?? null;
-        } else {
-            $from = now()->startOfMonth();
-            $to = now()->endOfMonth();
-            $user = auth()->user();
-            $branchId = $user->branch_id ?? $this->branch_id ?? null;
-        }
+        $filters = \App\Helpers\DashboardFilterHelper::parseFiltersFromRequest();
+        $from = $filters['date_from'] ?? now()->startOfMonth();
+        $to = $filters['date_to'] ?? now()->endOfMonth();
+        $branchId = $filters['branch_id'] ?? null;
 
         $cacheKey = "dashboard_hr_stats_{$branchId}_{$from->toDateString()}_{$to->toDateString()}";
 
