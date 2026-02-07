@@ -15,6 +15,7 @@ use App\Models\MainCore\Currency;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Grid;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Illuminate\Support\Carbon;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -35,11 +36,6 @@ class Dashboard extends BaseDashboard implements HasForms
      */
     public array $filters = [];
 
-    /**
-     * Livewire event listeners for auto-opening filters modal
-     */
-    protected $listeners = ['open-dashboard-filters' => 'openFiltersModal'];
-
     public function mount(): void
     {
         parent::mount();
@@ -48,7 +44,7 @@ class Dashboard extends BaseDashboard implements HasForms
         $this->filters = DashboardFilterHelper::parseFiltersFromRequest();
         $this->filters = DashboardFilterHelper::validateDateRange($this->filters);
 
-        // Prepare modal form state
+        // Prepare form state
         $this->formState = [
             'date_from' => $this->filters['date_from']?->format('Y-m-d'),
             'date_to' => $this->filters['date_to']?->format('Y-m-d'),
@@ -59,6 +55,37 @@ class Dashboard extends BaseDashboard implements HasForms
             'expense_type_id' => $this->filters['expense_type_id'],
             'currency_id' => $this->filters['currency_id'],
             'order_status' => $this->filters['order_status'] ?? 'all',
+        ];
+
+        $this->filterForm->fill($this->formState);
+    }
+
+    protected function getForms(): array
+    {
+        return [
+            'filterForm',
+        ];
+    }
+
+    protected function getFilterFormSchema(): array
+    {
+        return [
+            Grid::make(2)
+                ->schema([
+                    DatePicker::make('date_from')
+                        ->label('Start date')
+                        ->required()
+                        ->default(fn () => $this->formState['date_from'] ?? now()->startOfMonth()->format('Y-m-d'))
+                        ->displayFormat('d/m/Y')
+                        ->native(false),
+
+                    DatePicker::make('date_to')
+                        ->label('End date')
+                        ->required()
+                        ->default(fn () => $this->formState['date_to'] ?? now()->endOfMonth()->format('Y-m-d'))
+                        ->displayFormat('d/m/Y')
+                        ->native(false),
+                ]),
         ];
     }
 
@@ -76,41 +103,9 @@ class Dashboard extends BaseDashboard implements HasForms
         return ($request->has('date_from') && $request->has('date_to')) || $request->boolean('filters');
     }
 
-    /**
-     * Open the filters modal programmatically (called by Livewire event from Alpine.js)
-     */
-    public function openFiltersModal(): void
-    {
-        $this->mountAction('filters');
-    }
-
     protected function getHeaderActions(): array
     {
-        return [
-            Action::make('filters')
-                ->label('الفلاتر')
-                ->icon('heroicon-o-funnel')
-                ->color('primary')
-                ->button()
-                ->modalHeading('فلاتر لوحة التحكم')
-                ->modalDescription('اختر الفترة والفروع/الأنواع لتصفية كل الإحصائيات والجداول والشارتات.')
-                ->modalWidth('4xl')
-                ->modalSubmitActionLabel('تطبيق')
-                ->modalCancelActionLabel('إغلاق')
-                ->fillForm(fn () => $this->formState)
-                ->form($this->filtersSchema())
-                ->action(function (array $data) {
-                    $this->applyFilters($data);
-                })
-                ->extraModalFooterActions([
-                    Action::make('resetFilters')
-                        ->label('Reset')
-                        ->color('gray')
-                        ->action(function () {
-                            $this->resetToDefaults();
-                        }),
-                ]),
-        ];
+        return [];
     }
 
     private function filtersSchema(): array
@@ -205,8 +200,10 @@ class Dashboard extends BaseDashboard implements HasForms
         ];
     }
 
-    private function applyFilters(array $data): void
+    public function applyFilters(): void
     {
+        $data = $this->filterForm->getState();
+
         // Save form state
         $this->formState = $data;
 
@@ -233,23 +230,17 @@ class Dashboard extends BaseDashboard implements HasForms
         );
     }
 
-    private function resetToDefaults(): void
+
+    public function resetToDefaults(): void
     {
         $defaults = DashboardFilterHelper::getDefaultFilters();
 
-        $data = [
+        $this->filterForm->fill([
             'date_from' => $defaults['date_from']->format('Y-m-d'),
             'date_to' => $defaults['date_to']->format('Y-m-d'),
-            'branch_id' => null,
-            'transaction_type' => 'all',
-            'finance_type_id' => null,
-            'revenue_type_id' => null,
-            'expense_type_id' => null,
-            'currency_id' => null,
-            'order_status' => 'all',
-        ];
+        ]);
 
-        $this->applyFilters($data);
+        $this->applyFilters();
     }
 
     protected function getHeaderWidgets(): array
