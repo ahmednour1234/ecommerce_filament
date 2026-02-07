@@ -92,32 +92,34 @@ class PdfExport
      */
     protected function getViewData(): array
     {
-        // Rows: نحول كل row لarray وبعدين ننضف كل cell كـ string
-        $cleanRows = $this->data->map(function ($row) {
+        $cleanHeaders = array_values(array_map(fn ($h) => $this->preserveUtf8($h), $this->headers));
+        $cleanTitle = $this->preserveUtf8($this->title);
+
+        $cleanRows = $this->data->map(function ($row) use ($cleanHeaders) {
             $rowArray = $this->toArraySafe($row);
 
-            // خليك متسامح: لو row طلع scalar
             if (!is_array($rowArray)) {
-                return [$this->toCleanString($rowArray)];
+                return [$this->preserveUtf8($rowArray)];
             }
 
-            // نظّف كل cells
             $cells = [];
-            foreach ($rowArray as $cell) {
-                // لو cell array/object خليه نص واضح بدل ما يبوّظ
-                if (is_array($cell) || is_object($cell)) {
-                    $cell = $this->stringifyComplex($cell);
+
+            if (array_keys($rowArray) !== range(0, count($rowArray) - 1)) {
+                foreach ($cleanHeaders as $header) {
+                    $cells[] = $this->preserveUtf8($rowArray[$header] ?? '');
                 }
-                $cells[] = $this->toCleanString($cell);
+            } else {
+                foreach ($rowArray as $cell) {
+                    if (is_array($cell) || is_object($cell)) {
+                        $cell = $this->stringifyComplex($cell);
+                    }
+                    $cells[] = $this->preserveUtf8($cell);
+                }
             }
 
-            return array_values($cells);
+            return $cells;
         })->toArray();
 
-        $cleanHeaders = array_values(array_map(fn ($h) => $this->toCleanString($h), $this->headers));
-        $cleanTitle = $this->toCleanString($this->title);
-
-        // Metadata: تنظيف recursive كامل (arrays متداخلة)
         $cleanMetadata = $this->sanitizeDeep($this->metadata);
 
         return [
@@ -126,6 +128,38 @@ class PdfExport
             'rows' => $cleanRows,
             'metadata' => $cleanMetadata,
         ];
+    }
+
+    protected function preserveUtf8($value): string
+    {
+        if (is_null($value)) return '';
+        if (is_bool($value)) return $value ? '1' : '0';
+        if (is_numeric($value)) return (string) $value;
+
+        if (!is_string($value)) {
+            $value = (string) $value;
+        }
+
+        if (empty($value)) return '';
+
+        if (!mb_check_encoding($value, 'UTF-8')) {
+            $detected = @mb_detect_encoding($value, ['UTF-8', 'Windows-1256', 'ISO-8859-6', 'ISO-8859-1', 'Windows-1252', 'ASCII'], true);
+            if ($detected && $detected !== 'UTF-8') {
+                $converted = @mb_convert_encoding($value, 'UTF-8', $detected);
+                if ($converted !== false && mb_check_encoding($converted, 'UTF-8')) {
+                    return $converted;
+                }
+            }
+
+            if (function_exists('iconv')) {
+                $iconv = @iconv('UTF-8', 'UTF-8//IGNORE', $value);
+                if ($iconv !== false) {
+                    return $iconv;
+                }
+            }
+        }
+
+        return $value;
     }
 
     /**

@@ -547,16 +547,16 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
         try {
             $table = $this->table($this->makeTable());
             $exportData = $this->getTableDataForExport($table);
-            $title = $this->sanitizeUtf8($this->getExportTitle() ?? 'Report');
-            $filename = $this->sanitizeUtf8($this->getExportFilename('pdf'));
+            $title = $this->preserveUtf8($this->getExportTitle() ?? 'Report');
+            $filename = $this->preserveUtf8($this->getExportFilename('pdf'));
             $metadata = $this->getExportMetadata();
 
             $sanitizedDataArray = [];
             foreach ($exportData['data'] as $row) {
                 $sanitizedRow = [];
                 foreach ($row as $key => $value) {
-                    $cleanKey = $this->sanitizeUtf8($key);
-                    $cleanValue = $this->sanitizeUtf8($value);
+                    $cleanKey = $this->preserveUtf8($key);
+                    $cleanValue = $this->preserveUtf8($value);
                     $sanitizedRow[$cleanKey] = $cleanValue;
                 }
                 $sanitizedDataArray[] = $sanitizedRow;
@@ -564,18 +564,18 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
 
             $sanitizedHeaders = [];
             foreach ($exportData['headers'] as $header) {
-                $sanitizedHeaders[] = $this->sanitizeUtf8($header);
+                $sanitizedHeaders[] = $this->preserveUtf8($header);
             }
 
             $sanitizedMetadata = [];
             foreach ($metadata as $key => $value) {
-                $sanitizedKey = $this->sanitizeUtf8($key);
+                $sanitizedKey = $this->preserveUtf8($key);
                 if (is_string($value)) {
-                    $sanitizedMetadata[$sanitizedKey] = $this->sanitizeUtf8($value);
+                    $sanitizedMetadata[$sanitizedKey] = $this->preserveUtf8($value);
                 } elseif (is_array($value)) {
-                    $sanitizedMetadata[$sanitizedKey] = array_map([$this, 'sanitizeUtf8'], $value);
+                    $sanitizedMetadata[$sanitizedKey] = array_map([$this, 'preserveUtf8'], $value);
                 } else {
-                    $sanitizedMetadata[$sanitizedKey] = is_numeric($value) ? $value : $this->sanitizeUtf8((string)$value);
+                    $sanitizedMetadata[$sanitizedKey] = is_numeric($value) ? $value : $this->preserveUtf8((string)$value);
                 }
             }
 
@@ -688,6 +688,40 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
         }
 
         return $record[$key] ?? '';
+    }
+
+    protected function preserveUtf8($value): string
+    {
+        if (is_null($value)) return '';
+        if (is_bool($value)) return $value ? '1' : '0';
+        if (is_numeric($value)) return (string) $value;
+
+        if (!is_string($value)) {
+            $value = (string) $value;
+        }
+
+        if (empty($value)) return '';
+
+        if (mb_check_encoding($value, 'UTF-8')) {
+            return $value;
+        }
+
+        $detected = @mb_detect_encoding($value, ['UTF-8', 'Windows-1256', 'ISO-8859-6', 'ISO-8859-1', 'Windows-1252', 'ASCII'], true);
+        if ($detected && $detected !== 'UTF-8') {
+            $converted = @mb_convert_encoding($value, 'UTF-8', $detected);
+            if ($converted !== false && mb_check_encoding($converted, 'UTF-8')) {
+                return $converted;
+            }
+        }
+
+        if (function_exists('iconv')) {
+            $iconv = @iconv('UTF-8', 'UTF-8//IGNORE', $value);
+            if ($iconv !== false) {
+                return $iconv;
+            }
+        }
+
+        return $value;
     }
 
     protected function sanitizeUtf8($value): string
