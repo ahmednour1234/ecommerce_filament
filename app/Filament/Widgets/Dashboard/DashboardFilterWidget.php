@@ -9,6 +9,7 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Redirect;
 
 class DashboardFilterWidget extends Widget implements HasForms
 {
@@ -66,6 +67,8 @@ class DashboardFilterWidget extends Widget implements HasForms
 
     public function applyFilters(): void
     {
+        $this->validate();
+
         $data = $this->filterForm->getState();
 
         $filters = [
@@ -76,9 +79,8 @@ class DashboardFilterWidget extends Widget implements HasForms
         $filters = DashboardFilterHelper::validateDateRange($filters);
         $queryString = DashboardFilterHelper::buildFilterQueryString($filters);
 
-        $this->redirect(
-            request()->url() . ($queryString ? '?' . $queryString : ''),
-            navigate: true
-        );
+        $url = request()->url() . ($queryString ? '?' . $queryString : '');
+        
+        return redirect($url);
     }
 }
