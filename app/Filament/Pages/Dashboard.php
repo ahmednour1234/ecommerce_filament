@@ -64,10 +64,13 @@ class Dashboard extends BaseDashboard implements HasForms
                 ->label('تحديد الفترة')
                 ->icon('heroicon-o-funnel')
                 ->color('primary')
+                ->button()
+                ->outlined(false)
                 ->modalHeading('فلاتر لوحة التحكم')
                 ->modalDescription('استخدم الفلاتر أدناه لتصفية البيانات')
                 ->modalSubmitActionLabel('تطبيق')
                 ->modalCancelActionLabel('إلغاء')
+                ->modalWidth('4xl')
                 ->form([
                     \Filament\Forms\Components\DatePicker::make('date_from')
                         ->label('من تاريخ')
@@ -203,7 +206,7 @@ class Dashboard extends BaseDashboard implements HasForms
         $this->filters = DashboardFilterHelper::validateDateRange($this->filters);
 
         $queryString = DashboardFilterHelper::buildFilterQueryString($this->filters);
-        
+
         $this->redirect(route('filament.admin.pages.dashboard') . ($queryString ? '?' . $queryString : ''), navigate: true);
     }
 
