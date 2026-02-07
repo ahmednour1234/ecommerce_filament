@@ -109,36 +109,65 @@ class PdfExport
             $value = (string) $value;
         }
 
+        if (empty($value)) {
+            return '';
+        }
+
+        // First, try to remove invalid UTF-8 bytes
+        $value = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/u', '', $value);
+
         // Check if already valid UTF-8
         if (mb_check_encoding($value, 'UTF-8')) {
-            return $value;
+            // Validate it can be JSON encoded
+            $test = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+            if ($test !== false && json_last_error() === JSON_ERROR_NONE) {
+                return $value;
+            }
         }
 
         // Try to detect and convert encoding
-        $detected = mb_detect_encoding($value, ['UTF-8', 'ISO-8859-1', 'Windows-1256', 'ASCII'], true);
+        $detected = @mb_detect_encoding($value, ['UTF-8', 'ISO-8859-1', 'Windows-1256', 'ASCII'], true);
         if ($detected && $detected !== 'UTF-8') {
-            $converted = mb_convert_encoding($value, 'UTF-8', $detected);
+            $converted = @mb_convert_encoding($value, 'UTF-8', $detected);
             if ($converted !== false && mb_check_encoding($converted, 'UTF-8')) {
-                return $converted;
+                $test = json_encode($converted, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+                if ($test !== false && json_last_error() === JSON_ERROR_NONE) {
+                    return $converted;
+                }
             }
         }
 
         // Remove invalid UTF-8 characters using iconv
         if (function_exists('iconv')) {
-            $cleaned = @iconv('UTF-8', 'UTF-8//IGNORE', $value);
-            if ($cleaned !== false) {
+            $cleaned = @iconv('UTF-8', 'UTF-8//IGNORE//TRANSLIT', $value);
+            if ($cleaned !== false && mb_check_encoding($cleaned, 'UTF-8')) {
+                $test = json_encode($cleaned, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+                if ($test !== false && json_last_error() === JSON_ERROR_NONE) {
+                    return $cleaned;
+                }
+            }
+        }
+
+        // Fallback: use mb_convert_encoding
+        $cleaned = @mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+        if ($cleaned !== false && mb_check_encoding($cleaned, 'UTF-8')) {
+            $test = json_encode($cleaned, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+            if ($test !== false && json_last_error() === JSON_ERROR_NONE) {
                 return $cleaned;
             }
         }
 
-        // Fallback: use mb_convert_encoding with //IGNORE
-        $cleaned = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
-        if (mb_check_encoding($cleaned, 'UTF-8')) {
-            return $cleaned;
+        // Last resort: filter through json_encode/decode
+        $json = @json_encode($value, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+        if ($json !== false) {
+            $decoded = json_decode($json, true);
+            if ($decoded !== null && is_string($decoded)) {
+                return $decoded;
+            }
         }
 
-        // Last resort: remove invalid UTF-8 bytes
-        $cleaned = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $value);
+        // Final fallback: remove all non-printable characters
+        $cleaned = preg_replace('/[^\x20-\x7E\x{00A0}-\x{FFFF}]/u', '', $value);
         return mb_convert_encoding($cleaned, 'UTF-8', 'UTF-8') ?: '';
     }
 

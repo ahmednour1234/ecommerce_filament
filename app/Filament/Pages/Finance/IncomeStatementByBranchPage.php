@@ -580,9 +580,13 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
                 }
             }
 
-            json_encode($sanitizedDataArray, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
-            json_encode($sanitizedHeaders, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
-            json_encode($sanitizedMetadata, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+            $test1 = json_encode($sanitizedDataArray, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+            $test2 = json_encode($sanitizedHeaders, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+            $test3 = json_encode($sanitizedMetadata, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+
+            if ($test1 === false || $test2 === false || $test3 === false) {
+                throw new \RuntimeException('Invalid UTF-8 data detected after sanitization');
+            }
 
             $export = new \App\Exports\PdfExport(
                 collect($sanitizedDataArray),
@@ -680,35 +684,57 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
             return '';
         }
 
+        // Remove invalid UTF-8 bytes first
+        $value = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/u', '', $value);
+
+        // Check if valid UTF-8 and can be JSON encoded
         if (mb_check_encoding($value, 'UTF-8')) {
-            $cleaned = $this->removeInvalidUtf8($value);
-            if (mb_check_encoding($cleaned, 'UTF-8')) {
-                return $cleaned;
+            $test = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+            if ($test !== false && json_last_error() === JSON_ERROR_NONE) {
+                return $value;
             }
         }
 
-        $detected = mb_detect_encoding($value, ['UTF-8', 'ISO-8859-1', 'Windows-1256', 'ASCII'], true);
+        $detected = @mb_detect_encoding($value, ['UTF-8', 'ISO-8859-1', 'Windows-1256', 'ASCII'], true);
         if ($detected && $detected !== 'UTF-8') {
             $converted = @mb_convert_encoding($value, 'UTF-8', $detected);
             if ($converted !== false && mb_check_encoding($converted, 'UTF-8')) {
-                return $this->removeInvalidUtf8($converted);
+                $test = json_encode($converted, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+                if ($test !== false && json_last_error() === JSON_ERROR_NONE) {
+                    return $converted;
+                }
             }
         }
 
         if (function_exists('iconv')) {
             $cleaned = @iconv('UTF-8', 'UTF-8//IGNORE//TRANSLIT', $value);
             if ($cleaned !== false && mb_check_encoding($cleaned, 'UTF-8')) {
-                return $cleaned;
+                $test = json_encode($cleaned, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+                if ($test !== false && json_last_error() === JSON_ERROR_NONE) {
+                    return $cleaned;
+                }
             }
         }
 
         $cleaned = $this->removeInvalidUtf8($value);
         $converted = @mb_convert_encoding($cleaned, 'UTF-8', 'UTF-8');
         if ($converted !== false && mb_check_encoding($converted, 'UTF-8')) {
-            return $converted;
+            $test = json_encode($converted, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+            if ($test !== false && json_last_error() === JSON_ERROR_NONE) {
+                return $converted;
+            }
         }
 
-        return preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/u', '', $value) ?: '';
+        // Final fallback: filter through json_encode/decode
+        $json = @json_encode($value, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+        if ($json !== false) {
+            $decoded = json_decode($json, true);
+            if ($decoded !== null && is_string($decoded)) {
+                return $decoded;
+            }
+        }
+
+        return preg_replace('/[^\x20-\x7E\x{00A0}-\x{FFFF}]/u', '', $value) ?: '';
     }
 
     protected function removeInvalidUtf8(string $value): string
