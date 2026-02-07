@@ -18,7 +18,7 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
 
     protected function getData(): array
     {
-        $dashboard = $this->getLivewire();
+        $dashboard = $this->getOwner();
         
         if (!$dashboard instanceof Dashboard) {
             return $this->getEmptyData();

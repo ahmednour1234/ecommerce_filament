@@ -28,7 +28,7 @@ class HRStatsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $dashboard = $this->getLivewire();
+        $dashboard = $this->getOwner();
         
         if ($dashboard instanceof \App\Filament\Pages\Dashboard) {
             $filters = $dashboard->getFilters();

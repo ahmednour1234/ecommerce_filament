@@ -20,7 +20,7 @@ class FinanceBranchesTableWidget extends BaseWidget
 
     public function table(Table $table): Table
     {
-        $dashboard = $this->getLivewire();
+        $dashboard = $this->getOwner();
         
         if (!$dashboard instanceof Dashboard) {
             return $table->query(fn () => BranchTransaction::query()->whereRaw('1 = 0'));
