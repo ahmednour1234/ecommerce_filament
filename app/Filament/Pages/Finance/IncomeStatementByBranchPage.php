@@ -618,16 +618,10 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
             $row = [];
             foreach ($columns as $column) {
                 $key = $column['name'];
-                $label = $this->sanitizeUtf8($column['label']);
+                $label = $this->preserveUtf8($column['label']);
                 $value = $this->getColumnValue($record, $key, $column);
 
-                $cleanValue = $this->sanitizeUtf8($value);
-
-                $testJson = json_encode($cleanValue, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
-                if ($testJson === false) {
-                    $cleanValue = $this->sanitizeUtf8((string)$value);
-                }
-
+                $cleanValue = $this->preserveUtf8($value);
                 $row[$label] = $cleanValue;
             }
             $formattedData[] = $row;
@@ -635,11 +629,7 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
 
         $headers = [];
         foreach (array_column($columns, 'label') as $header) {
-            $cleanHeader = $this->sanitizeUtf8($header);
-            $testJson = json_encode($cleanHeader, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
-            if ($testJson === false) {
-                $cleanHeader = $this->sanitizeUtf8((string)$header);
-            }
+            $cleanHeader = $this->preserveUtf8($header);
             $headers[] = $cleanHeader;
         }
 

@@ -33,7 +33,13 @@ class PdfExport
 
             $isRtl = $this->detectRtl($viewData);
 
-            $pdf = Pdf::loadView('exports.table-pdf', $viewData)
+            $html = view('exports.table-pdf', $viewData)->render();
+
+            if (!mb_check_encoding($html, 'UTF-8')) {
+                $html = mb_convert_encoding($html, 'UTF-8', mb_detect_encoding($html, ['UTF-8', 'Windows-1256', 'ISO-8859-6'], true));
+            }
+
+            $pdf = Pdf::loadHTML($html, 'UTF-8')
                 ->setPaper('a4', 'landscape')
                 ->setOption('isHtml5ParserEnabled', true)
                 ->setOption('isRemoteEnabled', true)
@@ -44,7 +50,8 @@ class PdfExport
                     resource_path('fonts'),
                     storage_path('fonts'),
                 ])
-                ->setOption('fontCache', storage_path('fonts'));
+                ->setOption('fontCache', storage_path('fonts'))
+                ->setOption('isPhpEnabled', true);
 
             return $pdf->download($filename);
         } catch (\Throwable $e) {
@@ -65,7 +72,13 @@ class PdfExport
 
             $isRtl = $this->detectRtl($viewData);
 
-            $pdf = Pdf::loadView('exports.table-pdf', $viewData)
+            $html = view('exports.table-pdf', $viewData)->render();
+
+            if (!mb_check_encoding($html, 'UTF-8')) {
+                $html = mb_convert_encoding($html, 'UTF-8', mb_detect_encoding($html, ['UTF-8', 'Windows-1256', 'ISO-8859-6'], true));
+            }
+
+            $pdf = Pdf::loadHTML($html, 'UTF-8')
                 ->setPaper('a4', 'landscape')
                 ->setOption('isHtml5ParserEnabled', true)
                 ->setOption('isRemoteEnabled', true)
@@ -76,7 +89,8 @@ class PdfExport
                     resource_path('fonts'),
                     storage_path('fonts'),
                 ])
-                ->setOption('fontCache', storage_path('fonts'));
+                ->setOption('fontCache', storage_path('fonts'))
+                ->setOption('isPhpEnabled', true);
 
             return $pdf->stream($filename);
         } catch (\Throwable $e) {

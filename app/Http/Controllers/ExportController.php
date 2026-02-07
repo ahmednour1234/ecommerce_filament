@@ -29,7 +29,7 @@ class ExportController extends Controller
     public function reportPrint(Request $request, string $report): View
     {
         $filters = new FilterDTO($request->get('filters', []));
-        
+
         $service = match($report) {
             'trial-balance' => new TrialBalanceReportService($filters),
             'general-ledger' => new GeneralLedgerReportService($filters),
@@ -59,28 +59,29 @@ class ExportController extends Controller
     public function branchStatementPdf(Request $request)
     {
         $exportData = session('branch_statement_pdf_export');
-        
+
         if (!$exportData) {
             abort(404, 'Export data not found');
         }
 
         $data = new Collection($exportData['data']);
         $export = new PdfExport($data, $exportData['headers'], $exportData['title'], $exportData['metadata']);
-        
+
         return $export->download($exportData['filename']);
     }
 
     public function incomeStatementPdf(Request $request)
     {
         $exportData = session('income_statement_pdf_export');
-        
+
         if (!$exportData) {
             abort(404, 'Export data not found');
         }
 
         $data = new Collection($exportData['data']);
+
         $export = new PdfExport($data, $exportData['headers'], $exportData['title'], $exportData['metadata']);
-        
+
         return $export->download($exportData['filename']);
     }
 
@@ -100,7 +101,7 @@ class ExportController extends Controller
         ];
 
         $export = new PdfExport($testData, $headers, $title, $metadata);
-        
+
         return $export->download('test-arabic-' . date('Y-m-d-His') . '.pdf');
     }
 }
