@@ -220,7 +220,7 @@ class Dashboard extends BaseDashboard implements HasForms
 
         $queryString = DashboardFilterHelper::buildFilterQueryString($this->filters);
         
-        return redirect(route('filament.admin.pages.dashboard') . ($queryString ? '?' . $queryString : ''));
+        $this->redirect(route('filament.admin.pages.dashboard') . ($queryString ? '?' . $queryString : ''), navigate: true);
     }
 
     protected function getHeaderWidgets(): array
