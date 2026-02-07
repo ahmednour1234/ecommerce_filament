@@ -11,6 +11,8 @@ class FinanceTopTypesWidget extends ChartWidget
     protected static ?string $heading = 'أعلى أنواع الإيرادات والمصروفات';
     protected int|string|array $columnSpan = 'full';
     protected static ?int $sort = 4;
+    
+    protected $listeners = ['filters-updated' => '$refresh'];
 
     protected function getData(): array
     {

@@ -14,6 +14,8 @@ class FinanceStatsWidget extends BaseWidget
     protected static ?int $sort = 1;
     protected int|string|array $columnSpan = 'full';
     protected ?string $heading = 'إحصائيات المالية';
+    
+    protected $listeners = ['filters-updated' => '$refresh'];
 
     protected function getStats(): array
     {

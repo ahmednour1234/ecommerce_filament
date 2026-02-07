@@ -25,6 +25,8 @@ class HRStatsWidget extends BaseWidget
     protected static ?int $sort = 2;
 
     protected int|string|array $columnSpan = 'full';
+    
+    protected $listeners = ['filters-updated' => '$refresh'];
 
     protected function getStats(): array
     {

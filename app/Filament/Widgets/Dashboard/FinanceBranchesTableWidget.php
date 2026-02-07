@@ -17,6 +17,8 @@ class FinanceBranchesTableWidget extends BaseWidget
     protected static ?int $sort = 2;
     protected int|string|array $columnSpan = 'full';
     protected static ?string $heading = 'ملخص المالية حسب الفروع';
+    
+    protected $listeners = ['filters-updated' => '$refresh'];
 
     public function table(Table $table): Table
     {

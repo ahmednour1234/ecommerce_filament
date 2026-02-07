@@ -20,6 +20,11 @@ class DashboardFilterWidget extends Widget implements HasForms
     public ?string $date_from = null;
     public ?string $date_to = null;
 
+    protected $queryString = [
+        'date_from' => ['except' => ''],
+        'date_to' => ['except' => ''],
+    ];
+
     public function mount(): void
     {
         $filters = DashboardFilterHelper::parseFiltersFromRequest();
@@ -44,6 +49,7 @@ class DashboardFilterWidget extends Widget implements HasForms
     public function filterForm(\Filament\Forms\Form $form): \Filament\Forms\Form
     {
         return $form
+            ->statePath('filterForm')
             ->schema([
                 Grid::make(2)
                     ->schema([
@@ -52,16 +58,34 @@ class DashboardFilterWidget extends Widget implements HasForms
                             ->required()
                             ->default(fn () => $this->date_from ?? now()->startOfMonth()->format('Y-m-d'))
                             ->displayFormat('d/m/Y')
-                            ->native(false),
+                            ->native(false)
+                            ->live()
+                            ->afterStateUpdated(function ($state) {
+                                $this->date_from = $state;
+                            }),
 
                         DatePicker::make('date_to')
                             ->label('End date')
                             ->required()
                             ->default(fn () => $this->date_to ?? now()->endOfMonth()->format('Y-m-d'))
                             ->displayFormat('d/m/Y')
-                            ->native(false),
+                            ->native(false)
+                            ->live()
+                            ->afterStateUpdated(function ($state) {
+                                $this->date_to = $state;
+                            }),
                     ]),
             ]);
+    }
+
+    public function updatedDateFrom(): void
+    {
+        $this->dispatch('filters-updated');
+    }
+
+    public function updatedDateTo(): void
+    {
+        $this->dispatch('filters-updated');
     }
 
     public function applyFilters(): void
@@ -70,16 +94,9 @@ class DashboardFilterWidget extends Widget implements HasForms
 
         $data = $this->filterForm->getState();
 
-        $filters = [
-            'date_from' => !empty($data['date_from']) ? Carbon::parse($data['date_from'])->startOfDay() : null,
-            'date_to' => !empty($data['date_to']) ? Carbon::parse($data['date_to'])->endOfDay() : null,
-        ];
+        $this->date_from = $data['date_from'] ?? $this->date_from;
+        $this->date_to = $data['date_to'] ?? $this->date_to;
 
-        $filters = DashboardFilterHelper::validateDateRange($filters);
-        $queryString = DashboardFilterHelper::buildFilterQueryString($filters);
-
-        $url = request()->url() . ($queryString ? '?' . $queryString : '');
-        
-        $this->redirect($url, navigate: false);
+        $this->dispatch('filters-updated');
     }
 }

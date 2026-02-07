@@ -13,6 +13,8 @@ class OrderStatsWidget extends BaseWidget
     protected static ?int $sort = 0;
     protected int|string|array $columnSpan = 'full';
     protected ?string $heading = 'إحصائيات الطلبات';
+    
+    protected $listeners = ['filters-updated' => '$refresh'];
 
     protected function getStats(): array
     {

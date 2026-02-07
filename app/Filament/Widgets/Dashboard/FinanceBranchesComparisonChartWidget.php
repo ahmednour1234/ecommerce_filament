@@ -15,6 +15,8 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
     protected int|string|array $columnSpan = 'full';
 
     protected static ?int $sort = 6;
+    
+    protected $listeners = ['filters-updated' => '$refresh'];
 
     protected function getData(): array
     {
