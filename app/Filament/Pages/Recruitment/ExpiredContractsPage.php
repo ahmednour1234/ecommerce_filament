@@ -12,7 +12,7 @@ class ExpiredContractsPage extends Page
 
     protected static ?string $navigationIcon = 'heroicon-o-trash';
     protected static ?string $navigationGroup = 'recruitment';
-    protected static ?int $navigationSort = 11;
+    protected static ?int $navigationSort = 12;
     protected static ?string $navigationTranslationKey = 'sidebar.recruitment.expired_contracts';
 
     public static function shouldRegisterNavigation(): bool

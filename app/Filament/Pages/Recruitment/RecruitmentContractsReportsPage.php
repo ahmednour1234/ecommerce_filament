@@ -16,7 +16,7 @@ class RecruitmentContractsReportsPage extends Page implements HasForms
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
     protected static ?string $navigationGroup = 'recruitment';
-    protected static ?int $navigationSort = 12;
+    protected static ?int $navigationSort = 10;
     protected static ?string $navigationTranslationKey = 'sidebar.recruitment.contracts_reports';
 
     public static function shouldRegisterNavigation(): bool

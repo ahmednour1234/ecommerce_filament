@@ -12,7 +12,7 @@ class ReceivedWorkersPage extends Page
 
     protected static ?string $navigationIcon = 'heroicon-o-arrow-down-tray';
     protected static ?string $navigationGroup = 'recruitment';
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 11;
     protected static ?string $navigationTranslationKey = 'sidebar.recruitment.received_workers';
 
     public static function shouldRegisterNavigation(): bool
