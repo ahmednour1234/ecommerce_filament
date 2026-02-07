@@ -17,11 +17,13 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Illuminate\Support\Carbon;
-
-class Dashboard extends BaseDashboard
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+class Dashboard extends BaseDashboard implements HasForms
 {
     protected static ?string $navigationIcon = 'heroicon-o-home';
     protected static string $view = 'filament.pages.dashboard';
+    use InteractsWithForms;
 
     /**
      * Used by the modal form (Filament Action form state)
