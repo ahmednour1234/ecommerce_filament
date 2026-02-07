@@ -35,6 +35,11 @@ class Dashboard extends BaseDashboard implements HasForms
      */
     public array $filters = [];
 
+    /**
+     * Livewire event listeners for auto-opening filters modal
+     */
+    protected $listeners = ['open-dashboard-filters' => 'openFiltersModal'];
+
     public function mount(): void
     {
         parent::mount();
@@ -62,10 +67,27 @@ class Dashboard extends BaseDashboard implements HasForms
         return $this->filters;
     }
 
+    /**
+     * Check if filters are currently applied (date_from and date_to in query string OR ?filters=1 flag)
+     */
+    public function hasFiltersApplied(): bool
+    {
+        $request = request();
+        return ($request->has('date_from') && $request->has('date_to')) || $request->boolean('filters');
+    }
+
+    /**
+     * Open the filters modal programmatically (called by Livewire event from Alpine.js)
+     */
+    public function openFiltersModal(): void
+    {
+        $this->mountAction('filters');
+    }
+
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('openFilters')
+            Action::make('filters')
                 ->label('الفلاتر')
                 ->icon('heroicon-o-funnel')
                 ->color('primary')

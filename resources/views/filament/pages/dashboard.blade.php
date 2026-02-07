@@ -7,16 +7,9 @@
             <p class="text-sm text-gray-500">ملخص سريع للأداء + فلاتر لتحديد الفترة</p>
         </div>
 
-        {{-- IMPORTANT:
-            Filament should render header actions automatically,
-            but with custom view sometimes you need to explicitly render them.
-        --}}
+        {{-- Render Filament header actions using the proper component --}}
         <div class="flex items-center gap-2">
-            @if (method_exists($this, 'getCachedHeaderActions'))
-                @foreach ($this->getCachedHeaderActions() as $action)
-                    {{ $action }}
-                @endforeach
-            @endif
+            <x-filament::actions :actions="$this->getCachedHeaderActions()" />
         </div>
     </div>
 
@@ -46,6 +39,41 @@
             :columns="1"
         />
     </div>
+
+    {{-- Auto-open filters modal if filters not applied --}}
+    <div x-data="{
+        init() {
+            // Wait for Livewire to be fully loaded
+            if (typeof window.Livewire === 'undefined') {
+                setTimeout(() => this.init(), 100);
+                return;
+            }
+
+            // Check if filters are applied (date_from and date_to in query string OR ?filters=1 flag)
+            const urlParams = new URLSearchParams(window.location.search);
+            const hasDateFrom = urlParams.has('date_from');
+            const hasDateTo = urlParams.has('date_to');
+            const hasFiltersFlag = urlParams.get('filters') === '1';
+            const skipModal = urlParams.get('skip_filters_modal') === '1';
+
+            const filtersApplied = (hasDateFrom && hasDateTo) || hasFiltersFlag;
+
+            // Check sessionStorage to avoid annoying users repeatedly
+            const alreadyPrompted = sessionStorage.getItem('dashboard_filters_prompted') === '1';
+
+            // Auto-open modal if:
+            // - Filters are NOT applied
+            // - User hasn't been prompted in this session
+            // - No skip_filters_modal flag in URL
+            if (!filtersApplied && !alreadyPrompted && !skipModal) {
+                // Mark as prompted to avoid opening again in this session
+                sessionStorage.setItem('dashboard_filters_prompted', '1');
+
+                // Dispatch Livewire event to open the filters modal
+                window.Livewire.dispatch('open-dashboard-filters');
+            }
+        }
+    }" x-init="init()"></div>
 
     <style>
         /* 1) اجعل RTL على مستوى الصفحة بالكامل */
