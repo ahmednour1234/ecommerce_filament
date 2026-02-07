@@ -297,53 +297,76 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
         $allRows = [];
 
         foreach ($incomeTypes as $type) {
+            $typeName = $this->preserveUtf8($type['name']);
+            $section = $this->preserveUtf8(tr('reports.income_statement.income_section', [], null, 'dashboard') ?: 'INCOME');
             $allRows[] = [
                 'id' => 'income_' . $type['id'],
-                'section' => tr('reports.income_statement.income_section', [], null, 'dashboard') ?: 'INCOME',
-                'type' => $type['name'],
+                'section' => $section,
+                'type' => $typeName,
                 'amount' => $type['total'],
                 'finance_type_id' => $type['id'],
             ];
         }
 
         if (!empty($incomeTypes)) {
+            $section = $this->preserveUtf8(tr('reports.income_statement.income_section', [], null, 'dashboard') ?: 'INCOME');
+            $totalIncome = $this->preserveUtf8(tr('reports.income_statement.total_income', [], null, 'dashboard') ?: 'Total Income');
             $allRows[] = [
                 'id' => 'income_total',
-                'section' => tr('reports.income_statement.income_section', [], null, 'dashboard') ?: 'INCOME',
-                'type' => tr('reports.income_statement.total_income', [], null, 'dashboard') ?: 'Total Income',
+                'section' => $section,
+                'type' => $totalIncome,
                 'amount' => $this->getTotalIncome(),
                 'finance_type_id' => null,
             ];
         }
 
         foreach ($expenseTypes as $type) {
+            $typeName = $this->preserveUtf8($type['name']);
+            $section = $this->preserveUtf8(tr('reports.income_statement.expense_section', [], null, 'dashboard') ?: 'EXPENSE');
             $allRows[] = [
                 'id' => 'expense_' . $type['id'],
-                'section' => tr('reports.income_statement.expense_section', [], null, 'dashboard') ?: 'EXPENSE',
-                'type' => $type['name'],
+                'section' => $section,
+                'type' => $typeName,
                 'amount' => $type['total'],
                 'finance_type_id' => $type['id'],
             ];
         }
 
         if (!empty($expenseTypes)) {
+            $section = $this->preserveUtf8(tr('reports.income_statement.expense_section', [], null, 'dashboard') ?: 'EXPENSE');
+            $totalExpense = $this->preserveUtf8(tr('reports.income_statement.total_expense', [], null, 'dashboard') ?: 'Total Expense');
             $allRows[] = [
                 'id' => 'expense_total',
-                'section' => tr('reports.income_statement.expense_section', [], null, 'dashboard') ?: 'EXPENSE',
-                'type' => tr('reports.income_statement.total_expense', [], null, 'dashboard') ?: 'Total Expense',
+                'section' => $section,
+                'type' => $totalExpense,
                 'amount' => $this->getTotalExpense(),
                 'finance_type_id' => null,
             ];
         }
 
+        DB::statement('SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci');
+        
         $unionQueries = [];
         foreach ($allRows as $row) {
+            $id = (string)$row['id'];
+            $section = mb_convert_encoding($row['section'] ?? '', 'UTF-8', 'UTF-8');
+            $type = mb_convert_encoding($row['type'] ?? '', 'UTF-8', 'UTF-8');
+            $amount = (float)$row['amount'];
+            $financeTypeId = $row['finance_type_id'];
+            
+            if (!mb_check_encoding($section, 'UTF-8')) {
+                $section = mb_convert_encoding($section, 'UTF-8', mb_detect_encoding($section, ['UTF-8', 'Windows-1256', 'ISO-8859-6'], true) ?: 'UTF-8');
+            }
+            if (!mb_check_encoding($type, 'UTF-8')) {
+                $type = mb_convert_encoding($type, 'UTF-8', mb_detect_encoding($type, ['UTF-8', 'Windows-1256', 'ISO-8859-6'], true) ?: 'UTF-8');
+            }
+            
             $unionQueries[] = DB::query()->selectRaw('? as id, ? as section, ? as type, ? as amount, ? as finance_type_id', [
-                $row['id'],
-                $row['section'],
-                $row['type'],
-                $row['amount'],
-                $row['finance_type_id'],
+                $id,
+                $section,
+                $type,
+                $amount,
+                $financeTypeId,
             ]);
         }
 
