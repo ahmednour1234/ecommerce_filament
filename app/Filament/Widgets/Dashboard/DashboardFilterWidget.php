@@ -17,26 +17,21 @@ class DashboardFilterWidget extends Widget implements HasForms
     protected static string $view = 'filament.widgets.dashboard-filter-widget';
     protected int|string|array $columnSpan = 'full';
 
-    public array $formState = [];
+    public ?string $date_from = null;
+    public ?string $date_to = null;
 
     public function mount(): void
     {
         $filters = DashboardFilterHelper::parseFiltersFromRequest();
         $filters = DashboardFilterHelper::validateDateRange($filters);
 
-        $this->formState = [
-            'date_from' => $filters['date_from']?->format('Y-m-d'),
-            'date_to' => $filters['date_to']?->format('Y-m-d'),
-            'branch_id' => $filters['branch_id'],
-            'transaction_type' => $filters['transaction_type'] ?? 'all',
-            'finance_type_id' => $filters['finance_type_id'],
-            'revenue_type_id' => $filters['revenue_type_id'],
-            'expense_type_id' => $filters['expense_type_id'],
-            'currency_id' => $filters['currency_id'],
-            'order_status' => $filters['order_status'] ?? 'all',
-        ];
+        $this->date_from = $filters['date_from']?->format('Y-m-d') ?? now()->startOfMonth()->format('Y-m-d');
+        $this->date_to = $filters['date_to']?->format('Y-m-d') ?? now()->endOfMonth()->format('Y-m-d');
 
-        $this->filterForm->fill($this->formState);
+        $this->filterForm->fill([
+            'date_from' => $this->date_from,
+            'date_to' => $this->date_to,
+        ]);
     }
 
     protected function getForms(): array
@@ -55,14 +50,14 @@ class DashboardFilterWidget extends Widget implements HasForms
                         DatePicker::make('date_from')
                             ->label('Start date')
                             ->required()
-                            ->default(fn () => $this->formState['date_from'] ?? now()->startOfMonth()->format('Y-m-d'))
+                            ->default(fn () => $this->date_from ?? now()->startOfMonth()->format('Y-m-d'))
                             ->displayFormat('d/m/Y')
                             ->native(false),
 
                         DatePicker::make('date_to')
                             ->label('End date')
                             ->required()
-                            ->default(fn () => $this->formState['date_to'] ?? now()->endOfMonth()->format('Y-m-d'))
+                            ->default(fn () => $this->date_to ?? now()->endOfMonth()->format('Y-m-d'))
                             ->displayFormat('d/m/Y')
                             ->native(false),
                     ]),
@@ -73,18 +68,9 @@ class DashboardFilterWidget extends Widget implements HasForms
     {
         $data = $this->filterForm->getState();
 
-        $this->formState = $data;
-
         $filters = [
             'date_from' => !empty($data['date_from']) ? Carbon::parse($data['date_from'])->startOfDay() : null,
             'date_to' => !empty($data['date_to']) ? Carbon::parse($data['date_to'])->endOfDay() : null,
-            'branch_id' => !empty($data['branch_id']) ? (int) $data['branch_id'] : null,
-            'transaction_type' => $data['transaction_type'] ?? 'all',
-            'finance_type_id' => !empty($data['finance_type_id']) ? (int) $data['finance_type_id'] : null,
-            'revenue_type_id' => !empty($data['revenue_type_id']) ? (int) $data['revenue_type_id'] : null,
-            'expense_type_id' => !empty($data['expense_type_id']) ? (int) $data['expense_type_id'] : null,
-            'currency_id' => !empty($data['currency_id']) ? (int) $data['currency_id'] : null,
-            'order_status' => (!empty($data['order_status']) && $data['order_status'] !== 'all') ? $data['order_status'] : null,
         ];
 
         $filters = DashboardFilterHelper::validateDateRange($filters);
