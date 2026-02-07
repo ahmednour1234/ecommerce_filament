@@ -442,27 +442,8 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
                     ->icon('heroicon-o-document-arrow-down')
                     ->requiresConfirmation(false)
                     ->action(function () {
-                        try {
-                            $table = $this->table($this->makeTable());
-                            $response = $this->exportToPdf($table, $this->getExportFilename('pdf'));
-                            
-                            if (!$response instanceof \Illuminate\Http\Response && !$response instanceof \Symfony\Component\HttpFoundation\StreamedResponse && !$response instanceof \Symfony\Component\HttpFoundation\BinaryFileResponse) {
-                                throw new \RuntimeException('Invalid response type from PDF export');
-                            }
-                            
-                            return $response;
-                        } catch (\Throwable $e) {
-                            $safeMessage = mb_convert_encoding($e->getMessage(), 'UTF-8', 'UTF-8');
-                            if (!mb_check_encoding($safeMessage, 'UTF-8')) {
-                                $safeMessage = 'PDF export failed';
-                            }
-                            \Illuminate\Support\Facades\Log::error('PDF Export Action Error: ' . $safeMessage);
-                            
-                            $cleanException = new \RuntimeException('PDF export failed: ' . $safeMessage);
-                            throw $cleanException;
-                        }
-                    })
-                    ->extraAttributes(['class' => 'pdf-export-action']),
+                        return $this->downloadPdf();
+                    }),
             ])
             ->defaultSort('section')
             ->paginated(false);
@@ -561,13 +542,13 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
         }, $metadata);
     }
 
-    public function exportToPdf(?\Filament\Tables\Table $table = null, string $filename = null): \Illuminate\Http\Response
+    public function downloadPdf()
     {
         try {
-            $table = $table ?? $this->table($this->makeTable());
+            $table = $this->table($this->makeTable());
             $exportData = $this->getTableDataForExport($table);
             $title = $this->sanitizeUtf8($this->getExportTitle() ?? 'Report');
-            $filename = $this->sanitizeUtf8($filename ?? $this->getExportFilename('pdf'));
+            $filename = $this->sanitizeUtf8($this->getExportFilename('pdf'));
             $metadata = $this->getExportMetadata();
 
             $sanitizedDataArray = [];
@@ -606,25 +587,20 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
                 throw new \RuntimeException('Invalid UTF-8 data detected after sanitization');
             }
 
-            $export = new \App\Exports\PdfExport(
-                collect($sanitizedDataArray),
-                $sanitizedHeaders,
-                $title,
-                $sanitizedMetadata
-            );
+            session()->flash('income_statement_pdf_export', [
+                'data' => $sanitizedDataArray,
+                'headers' => $sanitizedHeaders,
+                'title' => $title,
+                'filename' => $filename,
+                'metadata' => $sanitizedMetadata,
+            ]);
 
-            $response = $export->download($filename);
-            
-            if ($response instanceof \Illuminate\Http\JsonResponse) {
-                throw new \RuntimeException('PDF export returned JSON response instead of PDF');
-            }
-            
-            return $response;
+            return redirect()->route('filament.exports.income-statement-pdf');
         } catch (\Exception $e) {
             $safeMessage = $this->sanitizeUtf8($e->getMessage());
             $safeTrace = $this->sanitizeUtf8($e->getTraceAsString());
             Log::error('PDF Export Error: ' . $safeMessage . PHP_EOL . $safeTrace);
-            
+
             $exception = new \RuntimeException('PDF export failed: ' . $safeMessage, $e->getCode(), $e);
             throw $exception;
         }
@@ -644,14 +620,14 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
                 $key = $column['name'];
                 $label = $this->sanitizeUtf8($column['label']);
                 $value = $this->getColumnValue($record, $key, $column);
-                
+
                 $cleanValue = $this->sanitizeUtf8($value);
-                
+
                 $testJson = json_encode($cleanValue, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
                 if ($testJson === false) {
                     $cleanValue = $this->sanitizeUtf8((string)$value);
                 }
-                
+
                 $row[$label] = $cleanValue;
             }
             $formattedData[] = $row;
@@ -671,12 +647,12 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
             'data' => collect($formattedData),
             'headers' => $headers,
         ];
-        
+
         $finalTest = json_encode($result, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
         if ($finalTest === false) {
             throw new \RuntimeException('Export data contains invalid UTF-8 after sanitization');
         }
-        
+
         return $result;
     }
 

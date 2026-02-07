@@ -70,6 +70,20 @@ class ExportController extends Controller
         return $export->download($exportData['filename']);
     }
 
+    public function incomeStatementPdf(Request $request)
+    {
+        $exportData = session('income_statement_pdf_export');
+        
+        if (!$exportData) {
+            abort(404, 'Export data not found');
+        }
+
+        $data = new Collection($exportData['data']);
+        $export = new PdfExport($data, $exportData['headers'], $exportData['title'], $exportData['metadata']);
+        
+        return $export->download($exportData['filename']);
+    }
+
     public function testArabicPdf()
     {
         $testData = collect([
