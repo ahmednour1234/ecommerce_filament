@@ -64,8 +64,6 @@ class FinanceBranchesTableWidget extends BaseWidget
             $unionQuery = $unionQuery ? $unionQuery->unionAll($uq) : $uq;
         }
 
-        $defaultCurrencyId = Money::defaultCurrencyId();
-
         return $table
             ->query(fn () => BranchTransaction::query()
                 ->fromSub($unionQuery, 'branches_finance_data')
@@ -80,21 +78,21 @@ class FinanceBranchesTableWidget extends BaseWidget
                 TextColumn::make('income')
                     ->label('الإيراد')
                     ->numeric(decimalPlaces: 2)
-                    ->formatStateUsing(fn ($state) => Money::format($state, $defaultCurrencyId))
+                    ->formatStateUsing(fn ($state) => Money::format($state, 'SAR'))
                     ->alignEnd()
                     ->weight(fn ($record) => str_contains($record->id ?? '', 'total') || str_contains($record->id ?? '', 'zzz') ? 'bold' : 'normal')
                     ->color(fn ($record) => str_contains($record->id ?? '', 'total') || str_contains($record->id ?? '', 'zzz') ? 'danger' : null),
                 TextColumn::make('expense')
                     ->label('المصروف')
                     ->numeric(decimalPlaces: 2)
-                    ->formatStateUsing(fn ($state) => Money::format($state, $defaultCurrencyId))
+                    ->formatStateUsing(fn ($state) => Money::format($state, 'SAR'))
                     ->alignEnd()
                     ->weight(fn ($record) => str_contains($record->id ?? '', 'total') || str_contains($record->id ?? '', 'zzz') ? 'bold' : 'normal')
                     ->color(fn ($record) => str_contains($record->id ?? '', 'total') || str_contains($record->id ?? '', 'zzz') ? 'danger' : null),
                 TextColumn::make('net')
                     ->label('الصافي')
                     ->numeric(decimalPlaces: 2)
-                    ->formatStateUsing(fn ($state) => Money::format($state, $defaultCurrencyId))
+                    ->formatStateUsing(fn ($state) => Money::format($state, 'SAR'))
                     ->alignEnd()
                     ->color(function ($record) {
                         if (str_contains($record->id ?? '', 'total') || str_contains($record->id ?? '', 'zzz')) {

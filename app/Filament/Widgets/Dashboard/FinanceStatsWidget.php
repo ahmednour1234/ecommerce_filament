@@ -40,22 +40,20 @@ class FinanceStatsWidget extends BaseWidget
             ];
         }
 
-        $defaultCurrencyId = Money::defaultCurrencyId();
-
         return [
-            Stat::make('إجمالي الإيرادات', Money::format($kpis['total_revenue'], $defaultCurrencyId))
+            Stat::make('إجمالي الإيرادات', Money::format($kpis['total_revenue'], 'SAR'))
                 ->description('عدد المعاملات: ' . Number::format($kpis['revenue_count']))
                 ->descriptionIcon('heroicon-o-arrow-trending-up')
                 ->color('success')
                 ->icon('heroicon-o-banknotes'),
 
-            Stat::make('إجمالي المصروفات', Money::format($kpis['total_expenses'], $defaultCurrencyId))
+            Stat::make('إجمالي المصروفات', Money::format($kpis['total_expenses'], 'SAR'))
                 ->description('عدد المعاملات: ' . Number::format($kpis['expense_count']))
                 ->descriptionIcon('heroicon-o-arrow-trending-down')
                 ->color('danger')
                 ->icon('heroicon-o-currency-dollar'),
 
-            Stat::make('صافي الربح', Money::format($kpis['net_profit'], $defaultCurrencyId))
+            Stat::make('صافي الربح', Money::format($kpis['net_profit'], 'SAR'))
                 ->description($kpis['net_profit'] >= 0 ? 'ربح إيجابي' : 'خسارة')
                 ->descriptionIcon($kpis['net_profit'] >= 0 ? 'heroicon-o-check-circle' : 'heroicon-o-exclamation-circle')
                 ->color($kpis['net_profit'] >= 0 ? 'success' : 'danger')
