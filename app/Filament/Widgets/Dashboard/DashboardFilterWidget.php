@@ -96,6 +96,16 @@ class DashboardFilterWidget extends Widget implements HasForms
         $this->date_from = $data['date_from'] ?? $this->date_from;
         $this->date_to = $data['date_to'] ?? $this->date_to;
 
-        $this->dispatch('filters-updated');
+        $filters = [
+            'date_from' => !empty($this->date_from) ? Carbon::parse($this->date_from)->startOfDay() : null,
+            'date_to' => !empty($this->date_to) ? Carbon::parse($this->date_to)->endOfDay() : null,
+        ];
+
+        $filters = DashboardFilterHelper::validateDateRange($filters);
+        $queryString = DashboardFilterHelper::buildFilterQueryString($filters);
+
+        $url = request()->url() . ($queryString ? '?' . $queryString : '');
+        
+        $this->redirect($url, navigate: true);
     }
 }
