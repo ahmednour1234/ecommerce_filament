@@ -442,9 +442,27 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
                     ->icon('heroicon-o-document-arrow-down')
                     ->requiresConfirmation(false)
                     ->action(function () {
-                        $table = $this->table($this->makeTable());
-                        return $this->exportToPdf($table, $this->getExportFilename('pdf'));
-                    }),
+                        try {
+                            $table = $this->table($this->makeTable());
+                            $response = $this->exportToPdf($table, $this->getExportFilename('pdf'));
+                            
+                            if (!$response instanceof \Illuminate\Http\Response && !$response instanceof \Symfony\Component\HttpFoundation\StreamedResponse && !$response instanceof \Symfony\Component\HttpFoundation\BinaryFileResponse) {
+                                throw new \RuntimeException('Invalid response type from PDF export');
+                            }
+                            
+                            return $response;
+                        } catch (\Throwable $e) {
+                            $safeMessage = mb_convert_encoding($e->getMessage(), 'UTF-8', 'UTF-8');
+                            if (!mb_check_encoding($safeMessage, 'UTF-8')) {
+                                $safeMessage = 'PDF export failed';
+                            }
+                            \Illuminate\Support\Facades\Log::error('PDF Export Action Error: ' . $safeMessage);
+                            
+                            $cleanException = new \RuntimeException('PDF export failed: ' . $safeMessage);
+                            throw $cleanException;
+                        }
+                    })
+                    ->extraAttributes(['class' => 'pdf-export-action']),
             ])
             ->defaultSort('section')
             ->paginated(false);
@@ -595,10 +613,20 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
                 $sanitizedMetadata
             );
 
-            return $export->download($filename);
+            $response = $export->download($filename);
+            
+            if ($response instanceof \Illuminate\Http\JsonResponse) {
+                throw new \RuntimeException('PDF export returned JSON response instead of PDF');
+            }
+            
+            return $response;
         } catch (\Exception $e) {
-            Log::error('PDF Export Error: ' . $e->getMessage() . PHP_EOL . $e->getTraceAsString());
-            throw $e;
+            $safeMessage = $this->sanitizeUtf8($e->getMessage());
+            $safeTrace = $this->sanitizeUtf8($e->getTraceAsString());
+            Log::error('PDF Export Error: ' . $safeMessage . PHP_EOL . $safeTrace);
+            
+            $exception = new \RuntimeException('PDF export failed: ' . $safeMessage, $e->getCode(), $e);
+            throw $exception;
         }
     }
 
@@ -616,20 +644,40 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
                 $key = $column['name'];
                 $label = $this->sanitizeUtf8($column['label']);
                 $value = $this->getColumnValue($record, $key, $column);
-                $row[$label] = $this->sanitizeUtf8($value);
+                
+                $cleanValue = $this->sanitizeUtf8($value);
+                
+                $testJson = json_encode($cleanValue, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
+                if ($testJson === false) {
+                    $cleanValue = $this->sanitizeUtf8((string)$value);
+                }
+                
+                $row[$label] = $cleanValue;
             }
             $formattedData[] = $row;
         }
 
         $headers = [];
         foreach (array_column($columns, 'label') as $header) {
-            $headers[] = $this->sanitizeUtf8($header);
+            $cleanHeader = $this->sanitizeUtf8($header);
+            $testJson = json_encode($cleanHeader, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
+            if ($testJson === false) {
+                $cleanHeader = $this->sanitizeUtf8((string)$header);
+            }
+            $headers[] = $cleanHeader;
         }
 
-        return [
+        $result = [
             'data' => collect($formattedData),
             'headers' => $headers,
         ];
+        
+        $finalTest = json_encode($result, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
+        if ($finalTest === false) {
+            throw new \RuntimeException('Export data contains invalid UTF-8 after sanitization');
+        }
+        
+        return $result;
     }
 
     protected function getColumnValue($record, string $key, array $column): mixed

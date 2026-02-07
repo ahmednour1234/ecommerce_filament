@@ -23,44 +23,66 @@ class PdfExport
 
     public function download(string $filename = 'export.pdf'): \Illuminate\Http\Response
     {
-        $viewData = $this->getViewData();
-        $isRtl = $this->detectRtl($viewData);
+        try {
+            $viewData = $this->getViewData();
 
-        $pdf = Pdf::loadView('exports.table-pdf', $viewData)
-            ->setPaper('a4', 'landscape')
-            ->setOption('isHtml5ParserEnabled', true)
-            ->setOption('isRemoteEnabled', true)
-            ->setOption('enable-local-file-access', true)
-            ->setOption('defaultFont', $isRtl ? 'Cairo' : 'DejaVu Sans')
-            ->setOption('fontDir', [
-                public_path('fonts'),
-                resource_path('fonts'),
-                storage_path('fonts'),
-            ])
-            ->setOption('fontCache', storage_path('fonts'));
+            $testJson = json_encode($viewData, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
+            if ($testJson === false) {
+                throw new \RuntimeException('View data contains invalid UTF-8 after sanitization');
+            }
 
-        return $pdf->download($filename);
+            $isRtl = $this->detectRtl($viewData);
+
+            $pdf = Pdf::loadView('exports.table-pdf', $viewData)
+                ->setPaper('a4', 'landscape')
+                ->setOption('isHtml5ParserEnabled', true)
+                ->setOption('isRemoteEnabled', true)
+                ->setOption('enable-local-file-access', true)
+                ->setOption('defaultFont', $isRtl ? 'Cairo' : 'DejaVu Sans')
+                ->setOption('fontDir', [
+                    public_path('fonts'),
+                    resource_path('fonts'),
+                    storage_path('fonts'),
+                ])
+                ->setOption('fontCache', storage_path('fonts'));
+
+            return $pdf->download($filename);
+        } catch (\Throwable $e) {
+            $safeMessage = $this->toCleanString($e->getMessage());
+            throw new \RuntimeException('PDF generation failed: ' . $safeMessage, $e->getCode(), $e);
+        }
     }
 
     public function stream(string $filename = 'export.pdf'): \Illuminate\Http\Response
     {
-        $viewData = $this->getViewData();
-        $isRtl = $this->detectRtl($viewData);
+        try {
+            $viewData = $this->getViewData();
 
-        $pdf = Pdf::loadView('exports.table-pdf', $viewData)
-            ->setPaper('a4', 'landscape')
-            ->setOption('isHtml5ParserEnabled', true)
-            ->setOption('isRemoteEnabled', true)
-            ->setOption('enable-local-file-access', true)
-            ->setOption('defaultFont', $isRtl ? 'Cairo' : 'DejaVu Sans')
-            ->setOption('fontDir', [
-                public_path('fonts'),
-                resource_path('fonts'),
-                storage_path('fonts'),
-            ])
-            ->setOption('fontCache', storage_path('fonts'));
+            $testJson = json_encode($viewData, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
+            if ($testJson === false) {
+                throw new \RuntimeException('View data contains invalid UTF-8 after sanitization');
+            }
 
-        return $pdf->stream($filename);
+            $isRtl = $this->detectRtl($viewData);
+
+            $pdf = Pdf::loadView('exports.table-pdf', $viewData)
+                ->setPaper('a4', 'landscape')
+                ->setOption('isHtml5ParserEnabled', true)
+                ->setOption('isRemoteEnabled', true)
+                ->setOption('enable-local-file-access', true)
+                ->setOption('defaultFont', $isRtl ? 'Cairo' : 'DejaVu Sans')
+                ->setOption('fontDir', [
+                    public_path('fonts'),
+                    resource_path('fonts'),
+                    storage_path('fonts'),
+                ])
+                ->setOption('fontCache', storage_path('fonts'));
+
+            return $pdf->stream($filename);
+        } catch (\Throwable $e) {
+            $safeMessage = $this->toCleanString($e->getMessage());
+            throw new \RuntimeException('PDF generation failed: ' . $safeMessage, $e->getCode(), $e);
+        }
     }
 
     /**
