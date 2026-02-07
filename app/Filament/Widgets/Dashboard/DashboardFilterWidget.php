@@ -49,7 +49,6 @@ class DashboardFilterWidget extends Widget implements HasForms
     public function filterForm(\Filament\Forms\Form $form): \Filament\Forms\Form
     {
         return $form
-            ->statePath('filterForm')
             ->schema([
                 Grid::make(2)
                     ->schema([
