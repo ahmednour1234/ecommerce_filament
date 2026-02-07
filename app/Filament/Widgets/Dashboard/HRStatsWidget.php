@@ -28,23 +28,19 @@ class HRStatsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $dateRange = session()->get('dashboard_date_range', 'year');
-        $dateFrom = session()->get('dashboard_date_from');
-        $dateTo = session()->get('dashboard_date_to');
-
-        if ($dateRange === 'today') {
-            $from = now()->startOfDay();
-            $to = now()->endOfDay();
-        } elseif ($dateRange === 'year') {
-            $from = now()->startOfYear()->startOfDay();
-            $to = now()->endOfDay();
+        $dashboard = $this->getLivewire();
+        
+        if ($dashboard instanceof \App\Filament\Pages\Dashboard) {
+            $filters = $dashboard->getFilters();
+            $from = $filters['date_from'] ?? now()->startOfMonth();
+            $to = $filters['date_to'] ?? now()->endOfMonth();
+            $branchId = $filters['branch_id'] ?? null;
         } else {
-            $from = $dateFrom ? Carbon::parse($dateFrom)->startOfDay() : now()->startOfYear()->startOfDay();
-            $to = $dateTo ? Carbon::parse($dateTo)->endOfDay() : now()->endOfDay();
+            $from = now()->startOfMonth();
+            $to = now()->endOfMonth();
+            $user = auth()->user();
+            $branchId = $user->branch_id ?? $this->branch_id ?? null;
         }
-
-        $user = auth()->user();
-        $branchId = $user->branch_id ?? $this->branch_id ?? null;
 
         $cacheKey = "dashboard_hr_stats_{$branchId}_{$from->toDateString()}_{$to->toDateString()}";
 

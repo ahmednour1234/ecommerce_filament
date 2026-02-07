@@ -2,211 +2,72 @@
 
 namespace App\Filament\Widgets\Dashboard;
 
-use App\Models\Finance\BranchTransaction;
-use App\Models\Finance\FinanceType;
-use App\Models\MainCore\Branch;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Contracts\HasForms;
+use App\Filament\Pages\Dashboard;
+use App\Services\Dashboard\DashboardService;
+use App\Support\Money;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Number;
 
-class FinanceStatsWidget extends BaseWidget implements HasForms
+class FinanceStatsWidget extends BaseWidget
 {
-    use InteractsWithForms;
-
-    public ?int $branch_id = null;
-    public ?int $finance_type_id = null;
-
     protected static ?int $sort = 1;
     protected int|string|array $columnSpan = 'full';
     protected ?string $heading = 'إحصائيات المالية';
 
-    public function mount(): void
-    {
-        $user = Auth::user();
-
-        $this->branch_id = session()->get('dashboard_finance_branch_id') ?? ($user?->branch_id);
-        $this->finance_type_id = session()->get('dashboard_finance_type_id');
-
-        $this->form->fill([
-            'branch_id' => $this->branch_id,
-            'finance_type_id' => $this->finance_type_id,
-        ]);
-    }
-
-    protected function hasForm(): bool
-    {
-        return true;
-    }
-
-    protected function getFormSchema(): array
-    {
-        return [
-            Section::make('فلاتر المالية')
-                ->schema([
-                    Select::make('branch_id')
-                        ->label('الفرع')
-                        ->options(fn () => Branch::where('status', 'active')->pluck('name', 'id')->toArray())
-                        ->searchable()
-                        ->preload()
-                        ->nullable()
-                        ->live()
-                        ->afterStateUpdated(function ($state) {
-                            $this->branch_id = $state ? (int) $state : null;
-                            session()->put('dashboard_finance_branch_id', $this->branch_id);
-
-                            $this->flushFinanceStatsCache();
-                            $this->dispatch('$refresh');
-                        }),
-
-                    Select::make('finance_type_id')
-                        ->label('نوع المالية')
-                        ->options(fn () => FinanceType::where('is_active', true)->get()->pluck('name_text', 'id')->toArray())
-                        ->searchable()
-                        ->preload()
-                        ->nullable()
-                        ->live()
-                        ->afterStateUpdated(function ($state) {
-                            $this->finance_type_id = $state ? (int) $state : null;
-                            session()->put('dashboard_finance_type_id', $this->finance_type_id);
-
-                            $this->flushFinanceStatsCache();
-                            $this->dispatch('$refresh');
-                        }),
-                ])
-                ->columns(2)
-                ->collapsible()
-                ->collapsed(true),
-        ];
-    }
-
-    protected function getFormStatePath(): ?string
-    {
-        return 'filters';
-    }
-
-    protected function flushFinanceStatsCache(): void
-    {
-        $dateRange = session()->get('dashboard_date_range', 'year');
-        $dateFrom = session()->get('dashboard_date_from');
-        $dateTo = session()->get('dashboard_date_to');
-
-        if ($dateRange === 'today') {
-            $from = now()->startOfDay();
-            $to = now()->endOfDay();
-        } elseif ($dateRange === 'year') {
-            $from = now()->startOfYear()->startOfDay();
-            $to = now()->endOfDay();
-        } else {
-            $from = $dateFrom ? Carbon::parse($dateFrom)->startOfDay() : now()->startOfYear()->startOfDay();
-            $to = $dateTo ? Carbon::parse($dateTo)->endOfDay() : now()->endOfDay();
-        }
-
-        $user = Auth::user();
-        $branchId = $this->branch_id ?? session()->get('dashboard_finance_branch_id') ?? ($user?->branch_id) ?? null;
-        $financeTypeId = $this->finance_type_id ?? session()->get('dashboard_finance_type_id') ?? null;
-
-        $cacheKey = "dashboard_finance_stats_{$branchId}_{$financeTypeId}_{$from->toDateString()}_{$to->toDateString()}";
-        Cache::forget($cacheKey);
-    }
-
     protected function getStats(): array
     {
-        $dateRange = session()->get('dashboard_date_range', 'year');
-        $dateFrom = session()->get('dashboard_date_from');
-        $dateTo = session()->get('dashboard_date_to');
-
-        if ($dateRange === 'today') {
-            $from = now()->startOfDay();
-            $to = now()->endOfDay();
-        } elseif ($dateRange === 'year') {
-            $from = now()->startOfYear()->startOfDay();
-            $to = now()->endOfDay();
-        } else {
-            $from = $dateFrom ? Carbon::parse($dateFrom)->startOfDay() : now()->startOfYear()->startOfDay();
-            $to = $dateTo ? Carbon::parse($dateTo)->endOfDay() : now()->endOfDay();
+        $dashboard = $this->getLivewire();
+        
+        if (!$dashboard instanceof Dashboard) {
+            return [];
         }
 
-        $branchId = $this->branch_id ?? session('dashboard_finance_branch_id') ?? auth()->user()?->branch_id;
-        $financeTypeId = $this->finance_type_id ?? session('dashboard_finance_type_id');
+        $filters = $dashboard->getFilters();
+        $service = app(DashboardService::class);
+        $kpis = $service->getFinancialKpis($filters);
 
-        $cacheKey = "dashboard_finance_stats_{$branchId}_{$financeTypeId}_{$from->toDateString()}_{$to->toDateString()}";
-
-        return Cache::remember($cacheKey, 300, function () use ($from, $to, $branchId, $financeTypeId) {
-            $query = BranchTransaction::query()
-                ->whereBetween('trx_date', [$from, $to]);
-
-            $user = Auth::user();
-            if ($user && !$user->hasRole('super_admin') && !$user->can('finance.view_all_branches')) {
-                if (method_exists($user, 'branches')) {
-                    $branchIds = $user->branches()->pluck('branches.id')->toArray();
-                    if (!empty($branchIds)) {
-                        $query->whereIn('branch_id', $branchIds);
-                    } else {
-                        $query->whereRaw('1 = 0');
-                    }
-                } elseif ($user->branch_id) {
-                    $query->where('branch_id', $user->branch_id);
-                }
-            }
-
-            if ($branchId) {
-                $query->where('branch_id', $branchId);
-            }
-
-            if ($financeTypeId) {
-                $query->where('finance_type_id', $financeTypeId);
-            }
-
-            $query->where('status', 'approved');
-
-            $incomeQuery = (clone $query)->income();
-            $expenseQuery = (clone $query)->expense();
-
-            $totalIncome = (float) $incomeQuery->sum('amount');
-            $totalExpense = (float) $expenseQuery->sum('amount');
-            $netProfit = $totalIncome - $totalExpense;
-
-            $incomeCount = $incomeQuery->count();
-            $expenseCount = $expenseQuery->count();
-
+        if ($kpis['total_revenue'] == 0 && $kpis['total_expenses'] == 0) {
             return [
-                Stat::make('إجمالي الإيرادات', Number::currency($totalIncome))
-                    ->description('عدد المعاملات: ' . Number::format($incomeCount))
-                    ->descriptionIcon('heroicon-o-arrow-trending-up')
-                    ->color('success')
-                    ->icon('heroicon-o-banknotes'),
-
-                Stat::make('إجمالي المصروفات', Number::currency($totalExpense))
-                    ->description('عدد المعاملات: ' . Number::format($expenseCount))
-                    ->descriptionIcon('heroicon-o-arrow-trending-down')
-                    ->color('danger')
-                    ->icon('heroicon-o-currency-dollar'),
-
-                Stat::make('صافي الربح', Number::currency($netProfit))
-                    ->description($netProfit >= 0 ? 'ربح إيجابي' : 'خسارة')
-                    ->descriptionIcon($netProfit >= 0 ? 'heroicon-o-check-circle' : 'heroicon-o-exclamation-circle')
-                    ->color($netProfit >= 0 ? 'success' : 'danger')
-                    ->icon('heroicon-o-chart-bar'),
-
-                Stat::make('عدد معاملات الإيرادات', Number::format($incomeCount))
-                    ->description('معاملات الإيرادات في الفترة المحددة')
-                    ->descriptionIcon('heroicon-o-document-plus')
-                    ->color('info')
-                    ->icon('heroicon-o-document-text'),
-
-                Stat::make('عدد معاملات المصروفات', Number::format($expenseCount))
-                    ->description('معاملات المصروفات في الفترة المحددة')
-                    ->descriptionIcon('heroicon-o-document-minus')
-                    ->color('warning')
-                    ->icon('heroicon-o-document-duplicate'),
+                Stat::make('لا توجد بيانات', 'لا توجد معاملات مالية في الفترة المحددة')
+                    ->description('')
+                    ->color('gray')
+                    ->icon('heroicon-o-information-circle'),
             ];
-        });
+        }
+
+        $defaultCurrencyId = Money::defaultCurrencyId();
+
+        return [
+            Stat::make('إجمالي الإيرادات', Money::format($kpis['total_revenue'], $defaultCurrencyId))
+                ->description('عدد المعاملات: ' . Number::format($kpis['revenue_count']))
+                ->descriptionIcon('heroicon-o-arrow-trending-up')
+                ->color('success')
+                ->icon('heroicon-o-banknotes'),
+
+            Stat::make('إجمالي المصروفات', Money::format($kpis['total_expenses'], $defaultCurrencyId))
+                ->description('عدد المعاملات: ' . Number::format($kpis['expense_count']))
+                ->descriptionIcon('heroicon-o-arrow-trending-down')
+                ->color('danger')
+                ->icon('heroicon-o-currency-dollar'),
+
+            Stat::make('صافي الربح', Money::format($kpis['net_profit'], $defaultCurrencyId))
+                ->description($kpis['net_profit'] >= 0 ? 'ربح إيجابي' : 'خسارة')
+                ->descriptionIcon($kpis['net_profit'] >= 0 ? 'heroicon-o-check-circle' : 'heroicon-o-exclamation-circle')
+                ->color($kpis['net_profit'] >= 0 ? 'success' : 'danger')
+                ->icon('heroicon-o-chart-bar'),
+
+            Stat::make('عدد معاملات الإيرادات', Number::format($kpis['revenue_count']))
+                ->description('معاملات الإيرادات في الفترة المحددة')
+                ->descriptionIcon('heroicon-o-document-plus')
+                ->color('info')
+                ->icon('heroicon-o-document-text'),
+
+            Stat::make('عدد معاملات المصروفات', Number::format($kpis['expense_count']))
+                ->description('معاملات المصروفات في الفترة المحددة')
+                ->descriptionIcon('heroicon-o-document-minus')
+                ->color('warning')
+                ->icon('heroicon-o-document-duplicate'),
+        ];
     }
 }
