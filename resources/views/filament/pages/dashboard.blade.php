@@ -41,39 +41,90 @@
     </div>
 
     {{-- Auto-open filters modal if filters not applied --}}
-    <div x-data="{
-        init() {
-            // Wait for Livewire to be fully loaded
-            if (typeof window.Livewire === 'undefined') {
-                setTimeout(() => this.init(), 100);
-                return;
-            }
+    <div
+        x-data="{}"
+        x-init="
+            setTimeout(() => {
+                // Check if filters are applied (date_from and date_to in query string OR ?filters=1 flag)
+                const urlParams = new URLSearchParams(window.location.search);
+                const hasDateFrom = urlParams.has('date_from');
+                const hasDateTo = urlParams.has('date_to');
+                const hasFiltersFlag = urlParams.get('filters') === '1';
+                const skipModal = urlParams.get('skip_filters_modal') === '1';
 
-            // Check if filters are applied (date_from and date_to in query string OR ?filters=1 flag)
-            const urlParams = new URLSearchParams(window.location.search);
-            const hasDateFrom = urlParams.has('date_from');
-            const hasDateTo = urlParams.has('date_to');
-            const hasFiltersFlag = urlParams.get('filters') === '1';
-            const skipModal = urlParams.get('skip_filters_modal') === '1';
+                const filtersApplied = (hasDateFrom && hasDateTo) || hasFiltersFlag;
 
-            const filtersApplied = (hasDateFrom && hasDateTo) || hasFiltersFlag;
+                // Check sessionStorage to avoid annoying users repeatedly
+                const alreadyPrompted = sessionStorage.getItem('dashboard_filters_prompted') === '1';
 
-            // Check sessionStorage to avoid annoying users repeatedly
-            const alreadyPrompted = sessionStorage.getItem('dashboard_filters_prompted') === '1';
+                // Auto-open modal if:
+                // - Filters are NOT applied
+                // - User hasn't been prompted in this session
+                // - No skip_filters_modal flag in URL
+                if (!filtersApplied && !alreadyPrompted && !skipModal) {
+                    // Mark as prompted to avoid opening again in this session
+                    sessionStorage.setItem('dashboard_filters_prompted', '1');
 
-            // Auto-open modal if:
-            // - Filters are NOT applied
-            // - User hasn't been prompted in this session
-            // - No skip_filters_modal flag in URL
-            if (!filtersApplied && !alreadyPrompted && !skipModal) {
-                // Mark as prompted to avoid opening again in this session
-                sessionStorage.setItem('dashboard_filters_prompted', '1');
+                    // Try multiple methods to open the modal
+                    function tryOpen() {
+                        // Method 1: Use $wire.call to directly call the method (most reliable)
+                        if (typeof $wire !== 'undefined' && $wire.call) {
+                            try {
+                                $wire.call('openFiltersModal');
+                                return;
+                            } catch (e) {
+                                // Continue to next method
+                            }
+                        }
 
-                // Dispatch Livewire event to open the filters modal
-                window.Livewire.dispatch('open-dashboard-filters');
-            }
-        }
-    }" x-init="init()"></div>
+                        // Method 2: Use $wire.dispatch for event (Filament/Livewire context)
+                        if (typeof $wire !== 'undefined' && $wire.dispatch) {
+                            try {
+                                $wire.dispatch('open-dashboard-filters');
+                                return;
+                            } catch (e) {
+                                // Continue to next method
+                            }
+                        }
+
+                        // Method 3: Use window.Livewire.dispatch (Livewire 3)
+                        if (typeof window.Livewire !== 'undefined' && window.Livewire.dispatch) {
+                            try {
+                                window.Livewire.dispatch('open-dashboard-filters');
+                                return;
+                            } catch (e) {
+                                // Continue to next method
+                            }
+                        }
+
+                        // Method 4: Find component by ID and dispatch
+                        if (typeof window.Livewire !== 'undefined' && window.Livewire.find) {
+                            try {
+                                const componentId = @js($this->getId());
+                                const component = window.Livewire.find(componentId);
+                                if (component && component.dispatch) {
+                                    component.dispatch('open-dashboard-filters');
+                                    return;
+                                }
+                            } catch (e) {
+                                // Continue to retry
+                            }
+                        }
+
+                        // If all methods failed, retry after delay (max 5 attempts)
+                        if (tryOpen.attempts === undefined) tryOpen.attempts = 0;
+                        tryOpen.attempts++;
+                        if (tryOpen.attempts < 5) {
+                            setTimeout(tryOpen, 200);
+                        }
+                    }
+
+                    // Start trying to open after a delay to ensure everything is loaded
+                    setTimeout(tryOpen, 800);
+                }
+            }, 100);
+        "
+    ></div>
 
     <style>
         /* 1) اجعل RTL على مستوى الصفحة بالكامل */
