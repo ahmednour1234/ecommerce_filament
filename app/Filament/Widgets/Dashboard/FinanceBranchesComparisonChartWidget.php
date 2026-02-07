@@ -15,14 +15,22 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
     protected int|string|array $columnSpan = 'full';
 
     protected static ?int $sort = 6;
-    
+
     protected $listeners = ['filters-updated' => '$refresh'];
+
+    protected function getFilters(): array
+    {
+        if (session()->has('dashboard_filters')) {
+            return session()->get('dashboard_filters');
+        }
+        return \App\Helpers\DashboardFilterHelper::parseFiltersFromRequest();
+    }
 
     protected function getData(): array
     {
-        $filters = \App\Helpers\DashboardFilterHelper::parseFiltersFromRequest();
+        $filters = $this->getFilters();
         $service = app(DashboardService::class);
-        
+
         try {
             $data = $service->getBranchComparisonChart($filters);
 

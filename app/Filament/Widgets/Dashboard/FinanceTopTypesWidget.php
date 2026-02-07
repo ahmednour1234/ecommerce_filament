@@ -14,9 +14,17 @@ class FinanceTopTypesWidget extends ChartWidget
     
     protected $listeners = ['filters-updated' => '$refresh'];
 
+    protected function getFilters(): array
+    {
+        if (session()->has('dashboard_filters')) {
+            return session()->get('dashboard_filters');
+        }
+        return \App\Helpers\DashboardFilterHelper::parseFiltersFromRequest();
+    }
+
     protected function getData(): array
     {
-        $filters = \App\Helpers\DashboardFilterHelper::parseFiltersFromRequest();
+        $filters = $this->getFilters();
         $service = app(DashboardService::class);
         $data = $service->getTopIncomeExpenseTypes($filters);
 

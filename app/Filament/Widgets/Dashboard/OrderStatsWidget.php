@@ -16,9 +16,17 @@ class OrderStatsWidget extends BaseWidget
     
     protected $listeners = ['filters-updated' => '$refresh'];
 
+    protected function getFilters(): array
+    {
+        if (session()->has('dashboard_filters')) {
+            return session()->get('dashboard_filters');
+        }
+        return \App\Helpers\DashboardFilterHelper::parseFiltersFromRequest();
+    }
+
     protected function getStats(): array
     {
-        $filters = \App\Helpers\DashboardFilterHelper::parseFiltersFromRequest();
+        $filters = $this->getFilters();
         $service = app(DashboardService::class);
         $stats = $service->getOrderStats($filters);
 

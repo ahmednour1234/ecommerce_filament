@@ -17,10 +17,20 @@ class FinanceBranchesTableWidget extends BaseWidget
     protected static ?int $sort = 2;
     protected int|string|array $columnSpan = 'full';
     protected static ?string $heading = 'ملخص المالية حسب الفروع';
+    
+    protected $listeners = ['filters-updated' => '$refresh'];
+
+    protected function getFilters(): array
+    {
+        if (session()->has('dashboard_filters')) {
+            return session()->get('dashboard_filters');
+        }
+        return \App\Helpers\DashboardFilterHelper::parseFiltersFromRequest();
+    }
 
     public function table(Table $table): Table
     {
-        $filters = \App\Helpers\DashboardFilterHelper::parseFiltersFromRequest();
+        $filters = $this->getFilters();
         $service = app(DashboardService::class);
         $branchesData = $service->getBranchFinancialSummary($filters);
 
