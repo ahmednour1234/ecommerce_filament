@@ -2,24 +2,6 @@
 
     <div class="mb-6">
         <h1 class="text-2xl font-bold mb-4">Dashboard</h1>
-
-        {{-- Inline Filters --}}
-        <div class="mb-6">
-            <div class="fi-section rounded-lg bg-white dark:bg-gray-800 shadow-sm ring-1 ring-gray-950/5 dark:ring-white/10 p-4">
-                <form wire:submit="applyFilters">
-                    <div class="flex items-end gap-4 flex-wrap">
-                        <div class="flex-1 min-w-[200px]">
-                            {{ $this->filterForm }}
-                        </div>
-                        <div class="flex items-end">
-                            <x-filament::button type="submit" color="primary">
-                                Apply
-                            </x-filament::button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
     </div>
 
     <div class="space-y-6">
