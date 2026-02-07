@@ -9,7 +9,6 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Redirect;
 
 class DashboardFilterWidget extends Widget implements HasForms
 {
@@ -81,6 +80,6 @@ class DashboardFilterWidget extends Widget implements HasForms
 
         $url = request()->url() . ($queryString ? '?' . $queryString : '');
         
-        return redirect($url);
+        $this->redirect($url, navigate: false);
     }
 }
