@@ -2,24 +2,27 @@
 
 namespace App\Filament\Pages\Recruitment;
 
-use App\Filament\Concerns\ExportsTable;
+use App\Exports\ReceivingRecruitmentExport;
 use App\Filament\Concerns\TranslatableNavigation;
 use App\Filament\Resources\Recruitment\RecruitmentContractResource;
 use App\Models\Client;
-use App\Models\Recruitment\RecruitmentContract;
 use App\Models\User;
+use App\Services\Recruitment\ReceivingRecruitmentReportService;
 use Filament\Pages\Page;
 use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ReceivingRecruitmentReportPage extends Page implements HasTable
 {
     use InteractsWithTable;
-    use ExportsTable;
     use TranslatableNavigation;
+
+    protected ReceivingRecruitmentReportService $reportService;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
     protected static ?string $navigationGroup = 'recruitment';
@@ -42,14 +45,15 @@ class ReceivingRecruitmentReportPage extends Page implements HasTable
         return tr('recruitment.receiving_labor.title', [], null, 'dashboard') ?: 'استلام العمالة';
     }
 
+    public function mount(): void
+    {
+        $this->reportService = app(ReceivingRecruitmentReportService::class);
+    }
+
     public function table(Table $table): Table
     {
         return $table
-            ->query(
-                RecruitmentContract::query()
-                    ->received()
-                    ->with(['client', 'worker', 'creator'])
-            )
+            ->query($this->reportService->getBaseQuery())
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->label(tr('recruitment.receiving_labor.table.id', [], null, 'dashboard') ?: 'رقم')
@@ -229,7 +233,7 @@ class ReceivingRecruitmentReportPage extends Page implements HasTable
                 ->label(tr('actions.export_excel', [], null, 'dashboard') ?: 'تصدير Excel')
                 ->icon('heroicon-o-arrow-down-tray')
                 ->action(function () {
-                    return $this->exportToExcel(null, $this->getExportFilename('xlsx'));
+                    return $this->exportToExcel();
                 }),
 
             \Filament\Actions\Action::make('print')
@@ -240,17 +244,59 @@ class ReceivingRecruitmentReportPage extends Page implements HasTable
         ];
     }
 
-    protected function getExportTitle(): ?string
+    protected function exportToExcel(): BinaryFileResponse
     {
-        return tr('recruitment.receiving_labor.title', [], null, 'dashboard') ?: 'استلام العمالة';
+        $table = $this->table($this->makeTable());
+        $tableQuery = $table->getQuery();
+        $contracts = $tableQuery->get();
+
+        $export = new ReceivingRecruitmentExport($contracts);
+        $filename = $this->getExportFilename('xlsx');
+
+        return Excel::download($export, $filename);
     }
 
-    protected function getExportMetadata(): array
+    protected function getPrintUrl(): string
     {
-        return [
-            'exported_at' => now()->format('Y-m-d H:i:s'),
-            'exported_by' => auth()->user()?->name ?? 'System',
-            'report_type' => 'receiving_labor',
-        ];
+        $table = $this->table($this->makeTable());
+        $tableQuery = $table->getQuery();
+        $contracts = $tableQuery->get();
+
+        $headers = $this->reportService->getExportHeaders();
+        $rows = $contracts->map(function ($contract) {
+            $formatted = $this->reportService->formatContractForExport($contract);
+            return [
+                $formatted['id'],
+                $formatted['contract_no'],
+                $formatted['client'],
+                $formatted['worker'],
+                $formatted['passport_number'],
+                $formatted['arrival_date'],
+                $formatted['trial_end_date'],
+                $formatted['contract_end_date'],
+                $formatted['status'],
+                $formatted['employee'],
+            ];
+        })->toArray();
+
+        session()->flash('print_data', [
+            'title' => tr('recruitment.receiving_labor.title', [], null, 'dashboard') ?: 'استلام العمالة',
+            'headers' => $headers,
+            'rows' => $rows,
+            'metadata' => [
+                'exported_at' => now()->format('Y-m-d H:i:s'),
+                'exported_by' => auth()->user()?->name ?? 'System',
+                'report_type' => 'receiving_labor',
+            ],
+        ]);
+
+        return route('filament.exports.print');
+    }
+
+    protected function getExportFilename(string $extension = 'xlsx'): string
+    {
+        $title = tr('recruitment.receiving_labor.title', [], null, 'dashboard') ?: 'receiving_labor';
+        $sanitized = preg_replace('/[^a-z0-9]+/i', '_', $title);
+        return strtolower($sanitized) . '_' . date('Y-m-d_His') . '.' . $extension;
     }
 }
