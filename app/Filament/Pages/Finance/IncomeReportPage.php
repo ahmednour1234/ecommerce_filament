@@ -62,8 +62,9 @@ class IncomeReportPage extends Page implements HasTable, HasForms
     {
         // Handle case where Filament tries to pass Infolist instead of Form
         if ($form instanceof Infolist) {
-            // Use the existing form instance from InteractsWithForms trait
-            $form = $this->form;
+            // Create a new Form instance
+            $form = Forms\Form::make($this)
+                ->statePath('data');
         }
         
         return $form
