@@ -15,6 +15,7 @@ use App\Models\Finance\FinanceType;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Infolists\Infolist;
 use Filament\Pages\Page;
 use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
@@ -57,8 +58,14 @@ class IncomeReportPage extends Page implements HasTable, HasForms
         ]);
     }
 
-    public function form(Forms\Form $form): Forms\Form
+    public function form(Forms\Form|Infolist $form): Forms\Form
     {
+        // Handle case where Filament tries to pass Infolist instead of Form
+        if ($form instanceof Infolist) {
+            // Use the existing form instance from InteractsWithForms trait
+            $form = $this->form;
+        }
+        
         return $form
             ->schema([
                 Forms\Components\Section::make(tr('reports.filters.title', [], null, 'dashboard') ?: 'Filters')
