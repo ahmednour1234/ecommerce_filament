@@ -107,6 +107,8 @@ class ReportPdfExport
             'direction' => $this->isRtl ? 'rtl' : 'ltr',
             'autoScriptToLang' => true,
             'autoLangToFont' => true,
+            'pcreBacktrackLimit' => 10000000,
+            'pcreRecursionLimit' => 50000,
         ];
 
         return new Mpdf($config);
@@ -220,7 +222,8 @@ class ReportPdfExport
         $mpdf = $this->createMpdf();
         $html = $this->renderView();
         
-        $mpdf->WriteHTML($html);
+        // Write HTML in chunks to avoid backtrack limit issues
+        $this->writeHtmlInChunks($mpdf, $html);
         
         return response()->streamDownload(function () use ($mpdf, $filename) {
             $mpdf->Output($filename, 'D');
@@ -237,7 +240,8 @@ class ReportPdfExport
         $mpdf = $this->createMpdf();
         $html = $this->renderView();
         
-        $mpdf->WriteHTML($html);
+        // Write HTML in chunks to avoid backtrack limit issues
+        $this->writeHtmlInChunks($mpdf, $html);
         
         return response()->streamDownload(function () use ($mpdf) {
             $mpdf->Output('', 'I');
@@ -254,9 +258,72 @@ class ReportPdfExport
         $mpdf = $this->createMpdf();
         $html = $this->renderView();
         
-        $mpdf->WriteHTML($html);
+        // Write HTML in chunks to avoid backtrack limit issues
+        $this->writeHtmlInChunks($mpdf, $html);
         
         return $mpdf->Output('', 'S');
+    }
+
+    /**
+     * Write HTML in chunks to avoid backtrack limit issues
+     */
+    protected function writeHtmlInChunks(Mpdf $mpdf, string $html): void
+    {
+        // Increase PHP backtrack limit for this operation
+        $originalLimit = ini_get('pcre.backtrack_limit');
+        ini_set('pcre.backtrack_limit', '10000000');
+        
+        try {
+            // Split HTML into chunks (400KB chunks to be safe)
+            $chunkSize = 400000;
+            $htmlLength = mb_strlen($html, 'UTF-8');
+            
+            if ($htmlLength <= $chunkSize) {
+                // Small enough to write in one go
+                $mpdf->WriteHTML($html);
+            } else {
+                // Split into chunks at table row boundaries
+                $offset = 0;
+                $chunk = '';
+                
+                while ($offset < $htmlLength) {
+                    $remaining = mb_substr($html, $offset, $chunkSize * 2, 'UTF-8');
+                    
+                    // Try to find a good break point (end of table row)
+                    $breakPoint = mb_strrpos($remaining, '</tr>', 0, 'UTF-8');
+                    
+                    if ($breakPoint !== false && $breakPoint > $chunkSize * 0.5) {
+                        // Found a good break point
+                        $chunk = mb_substr($html, $offset, $breakPoint + 5, 'UTF-8');
+                        $offset += $breakPoint + 5;
+                    } else {
+                        // No good break point, use chunk size
+                        $chunk = mb_substr($html, $offset, $chunkSize, 'UTF-8');
+                        $offset += $chunkSize;
+                    }
+                    
+                    if (!empty($chunk)) {
+                        $mpdf->WriteHTML($chunk);
+                    }
+                    
+                    // Safety check to avoid infinite loop
+                    if ($offset >= $htmlLength) {
+                        break;
+                    }
+                }
+                
+                // Write any remaining content
+                if ($offset < $htmlLength) {
+                    $remaining = mb_substr($html, $offset, null, 'UTF-8');
+                    if (!empty($remaining)) {
+                        $mpdf->WriteHTML($remaining);
+                    }
+                }
+            }
+        } finally {
+            // Restore original limit
+            ini_set('pcre.backtrack_limit', $originalLimit);
+        }
     }
 
     public function setSummaryData(Collection $summaryData, array $summaryHeaders): void
