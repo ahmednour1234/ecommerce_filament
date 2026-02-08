@@ -58,10 +58,10 @@ class IncomeReportPage extends Page implements HasTable, HasForms
         ]);
     }
 
-    public function form(Forms\Form|Infolist $form): Forms\Form
+    public function form(Forms\Form|Infolist|null $form = null): Forms\Form
     {
-        // Handle case where Filament tries to pass Infolist instead of Form
-        if ($form instanceof Infolist) {
+        // Handle case where no argument is passed or Infolist is passed
+        if ($form === null || $form instanceof Infolist) {
             // Create a new Form instance
             $form = Forms\Form::make($this)
                 ->statePath('data');
