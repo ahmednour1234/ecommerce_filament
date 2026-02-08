@@ -196,7 +196,7 @@ class ContractsTestDataSeeder extends Seeder
                 'duration_type' => $durationType,
                 'duration' => $duration,
                 'tax_percent' => $taxPercent,
-                'discount_type' => null,
+                'discount_type' => 'none',
                 'discount_value' => 0,
                 'subtotal' => $subtotal,
                 'tax_value' => $taxValue,
