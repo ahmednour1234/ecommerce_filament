@@ -120,7 +120,10 @@ class AdminPanelProvider extends PanelProvider
                     ->label(fn () => tr('sidebar.finance', [], null, 'dashboard') ?: 'المالية')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make()
-                    ->label(fn () => tr('sidebar.recruitment', [], null, 'dashboard') ?: 'التوظيف / الاستقدام')
+                    ->label(fn () => tr('sidebar.recruitment', [], null, 'dashboard') ?: 'التوظيف')
+                    ->collapsible(false),
+                \Filament\Navigation\NavigationGroup::make()
+                    ->label(fn () => tr('sidebar.recruitment_contracts', [], null, 'dashboard') ?: 'عقود الاستقدام')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make()
                     ->label(fn () => tr('sidebar.rental', [], null, 'dashboard') ?: 'قسم التأجير')

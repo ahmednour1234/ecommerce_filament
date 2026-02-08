@@ -24,7 +24,8 @@ class NavigationRefactorTranslationsSeeder extends Seeder
             'sidebar.general_settings' => ['en' => 'General Settings', 'ar' => 'الإعدادات العامة'],
             'sidebar.clients' => ['en' => 'Clients', 'ar' => 'العملاء'],
             'sidebar.finance' => ['en' => 'Finance', 'ar' => 'المالية'],
-            'sidebar.recruitment' => ['en' => 'Recruitment', 'ar' => 'التوظيف / الاستقدام'],
+            'sidebar.recruitment' => ['en' => 'Recruitment', 'ar' => 'التوظيف'],
+            'sidebar.recruitment_contracts' => ['en' => 'Recruitment Contracts', 'ar' => 'عقود الاستقدام'],
             'sidebar.rental' => ['en' => 'Rental', 'ar' => 'قسم التأجير'],
             'sidebar.system' => ['en' => 'System', 'ar' => 'النظام'],
             'sidebar.hr' => ['en' => 'Human Resources', 'ar' => 'الموارد البشرية'],
@@ -60,11 +61,14 @@ class NavigationRefactorTranslationsSeeder extends Seeder
             'sidebar.recruitment.professions' => ['en' => 'Professions', 'ar' => 'المهن'],
             'sidebar.recruitment.laborers' => ['en' => 'Laborers', 'ar' => 'العمال'],
             'sidebar.recruitment.used_laborers' => ['en' => 'Used Laborers', 'ar' => 'العمال المستخدمون'],
-            'sidebar.recruitment.contracts' => ['en' => 'Recruitment Contracts', 'ar' => 'عقود الاستقدام'],
             'sidebar.recruitment.packages' => ['en' => 'Packages', 'ar' => 'الباقات'],
-            'sidebar.recruitment.received_workers' => ['en' => 'Received Workers', 'ar' => 'العمالة المستلمة'],
-            'sidebar.recruitment.expired_contracts' => ['en' => 'Expired Contracts', 'ar' => 'العقود المنتهية'],
-            'sidebar.recruitment.contracts_reports' => ['en' => 'Recruitment Contracts Reports', 'ar' => 'تقارير عقود الاستقدام'],
+            
+            // Recruitment Contracts Group
+            'sidebar.recruitment_contracts.contracts' => ['en' => 'Recruitment Contracts', 'ar' => 'عقود الاستقدام'],
+            'sidebar.recruitment_contracts.received_workers' => ['en' => 'Received Workers', 'ar' => 'العمالة المستلمة'],
+            'sidebar.recruitment_contracts.receiving_labor' => ['en' => 'Receiving Labor', 'ar' => 'استلام العمالة'],
+            'sidebar.recruitment_contracts.expired_contracts' => ['en' => 'Expired Contracts', 'ar' => 'العقود المنتهية'],
+            'sidebar.recruitment_contracts.contracts_reports' => ['en' => 'Recruitment Contracts Reports', 'ar' => 'تقارير عقود الاستقدام'],
 
             // Rental
             'sidebar.rental.contracts_requests' => ['en' => 'Contracts & Requests', 'ar' => 'العقود والطلبات'],

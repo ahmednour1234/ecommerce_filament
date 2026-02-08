@@ -95,6 +95,14 @@ class ReceivingRecruitmentTranslationsSeeder extends Seeder
                 'en' => 'Receiving Labor',
                 'ar' => 'استلام العمالة',
             ],
+            'sidebar.recruitment_contracts' => [
+                'en' => 'Recruitment Contracts',
+                'ar' => 'عقود الاستقدام',
+            ],
+            'sidebar.recruitment' => [
+                'en' => 'Recruitment',
+                'ar' => 'التوظيف',
+            ],
         ];
 
         $created = 0;

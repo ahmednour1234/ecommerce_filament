@@ -11,9 +11,9 @@ class ExpiredContractsPage extends Page
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-trash';
-    protected static ?string $navigationGroup = 'recruitment';
+    protected static ?string $navigationGroup = 'recruitment_contracts';
     protected static ?int $navigationSort = 12;
-    protected static ?string $navigationTranslationKey = 'sidebar.recruitment.expired_contracts';
+    protected static ?string $navigationTranslationKey = 'sidebar.recruitment_contracts.expired_contracts';
 
     public static function shouldRegisterNavigation(): bool
     {
