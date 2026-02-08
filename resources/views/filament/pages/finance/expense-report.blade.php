@@ -140,14 +140,4 @@
             {{ $this->table }}
         </div>
     </div>
-
-    <style>
-        .fi-ta-table {
-            border-radius: 0.75rem;
-        }
-
-        .fi-section {
-            border-radius: 1rem;
-        }
-    </style>
 </x-filament-panels::page>
