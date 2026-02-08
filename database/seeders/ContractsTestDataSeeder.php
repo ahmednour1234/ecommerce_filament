@@ -57,6 +57,11 @@ class ContractsTestDataSeeder extends Seeder
             $this->command->warn('No customers found. Rental contracts will be created without customer.');
         }
 
+        if (!$package) {
+            $this->command->error('No rental packages found. Please seed packages first.');
+            return;
+        }
+
         if (!$worker) {
             $this->command->warn('No workers found. Contracts will be created without worker.');
         }
@@ -183,7 +188,7 @@ class ContractsTestDataSeeder extends Seeder
                 'worker_id' => $worker?->id,
                 'country_id' => $country->id,
                 'profession_id' => $profession?->id,
-                'package_id' => $package?->id,
+                'package_id' => $package->id,
                 'status' => $status,
                 'payment_status' => $paymentStatus,
                 'start_date' => $startDate,
