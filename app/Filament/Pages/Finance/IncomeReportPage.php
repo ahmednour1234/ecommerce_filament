@@ -15,7 +15,6 @@ use App\Models\Finance\FinanceType;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Infolists\Infolist as FilamentInfolist;
 use Filament\Pages\Page;
 use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
@@ -145,11 +144,6 @@ class IncomeReportPage extends Page implements HasTable, HasForms
                     ->columns(3),
             ])
             ->statePath('data');
-    }
-
-    public function infolist(\Filament\Infolists\Infolist $infolist): \Filament\Infolists\Infolist
-    {
-        return $infolist->schema([]);
     }
 
     protected function baseQuery(): Builder
