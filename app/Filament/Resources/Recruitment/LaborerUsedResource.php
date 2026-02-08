@@ -23,7 +23,7 @@ class LaborerUsedResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
     protected static ?string $navigationGroup = 'recruitment_contracts';
-    protected static ?int $navigationSort = 7;
+    protected static ?int $navigationSort = 6;
     protected static ?string $navigationTranslationKey = 'sidebar.recruitment_contracts.used_laborers';
 
     public static function form(Form $form): Form

@@ -12,7 +12,7 @@ class ReceivedWorkersPage extends Page
 
     protected static ?string $navigationIcon = 'heroicon-o-arrow-down-tray';
     protected static ?string $navigationGroup = 'recruitment_contracts';
-    protected static ?int $navigationSort = 11;
+    protected static ?int $navigationSort = 2;
     protected static ?string $navigationTranslationKey = 'sidebar.recruitment_contracts.received_workers';
 
     public static function shouldRegisterNavigation(): bool
@@ -25,7 +25,7 @@ class ReceivedWorkersPage extends Page
 
     public static function getNavigationLabel(): string
     {
-        return tr('recruitment_contract.menu.received_workers', [], null, 'dashboard') ?: 'العمالة المستلمة';
+        return tr('sidebar.recruitment_contracts.received_workers', [], null, 'dashboard') ?: 'العمالة المستلمة';
     }
 
     public function mount(): void

@@ -16,7 +16,7 @@ class RecruitmentContractsReportsPage extends Page implements HasForms
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
     protected static ?string $navigationGroup = 'recruitment_contracts';
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 5;
     protected static ?string $navigationTranslationKey = 'sidebar.recruitment_contracts.contracts_reports';
 
     public static function shouldRegisterNavigation(): bool
@@ -33,7 +33,7 @@ class RecruitmentContractsReportsPage extends Page implements HasForms
 
     public static function getNavigationLabel(): string
     {
-        return tr('recruitment_contract.menu.reports', [], null, 'dashboard') ?: 'التقارير';
+        return tr('sidebar.recruitment_contracts.contracts_reports', [], null, 'dashboard') ?: 'تقارير عقود الاستقدام';
     }
 
     public function mount(): void
