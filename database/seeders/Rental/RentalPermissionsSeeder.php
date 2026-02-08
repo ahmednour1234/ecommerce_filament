@@ -83,12 +83,18 @@ class RentalPermissionsSeeder extends Seeder
 
         $this->command->info('Step 7: Assigning permissions to roles...');
 
+        // Assign to Admin role
+        $adminRole = Role::firstOrCreate(['name' => 'Admin', 'guard_name' => 'web']);
+        $adminRole->givePermissionTo($allPermissions);
+        $this->command->info('✓ All rental permissions assigned to Admin role');
+
+        // Assign to super_admin role if exists
         $superAdminRole = Role::where('name', 'super_admin')->first();
         if ($superAdminRole) {
             $superAdminRole->givePermissionTo($allPermissions);
-            $this->command->info('✓ All permissions assigned to super_admin role');
+            $this->command->info('✓ All rental permissions assigned to super_admin role');
         } else {
-            $this->command->warn('⚠ super_admin role not found. Permissions will be assigned by SuperAdminSeeder.');
+            $this->command->info('ℹ super_admin role not found. Permissions will be assigned by SuperAdminSeeder.');
         }
 
         $this->command->newLine();
