@@ -127,7 +127,10 @@ class ExpensesRelationManager extends RelationManager
                         
                         return $link;
                     })
-                    ->visible(fn () => auth()->user()?->can('recruitment_contracts.finance.manage') ?? false),
+                    ->visible(function () {
+                        $user = auth()->user();
+                        return $user?->hasRole('super_admin') || ($user?->can('recruitment_contracts.finance.manage') ?? false);
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
@@ -173,14 +176,23 @@ class ExpensesRelationManager extends RelationManager
                         );
                         return $record->fresh();
                     })
-                    ->visible(fn () => auth()->user()?->can('recruitment_contracts.finance.manage') ?? false),
+                    ->visible(function () {
+                        $user = auth()->user();
+                        return $user?->hasRole('super_admin') || ($user?->can('recruitment_contracts.finance.manage') ?? false);
+                    }),
                 Tables\Actions\DeleteAction::make()
-                    ->visible(fn () => auth()->user()?->can('recruitment_contracts.finance.manage') ?? false),
+                    ->visible(function () {
+                        $user = auth()->user();
+                        return $user?->hasRole('super_admin') || ($user?->can('recruitment_contracts.finance.manage') ?? false);
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
-                        ->visible(fn () => auth()->user()?->can('recruitment_contracts.finance.manage') ?? false),
+                        ->visible(function () {
+                        $user = auth()->user();
+                        return $user?->hasRole('super_admin') || ($user?->can('recruitment_contracts.finance.manage') ?? false);
+                    }),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
