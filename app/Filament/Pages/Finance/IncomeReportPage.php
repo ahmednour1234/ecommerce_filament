@@ -44,6 +44,20 @@ class IncomeReportPage extends Page implements HasTable, HasForms
 
     public ?array $data = [];
 
+    protected function getForms(): array
+    {
+        return [
+            'form',
+        ];
+    }
+
+    protected function getCachedActions(): array
+    {
+        // Exclude 'form' from actions - it's a form method, not an action
+        $actions = parent::getCachedActions();
+        return array_filter($actions, fn($key) => $key !== 'form', ARRAY_FILTER_USE_KEY);
+    }
+
     public function mount(): void
     {
         $this->form->fill([
