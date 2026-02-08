@@ -81,14 +81,11 @@ class AgentResource extends Resource
 
                         Forms\Components\TextInput::make('phone_2')
                             ->label(tr('recruitment.fields.phone_2', [], null, 'dashboard') ?: 'Phone 2')
-                            ->tel()
                             ->maxLength(50)
                             ->columnSpan(1),
 
                         Forms\Components\TextInput::make('mobile')
                             ->label(tr('recruitment.fields.mobile', [], null, 'dashboard') ?: 'Mobile')
-                            ->tel()
-                            ->maxLength(50)
                             ->columnSpan(1),
 
                         Forms\Components\TextInput::make('fax')
