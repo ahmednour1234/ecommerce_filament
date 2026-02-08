@@ -60,11 +60,11 @@ class NavigationRefactorTranslationsSeeder extends Seeder
             'sidebar.recruitment.nationalities' => ['en' => 'Nationalities', 'ar' => 'الجنسيات'],
             'sidebar.recruitment.professions' => ['en' => 'Professions', 'ar' => 'المهن'],
             'sidebar.recruitment.laborers' => ['en' => 'Laborers', 'ar' => 'العمال'],
-            'sidebar.recruitment.used_laborers' => ['en' => 'Used Laborers', 'ar' => 'العمال المستخدمون'],
             'sidebar.recruitment.packages' => ['en' => 'Packages', 'ar' => 'الباقات'],
             
             // Recruitment Contracts Group
             'sidebar.recruitment_contracts.contracts' => ['en' => 'Recruitment Contracts', 'ar' => 'عقود الاستقدام'],
+            'sidebar.recruitment_contracts.used_laborers' => ['en' => 'Used Laborers', 'ar' => 'العمال المستخدمون'],
             'sidebar.recruitment_contracts.received_workers' => ['en' => 'Received Workers', 'ar' => 'العمالة المستلمة'],
             'sidebar.recruitment_contracts.receiving_labor' => ['en' => 'Receiving Labor', 'ar' => 'استلام العمالة'],
             'sidebar.recruitment_contracts.expired_contracts' => ['en' => 'Expired Contracts', 'ar' => 'العقود المنتهية'],
