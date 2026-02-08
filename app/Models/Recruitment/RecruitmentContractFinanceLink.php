@@ -24,13 +24,11 @@ class RecruitmentContractFinanceLink extends Model
         parent::boot();
 
         static::saved(function ($link) {
-            if ($link->wasRecentlyCreated) {
-                $contract = $link->contract;
-                if ($contract) {
-                    $service = app(\App\Services\Recruitment\RecruitmentContractService::class);
-                    $totals = $service->computeTotals($contract);
-                    $contract->update($totals);
-                }
+            $contract = $link->contract;
+            if ($contract) {
+                $service = app(\App\Services\Recruitment\RecruitmentContractService::class);
+                $totals = $service->computeTotals($contract);
+                $contract->update($totals);
             }
         });
 

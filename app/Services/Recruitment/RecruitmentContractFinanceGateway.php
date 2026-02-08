@@ -114,4 +114,66 @@ class RecruitmentContractFinanceGateway
             return $transaction->id;
         });
     }
+
+    public function updateReceipt(RecruitmentContractFinanceLink $link, float $amount, array $meta = []): bool
+    {
+        return DB::transaction(function () use ($link, $amount, $meta) {
+            $transaction = $link->financeTransaction;
+            $contract = $link->contract;
+            
+            if (!$transaction || !$contract) {
+                return false;
+            }
+
+            $client = $contract->client;
+            
+            $transaction->update([
+                'amount' => $amount,
+                'payment_method' => $meta['payment_method'] ?? $transaction->payment_method,
+                'recipient_name' => $client->name_ar ?? $client->name_en ?? $transaction->recipient_name,
+                'notes' => "Recruitment contract receipt: {$contract->contract_no}" . ($meta['note'] ? " - {$meta['note']}" : ''),
+            ]);
+
+            $link->update([
+                'amount' => $amount,
+            ]);
+
+            return true;
+        });
+    }
+
+    public function updateExpense(RecruitmentContractFinanceLink $link, float $amount, array $meta = []): bool
+    {
+        return DB::transaction(function () use ($link, $amount, $meta) {
+            $transaction = $link->financeTransaction;
+            $contract = $link->contract;
+            
+            if (!$transaction || !$contract) {
+                return false;
+            }
+
+            $client = $contract->client;
+            
+            $transaction->update([
+                'amount' => abs($amount),
+                'payment_method' => $meta['payment_method'] ?? $transaction->payment_method,
+                'recipient_name' => $meta['recipient_name'] ?? $transaction->recipient_name ?? ($client->name_ar ?? $client->name_en ?? null),
+                'notes' => "Recruitment contract expense: {$contract->contract_no}" . ($meta['note'] ? " - {$meta['note']}" : ''),
+            ]);
+
+            $link->update([
+                'amount' => abs($amount),
+            ]);
+
+            return true;
+        });
+    }
+
+    public function removeFinanceLink(RecruitmentContractFinanceLink $link): bool
+    {
+        return DB::transaction(function () use ($link) {
+            $link->delete();
+            return true;
+        });
+    }
 }

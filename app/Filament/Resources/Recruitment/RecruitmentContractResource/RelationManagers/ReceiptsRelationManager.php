@@ -94,6 +94,43 @@ class ReceiptsRelationManager extends RelationManager
                     ->visible(fn () => auth()->user()?->can('recruitment_contracts.finance.manage')),
             ])
             ->actions([
+                Tables\Actions\EditAction::make()
+                    ->fillForm(function (RecruitmentContractFinanceLink $record): array {
+                        $transaction = $record->financeTransaction;
+                        return [
+                            'amount' => $record->amount,
+                            'payment_method' => $transaction?->payment_method,
+                            'notes' => $transaction?->notes,
+                        ];
+                    })
+                    ->form([
+                        Forms\Components\TextInput::make('amount')
+                            ->label(tr('recruitment_contract.fields.amount', [], null, 'dashboard') ?: 'Amount')
+                            ->numeric()
+                            ->required()
+                            ->step(0.01)
+                            ->minValue(0.01),
+
+                        Forms\Components\TextInput::make('payment_method')
+                            ->label(tr('recruitment_contract.fields.payment_method', [], null, 'dashboard') ?: 'Payment Method')
+                            ->maxLength(255),
+
+                        Forms\Components\Textarea::make('notes')
+                            ->label(tr('recruitment_contract.fields.notes', [], null, 'dashboard') ?: 'Notes')
+                            ->rows(2),
+                    ])
+                    ->after(function (array $data, RecruitmentContractFinanceLink $record) {
+                        $financeGateway = app(RecruitmentContractFinanceGateway::class);
+                        $financeGateway->updateReceipt(
+                            $record,
+                            $data['amount'],
+                            [
+                                'payment_method' => $data['payment_method'] ?? null,
+                                'note' => $data['notes'] ?? null,
+                            ]
+                        );
+                    })
+                    ->visible(fn () => auth()->user()?->can('recruitment_contracts.finance.manage')),
                 Tables\Actions\DeleteAction::make()
                     ->visible(fn () => auth()->user()?->can('recruitment_contracts.finance.manage')),
             ])
