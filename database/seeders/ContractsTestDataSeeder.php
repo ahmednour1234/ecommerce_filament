@@ -49,7 +49,8 @@ class ContractsTestDataSeeder extends Seeder
         }
 
         if (!$client) {
-            $this->command->warn('No clients found. Recruitment contracts will be created without client.');
+            $this->command->error('No clients found. Please seed clients first.');
+            return;
         }
 
         if (!$customer) {
