@@ -51,11 +51,9 @@ class IncomeReportPage extends Page implements HasTable, HasForms
         ];
     }
 
-    protected function getCachedActions(): array
+    protected function getActions(): array
     {
-        // Exclude 'form' from actions - it's a form method, not an action
-        $actions = parent::getCachedActions();
-        return array_filter($actions, fn($key) => $key !== 'form', ARRAY_FILTER_USE_KEY);
+        return [];
     }
 
     public function mount(): void
