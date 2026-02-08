@@ -83,10 +83,27 @@ class ExpensesRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
-                    ->mutateFormDataUsing(function (array $data, RelationManager $livewire): array {
-                        return $data;
-                    })
-                    ->after(function (array $data, RelationManager $livewire) {
+                    ->form([
+                        Forms\Components\TextInput::make('amount')
+                            ->label(tr('recruitment_contract.fields.amount', [], null, 'dashboard') ?: 'Amount')
+                            ->numeric()
+                            ->required()
+                            ->step(0.01)
+                            ->minValue(0.01),
+
+                        Forms\Components\TextInput::make('recipient_name')
+                            ->label(tr('recruitment_contract.fields.recipient_name', [], null, 'dashboard') ?: 'Recipient Name')
+                            ->maxLength(255),
+
+                        Forms\Components\TextInput::make('payment_method')
+                            ->label(tr('recruitment_contract.fields.payment_method', [], null, 'dashboard') ?: 'Payment Method')
+                            ->maxLength(255),
+
+                        Forms\Components\Textarea::make('notes')
+                            ->label(tr('recruitment_contract.fields.notes', [], null, 'dashboard') ?: 'Notes')
+                            ->rows(2),
+                    ])
+                    ->using(function (array $data, RelationManager $livewire): Model {
                         $contract = $livewire->ownerRecord;
                         $financeGateway = app(RecruitmentContractFinanceGateway::class);
                         $financeTransactionId = $financeGateway->postExpense(
@@ -98,8 +115,19 @@ class ExpensesRelationManager extends RelationManager
                                 'note' => $data['notes'] ?? null,
                             ]
                         );
+                        
+                        if (!$financeTransactionId) {
+                            throw new \Exception('Failed to create expense transaction');
+                        }
+                        
+                        $link = $contract->expenses()->where('finance_transaction_id', $financeTransactionId)->first();
+                        if (!$link) {
+                            throw new \Exception('Failed to retrieve created expense link');
+                        }
+                        
+                        return $link;
                     })
-                    ->visible(fn () => auth()->user()?->can('recruitment_contracts.finance.manage')),
+                    ->visible(fn () => auth()->user()?->can('recruitment_contracts.finance.manage') ?? false),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
@@ -132,7 +160,7 @@ class ExpensesRelationManager extends RelationManager
                             ->label(tr('recruitment_contract.fields.notes', [], null, 'dashboard') ?: 'Notes')
                             ->rows(2),
                     ])
-                    ->after(function (array $data, RecruitmentContractFinanceLink $record) {
+                    ->using(function (RecruitmentContractFinanceLink $record, array $data): Model {
                         $financeGateway = app(RecruitmentContractFinanceGateway::class);
                         $financeGateway->updateExpense(
                             $record,
@@ -143,15 +171,16 @@ class ExpensesRelationManager extends RelationManager
                                 'note' => $data['notes'] ?? null,
                             ]
                         );
+                        return $record->fresh();
                     })
-                    ->visible(fn () => auth()->user()?->can('recruitment_contracts.finance.manage')),
+                    ->visible(fn () => auth()->user()?->can('recruitment_contracts.finance.manage') ?? false),
                 Tables\Actions\DeleteAction::make()
-                    ->visible(fn () => auth()->user()?->can('recruitment_contracts.finance.manage')),
+                    ->visible(fn () => auth()->user()?->can('recruitment_contracts.finance.manage') ?? false),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
-                        ->visible(fn () => auth()->user()?->can('recruitment_contracts.finance.manage')),
+                        ->visible(fn () => auth()->user()?->can('recruitment_contracts.finance.manage') ?? false),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
