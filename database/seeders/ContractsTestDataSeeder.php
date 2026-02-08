@@ -17,11 +17,11 @@ use Illuminate\Support\Carbon;
 
 /**
  * Contracts Test Data Seeder
- * 
+ *
  * Creates test data for:
  * - Recruitment Contracts (عقود الاستقدام)
  * - Rental Contracts (عقود الإيجار)
- * 
+ *
  * Run: php artisan db:seed --class=ContractsTestDataSeeder
  */
 class ContractsTestDataSeeder extends Seeder
@@ -123,10 +123,7 @@ class ContractsTestDataSeeder extends Seeder
                 'notes' => 'Test contract ' . $i . ' - ' . ($status === 'worker_received' ? 'This contract has been received.' : 'Test notes.'),
                 'worker_id' => $worker?->id,
                 'created_by' => $user->id,
-                'arrival_date' => $status === 'worker_received' ? Carbon::now()->subDays(rand(1, 30)) : null,
-                'trial_end_date' => $status === 'worker_received' ? Carbon::now()->addDays(rand(30, 90)) : null,
-                'contract_end_date' => $status === 'worker_received' ? Carbon::now()->addDays(rand(180, 365)) : null,
-            ]);
+               ]);
 
             $recruitmentContracts[] = $contract;
         }
@@ -153,7 +150,7 @@ class ContractsTestDataSeeder extends Seeder
 
             $startDate = Carbon::now()->subDays(rand(1, 180));
             $endDate = clone $startDate;
-            
+
             if ($durationType === 'day') {
                 $endDate->addDays($duration);
             } elseif ($durationType === 'month') {
