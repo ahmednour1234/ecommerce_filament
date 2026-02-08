@@ -76,9 +76,7 @@ class AgentResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('phone_1')
                             ->label(tr('recruitment.fields.phone_1', [], null, 'dashboard') ?: 'Phone 1')
-                            ->tel()
                             ->required()
-                            ->maxLength(50)
                             ->columnSpan(1),
 
                         Forms\Components\TextInput::make('phone_2')
