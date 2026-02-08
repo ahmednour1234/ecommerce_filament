@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Recruitment\RecruitmentContractResource\RelationManagers;
 
+use App\Exports\PdfExport;
+use App\Exports\TableExport;
 use App\Models\Recruitment\RecruitmentContractFinanceLink;
 use App\Services\Recruitment\RecruitmentContractFinanceGateway;
 use Filament\Forms;
@@ -10,6 +12,8 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReceiptsRelationManager extends RelationManager
 {
@@ -119,6 +123,38 @@ class ReceiptsRelationManager extends RelationManager
                         $user = auth()->user();
                         return $user?->hasRole('super_admin') || ($user?->can('recruitment_contracts.finance.manage') ?? false);
                     }),
+                Tables\Actions\Action::make('export_excel')
+                    ->label(tr('actions.export_excel', [], null, 'dashboard') ?: 'Export to Excel')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('success')
+                    ->action(function () {
+                        return $this->exportToExcel();
+                    })
+                    ->visible(function () {
+                        $user = auth()->user();
+                        return $user?->hasRole('super_admin') || ($user?->can('recruitment_contracts.finance.manage') ?? false);
+                    }),
+                Tables\Actions\Action::make('export_pdf')
+                    ->label(tr('actions.export_pdf', [], null, 'dashboard') ?: 'Export to PDF')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('danger')
+                    ->action(function () {
+                        return $this->exportToPdf();
+                    })
+                    ->visible(function () {
+                        $user = auth()->user();
+                        return $user?->hasRole('super_admin') || ($user?->can('recruitment_contracts.finance.manage') ?? false);
+                    }),
+                Tables\Actions\Action::make('print')
+                    ->label(tr('actions.print', [], null, 'dashboard') ?: 'Print')
+                    ->icon('heroicon-o-printer')
+                    ->color('gray')
+                    ->url(fn () => $this->getPrintUrl())
+                    ->openUrlInNewTab()
+                    ->visible(function () {
+                        $user = auth()->user();
+                        return $user?->hasRole('super_admin') || ($user?->can('recruitment_contracts.finance.manage') ?? false);
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
@@ -178,5 +214,101 @@ class ReceiptsRelationManager extends RelationManager
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
+    }
+
+    protected function getTableDataForExport(): array
+    {
+        $records = $this->getTable()->getQuery()->get();
+        $columns = $this->getTable()->getColumns();
+
+        $headers = [];
+        foreach ($columns as $column) {
+            if (method_exists($column, 'isHidden') && $column->isHidden()) {
+                continue;
+            }
+            $headers[] = $column->getLabel() ?? $column->getName();
+        }
+
+        $formattedData = $records->map(function ($record) use ($columns) {
+            $row = [];
+            foreach ($columns as $column) {
+                if (method_exists($column, 'isHidden') && $column->isHidden()) {
+                    continue;
+                }
+                $name = $column->getName();
+                $label = $column->getLabel() ?? $name;
+                $value = $this->getColumnValue($record, $name, $column);
+                $row[$label] = $value;
+            }
+            return $row;
+        });
+
+        return [
+            'data' => $formattedData,
+            'headers' => $headers,
+        ];
+    }
+
+    protected function getColumnValue($record, string $key, $column): mixed
+    {
+        if (str_contains($key, '.')) {
+            $parts = explode('.', $key);
+            $value = $record;
+            foreach ($parts as $part) {
+                if (is_object($value) && isset($value->$part)) {
+                    $value = $value->$part;
+                } elseif (is_array($value) && isset($value[$part])) {
+                    $value = $value[$part];
+                } else {
+                    return '';
+                }
+            }
+            return $value ?? '';
+        }
+
+        return $record->$key ?? '';
+    }
+
+    public function exportToExcel()
+    {
+        $exportData = $this->getTableDataForExport();
+        $title = static::getTitle($this->ownerRecord, static::class) . ' - ' . now()->format('Y-m-d');
+        $filename = 'receipts_' . now()->format('Y-m-d_His') . '.xlsx';
+
+        $export = new TableExport($exportData['data'], $exportData['headers'], $title);
+        return Excel::download($export, $filename);
+    }
+
+    public function exportToPdf()
+    {
+        $exportData = $this->getTableDataForExport();
+        $title = static::getTitle($this->ownerRecord, static::class);
+        $filename = 'receipts_' . now()->format('Y-m-d_His') . '.pdf';
+        $metadata = [
+            'exported_at' => now()->format('Y-m-d H:i:s'),
+            'contract_no' => $this->ownerRecord->contract_no ?? '',
+        ];
+
+        $export = new PdfExport($exportData['data'], $exportData['headers'], $title, $metadata);
+        return $export->download($filename);
+    }
+
+    public function getPrintUrl(): string
+    {
+        $exportData = $this->getTableDataForExport();
+        $title = static::getTitle($this->ownerRecord, static::class);
+        $metadata = [
+            'exported_at' => now()->format('Y-m-d H:i:s'),
+            'contract_no' => $this->ownerRecord->contract_no ?? '',
+        ];
+
+        session()->flash('print_data', [
+            'title' => $title,
+            'headers' => $exportData['headers'],
+            'rows' => $exportData['data']->map(fn($row) => array_values($row))->toArray(),
+            'metadata' => $metadata,
+        ]);
+
+        return route('filament.exports.print');
     }
 }
