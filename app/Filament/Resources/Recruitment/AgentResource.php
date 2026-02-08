@@ -6,6 +6,7 @@ use App\Filament\Resources\Recruitment\AgentResource\Pages;
 use App\Filament\Resources\Recruitment\AgentResource\RelationManagers;
 use App\Filament\Resources\Recruitment\AgentLaborPriceResource;
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Models\MainCore\Country;
 use App\Models\Recruitment\Agent;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -56,9 +57,16 @@ class AgentResource extends Resource
                             ->maxLength(255)
                             ->columnSpan(1),
 
-                        Forms\Components\TextInput::make('country_id')
-                            ->label(tr('recruitment.fields.country', [], null, 'dashboard') ?: 'Country ID')
-                            ->numeric()
+                        Forms\Components\Select::make('country_id')
+                            ->label(tr('recruitment.fields.country', [], null, 'dashboard') ?: 'Country')
+                            ->options(function () {
+                                return Country::where('is_active', true)
+                                    ->get()
+                                    ->pluck('name_text', 'id')
+                                    ->toArray();
+                            })
+                            ->searchable()
+                            ->preload()
                             ->required()
                             ->columnSpan(1),
                     ])
