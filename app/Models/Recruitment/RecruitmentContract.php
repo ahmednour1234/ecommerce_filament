@@ -211,4 +211,9 @@ class RecruitmentContract extends Model
     {
         return $query->where('payment_status', 'partial');
     }
+
+    public function scopeReceived($query)
+    {
+        return $query->where('status', 'worker_received');
+    }
 }
