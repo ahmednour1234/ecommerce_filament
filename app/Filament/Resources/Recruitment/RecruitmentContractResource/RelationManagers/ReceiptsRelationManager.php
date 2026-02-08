@@ -80,6 +80,8 @@ class ReceiptsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
+                    ->label(tr('actions.create', [], null, 'dashboard') ?: 'Create')
+                    ->icon('heroicon-o-plus')
                     ->form([
                         Forms\Components\TextInput::make('amount')
                             ->label(tr('recruitment_contract.fields.amount', [], null, 'dashboard') ?: 'Amount')
@@ -119,6 +121,7 @@ class ReceiptsRelationManager extends RelationManager
 
                         return $link;
                     })
+                    ->successNotificationTitle(tr('notifications.created', [], null, 'dashboard') ?: 'Created successfully')
                     ->visible(function () {
                         $user = auth()->user();
                         return $user?->hasRole('super_admin') || ($user?->can('recruitment_contracts.finance.manage') ?? false);
