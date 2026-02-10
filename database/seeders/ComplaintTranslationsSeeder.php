@@ -72,6 +72,9 @@ class ComplaintTranslationsSeeder extends Seeder
             'complaint.dashboard.closed_complaints' => ['en' => 'Closed Complaints', 'ar' => 'شكاوي مغلقة'],
             'complaint.dashboard.urgent_complaints' => ['en' => 'Urgent Complaints', 'ar' => 'شكاوي عاجلة'],
             'complaint.dashboard.high_priority_complaints' => ['en' => 'High Priority Complaints', 'ar' => 'شكاوي عالية الأولوية'],
+            'complaint.dashboard.medium_priority_complaints' => ['en' => 'Medium Priority Complaints', 'ar' => 'شكاوي متوسطة الأولوية'],
+            'complaint.dashboard.low_priority_complaints' => ['en' => 'Low Priority Complaints', 'ar' => 'شكاوي منخفضة الأولوية'],
+            'complaint.dashboard.requires_attention' => ['en' => 'Requires Immediate Attention', 'ar' => 'يحتاج إلى انتباه فوري'],
         ];
 
         $created = 0;

@@ -69,13 +69,18 @@ class ComplaintsStatsWidget extends BaseWidget
             }
 
             $totalComplaints = $query->count();
+            
+            // Priority-based counts
+            $urgentComplaints = (clone $query)->where('priority', 'urgent')->count();
+            $highComplaints = (clone $query)->where('priority', 'high')->count();
+            $mediumComplaints = (clone $query)->where('priority', 'medium')->count();
+            $lowComplaints = (clone $query)->where('priority', 'low')->count();
+            
+            // Status-based counts
             $pendingComplaints = (clone $query)->where('status', 'pending')->count();
             $inProgressComplaints = (clone $query)->where('status', 'in_progress')->count();
             $resolvedComplaints = (clone $query)->where('status', 'resolved')->count();
             $closedComplaints = (clone $query)->where('status', 'closed')->count();
-
-            $urgentComplaints = (clone $query)->where('priority', 'urgent')->count();
-            $highComplaints = (clone $query)->where('priority', 'high')->count();
 
             $stats = [];
 
@@ -91,23 +96,88 @@ class ComplaintsStatsWidget extends BaseWidget
                 ];
             }
 
+            // Total Complaints - Main Overview
             $stats[] = Stat::make(
                 tr('complaint.dashboard.total_complaints', [], null, 'dashboard') ?: 'إجمالي الشكاوي',
                 Number::format($totalComplaints)
             )
                 ->description(tr('complaint.dashboard.in_period', [], null, 'dashboard') ?: 'في الفترة المحددة')
-                ->descriptionIcon('heroicon-o-exclamation-triangle')
+                ->descriptionIcon('heroicon-m-chart-bar')
                 ->color('primary')
-                ->icon('heroicon-o-exclamation-triangle')
+                ->icon('heroicon-o-clipboard-document-list')
                 ->url($this->buildUrl($publicUrl, $baseFilters));
 
+            // Priority Section - Organized by Priority Level (Most Important First)
+            if ($urgentComplaints > 0) {
+                $urgentPending = (clone $query)->where('priority', 'urgent')->where('status', 'pending')->count();
+                $urgentInProgress = (clone $query)->where('priority', 'urgent')->where('status', 'in_progress')->count();
+                $urgentDescription = $urgentPending > 0 || $urgentInProgress > 0 
+                    ? tr('complaint.dashboard.requires_attention', [], null, 'dashboard') ?: 'يحتاج إلى انتباه فوري'
+                    : tr('complaint.priority.urgent', [], null, 'dashboard') ?: 'عاجل';
+                
+                $stats[] = Stat::make(
+                    tr('complaint.dashboard.urgent_complaints', [], null, 'dashboard') ?: 'شكاوي عاجلة',
+                    Number::format($urgentComplaints)
+                )
+                    ->description($urgentDescription)
+                    ->descriptionIcon('heroicon-m-fire')
+                    ->color('danger')
+                    ->icon('heroicon-o-exclamation-triangle')
+                    ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
+                        'priority' => ['value' => 'urgent'],
+                    ])));
+            }
+
+            if ($highComplaints > 0) {
+                $stats[] = Stat::make(
+                    tr('complaint.dashboard.high_priority_complaints', [], null, 'dashboard') ?: 'شكاوي عالية الأولوية',
+                    Number::format($highComplaints)
+                )
+                    ->description(tr('complaint.priority.high', [], null, 'dashboard') ?: 'عالي')
+                    ->descriptionIcon('heroicon-m-arrow-trending-up')
+                    ->color('warning')
+                    ->icon('heroicon-o-arrow-trending-up')
+                    ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
+                        'priority' => ['value' => 'high'],
+                    ])));
+            }
+
+            if ($mediumComplaints > 0) {
+                $stats[] = Stat::make(
+                    tr('complaint.dashboard.medium_priority_complaints', [], null, 'dashboard') ?: 'شكاوي متوسطة الأولوية',
+                    Number::format($mediumComplaints)
+                )
+                    ->description(tr('complaint.priority.medium', [], null, 'dashboard') ?: 'متوسط')
+                    ->descriptionIcon('heroicon-m-minus-circle')
+                    ->color('info')
+                    ->icon('heroicon-o-minus-circle')
+                    ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
+                        'priority' => ['value' => 'medium'],
+                    ])));
+            }
+
+            if ($lowComplaints > 0) {
+                $stats[] = Stat::make(
+                    tr('complaint.dashboard.low_priority_complaints', [], null, 'dashboard') ?: 'شكاوي منخفضة الأولوية',
+                    Number::format($lowComplaints)
+                )
+                    ->description(tr('complaint.priority.low', [], null, 'dashboard') ?: 'منخفض')
+                    ->descriptionIcon('heroicon-m-arrow-down')
+                    ->color('gray')
+                    ->icon('heroicon-o-arrow-down')
+                    ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
+                        'priority' => ['value' => 'low'],
+                    ])));
+            }
+
+            // Status Section - Organized by Status
             if ($pendingComplaints > 0) {
                 $stats[] = Stat::make(
                     tr('complaint.dashboard.pending_complaints', [], null, 'dashboard') ?: 'شكاوي قيد الانتظار',
                     Number::format($pendingComplaints)
                 )
                     ->description(tr('complaint.status.pending', [], null, 'dashboard') ?: 'قيد الانتظار')
-                    ->descriptionIcon('heroicon-o-clock')
+                    ->descriptionIcon('heroicon-m-clock')
                     ->color('warning')
                     ->icon('heroicon-o-clock')
                     ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
@@ -121,9 +191,9 @@ class ComplaintsStatsWidget extends BaseWidget
                     Number::format($inProgressComplaints)
                 )
                     ->description(tr('complaint.status.in_progress', [], null, 'dashboard') ?: 'قيد المعالجة')
-                    ->descriptionIcon('heroicon-o-arrow-path')
+                    ->descriptionIcon('heroicon-m-arrow-path')
                     ->color('info')
-                    ->icon('heroicon-o-arrow-path')
+                    ->icon('heroicon-o-arrow-path-rounded-square')
                     ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
                         'status' => ['value' => 'in_progress'],
                     ])));
@@ -135,7 +205,7 @@ class ComplaintsStatsWidget extends BaseWidget
                     Number::format($resolvedComplaints)
                 )
                     ->description(tr('complaint.status.resolved', [], null, 'dashboard') ?: 'تم الحل')
-                    ->descriptionIcon('heroicon-o-check-circle')
+                    ->descriptionIcon('heroicon-m-check-circle')
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
                     ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
@@ -149,39 +219,11 @@ class ComplaintsStatsWidget extends BaseWidget
                     Number::format($closedComplaints)
                 )
                     ->description(tr('complaint.status.closed', [], null, 'dashboard') ?: 'مغلق')
-                    ->descriptionIcon('heroicon-o-check-badge')
+                    ->descriptionIcon('heroicon-m-check-badge')
                     ->color('gray')
                     ->icon('heroicon-o-check-badge')
                     ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
                         'status' => ['value' => 'closed'],
-                    ])));
-            }
-
-            if ($urgentComplaints > 0) {
-                $stats[] = Stat::make(
-                    tr('complaint.dashboard.urgent_complaints', [], null, 'dashboard') ?: 'شكاوي عاجلة',
-                    Number::format($urgentComplaints)
-                )
-                    ->description(tr('complaint.priority.urgent', [], null, 'dashboard') ?: 'عاجل')
-                    ->descriptionIcon('heroicon-o-exclamation-circle')
-                    ->color('danger')
-                    ->icon('heroicon-o-exclamation-circle')
-                    ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
-                        'priority' => ['value' => 'urgent'],
-                    ])));
-            }
-
-            if ($highComplaints > 0) {
-                $stats[] = Stat::make(
-                    tr('complaint.dashboard.high_priority_complaints', [], null, 'dashboard') ?: 'شكاوي عالية الأولوية',
-                    Number::format($highComplaints)
-                )
-                    ->description(tr('complaint.priority.high', [], null, 'dashboard') ?: 'عالي')
-                    ->descriptionIcon('heroicon-o-arrow-trending-up')
-                    ->color('warning')
-                    ->icon('heroicon-o-arrow-trending-up')
-                    ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
-                        'priority' => ['value' => 'high'],
                     ])));
             }
 
