@@ -40,6 +40,7 @@ class RecruitmentContractTranslationsSeeder extends Seeder
             'recruitment_contract.fields.visa_date' => ['en' => 'Visa Date', 'ar' => 'تاريخ التأشيرة'],
             'recruitment_contract.fields.arrival_country' => ['en' => 'Arrival Country', 'ar' => 'محطة الوصول'],
             'recruitment_contract.fields.departure_country' => ['en' => 'Departure Country', 'ar' => 'محطة القدوم'],
+            'recruitment_contract.fields.receiving_station' => ['en' => 'Receiving Station', 'ar' => 'محطة الاستلام'],
             'recruitment_contract.fields.profession' => ['en' => 'Profession', 'ar' => 'المهنة'],
             'recruitment_contract.fields.gender' => ['en' => 'Gender', 'ar' => 'الجنس'],
             'recruitment_contract.fields.experience' => ['en' => 'Experience', 'ar' => 'الخبرة'],
