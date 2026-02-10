@@ -55,6 +55,56 @@ class RecruitmentContractResource extends Resource
                             ->required()
                             ->searchable()
                             ->reactive()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name_ar')
+                                    ->label(tr('general.clients.name_ar', [], null, 'dashboard') ?: 'Name (Arabic)')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('name_en')
+                                    ->label(tr('general.clients.name_en', [], null, 'dashboard') ?: 'Name (English)')
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('national_id')
+                                    ->label(tr('general.clients.national_id', [], null, 'dashboard') ?: 'National ID')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->unique(Client::class, 'national_id'),
+                                Forms\Components\TextInput::make('mobile')
+                                    ->label(tr('general.clients.mobile', [], null, 'dashboard') ?: 'Mobile')
+                                    ->required()
+                                    ->tel()
+                                    ->maxLength(50),
+                                Forms\Components\TextInput::make('email')
+                                    ->label(tr('general.clients.email', [], null, 'dashboard') ?: 'Email')
+                                    ->email()
+                                    ->maxLength(255),
+                                Forms\Components\DatePicker::make('birth_date')
+                                    ->label(tr('general.clients.birth_date', [], null, 'dashboard') ?: 'Birth Date')
+                                    ->required()
+                                    ->native(false),
+                                Forms\Components\Radio::make('marital_status')
+                                    ->label(tr('general.clients.marital_status', [], null, 'dashboard') ?: 'Marital Status')
+                                    ->required()
+                                    ->options([
+                                        'single' => tr('general.clients.single', [], null, 'dashboard') ?: 'Single',
+                                        'married' => tr('general.clients.married', [], null, 'dashboard') ?: 'Married',
+                                        'divorced' => tr('general.clients.divorced', [], null, 'dashboard') ?: 'Divorced',
+                                        'widowed' => tr('general.clients.widowed', [], null, 'dashboard') ?: 'Widowed',
+                                    ]),
+                                Forms\Components\Radio::make('classification')
+                                    ->label(tr('general.clients.classification', [], null, 'dashboard') ?: 'Classification')
+                                    ->required()
+                                    ->options([
+                                        'new' => tr('general.clients.new', [], null, 'dashboard') ?: 'New',
+                                        'vip' => tr('general.clients.vip', [], null, 'dashboard') ?: 'VIP',
+                                        'blocked' => tr('general.clients.blocked', [], null, 'dashboard') ?: 'Blocked',
+                                    ])
+                                    ->default('new'),
+                            ])
+                            ->createOptionUsing(function (array $data): int {
+                                $client = Client::create($data);
+                                Cache::forget('recruitment_contracts.clients');
+                                return $client->id;
+                            })
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('branch_id')
