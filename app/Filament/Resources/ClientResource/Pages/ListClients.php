@@ -69,11 +69,9 @@ class ListClients extends ListRecords
             'source' => 'المصدر / Source',
         ];
 
-        $data = [];
-        
-        $export = new class($data, $headers) implements \Maatwebsite\Excel\Concerns\FromArray, \Maatwebsite\Excel\Concerns\WithHeadings {
-            public function __construct(protected array $data, protected array $headers) {}
-            public function array(): array { return $this->data; }
+        $export = new class($headers) implements \Maatwebsite\Excel\Concerns\FromArray, \Maatwebsite\Excel\Concerns\WithHeadings {
+            public function __construct(protected array $headers) {}
+            public function array(): array { return []; }
             public function headings(): array { return array_values($this->headers); }
         };
 

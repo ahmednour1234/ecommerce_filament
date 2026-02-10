@@ -70,6 +70,14 @@ class ClientsTranslationsSeeder extends Seeder
             'general.clients.office_referral' => ['en' => 'Office Referral', 'ar' => 'إحالة المكتب'],
             'general.clients.save' => ['en' => 'Save', 'ar' => 'حفظ'],
             'general.clients.cancel' => ['en' => 'Cancel', 'ar' => 'إلغاء'],
+            'general.clients.download_template' => ['en' => 'Download Template', 'ar' => 'تحميل القالب'],
+            'general.clients.import' => ['en' => 'Import Excel', 'ar' => 'استيراد Excel'],
+            'general.clients.excel_file' => ['en' => 'Excel File', 'ar' => 'ملف Excel'],
+            'general.clients.import_success' => ['en' => 'Clients imported successfully', 'ar' => 'تم استيراد العملاء بنجاح'],
+            'general.clients.columns_added' => ['en' => 'New columns added', 'ar' => 'تم إضافة أعمدة جديدة'],
+            'general.clients.import_complete' => ['en' => 'Import Complete', 'ar' => 'اكتمل الاستيراد'],
+            'general.clients.import_errors' => ['en' => 'Import Errors', 'ar' => 'أخطاء الاستيراد'],
+            'general.clients.import_failed' => ['en' => 'Import Failed', 'ar' => 'فشل الاستيراد'],
         ];
 
         $created = 0;
