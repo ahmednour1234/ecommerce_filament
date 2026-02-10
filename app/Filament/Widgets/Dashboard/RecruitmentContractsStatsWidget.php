@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets\Dashboard;
 
+use App\Filament\Resources\Recruitment\RecruitmentContractResource;
 use App\Models\Recruitment\RecruitmentContract;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -14,7 +15,7 @@ class RecruitmentContractsStatsWidget extends BaseWidget
     protected static ?int $sort = 4;
     protected int|string|array $columnSpan = 'full';
     protected ?string $heading = null;
-    
+
     protected $listeners = ['filters-updated' => '$refresh'];
 
     public function getHeading(): string
@@ -47,6 +48,16 @@ class RecruitmentContractsStatsWidget extends BaseWidget
         $cacheKey = "dashboard_recruitment_contracts_stats_{$branchId}_{$from->toDateString()}_{$to->toDateString()}";
 
         return Cache::remember($cacheKey, 300, function () use ($from, $to, $branchId) {
+            $baseFilters = [
+                'created_at' => [
+                    'created_from' => $from->format('Y-m-d'),
+                    'created_until' => $to->format('Y-m-d'),
+                ],
+            ];
+
+            if ($branchId) {
+                $baseFilters['branch_id'] = ['value' => $branchId];
+            }
             $query = RecruitmentContract::query()
                 ->whereBetween('created_at', [$from, $to]);
 
@@ -87,7 +98,10 @@ class RecruitmentContractsStatsWidget extends BaseWidget
                 ->description(tr('recruitment_contract.dashboard.in_period', [], null, 'dashboard') ?: 'في الفترة المحددة')
                 ->descriptionIcon('heroicon-o-document-text')
                 ->color('primary')
-                ->icon('heroicon-o-document-text');
+                ->icon('heroicon-o-document-text')
+                ->url(RecruitmentContractResource::getUrl('index', [
+                    'tableFilters' => $baseFilters,
+                ]));
 
             if ($newContracts > 0) {
                 $stats[] = Stat::make(
@@ -97,7 +111,12 @@ class RecruitmentContractsStatsWidget extends BaseWidget
                     ->description(tr('recruitment_contract.status.new', [], null, 'dashboard') ?: 'جديد')
                     ->descriptionIcon('heroicon-o-plus-circle')
                     ->color('info')
-                    ->icon('heroicon-o-plus-circle');
+                    ->icon('heroicon-o-plus-circle')
+                    ->url(RecruitmentContractResource::getUrl('index', [
+                        'tableFilters' => array_merge($baseFilters, [
+                            'status' => ['value' => 'new'],
+                        ]),
+                    ]));
             }
 
             if ($processingContracts > 0) {
@@ -108,7 +127,12 @@ class RecruitmentContractsStatsWidget extends BaseWidget
                     ->description(tr('recruitment_contract.status.processing', [], null, 'dashboard') ?: 'قيد المعالجة')
                     ->descriptionIcon('heroicon-o-clock')
                     ->color('warning')
-                    ->icon('heroicon-o-clock');
+                    ->icon('heroicon-o-clock')
+                    ->url(RecruitmentContractResource::getUrl('index', [
+                        'tableFilters' => array_merge($baseFilters, [
+                            'status' => ['value' => 'processing'],
+                        ]),
+                    ]));
             }
 
             if ($visaIssued > 0) {
@@ -119,7 +143,12 @@ class RecruitmentContractsStatsWidget extends BaseWidget
                     ->description(tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم إصدار التأشيرة')
                     ->descriptionIcon('heroicon-o-check-circle')
                     ->color('success')
-                    ->icon('heroicon-o-check-circle');
+                    ->icon('heroicon-o-check-circle')
+                    ->url(RecruitmentContractResource::getUrl('index', [
+                        'tableFilters' => array_merge($baseFilters, [
+                            'status' => ['value' => 'visa_issued'],
+                        ]),
+                    ]));
             }
 
             if ($arrived > 0) {
@@ -130,7 +159,12 @@ class RecruitmentContractsStatsWidget extends BaseWidget
                     ->description(tr('recruitment_contract.status.arrived_in_saudi_arabia', [], null, 'dashboard') ?: 'وصل للمملكة العربية السعودية')
                     ->descriptionIcon('heroicon-o-map-pin')
                     ->color('success')
-                    ->icon('heroicon-o-map-pin');
+                    ->icon('heroicon-o-map-pin')
+                    ->url(RecruitmentContractResource::getUrl('index', [
+                        'tableFilters' => array_merge($baseFilters, [
+                            'status' => ['value' => 'arrived_in_saudi_arabia'],
+                        ]),
+                    ]));
             }
 
             if ($closed > 0) {
@@ -141,7 +175,12 @@ class RecruitmentContractsStatsWidget extends BaseWidget
                     ->description(tr('recruitment_contract.status.closed', [], null, 'dashboard') ?: 'مغلق')
                     ->descriptionIcon('heroicon-o-check-badge')
                     ->color('gray')
-                    ->icon('heroicon-o-check-badge');
+                    ->icon('heroicon-o-check-badge')
+                    ->url(RecruitmentContractResource::getUrl('index', [
+                        'tableFilters' => array_merge($baseFilters, [
+                            'status' => ['value' => 'closed'],
+                        ]),
+                    ]));
             }
 
             if ($rejected > 0) {
@@ -152,7 +191,12 @@ class RecruitmentContractsStatsWidget extends BaseWidget
                     ->description(tr('recruitment_contract.status.rejected', [], null, 'dashboard') ?: 'مرفوض')
                     ->descriptionIcon('heroicon-o-x-circle')
                     ->color('danger')
-                    ->icon('heroicon-o-x-circle');
+                    ->icon('heroicon-o-x-circle')
+                    ->url(RecruitmentContractResource::getUrl('index', [
+                        'tableFilters' => array_merge($baseFilters, [
+                            'status' => ['value' => 'rejected'],
+                        ]),
+                    ]));
             }
 
             $stats[] = Stat::make(
@@ -162,16 +206,23 @@ class RecruitmentContractsStatsWidget extends BaseWidget
                 ->description(tr('recruitment_contract.dashboard.all_contracts', [], null, 'dashboard') ?: 'جميع العقود')
                 ->descriptionIcon('heroicon-o-currency-dollar')
                 ->color('success')
-                ->icon('heroicon-o-banknotes');
+                ->icon('heroicon-o-banknotes')
+                ->url(RecruitmentContractResource::getUrl('index', [
+                    'tableFilters' => $baseFilters,
+                ]));
 
+            $remainingLabel = tr('recruitment_contract.dashboard.remaining', [], null, 'dashboard') ?: 'المتبقي';
             $stats[] = Stat::make(
                 tr('recruitment_contract.dashboard.paid_total', [], null, 'dashboard') ?: 'المبلغ المدفوع',
                 Number::currency($paidTotal, 'SAR')
             )
-                ->description(tr('recruitment_contract.dashboard.remaining', [], null, 'dashboard') ?: 'المتبقي') . ': ' . Number::currency($remainingTotal, 'SAR')
+                ->description($remainingLabel . ': ' . Number::currency($remainingTotal, 'SAR'))
                 ->descriptionIcon('heroicon-o-arrow-trending-up')
                 ->color('info')
-                ->icon('heroicon-o-arrow-trending-up');
+                ->icon('heroicon-o-arrow-trending-up')
+                ->url(RecruitmentContractResource::getUrl('index', [
+                    'tableFilters' => $baseFilters,
+                ]));
 
             return $stats;
         });
