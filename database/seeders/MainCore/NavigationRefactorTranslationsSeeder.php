@@ -64,6 +64,7 @@ class NavigationRefactorTranslationsSeeder extends Seeder
             
             // Recruitment Contracts Group
             'sidebar.recruitment_contracts.contracts' => ['en' => 'Recruitment Contracts', 'ar' => 'عقود الاستقدام'],
+            'sidebar.recruitment_contracts.add_contract' => ['en' => 'Add Recruitment Contract', 'ar' => 'إضافة عقد استقدام'],
             'sidebar.recruitment_contracts.used_laborers' => ['en' => 'Used Laborers', 'ar' => 'العمال المستخدمون'],
             'sidebar.recruitment_contracts.received_workers' => ['en' => 'Received Workers', 'ar' => 'العمالة المستلمة'],
             'sidebar.recruitment_contracts.receiving_labor' => ['en' => 'Receiving Labor', 'ar' => 'استلام العمالة'],
