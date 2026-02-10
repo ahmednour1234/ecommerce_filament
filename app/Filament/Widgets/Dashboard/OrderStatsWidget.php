@@ -49,6 +49,9 @@ class OrderStatsWidget extends BaseWidget
             ],
         ];
 
+        $baseUrl = OrderResource::getUrl('index');
+        $publicUrl = '/public' . $baseUrl;
+
         if ($stats['total'] === 0) {
             return [
                 Stat::make('لا توجد بيانات', 'لا توجد طلبات في الفترة المحددة')
@@ -66,11 +69,9 @@ class OrderStatsWidget extends BaseWidget
                 ->descriptionIcon('heroicon-o-clock')
                 ->color('warning')
                 ->icon('heroicon-o-clock')
-                ->url(OrderResource::getUrl('index', [
-                    'tableFilters' => array_merge($baseFilters, [
-                        'status' => ['value' => 'pending'],
-                    ]),
-                ]));
+                ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
+                    'status' => ['value' => 'pending'],
+                ])));
         }
 
         if ($stats['processing'] > 0) {
@@ -79,11 +80,9 @@ class OrderStatsWidget extends BaseWidget
                 ->descriptionIcon('heroicon-o-cog-6-tooth')
                 ->color('info')
                 ->icon('heroicon-o-cog-6-tooth')
-                ->url(OrderResource::getUrl('index', [
-                    'tableFilters' => array_merge($baseFilters, [
-                        'status' => ['value' => 'processing'],
-                    ]),
-                ]));
+                ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
+                    'status' => ['value' => 'processing'],
+                ])));
         }
 
         if ($stats['completed'] > 0) {
@@ -92,11 +91,9 @@ class OrderStatsWidget extends BaseWidget
                 ->descriptionIcon('heroicon-o-check-circle')
                 ->color('success')
                 ->icon('heroicon-o-check-circle')
-                ->url(OrderResource::getUrl('index', [
-                    'tableFilters' => array_merge($baseFilters, [
-                        'status' => ['value' => 'completed'],
-                    ]),
-                ]));
+                ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
+                    'status' => ['value' => 'completed'],
+                ])));
         }
 
         if ($stats['cancelled'] > 0) {
@@ -105,11 +102,9 @@ class OrderStatsWidget extends BaseWidget
                 ->descriptionIcon('heroicon-o-x-circle')
                 ->color('danger')
                 ->icon('heroicon-o-x-circle')
-                ->url(OrderResource::getUrl('index', [
-                    'tableFilters' => array_merge($baseFilters, [
-                        'status' => ['value' => 'cancelled'],
-                    ]),
-                ]));
+                ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
+                    'status' => ['value' => 'cancelled'],
+                ])));
         }
 
         if ($stats['refunded'] > 0) {
@@ -118,11 +113,9 @@ class OrderStatsWidget extends BaseWidget
                 ->descriptionIcon('heroicon-o-arrow-uturn-left')
                 ->color('gray')
                 ->icon('heroicon-o-arrow-uturn-left')
-                ->url(OrderResource::getUrl('index', [
-                    'tableFilters' => array_merge($baseFilters, [
-                        'status' => ['value' => 'refunded'],
-                    ]),
-                ]));
+                ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
+                    'status' => ['value' => 'refunded'],
+                ])));
         }
 
         $statsArray[] = Stat::make('إجمالي الطلبات', Number::format($stats['total']))
@@ -130,10 +123,25 @@ class OrderStatsWidget extends BaseWidget
             ->descriptionIcon('heroicon-o-shopping-bag')
             ->color('primary')
             ->icon('heroicon-o-shopping-bag')
-            ->url(OrderResource::getUrl('index', [
-                'tableFilters' => $baseFilters,
-            ]));
+            ->url($this->buildUrl($publicUrl, $baseFilters));
 
         return $statsArray;
+    }
+
+    protected function buildUrl(string $baseUrl, array $filters): string
+    {
+        $params = [];
+        foreach ($filters as $key => $value) {
+            if (is_array($value)) {
+                foreach ($value as $subKey => $subValue) {
+                    $params["tableFilters[{$key}][{$subKey}]"] = $subValue;
+                }
+            } else {
+                $params["tableFilters[{$key}][value]"] = $value;
+            }
+        }
+        
+        $queryString = http_build_query($params);
+        return $baseUrl . ($queryString ? '?' . $queryString : '');
     }
 }

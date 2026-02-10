@@ -54,10 +54,13 @@ class RecruitmentContractsStatsWidget extends BaseWidget
                     'created_until' => $to->format('Y-m-d'),
                 ],
             ];
-
+            
             if ($branchId) {
                 $baseFilters['branch_id'] = ['value' => $branchId];
             }
+
+            $baseUrl = RecruitmentContractResource::getUrl('index');
+            $publicUrl = '/public' . $baseUrl;
             $query = RecruitmentContract::query()
                 ->whereBetween('created_at', [$from, $to]);
 
@@ -99,9 +102,7 @@ class RecruitmentContractsStatsWidget extends BaseWidget
                 ->descriptionIcon('heroicon-o-document-text')
                 ->color('primary')
                 ->icon('heroicon-o-document-text')
-                ->url(RecruitmentContractResource::getUrl('index', [
-                    'tableFilters' => $baseFilters,
-                ]));
+                ->url($this->buildUrl($publicUrl, $baseFilters));
 
             if ($newContracts > 0) {
                 $stats[] = Stat::make(
@@ -112,11 +113,9 @@ class RecruitmentContractsStatsWidget extends BaseWidget
                     ->descriptionIcon('heroicon-o-plus-circle')
                     ->color('info')
                     ->icon('heroicon-o-plus-circle')
-                    ->url(RecruitmentContractResource::getUrl('index', [
-                        'tableFilters' => array_merge($baseFilters, [
-                            'status' => ['value' => 'new'],
-                        ]),
-                    ]));
+                    ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
+                        'status' => ['value' => 'new'],
+                    ])));
             }
 
             if ($processingContracts > 0) {
@@ -128,11 +127,9 @@ class RecruitmentContractsStatsWidget extends BaseWidget
                     ->descriptionIcon('heroicon-o-clock')
                     ->color('warning')
                     ->icon('heroicon-o-clock')
-                    ->url(RecruitmentContractResource::getUrl('index', [
-                        'tableFilters' => array_merge($baseFilters, [
-                            'status' => ['value' => 'processing'],
-                        ]),
-                    ]));
+                    ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
+                        'status' => ['value' => 'processing'],
+                    ])));
             }
 
             if ($visaIssued > 0) {
@@ -144,11 +141,9 @@ class RecruitmentContractsStatsWidget extends BaseWidget
                     ->descriptionIcon('heroicon-o-check-circle')
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
-                    ->url(RecruitmentContractResource::getUrl('index', [
-                        'tableFilters' => array_merge($baseFilters, [
-                            'status' => ['value' => 'visa_issued'],
-                        ]),
-                    ]));
+                    ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
+                        'status' => ['value' => 'visa_issued'],
+                    ])));
             }
 
             if ($arrived > 0) {
@@ -160,11 +155,9 @@ class RecruitmentContractsStatsWidget extends BaseWidget
                     ->descriptionIcon('heroicon-o-map-pin')
                     ->color('success')
                     ->icon('heroicon-o-map-pin')
-                    ->url(RecruitmentContractResource::getUrl('index', [
-                        'tableFilters' => array_merge($baseFilters, [
-                            'status' => ['value' => 'arrived_in_saudi_arabia'],
-                        ]),
-                    ]));
+                    ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
+                        'status' => ['value' => 'arrived_in_saudi_arabia'],
+                    ])));
             }
 
             if ($closed > 0) {
@@ -176,11 +169,9 @@ class RecruitmentContractsStatsWidget extends BaseWidget
                     ->descriptionIcon('heroicon-o-check-badge')
                     ->color('gray')
                     ->icon('heroicon-o-check-badge')
-                    ->url(RecruitmentContractResource::getUrl('index', [
-                        'tableFilters' => array_merge($baseFilters, [
-                            'status' => ['value' => 'closed'],
-                        ]),
-                    ]));
+                    ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
+                        'status' => ['value' => 'closed'],
+                    ])));
             }
 
             if ($rejected > 0) {
@@ -192,11 +183,9 @@ class RecruitmentContractsStatsWidget extends BaseWidget
                     ->descriptionIcon('heroicon-o-x-circle')
                     ->color('danger')
                     ->icon('heroicon-o-x-circle')
-                    ->url(RecruitmentContractResource::getUrl('index', [
-                        'tableFilters' => array_merge($baseFilters, [
-                            'status' => ['value' => 'rejected'],
-                        ]),
-                    ]));
+                    ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
+                        'status' => ['value' => 'rejected'],
+                    ])));
             }
 
             $stats[] = Stat::make(
@@ -207,9 +196,7 @@ class RecruitmentContractsStatsWidget extends BaseWidget
                 ->descriptionIcon('heroicon-o-currency-dollar')
                 ->color('success')
                 ->icon('heroicon-o-banknotes')
-                ->url(RecruitmentContractResource::getUrl('index', [
-                    'tableFilters' => $baseFilters,
-                ]));
+                ->url($this->buildUrl($publicUrl, $baseFilters));
 
             $remainingLabel = tr('recruitment_contract.dashboard.remaining', [], null, 'dashboard') ?: 'المتبقي';
             $stats[] = Stat::make(
@@ -220,11 +207,26 @@ class RecruitmentContractsStatsWidget extends BaseWidget
                 ->descriptionIcon('heroicon-o-arrow-trending-up')
                 ->color('info')
                 ->icon('heroicon-o-arrow-trending-up')
-                ->url(RecruitmentContractResource::getUrl('index', [
-                    'tableFilters' => $baseFilters,
-                ]));
+                ->url($this->buildUrl($publicUrl, $baseFilters));
 
             return $stats;
         });
+    }
+
+    protected function buildUrl(string $baseUrl, array $filters): string
+    {
+        $params = [];
+        foreach ($filters as $key => $value) {
+            if (is_array($value)) {
+                foreach ($value as $subKey => $subValue) {
+                    $params["tableFilters[{$key}][{$subKey}]"] = $subValue;
+                }
+            } else {
+                $params["tableFilters[{$key}][value]"] = $value;
+            }
+        }
+        
+        $queryString = http_build_query($params);
+        return $baseUrl . ($queryString ? '?' . $queryString : '');
     }
 }
