@@ -110,6 +110,13 @@ class RecruitmentContractTranslationsSeeder extends Seeder
             'recruitment_contract.tabs.status_logs' => ['en' => 'Status Logs', 'ar' => 'سجل الأحداث'],
 
             'recruitment_contract.actions.create' => ['en' => 'Create Contract', 'ar' => 'إنشاء عقد'],
+            'recruitment_contract.actions.download_template' => ['en' => 'Download Template', 'ar' => 'تحميل القالب'],
+            'recruitment_contract.actions.import' => ['en' => 'Import Excel', 'ar' => 'استيراد Excel'],
+            'recruitment_contract.actions.excel_file' => ['en' => 'Excel File', 'ar' => 'ملف Excel'],
+            'recruitment_contract.actions.import_success' => ['en' => 'Recruitment contracts imported successfully', 'ar' => 'تم استيراد عقود الاستقدام بنجاح'],
+            'recruitment_contract.actions.import_complete' => ['en' => 'Import Complete', 'ar' => 'اكتمل الاستيراد'],
+            'recruitment_contract.actions.import_errors' => ['en' => 'Import Errors', 'ar' => 'أخطاء الاستيراد'],
+            'recruitment_contract.actions.import_failed' => ['en' => 'Import Failed', 'ar' => 'فشل الاستيراد'],
 
             'sidebar.عقود_الاستقدام' => ['en' => 'Recruitment Contracts', 'ar' => 'عقود الاستقدام'],
             'sidebar.عقود_الاستقدام.recruitment_contract' => ['en' => 'Recruitment Contracts', 'ar' => 'عقود الاستقدام'],

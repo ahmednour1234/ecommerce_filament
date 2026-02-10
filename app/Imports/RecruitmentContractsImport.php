@@ -1,0 +1,252 @@
+<?php
+
+namespace App\Imports;
+
+use App\Models\Client;
+use App\Models\Recruitment\Agent;
+use App\Models\Recruitment\Laborer;
+use App\Models\Recruitment\RecruitmentContract;
+use App\Models\MainCore\Country;
+use App\Models\MainCore\Currency;
+use App\Models\Recruitment\Nationality;
+use App\Models\Recruitment\Profession;
+use App\Models\MainCore\Branch;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Concerns\ToCollection;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
+
+class RecruitmentContractsImport implements ToCollection, WithHeadingRow
+{
+    protected $errors = [];
+    protected $defaultCountry;
+    protected $defaultCurrency;
+    protected $defaultNationality;
+    protected $defaultProfession;
+
+    public function __construct()
+    {
+        $this->defaultCountry = Country::where('is_active', true)->first();
+        $this->defaultCurrency = Currency::first();
+        $this->defaultNationality = Nationality::where('is_active', true)->first() ?? Nationality::first();
+        $this->defaultProfession = Profession::where('is_active', true)->first() ?? Profession::first();
+    }
+
+    public function collection(Collection $rows)
+    {
+        foreach ($rows as $index => $row) {
+            try {
+                $rowArray = is_array($row) ? $row : $row->toArray();
+                
+                $workerName = $this->getValue($rowArray, ['name_of_the_worker', 'worker_name', 'name', 'الاسم', 'اسم العامل']);
+                $passportNo = $this->getValue($rowArray, ['passport_no', 'passport_number', 'passport', 'رقم الجواز']);
+                $clientName = $this->getValue($rowArray, ['client_name', 'client', 'العميل', 'اسم العميل']);
+                $sponsorName = $this->getValue($rowArray, ['sponsor_name', 'sponsor', 'الكفيل', 'اسم الكفيل']);
+                $visaNo = $this->getValue($rowArray, ['visa_no', 'visa_number', 'visa', 'رقم التأشيرة']);
+                $idNumber = $this->getValue($rowArray, ['id_number', 'id', 'national_id', 'رقم الهوية']);
+                $note = $this->getValue($rowArray, ['note', 'notes', 'ملاحظات', 'ملاحظة']);
+                $arrivalDate = $this->getValue($rowArray, ['arrival_date', 'arrival', 'تاريخ الوصول']);
+                $issueDate = $this->getValue($rowArray, ['issue_date', 'issue', 'تاريخ الإصدار']);
+                $statusCode = $this->getValue($rowArray, ['status_code', 'status', 'الحالة']);
+                $airportName = $this->getValue($rowArray, ['name_of_the_airport', 'airport', 'اسم المطار']);
+                
+                if (empty($workerName) && empty($passportNo)) {
+                    $this->errors[] = "Row " . ($index + 2) . ": Worker name or passport number is required";
+                    continue;
+                }
+                
+                $worker = $this->findOrCreateWorker($workerName, $passportNo, $sponsorName);
+                $client = $this->findOrCreateClient($clientName, $idNumber);
+                $agent = $this->findOrCreateAgent($sponsorName);
+                
+                if (!$worker) {
+                    $this->errors[] = "Row " . ($index + 2) . ": Could not create worker";
+                    continue;
+                }
+                
+                $defaultBranch = Branch::active()->first();
+                
+                $contractData = [
+                    'client_id' => $client?->id,
+                    'branch_id' => $defaultBranch?->id,
+                    'worker_id' => $worker->id,
+                    'visa_no' => $visaNo ?: 'AUTO-' . time() . '-' . $index,
+                    'notes' => $note,
+                    'status' => $this->mapStatus($statusCode),
+                    'arrival_country_id' => $airportName,
+                    'departure_country_id' => $airportName,
+                    'receiving_station_id' => $airportName,
+                    'gregorian_request_date' => $arrivalDate ? $this->parseDate($arrivalDate) : now(),
+                    'visa_date' => $issueDate ? $this->parseDate($issueDate) : null,
+                    'created_by' => auth()->id(),
+                ];
+                
+                if ($visaNo) {
+                    RecruitmentContract::updateOrCreate(
+                        ['visa_no' => $visaNo],
+                        $contractData
+                    );
+                } else {
+                    RecruitmentContract::create($contractData);
+                }
+            } catch (\Exception $e) {
+                $this->errors[] = "Row " . ($index + 2) . ": " . $e->getMessage();
+            }
+        }
+    }
+
+    protected function findOrCreateWorker($name, $passportNo, $sponsorName)
+    {
+        $worker = null;
+        
+        if ($passportNo) {
+            $worker = Laborer::where('passport_number', $passportNo)->first();
+        }
+        
+        if (!$worker && $name) {
+            $worker = Laborer::where('name_ar', $name)
+                ->orWhere('name_en', $name)
+                ->first();
+        }
+        
+            if (!$worker && ($name || $passportNo)) {
+            $agent = $this->findOrCreateAgent($sponsorName);
+            
+            if (!$passportNo) {
+                $passportNo = 'PASS-' . time() . '-' . rand(1000, 9999);
+                while (Laborer::where('passport_number', $passportNo)->exists()) {
+                    $passportNo = 'PASS-' . time() . '-' . rand(1000, 9999);
+                }
+            }
+            
+            $workerData = [
+                'name_ar' => $name ?: 'Worker ' . time(),
+                'name_en' => $name ?: 'Worker ' . time(),
+                'passport_number' => $passportNo,
+                'agent_id' => $agent?->id ?: Agent::first()?->id ?: 1,
+                'country_id' => $this->defaultCountry?->id ?: 1,
+                'nationality_id' => $this->defaultNationality?->id ?: 1,
+                'profession_id' => $this->defaultProfession?->id ?: 1,
+                'monthly_salary_amount' => 0,
+                'monthly_salary_currency_id' => $this->defaultCurrency?->id ?: 1,
+                'is_available' => false,
+            ];
+            
+            $worker = Laborer::create($workerData);
+        }
+        
+        return $worker;
+    }
+
+    protected function findOrCreateClient($name, $idNumber)
+    {
+        if (empty($name)) {
+            return null;
+        }
+        
+        $client = null;
+        
+        if ($idNumber) {
+            $client = Client::where('national_id', $idNumber)->first();
+        }
+        
+        if (!$client) {
+            $client = Client::where('name_ar', $name)
+                ->orWhere('name_en', $name)
+                ->first();
+        }
+        
+        if (!$client) {
+            $client = Client::create([
+                'name_ar' => $name,
+                'name_en' => $name,
+                'national_id' => $idNumber ?: 'ID-' . time(),
+                'mobile' => '0000000000',
+                'birth_date' => now()->subYears(25),
+                'marital_status' => 'single',
+                'classification' => 'new',
+            ]);
+        }
+        
+        return $client;
+    }
+
+    protected function findOrCreateAgent($name)
+    {
+        if (empty($name)) {
+            return Agent::first();
+        }
+        
+        $agent = Agent::where('name_ar', $name)
+            ->orWhere('name_en', $name)
+            ->first();
+        
+        if (!$agent) {
+            $agent = Agent::create([
+                'code' => 'AGT-' . time(),
+                'name_ar' => $name,
+                'name_en' => $name,
+                'country_id' => $this->defaultCountry?->id,
+            ]);
+        }
+        
+        return $agent;
+    }
+
+    protected function getValue(array $row, array $keys)
+    {
+        foreach ($keys as $key) {
+            $sanitizedKey = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $key));
+            if (isset($row[$key])) {
+                return $row[$key];
+            }
+            if (isset($row[$sanitizedKey])) {
+                return $row[$sanitizedKey];
+            }
+        }
+        return null;
+    }
+
+    protected function parseDate($date)
+    {
+        if (empty($date)) {
+            return null;
+        }
+        
+        try {
+            if (is_numeric($date)) {
+                return \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($date));
+            }
+            return \Carbon\Carbon::parse($date);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    protected function mapStatus($code)
+    {
+        $statusMap = [
+            1 => 'new',
+            2 => 'foreign_embassy_approval',
+            3 => 'external_sending_office_approval',
+            4 => 'accepted_by_external_sending_office',
+            5 => 'foreign_labor_ministry_approval',
+            6 => 'accepted_by_foreign_labor_ministry',
+            7 => 'sent_to_saudi_embassy',
+            8 => 'visa_issued',
+            9 => 'arrived_in_saudi_arabia',
+            10 => 'rejected',
+            11 => 'cancelled',
+            12 => 'visa_cancelled',
+            13 => 'outside_kingdom',
+            14 => 'processing',
+        ];
+        
+        return $statusMap[$code] ?? 'new';
+    }
+
+    public function getErrors(): array
+    {
+        return $this->errors;
+    }
+}

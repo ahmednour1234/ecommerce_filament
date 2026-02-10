@@ -3,8 +3,12 @@
 namespace App\Filament\Resources\Recruitment\RecruitmentContractResource\Pages;
 
 use App\Filament\Resources\Recruitment\RecruitmentContractResource;
+use App\Imports\RecruitmentContractsImport;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
+use Filament\Notifications\Notification;
 
 class ListRecruitmentContracts extends ListRecords
 {
@@ -15,6 +19,90 @@ class ListRecruitmentContracts extends ListRecords
         return [
             Actions\CreateAction::make()
                 ->label(tr('recruitment_contract.actions.create', [], null, 'dashboard') ?: 'Create Contract'),
+            Actions\Action::make('download_template')
+                ->label(tr('recruitment_contract.actions.download_template', [], null, 'dashboard') ?: 'Download Template')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('success')
+                ->action(function () {
+                    return $this->downloadTemplate();
+                }),
+            Actions\Action::make('import')
+                ->label(tr('recruitment_contract.actions.import', [], null, 'dashboard') ?: 'Import Excel')
+                ->icon('heroicon-o-arrow-up-tray')
+                ->color('info')
+                ->form([
+                    \Filament\Forms\Components\FileUpload::make('file')
+                        ->label(tr('recruitment_contract.actions.excel_file', [], null, 'dashboard') ?: 'Excel File')
+                        ->acceptedFileTypes(['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'])
+                        ->required()
+                        ->disk('public')
+                        ->directory('imports'),
+                ])
+                ->action(function (array $data) {
+                    $this->importContracts($data['file']);
+                }),
         ];
+    }
+
+    protected function downloadTemplate()
+    {
+        $headers = [
+            'name_of_the_worker' => 'NAME OF THE WORKER / اسم العامل',
+            'passport_no' => 'passport_no / رقم الجواز',
+            'client_name' => 'client_name / اسم العميل',
+            'sponsor_name' => 'sponsor_name / اسم الكفيل',
+            'visa_no' => 'visa_no / رقم التأشيرة',
+            'id_number' => 'ID number / رقم الهوية',
+            'note' => 'note / ملاحظات',
+            'arrival_date' => 'arrival_date (YYYY-MM-DD) / تاريخ الوصول',
+            'issue_date' => 'issue_date (YYYY-MM-DD) / تاريخ الإصدار',
+            'status_code' => 'status_code (1-14) / رمز الحالة',
+            'name_of_the_airport' => 'NAME OF THE AIRPORT / اسم المطار',
+        ];
+        
+        $export = new class($headers) implements \Maatwebsite\Excel\Concerns\FromArray, \Maatwebsite\Excel\Concerns\WithHeadings {
+            public function __construct(protected array $headers) {}
+            public function array(): array { return []; }
+            public function headings(): array { return array_values($this->headers); }
+        };
+
+        $fileName = 'recruitment_contracts_template_' . date('Y-m-d_His') . '.xlsx';
+        $path = 'templates/' . $fileName;
+        
+        Excel::store($export, $path, 'public');
+        
+        return Storage::disk('public')->download($path, $fileName);
+    }
+
+    protected function importContracts(string $filePath)
+    {
+        try {
+            $import = new RecruitmentContractsImport();
+            Excel::import($import, $filePath, 'public');
+            
+            $errors = $import->getErrors();
+            
+            $message = tr('recruitment_contract.actions.import_success', [], null, 'dashboard') ?: 'Recruitment contracts imported successfully.';
+            
+            Notification::make()
+                ->title(tr('recruitment_contract.actions.import_complete', [], null, 'dashboard') ?: 'Import Complete')
+                ->body($message)
+                ->success()
+                ->send();
+            
+            if (!empty($errors)) {
+                Notification::make()
+                    ->title(tr('recruitment_contract.actions.import_errors', [], null, 'dashboard') ?: 'Import Errors')
+                    ->body(implode("\n", array_slice($errors, 0, 5)))
+                    ->warning()
+                    ->send();
+            }
+        } catch (\Exception $e) {
+            Notification::make()
+                ->title(tr('recruitment_contract.actions.import_failed', [], null, 'dashboard') ?: 'Import Failed')
+                ->body($e->getMessage())
+                ->danger()
+                ->send();
+        }
     }
 }
