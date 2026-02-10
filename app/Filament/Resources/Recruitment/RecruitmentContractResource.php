@@ -319,7 +319,19 @@ class RecruitmentContractResource extends Resource
                         Forms\Components\Select::make('status')
                             ->label(tr('recruitment_contract.fields.status', [], null, 'dashboard') ?: 'Status')
                             ->options([
-                                'new' => tr('recruitment_contract.status.new', [], null, 'dashboard') ?: 'New',
+                                'new' => tr('recruitment_contract.status.new', [], null, 'dashboard') ?: 'جديد',
+                                'foreign_embassy_approval' => tr('recruitment_contract.status.foreign_embassy_approval', [], null, 'dashboard') ?: 'موافقة السفارة الأجنبية',
+                                'external_sending_office_approval' => tr('recruitment_contract.status.external_sending_office_approval', [], null, 'dashboard') ?: 'موافقة مكتب الإرسال الخارجيه',
+                                'accepted_by_external_sending_office' => tr('recruitment_contract.status.accepted_by_external_sending_office', [], null, 'dashboard') ?: 'تم القبول من مكتب الإرسال الخارجيه',
+                                'foreign_labor_ministry_approval' => tr('recruitment_contract.status.foreign_labor_ministry_approval', [], null, 'dashboard') ?: 'موافقة وزارة العمل الأجنبية',
+                                'accepted_by_foreign_labor_ministry' => tr('recruitment_contract.status.accepted_by_foreign_labor_ministry', [], null, 'dashboard') ?: 'تم القبول من وزارة العمل الأجنبية',
+                                'sent_to_saudi_embassy' => tr('recruitment_contract.status.sent_to_saudi_embassy', [], null, 'dashboard') ?: 'تم الإرسال للسفارة السعودية',
+                                'visa_issued' => tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم إصدار التأشيرة',
+                                'arrived_in_saudi_arabia' => tr('recruitment_contract.status.arrived_in_saudi_arabia', [], null, 'dashboard') ?: 'وصل للمملكة العربية السعودية',
+                                'rejected' => tr('recruitment_contract.status.rejected', [], null, 'dashboard') ?: 'مرفوض',
+                                'cancelled' => tr('recruitment_contract.status.cancelled', [], null, 'dashboard') ?: 'ملغي',
+                                'visa_cancelled' => tr('recruitment_contract.status.visa_cancelled', [], null, 'dashboard') ?: 'إلغاء التأشيرة',
+                                'outside_kingdom' => tr('recruitment_contract.status.outside_kingdom', [], null, 'dashboard') ?: 'خارج المملكة',
                                 'processing' => tr('recruitment_contract.status.processing', [], null, 'dashboard') ?: 'Processing',
                                 'contract_signed' => tr('recruitment_contract.status.contract_signed', [], null, 'dashboard') ?: 'Contract Signed',
                                 'ticket_booked' => tr('recruitment_contract.status.ticket_booked', [], null, 'dashboard') ?: 'Ticket Booked',
@@ -386,15 +398,15 @@ class RecruitmentContractResource extends Resource
 
                 Tables\Columns\BadgeColumn::make('status')
                     ->label(tr('recruitment_contract.fields.status', [], null, 'dashboard') ?: 'Status')
-                    ->colors([
-                        'primary' => 'new',
-                        'warning' => 'processing',
-                        'info' => 'contract_signed',
-                        'success' => 'ticket_booked',
-                        'success' => 'worker_received',
-                        'gray' => 'closed',
-                        'danger' => 'returned',
-                    ])
+                    ->color(fn (string $state): string => match ($state) {
+                        'new' => 'primary',
+                        'foreign_embassy_approval', 'external_sending_office_approval', 'foreign_labor_ministry_approval', 'contract_signed' => 'info',
+                        'accepted_by_external_sending_office', 'accepted_by_foreign_labor_ministry', 'visa_issued', 'arrived_in_saudi_arabia', 'ticket_booked', 'worker_received' => 'success',
+                        'sent_to_saudi_embassy', 'outside_kingdom', 'processing' => 'warning',
+                        'rejected', 'visa_cancelled', 'returned' => 'danger',
+                        'cancelled', 'closed' => 'gray',
+                        default => 'gray',
+                    })
                     ->formatStateUsing(fn ($state) => tr("recruitment_contract.status.{$state}", [], null, 'dashboard') ?: $state)
                     ->sortable(),
 
@@ -429,7 +441,19 @@ class RecruitmentContractResource extends Resource
                 Tables\Filters\SelectFilter::make('status')
                     ->label(tr('recruitment_contract.fields.status', [], null, 'dashboard') ?: 'Status')
                     ->options([
-                        'new' => tr('recruitment_contract.status.new', [], null, 'dashboard') ?: 'New',
+                        'new' => tr('recruitment_contract.status.new', [], null, 'dashboard') ?: 'جديد',
+                        'foreign_embassy_approval' => tr('recruitment_contract.status.foreign_embassy_approval', [], null, 'dashboard') ?: 'موافقة السفارة الأجنبية',
+                        'external_sending_office_approval' => tr('recruitment_contract.status.external_sending_office_approval', [], null, 'dashboard') ?: 'موافقة مكتب الإرسال الخارجيه',
+                        'accepted_by_external_sending_office' => tr('recruitment_contract.status.accepted_by_external_sending_office', [], null, 'dashboard') ?: 'تم القبول من مكتب الإرسال الخارجيه',
+                        'foreign_labor_ministry_approval' => tr('recruitment_contract.status.foreign_labor_ministry_approval', [], null, 'dashboard') ?: 'موافقة وزارة العمل الأجنبية',
+                        'accepted_by_foreign_labor_ministry' => tr('recruitment_contract.status.accepted_by_foreign_labor_ministry', [], null, 'dashboard') ?: 'تم القبول من وزارة العمل الأجنبية',
+                        'sent_to_saudi_embassy' => tr('recruitment_contract.status.sent_to_saudi_embassy', [], null, 'dashboard') ?: 'تم الإرسال للسفارة السعودية',
+                        'visa_issued' => tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم إصدار التأشيرة',
+                        'arrived_in_saudi_arabia' => tr('recruitment_contract.status.arrived_in_saudi_arabia', [], null, 'dashboard') ?: 'وصل للمملكة العربية السعودية',
+                        'rejected' => tr('recruitment_contract.status.rejected', [], null, 'dashboard') ?: 'مرفوض',
+                        'cancelled' => tr('recruitment_contract.status.cancelled', [], null, 'dashboard') ?: 'ملغي',
+                        'visa_cancelled' => tr('recruitment_contract.status.visa_cancelled', [], null, 'dashboard') ?: 'إلغاء التأشيرة',
+                        'outside_kingdom' => tr('recruitment_contract.status.outside_kingdom', [], null, 'dashboard') ?: 'خارج المملكة',
                         'processing' => tr('recruitment_contract.status.processing', [], null, 'dashboard') ?: 'Processing',
                         'contract_signed' => tr('recruitment_contract.status.contract_signed', [], null, 'dashboard') ?: 'Contract Signed',
                         'ticket_booked' => tr('recruitment_contract.status.ticket_booked', [], null, 'dashboard') ?: 'Ticket Booked',
