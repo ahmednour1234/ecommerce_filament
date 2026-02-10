@@ -10,6 +10,7 @@ use App\Services\Recruitment\RecruitmentContractService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class RecruitmentContract extends Model
@@ -177,6 +178,11 @@ class RecruitmentContract extends Model
     public function statusLogs(): HasMany
     {
         return $this->hasMany(RecruitmentContractStatusLog::class);
+    }
+
+    public function complaints(): MorphMany
+    {
+        return $this->morphMany(\App\Models\Complaint::class, 'contract');
     }
 
     public function scopeNew($query)

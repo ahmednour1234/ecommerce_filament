@@ -12,6 +12,7 @@ use App\Services\Rental\RentalContractService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class RentalContract extends Model
@@ -169,6 +170,11 @@ class RentalContract extends Model
     public function cancelRefundRequests(): HasMany
     {
         return $this->hasMany(RentalCancelRefundRequest::class);
+    }
+
+    public function complaints(): MorphMany
+    {
+        return $this->morphMany(\App\Models\Complaint::class, 'contract');
     }
 
     public function scopeActive($query)
