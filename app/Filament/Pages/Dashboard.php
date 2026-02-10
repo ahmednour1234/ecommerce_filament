@@ -9,6 +9,7 @@ use App\Filament\Widgets\Dashboard\FinanceStatsWidget;
 use App\Filament\Widgets\Dashboard\FinanceTopTypesWidget;
 use App\Filament\Widgets\Dashboard\HRStatsWidget;
 use App\Filament\Widgets\Dashboard\OrderStatsWidget;
+use App\Filament\Widgets\Dashboard\RecruitmentContractsStatsWidget;
 use Filament\Pages\Dashboard as BaseDashboard;
 
 class Dashboard extends BaseDashboard
@@ -23,6 +24,7 @@ class Dashboard extends BaseDashboard
             OrderStatsWidget::class,
             FinanceStatsWidget::class,
             HRStatsWidget::class,
+            RecruitmentContractsStatsWidget::class,
         ];
     }
 
