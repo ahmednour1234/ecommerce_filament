@@ -152,45 +152,19 @@ class RecruitmentContractResource extends Resource
                             ->required(fn (callable $get) => $get('visa_type') === 'paid')
                             ->columnSpan(1),
 
-                        Forms\Components\Select::make('arrival_country_id')
-                            ->label(tr('recruitment_contract.fields.arrival_country', [], null, 'dashboard') ?: 'محطة الوصول')
-                            ->options(function () {
-                                return Cache::remember('recruitment_contracts.countries', 21600, function () {
-                                    return Country::where('is_active', true)
-                                        ->get()
-                                        ->pluck('name_text', 'id')
-                                        ->toArray();
-                                });
-                            })
-                            ->disabled()
-                            ->dehydrated()
+                        Forms\Components\TextInput::make('arrival_country_id')
+                            ->label(tr('recruitment_contract.fields.arrival_country', [], null, 'dashboard') ?: 'محطة الوصول والقدوم والاستلام')
+                            ->maxLength(255)
                             ->columnSpan(1),
 
-                        Forms\Components\Select::make('departure_country_id')
+                        Forms\Components\TextInput::make('departure_country_id')
                             ->label(tr('recruitment_contract.fields.departure_country', [], null, 'dashboard') ?: 'محطة القدوم')
-                            ->options(function () {
-                                return Cache::remember('recruitment_contracts.countries', 21600, function () {
-                                    return Country::where('is_active', true)
-                                        ->get()
-                                        ->pluck('name_text', 'id')
-                                        ->toArray();
-                                });
-                            })
-                            ->required()
-                            ->searchable()
+                            ->maxLength(255)
                             ->columnSpan(1),
 
-                        Forms\Components\Select::make('receiving_station_id')
+                        Forms\Components\TextInput::make('receiving_station_id')
                             ->label(tr('recruitment_contract.fields.receiving_station', [], null, 'dashboard') ?: 'محطة الاستلام')
-                            ->options(function () {
-                                return Cache::remember('recruitment_contracts.countries', 21600, function () {
-                                    return Country::where('is_active', true)
-                                        ->get()
-                                        ->pluck('name_text', 'id')
-                                        ->toArray();
-                                });
-                            })
-                            ->searchable()
+                            ->maxLength(255)
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('profession_id')

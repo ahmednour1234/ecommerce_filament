@@ -143,20 +143,6 @@ class RecruitmentContract extends Model
         return $this->belongsTo(Branch::class);
     }
 
-    public function arrivalCountry(): BelongsTo
-    {
-        return $this->belongsTo(Country::class, 'arrival_country_id');
-    }
-
-    public function departureCountry(): BelongsTo
-    {
-        return $this->belongsTo(Country::class, 'departure_country_id');
-    }
-
-    public function receivingStation(): BelongsTo
-    {
-        return $this->belongsTo(Country::class, 'receiving_station_id');
-    }
 
     public function profession(): BelongsTo
     {
