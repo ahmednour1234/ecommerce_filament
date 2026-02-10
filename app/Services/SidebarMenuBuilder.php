@@ -37,7 +37,8 @@ class SidebarMenuBuilder
     protected function processItem(array $item): ?array
     {
         if (isset($item['permission']) && $item['permission'] !== null) {
-            if (!Auth::check() || !Auth::user()->can($item['permission'])) {
+            $user = Auth::user();
+            if (!Auth::check() || (!$user->hasRole('super_admin') && !$user->can($item['permission']))) {
                 return null;
             }
         }
