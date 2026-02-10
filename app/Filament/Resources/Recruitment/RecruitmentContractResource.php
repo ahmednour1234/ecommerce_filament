@@ -162,8 +162,8 @@ class RecruitmentContractResource extends Resource
                                         ->toArray();
                                 });
                             })
-                            ->required()
-                            ->searchable()
+                            ->disabled()
+                            ->dehydrated()
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('departure_country_id')
@@ -177,6 +177,19 @@ class RecruitmentContractResource extends Resource
                                 });
                             })
                             ->required()
+                            ->searchable()
+                            ->columnSpan(1),
+
+                        Forms\Components\Select::make('receiving_station_id')
+                            ->label(tr('recruitment_contract.fields.receiving_station', [], null, 'dashboard') ?: 'محطة الاستلام')
+                            ->options(function () {
+                                return Cache::remember('recruitment_contracts.countries', 21600, function () {
+                                    return Country::where('is_active', true)
+                                        ->get()
+                                        ->pluck('name_text', 'id')
+                                        ->toArray();
+                                });
+                            })
                             ->searchable()
                             ->columnSpan(1),
 

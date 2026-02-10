@@ -27,6 +27,7 @@ class RecruitmentContract extends Model
         'visa_date',
         'arrival_country_id',
         'departure_country_id',
+        'receiving_station_id',
         'profession_id',
         'gender',
         'experience',
@@ -150,6 +151,11 @@ class RecruitmentContract extends Model
     public function departureCountry(): BelongsTo
     {
         return $this->belongsTo(Country::class, 'departure_country_id');
+    }
+
+    public function receivingStation(): BelongsTo
+    {
+        return $this->belongsTo(Country::class, 'receiving_station_id');
     }
 
     public function profession(): BelongsTo
