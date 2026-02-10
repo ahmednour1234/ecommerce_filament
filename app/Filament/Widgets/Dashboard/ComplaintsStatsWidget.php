@@ -111,9 +111,9 @@ class ComplaintsStatsWidget extends BaseWidget
             if ($urgentComplaints > 0) {
                 $urgentPending = (clone $query)->where('priority', 'urgent')->where('status', 'pending')->count();
                 $urgentInProgress = (clone $query)->where('priority', 'urgent')->where('status', 'in_progress')->count();
-                $urgentDescription = $urgentPending > 0 || $urgentInProgress > 0 
-                    ? tr('complaint.dashboard.requires_attention', [], null, 'dashboard') ?: 'يحتاج إلى انتباه فوري'
-                    : tr('complaint.priority.urgent', [], null, 'dashboard') ?: 'عاجل';
+                $urgentDescription = ($urgentPending > 0 || $urgentInProgress > 0)
+                    ? (tr('complaint.dashboard.requires_attention', [], null, 'dashboard') ?: 'يحتاج إلى انتباه فوري')
+                    : (tr('complaint.priority.urgent', [], null, 'dashboard') ?: 'عاجل');
                 
                 $stats[] = Stat::make(
                     tr('complaint.dashboard.urgent_complaints', [], null, 'dashboard') ?: 'شكاوي عاجلة',
