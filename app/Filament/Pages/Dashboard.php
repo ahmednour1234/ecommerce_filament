@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Widgets\Dashboard\ComplaintsStatsWidget;
 use App\Filament\Widgets\Dashboard\DashboardFilterWidget;
 use App\Filament\Widgets\Dashboard\FinanceBranchesComparisonChartWidget;
 use App\Filament\Widgets\Dashboard\FinanceBranchesTableWidget;
@@ -25,6 +26,7 @@ class Dashboard extends BaseDashboard
             FinanceStatsWidget::class,
             HRStatsWidget::class,
             RecruitmentContractsStatsWidget::class,
+            ComplaintsStatsWidget::class,
         ];
     }
 

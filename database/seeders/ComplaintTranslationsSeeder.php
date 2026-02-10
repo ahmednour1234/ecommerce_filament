@@ -60,6 +60,18 @@ class ComplaintTranslationsSeeder extends Seeder
             'tables.complaints.assigned_to' => ['en' => 'Assigned To', 'ar' => 'مكلف به'],
             'tables.complaints.branch' => ['en' => 'Branch', 'ar' => 'الفرع'],
             'tables.complaints.created_at' => ['en' => 'Created At', 'ar' => 'تاريخ الإنشاء'],
+
+            'complaint.dashboard.heading' => ['en' => 'Complaints Statistics', 'ar' => 'إحصائيات الشكاوي'],
+            'complaint.dashboard.no_data' => ['en' => 'No Data', 'ar' => 'لا توجد بيانات'],
+            'complaint.dashboard.no_complaints_period' => ['en' => 'No complaints in the selected period', 'ar' => 'لا توجد شكاوي في الفترة المحددة'],
+            'complaint.dashboard.total_complaints' => ['en' => 'Total Complaints', 'ar' => 'إجمالي الشكاوي'],
+            'complaint.dashboard.in_period' => ['en' => 'In the selected period', 'ar' => 'في الفترة المحددة'],
+            'complaint.dashboard.pending_complaints' => ['en' => 'Pending Complaints', 'ar' => 'شكاوي قيد الانتظار'],
+            'complaint.dashboard.in_progress_complaints' => ['en' => 'In Progress Complaints', 'ar' => 'شكاوي قيد المعالجة'],
+            'complaint.dashboard.resolved_complaints' => ['en' => 'Resolved Complaints', 'ar' => 'شكاوي تم حلها'],
+            'complaint.dashboard.closed_complaints' => ['en' => 'Closed Complaints', 'ar' => 'شكاوي مغلقة'],
+            'complaint.dashboard.urgent_complaints' => ['en' => 'Urgent Complaints', 'ar' => 'شكاوي عاجلة'],
+            'complaint.dashboard.high_priority_complaints' => ['en' => 'High Priority Complaints', 'ar' => 'شكاوي عالية الأولوية'],
         ];
 
         $created = 0;
