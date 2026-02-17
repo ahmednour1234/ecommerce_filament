@@ -8,7 +8,6 @@ use App\Filament\Resources\Rental\CancelRefundRequestsResource;
 use App\Filament\Resources\Rental\ReturnedContractsResource;
 use App\Filament\Resources\Rental\ArchivedContractsResource;
 use App\Filament\Resources\Recruitment\LaborerResource;
-use App\Filament\Resources\Recruitment\LaborerUsedResource;
 use App\Filament\Resources\Recruitment\RecruitmentContractResource;
 use App\Filament\Resources\Recruitment\AgentResource;
 use App\Filament\Resources\Recruitment\AgentLaborPriceResource;
@@ -119,12 +118,6 @@ return [
                             'icon' => 'heroicon-o-user-group',
                             'url' => fn() => LaborerResource::getUrl(),
                             'permission' => 'laborers.view_any',
-                        ],
-                        [
-                            'title' => 'sidebar.employment.used_laborers',
-                            'icon' => 'heroicon-o-users',
-                            'url' => fn() => LaborerUsedResource::getUrl(),
-                            'permission' => 'laborers_used.view_any',
                         ],
                         [
                             'title' => 'sidebar.employment.packages',
