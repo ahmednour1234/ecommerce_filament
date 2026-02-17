@@ -165,10 +165,8 @@ class CreateLeavePage extends Page implements HasForms
     {
         $data = $this->form->getState();
         $data['end_date'] = $this->end_date;
-        $data['total_days'] = $this->days;
 
-        // TODO: Replace with actual model save when it exists
-        // \App\Models\Housing\HousingLeave::create($data);
+        \App\Models\Housing\HousingLeave::create($data);
 
         Notification::make()
             ->title(tr('messages.saved_successfully', [], null, 'dashboard') ?: 'تم الحفظ بنجاح')

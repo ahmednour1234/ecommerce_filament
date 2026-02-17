@@ -15,9 +15,7 @@ class HousingStatusResource extends Resource
 {
     use TranslatableNavigation;
 
-    // TODO: Replace with actual model when it exists
-    // protected static ?string $model = \App\Models\Housing\HousingStatus::class;
-    protected static ?string $model = null;
+    protected static ?string $model = \App\Models\Housing\HousingStatus::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
     protected static ?string $navigationGroup = 'housing';

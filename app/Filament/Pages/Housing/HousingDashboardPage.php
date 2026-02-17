@@ -89,23 +89,23 @@ class HousingDashboardPage extends Page implements HasForms
 
     public function getCompletedCount(): int
     {
-        // TODO: Replace with actual model query when models exist
-        // return \App\Models\Housing\HousingRequest::where('status', 'completed')->count();
-        return 0;
+        return \App\Models\Housing\HousingRequest::whereHas('status', function ($q) {
+            $q->where('key', 'completed');
+        })->count();
     }
 
     public function getApprovedCount(): int
     {
-        // TODO: Replace with actual model query when models exist
-        // return \App\Models\Housing\HousingRequest::where('status', 'approved')->count();
-        return 0;
+        return \App\Models\Housing\HousingRequest::whereHas('status', function ($q) {
+            $q->where('key', 'approved');
+        })->count();
     }
 
     public function getPendingCount(): int
     {
-        // TODO: Replace with actual model query when models exist
-        // return \App\Models\Housing\HousingRequest::where('status', 'pending')->count();
-        return 0;
+        return \App\Models\Housing\HousingRequest::whereHas('status', function ($q) {
+            $q->where('key', 'pending');
+        })->count();
     }
 
     public function search(): void

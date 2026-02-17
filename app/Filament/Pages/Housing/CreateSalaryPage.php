@@ -164,9 +164,9 @@ class CreateSalaryPage extends Page implements HasForms
     public function save(): void
     {
         $data = $this->form->getState();
+        $data['net_salary'] = $this->net_salary;
 
-        // TODO: Replace with actual model save when it exists
-        // \App\Models\Housing\HousingSalary::create($data);
+        \App\Models\Housing\HousingSalary::create($data);
 
         Notification::make()
             ->title(tr('messages.saved_successfully', [], null, 'dashboard') ?: 'تم الحفظ بنجاح')

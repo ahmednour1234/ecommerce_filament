@@ -110,17 +110,12 @@ class CreateAccommodationEntryPage extends Page implements HasForms
                         \Filament\Forms\Components\Select::make('building_id')
                             ->label(tr('housing.accommodation.building', [], null, 'dashboard') ?: 'المبنى')
                             ->options(function () {
-                                // TODO: Replace with actual Building model when it exists
-                                // Only show buildings with available_capacity > 0
-                                // return \App\Models\Housing\Building::where('available_capacity', '>', 0)
-                                //     ->get()
-                                //     ->mapWithKeys(fn ($building) => [
-                                //         $building->id => $building->name . ' (' . $building->available_capacity . ' متاح)'
-                                //     ])
-                                //     ->toArray();
-                                
-                                // Placeholder for now
-                                return [];
+                                return \App\Models\Housing\Building::available()
+                                    ->get()
+                                    ->mapWithKeys(fn ($building) => [
+                                        $building->id => $building->name . ' (' . $building->available_capacity . ' ' . tr('common.available', [], null, 'dashboard') . ')'
+                                    ])
+                                    ->toArray();
                             })
                             ->required()
                             ->searchable()
@@ -136,8 +131,7 @@ class CreateAccommodationEntryPage extends Page implements HasForms
     {
         $data = $this->form->getState();
 
-        // TODO: Replace with actual model save when it exists
-        // \App\Models\Housing\AccommodationEntry::create($data);
+        \App\Models\Housing\AccommodationEntry::create($data);
 
         Notification::make()
             ->title(tr('messages.saved_successfully', [], null, 'dashboard') ?: 'تم الحفظ بنجاح')

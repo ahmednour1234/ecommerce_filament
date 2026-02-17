@@ -38,26 +38,30 @@ class HousingReportsPage extends Page
 
     public function getReturnsThisMonth(): int
     {
-        // TODO: Replace with actual model query when models exist
-        return 0;
+        return \App\Models\Housing\AccommodationEntry::where('entry_type', 'return')
+            ->whereMonth('entry_date', now()->month)
+            ->whereYear('entry_date', now()->year)
+            ->count();
     }
 
     public function getExitsThisMonth(): int
     {
-        // TODO: Replace with actual model query when models exist
-        return 0;
+        return \App\Models\Housing\AccommodationEntry::whereNotNull('exit_date')
+            ->whereMonth('exit_date', now()->month)
+            ->whereYear('exit_date', now()->year)
+            ->count();
     }
 
     public function getEntriesThisMonth(): int
     {
-        // TODO: Replace with actual model query when models exist
-        return 0;
+        return \App\Models\Housing\AccommodationEntry::whereMonth('entry_date', now()->month)
+            ->whereYear('entry_date', now()->year)
+            ->count();
     }
 
     public function getCurrentResidents(): int
     {
-        // TODO: Replace with actual model query when models exist
-        return 0;
+        return \App\Models\Housing\AccommodationEntry::whereNull('exit_date')->count();
     }
 
     public function viewReport(string $reportKey): void
