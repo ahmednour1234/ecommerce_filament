@@ -114,7 +114,7 @@ class HousingDashboardPage extends Page implements HasForms
         $this->dispatch('$refresh');
     }
 
-    public function reset(): void
+    public function resetFilters(): void
     {
         $this->request_type = null;
         $this->status = null;

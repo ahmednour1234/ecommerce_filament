@@ -93,7 +93,7 @@
                 <x-filament::button wire:click="search" color="primary">
                     {{ tr('housing.dashboard.search', [], null, 'dashboard') ?: 'بحث' }}
                 </x-filament::button>
-                <x-filament::button wire:click="reset" color="gray">
+                <x-filament::button wire:click="resetFilters" color="gray">
                     {{ tr('housing.dashboard.reset', [], null, 'dashboard') ?: 'إعادة تعيين' }}
                 </x-filament::button>
             </div>
