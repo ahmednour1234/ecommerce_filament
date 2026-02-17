@@ -110,9 +110,15 @@ class LaborerResource extends Resource
                             ->required()
                             ->columnSpan(1),
 
-                        Forms\Components\TextInput::make('experience_level')
+                        Forms\Components\Select::make('experience_level')
                             ->label(tr('recruitment.fields.experience_level', [], null, 'dashboard') ?: 'Experience Level')
-                            ->maxLength(255)
+                            ->options(fn () => [
+                                'beginner' => app()->getLocale() === 'ar' ? 'مبتدئ' : 'Beginner',
+                                'intermediate' => app()->getLocale() === 'ar' ? 'متوسط' : 'Intermediate',
+                                'advanced' => app()->getLocale() === 'ar' ? 'متقدم' : 'Advanced',
+                                'expert' => app()->getLocale() === 'ar' ? 'خبير' : 'Expert',
+                            ])
+                            ->searchable()
                             ->columnSpan(1),
 
                         Forms\Components\TextInput::make('social_status')
