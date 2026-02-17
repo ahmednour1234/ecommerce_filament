@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\MainCore\Language;
+use App\Models\MainCore\Translation;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\File;
 
@@ -9,9 +11,20 @@ class ServiceTransferTranslationsSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->command->info('Creating Service Transfer translations in JSON files...');
+        $this->command->info('Creating Service Transfer translations...');
+
+        $english = Language::where('code', 'en')->first();
+        $arabic = Language::where('code', 'ar')->first();
+
+        if (!$english || !$arabic) {
+            $this->command->warn('English or Arabic language not found. Skipping database translations.');
+        }
 
         $translations = [
+            // Sidebar navigation translations
+            'sidebar.servicetransfer' => ['en' => 'Service Transfers', 'ar' => 'طلبات نقل الخدمات'],
+            'sidebar.servicetransferrequestsreport' => ['en' => 'Service Transfer Requests Report', 'ar' => 'تقرير طلبات نقل الخدمات'],
+            'sidebar.servicetransferpaymentsreport' => ['en' => 'Service Transfer Payments Report', 'ar' => 'تقرير المدفوعات - نقل الخدمات'],
             'general.service_transfer' => ['en' => 'Service Transfer', 'ar' => 'نقل الخدمات'],
             'general.service_transfer_dashboard' => ['en' => 'Service Transfer Dashboard', 'ar' => 'لوحة نقل الخدمات'],
             'general.create_service_transfer' => ['en' => 'Create Service Transfer Request', 'ar' => 'إنشاء طلب نقل خدمة'],
@@ -102,5 +115,47 @@ class ServiceTransferTranslationsSeeder extends Seeder
         File::put($enFile, json_encode($enData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
         $this->command->info('✓ Service Transfer translations created in public/lang/ar.json and public/lang/en.json');
+
+        // Seed translations to database
+        if ($english && $arabic) {
+            $this->command->info('Seeding Service Transfer translations to database...');
+            
+            $created = 0;
+            $updated = 0;
+
+            foreach ($translations as $key => $values) {
+                // English translation
+                $resultEn = Translation::updateOrCreate(
+                    [
+                        'key' => $key,
+                        'group' => 'dashboard',
+                        'language_id' => $english->id,
+                    ],
+                    [
+                        'value' => $values['en'],
+                    ]
+                );
+
+                // Arabic translation
+                $resultAr = Translation::updateOrCreate(
+                    [
+                        'key' => $key,
+                        'group' => 'dashboard',
+                        'language_id' => $arabic->id,
+                    ],
+                    [
+                        'value' => $values['ar'],
+                    ]
+                );
+
+                if ($resultEn->wasRecentlyCreated || $resultAr->wasRecentlyCreated) {
+                    $created++;
+                } else {
+                    $updated++;
+                }
+            }
+
+            $this->command->info("✓ Service Transfer translations seeded to database: {$created} created, {$updated} updated.");
+        }
     }
 }

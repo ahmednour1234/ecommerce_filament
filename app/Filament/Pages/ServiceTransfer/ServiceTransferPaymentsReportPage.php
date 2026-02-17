@@ -23,6 +23,7 @@ class ServiceTransferPaymentsReportPage extends Page implements HasTable
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
     protected static ?string $navigationGroup = 'نقل الخدمات';
     protected static ?int $navigationSort = 12;
+    protected static ?string $navigationTranslationKey = 'sidebar.servicetransferpaymentsreport';
     protected static string $view = 'filament.pages.service-transfer.payments-report';
 
     public ?array $data = [];
