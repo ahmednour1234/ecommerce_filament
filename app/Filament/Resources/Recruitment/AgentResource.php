@@ -218,8 +218,10 @@ class AgentResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('country_id')
-                    ->label(tr('recruitment.fields.country', [], null, 'dashboard') ?: 'Country ID')
+                Tables\Columns\TextColumn::make('country.name')
+                    ->label(tr('recruitment.fields.country', [], null, 'dashboard') ?: 'Country')
+                    ->formatStateUsing(fn ($state, $record) => $record->country?->name_text ?? ($record->country?->name['en'] ?? ''))
+                    ->searchable()
                     ->sortable()
                     ->toggleable(),
 
@@ -252,6 +254,11 @@ class AgentResource extends Resource
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()->with(['country']);
     }
 
     public static function getRelations(): array

@@ -25,7 +25,7 @@ class SidebarMenuBuilder
 
         foreach ($items as $item) {
             $filteredItem = $this->processItem($item);
-            
+
             if ($filteredItem !== null) {
                 $filtered[] = $filteredItem;
             }
@@ -53,7 +53,7 @@ class SidebarMenuBuilder
 
         if (isset($item['children']) && is_array($item['children'])) {
             $processed['children'] = $this->filterItems($item['children']);
-            
+
             if (empty($processed['children']) && $processed['url'] === null) {
                 return null;
             }
