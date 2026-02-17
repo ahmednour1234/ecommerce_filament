@@ -22,7 +22,7 @@ class RecruitmentHousingRequestResource extends Resource
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationTranslationKey = 'sidebar.recruitment_housing.housing_requests';
 
-    protected static function getEloquentQuery(): Builder
+    public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->recruitment();
     }
