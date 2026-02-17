@@ -18,9 +18,9 @@ class HousingStatusResource extends Resource
     protected static ?string $model = \App\Models\Housing\HousingStatus::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
-    protected static ?string $navigationGroup = 'housing';
-    protected static ?int $navigationSort = 6;
-    protected static ?string $navigationTranslationKey = 'sidebar.housing.status_management';
+    protected static ?string $navigationGroup = 'housing_management';
+    protected static ?int $navigationSort = 1;
+    protected static ?string $navigationTranslationKey = 'sidebar.housing_management.status_management';
 
     public static function form(Form $form): Form
     {

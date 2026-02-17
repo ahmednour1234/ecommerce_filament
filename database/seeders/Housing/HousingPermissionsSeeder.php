@@ -21,6 +21,7 @@ class HousingPermissionsSeeder extends Seeder
             'leaves' => ['view_any', 'create', 'update', 'delete'],
             'accommodation_entries' => ['view_any', 'create', 'update', 'delete'],
             'statuses' => ['view_any', 'view', 'create', 'update', 'delete'],
+            'buildings' => ['view_any', 'view', 'create', 'update', 'delete'],
             'reports' => ['view'],
         ];
 

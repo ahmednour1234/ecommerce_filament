@@ -14,6 +14,7 @@ class HousingLeave extends Model
 
     protected $fillable = [
         'employee_id',
+        'type',
         'leave_type_id',
         'start_date',
         'days',
@@ -100,5 +101,15 @@ class HousingLeave extends Model
     public function scopeForEmployee($query, int $employeeId)
     {
         return $query->where('employee_id', $employeeId);
+    }
+
+    public function scopeRecruitment($query)
+    {
+        return $query->where('type', 'recruitment');
+    }
+
+    public function scopeRental($query)
+    {
+        return $query->where('type', 'rental');
     }
 }

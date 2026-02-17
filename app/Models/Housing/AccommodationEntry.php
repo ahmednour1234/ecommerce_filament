@@ -17,6 +17,7 @@ class AccommodationEntry extends Model
 
     protected $fillable = [
         'laborer_id',
+        'type',
         'contract_no',
         'entry_type',
         'entry_date',
@@ -139,5 +140,15 @@ class AccommodationEntry extends Model
     public function scopeTransfer($query)
     {
         return $query->where('entry_type', 'transfer');
+    }
+
+    public function scopeRecruitment($query)
+    {
+        return $query->where('type', 'recruitment');
+    }
+
+    public function scopeRental($query)
+    {
+        return $query->where('type', 'rental');
     }
 }

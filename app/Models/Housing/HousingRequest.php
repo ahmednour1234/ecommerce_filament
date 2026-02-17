@@ -21,7 +21,8 @@ class HousingRequest extends Model
         'contract_no',
         'client_id',
         'laborer_id',
-        'type',
+        'request_type',
+        'housing_type',
         'request_date',
         'status_id',
         'notes',
@@ -106,11 +107,21 @@ class HousingRequest extends Model
 
     public function scopeDelivery($query)
     {
-        return $query->where('type', 'delivery');
+        return $query->where('request_type', 'delivery');
     }
 
     public function scopeReturn($query)
     {
-        return $query->where('type', 'return');
+        return $query->where('request_type', 'return');
+    }
+
+    public function scopeRecruitment($query)
+    {
+        return $query->where('housing_type', 'recruitment');
+    }
+
+    public function scopeRental($query)
+    {
+        return $query->where('housing_type', 'rental');
     }
 }

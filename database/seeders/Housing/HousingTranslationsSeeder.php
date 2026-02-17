@@ -21,6 +21,29 @@ class HousingTranslationsSeeder extends Seeder
         $this->command->info('Creating Housing translations...');
 
         $translations = [
+            'sidebar.recruitment_housing' => ['en' => 'Recruitment Housing', 'ar' => 'إيواء الاستقدام'],
+            'sidebar.recruitment_housing.dashboard' => ['en' => 'Dashboard', 'ar' => 'لوحة التحكم'],
+            'sidebar.recruitment_housing.laborers_list' => ['en' => 'Laborers List', 'ar' => 'قائمة العمالة'],
+            'sidebar.recruitment_housing.housing_requests' => ['en' => 'Housing Requests', 'ar' => 'طلبات الإيواء'],
+            'sidebar.recruitment_housing.laborer_salaries' => ['en' => 'Laborer Salaries', 'ar' => 'رواتب العمالة'],
+            'sidebar.recruitment_housing.laborer_leaves' => ['en' => 'Laborer Leaves', 'ar' => 'إجازات العمالة'],
+            'sidebar.recruitment_housing.accommodation_entries' => ['en' => 'Accommodation Entries', 'ar' => 'إدخالات الإيواء'],
+            'sidebar.recruitment_housing.reports' => ['en' => 'Reports', 'ar' => 'التقارير'],
+
+            'sidebar.rental_housing' => ['en' => 'Rental Housing', 'ar' => 'إيواء التأجير'],
+            'sidebar.rental_housing.dashboard' => ['en' => 'Dashboard', 'ar' => 'لوحة التحكم'],
+            'sidebar.rental_housing.laborers_list' => ['en' => 'Laborers List', 'ar' => 'قائمة العمالة'],
+            'sidebar.rental_housing.housing_requests' => ['en' => 'Housing Requests', 'ar' => 'طلبات الإيواء'],
+            'sidebar.rental_housing.laborer_salaries' => ['en' => 'Laborer Salaries', 'ar' => 'رواتب العمالة'],
+            'sidebar.rental_housing.laborer_leaves' => ['en' => 'Laborer Leaves', 'ar' => 'إجازات العمالة'],
+            'sidebar.rental_housing.accommodation_entries' => ['en' => 'Accommodation Entries', 'ar' => 'إدخالات الإيواء'],
+            'sidebar.rental_housing.reports' => ['en' => 'Reports', 'ar' => 'التقارير'],
+
+            'sidebar.housing_management' => ['en' => 'Housing Management', 'ar' => 'إدارة الإيواء'],
+            'sidebar.housing_management.status_management' => ['en' => 'Status Management', 'ar' => 'إدارة الحالات'],
+            'sidebar.housing_management.buildings_management' => ['en' => 'Buildings Management', 'ar' => 'إدارة المباني'],
+            'sidebar.housing_management.branches_management' => ['en' => 'Branches Management', 'ar' => 'إدارة الفروع'],
+
             'sidebar.housing.housing' => ['en' => 'Housing', 'ar' => 'الإيواء'],
             'sidebar.housing.dashboard' => ['en' => 'Dashboard', 'ar' => 'لوحة التحكم'],
             'sidebar.housing.laborers_list' => ['en' => 'Laborers List', 'ar' => 'قائمة العمالة'],
@@ -129,6 +152,10 @@ class HousingTranslationsSeeder extends Seeder
             'housing.actions.print' => ['en' => 'Print', 'ar' => 'طباعة'],
             'housing.actions.excel' => ['en' => 'Excel', 'ar' => 'إكسل'],
             'housing.actions.copy' => ['en' => 'Copy', 'ar' => 'نسخ'],
+
+            'housing.buildings.capacity' => ['en' => 'Capacity', 'ar' => 'السعة'],
+            'housing.buildings.available_capacity' => ['en' => 'Available Capacity', 'ar' => 'السعة المتاحة'],
+            'housing.buildings.maintenance' => ['en' => 'Maintenance', 'ar' => 'صيانة'],
         ];
 
         $created = 0;
