@@ -41,7 +41,7 @@ class HousingDashboardPage extends Page implements HasForms
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->can('housing.dashboard.view') ?? false;
+        return false; // Hidden - replaced by RecruitmentHousingDashboardPage and RentalHousingDashboardPage
     }
 
     public function mount(): void

@@ -48,7 +48,7 @@ class CreateSalaryPage extends Page implements HasForms
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->can('housing.salaries.create') ?? false;
+        return false; // Hidden - replaced by RecruitmentHousingSalaryPage and RentalHousingSalaryPage
     }
 
     public function mount(): void

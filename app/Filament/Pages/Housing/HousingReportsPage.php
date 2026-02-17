@@ -33,7 +33,7 @@ class HousingReportsPage extends Page
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->can('housing.reports.view') ?? false;
+        return false; // Hidden - replaced by RecruitmentHousingReportsPage and RentalHousingReportsPage
     }
 
     public function getReturnsThisMonth(): int

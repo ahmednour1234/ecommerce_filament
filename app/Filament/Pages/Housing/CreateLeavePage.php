@@ -49,7 +49,7 @@ class CreateLeavePage extends Page implements HasForms
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->can('housing.leaves.create') ?? false;
+        return false; // Hidden - replaced by RecruitmentHousingLeavePage and RentalHousingLeavePage
     }
 
     public function mount(): void
