@@ -19,21 +19,17 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             RolePermissionSeeder::class, // Seed permissions for all resources
             \Database\Seeders\HR\HrPermissionsSeeder::class, // HR module permissions
-            \Database\Seeders\HR\HrTranslationsSeeder::class, // HR module translations
-            \Database\Seeders\HR\HrLoansTranslationsSeeder::class, // HR Loans module translations
             \Database\Seeders\HR\HrLookupsSeeder::class, // HR default lookups
             \Database\Seeders\MainCore\MainCoreSeeder::class,
+            AllTranslationsSeeder::class, // All translations in one unified seeder
             \Database\Seeders\Catalog\CatalogSeeder::class, // Must be after MainCore (needs Currency)
             \Database\Seeders\Accounting\AccountingSeeder::class, // Must be after MainCore (needs Branch, CostCenter)
             \Database\Seeders\Accounting\BankGuaranteePermissionsSeeder::class, // Bank Guarantee permissions
             \Database\Seeders\Sales\SalesSeeder::class, // Must be after Catalog and Accounting
             \Database\Seeders\Finance\FinancePermissionsSeeder::class, // Finance module permissions
             \Database\Seeders\Finance\FinanceTypesSeeder::class, // Finance types data
-            \Database\Seeders\Finance\FinanceTranslationsSeeder::class, // Finance translations
             \Database\Seeders\MainCore\CountriesSeeder::class,
             \Database\Seeders\ClientsPermissionsSeeder::class, // Clients module permissions
-            \Database\Seeders\ClientsTranslationsSeeder::class, // Clients module translations
-            \Database\Seeders\Biometric\BiometricTranslationsSeeder::class, // Biometric module translations
             SuperAdminSeeder::class, // Create super_admin role with ALL permissions (must be last)
         ]);
 
