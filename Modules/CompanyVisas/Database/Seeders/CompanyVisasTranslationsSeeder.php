@@ -95,6 +95,25 @@ class CompanyVisasTranslationsSeeder extends Seeder
             'company_visas.helpers.workers_required' => ['en' => 'Must not exceed remaining visa balance', 'ar' => 'يجب ألا يتجاوز الرصيد المتبقي من التأشيرة'],
 
             'company_visas.messages.finance_entry_info' => ['en' => 'A journal entry will be created automatically: Buyer account (Debit) and Agent account (Credit).', 'ar' => 'سيتم إنشاء قيد محاسبي تلقائياً: حساب المشترى (مدين) وحساب الوكيل (دائن).'],
+
+            'company_visas.actions.save' => ['en' => 'Save', 'ar' => 'حفظ'],
+            'company_visas.actions.cancel' => ['en' => 'Cancel', 'ar' => 'إلغاء'],
+            'company_visas.actions.delete' => ['en' => 'Delete', 'ar' => 'حذف'],
+            'company_visas.actions.edit' => ['en' => 'Edit', 'ar' => 'تعديل'],
+            'company_visas.actions.view' => ['en' => 'View', 'ar' => 'عرض'],
+            'company_visas.actions.create' => ['en' => 'Create', 'ar' => 'إنشاء'],
+            'company_visas.actions.load_available_workers' => ['en' => 'Load Available Workers', 'ar' => 'تحميل العمالة المتاحة'],
+            'company_visas.actions.remove_worker' => ['en' => 'Remove Worker', 'ar' => 'إزالة عامل'],
+            'company_visas.actions.upload_document' => ['en' => 'Upload Document', 'ar' => 'رفع مستند'],
+
+            'company_visas.messages.worker_linked_success' => ['en' => 'Workers linked successfully', 'ar' => 'تم ربط العمالة بنجاح'],
+            'company_visas.messages.expense_added_success' => ['en' => 'Expense added successfully', 'ar' => 'تم إضافة المصروف بنجاح'],
+            'company_visas.messages.status_updated_success' => ['en' => 'Status updated successfully', 'ar' => 'تم تحديث الحالة بنجاح'],
+            'company_visas.messages.cost_added_success' => ['en' => 'Contract cost added successfully', 'ar' => 'تم إضافة تكلفة العقد بنجاح'],
+            'company_visas.messages.document_uploaded_success' => ['en' => 'Document uploaded successfully', 'ar' => 'تم رفع المستند بنجاح'],
+
+            'company_visas.validation.workers_required_exceeds_balance' => ['en' => 'Workers required exceeds remaining visa balance', 'ar' => 'عدد العمالة المطلوبة يتجاوز الرصيد المتبقي من التأشيرة'],
+            'company_visas.validation.no_workers_available' => ['en' => 'No workers available matching the criteria', 'ar' => 'لا توجد عمالة متاحة تطابق المعايير'],
         ];
 
         $created = 0;
