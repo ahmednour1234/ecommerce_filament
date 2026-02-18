@@ -546,6 +546,8 @@ class AllTranslationsSeeder extends Seeder
             'housing.requests.order_no' => ['en' => 'Order No', 'ar' => 'رقم الطلب'],
             'housing.requests.client' => ['en' => 'Client', 'ar' => 'العميل'],
             'housing.requests.laborer' => ['en' => 'Laborer', 'ar' => 'العمالة'],
+            'housing.requests.status' => ['en' => 'Status', 'ar' => 'الحالة'],
+            'housing.requests.select_status' => ['en' => 'Select Status', 'ar' => 'اختر الحالة'],
             'housing.salary.create' => ['en' => 'Add Salary for Worker', 'ar' => 'إضافة راتب للعامل'],
             'housing.salary.basic_salary' => ['en' => 'Basic Salary', 'ar' => 'الراتب الأساسي'],
             'housing.leave.create' => ['en' => 'Add New Leave', 'ar' => 'إضافة إجازة جديدة'],
