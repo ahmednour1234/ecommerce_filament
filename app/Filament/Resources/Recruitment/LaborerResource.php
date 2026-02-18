@@ -112,11 +112,9 @@ class LaborerResource extends Resource
 
                         Forms\Components\Select::make('experience_level')
                             ->label(tr('recruitment.fields.experience_level', [], null, 'dashboard') ?: 'Experience Level')
-                            ->options(fn () => [
-                                'beginner' => app()->getLocale() === 'ar' ? 'مبتدئ' : 'Beginner',
-                                'intermediate' => app()->getLocale() === 'ar' ? 'متوسط' : 'Intermediate',
-                                'advanced' => app()->getLocale() === 'ar' ? 'متقدم' : 'Advanced',
-                                'expert' => app()->getLocale() === 'ar' ? 'خبير' : 'Expert',
+                            ->options([
+                                'gulf_experience' => app()->getLocale() === 'ar' ? 'خبره دول الخليج' : 'Gulf Experience',
+                                'new' => app()->getLocale() === 'ar' ? 'جديده' : 'New',
                             ])
                             ->searchable()
                             ->columnSpan(1),
@@ -294,7 +292,7 @@ class LaborerResource extends Resource
 
                 Tables\Columns\TextColumn::make('nationality.name_' . app()->getLocale())
                     ->label(tr('recruitment.fields.nationality', [], null, 'dashboard') ?: 'Nationality')
-                    ->formatStateUsing(fn ($state, $record) => $record->nationality 
+                    ->formatStateUsing(fn ($state, $record) => $record->nationality
                         ? (app()->getLocale() === 'ar' ? $record->nationality->name_ar : $record->nationality->name_en)
                         : '')
                     ->searchable()
@@ -302,7 +300,7 @@ class LaborerResource extends Resource
 
                 Tables\Columns\TextColumn::make('profession.name_' . app()->getLocale())
                     ->label(tr('recruitment.fields.profession', [], null, 'dashboard') ?: 'Profession')
-                    ->formatStateUsing(fn ($state, $record) => $record->profession 
+                    ->formatStateUsing(fn ($state, $record) => $record->profession
                         ? (app()->getLocale() === 'ar' ? $record->profession->name_ar : $record->profession->name_en)
                         : '')
                     ->searchable()
