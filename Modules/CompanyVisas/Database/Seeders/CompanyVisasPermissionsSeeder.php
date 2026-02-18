@@ -51,21 +51,27 @@ class CompanyVisasPermissionsSeeder extends Seeder
         $this->command->info('✓ All permissions assigned to super_admin role');
 
         $financeRole = Role::firstOrCreate(['name' => 'Finance', 'guard_name' => 'web']);
-        $financeRole->givePermissionTo([
+        $financePermissions = array_filter([
             Permission::where('name', 'company_visas.requests.view_requests')->first(),
             Permission::where('name', 'company_visas.contracts.view_contracts')->first(),
             Permission::where('name', 'company_visas.add_expense')->first(),
             Permission::where('name', 'company_visas.manage_cost')->first(),
         ]);
-        $this->command->info('✓ Finance permissions assigned');
+        if (!empty($financePermissions)) {
+            $financeRole->givePermissionTo($financePermissions);
+            $this->command->info('✓ Finance permissions assigned');
+        }
 
         $hrRole = Role::firstOrCreate(['name' => 'HR', 'guard_name' => 'web']);
-        $hrRole->givePermissionTo([
+        $hrPermissions = array_filter([
             Permission::where('name', 'company_visas.requests.view_requests')->first(),
             Permission::where('name', 'company_visas.contracts.view_contracts')->first(),
             Permission::where('name', 'company_visas.link_workers')->first(),
             Permission::where('name', 'company_visas.update_status')->first(),
         ]);
-        $this->command->info('✓ HR permissions assigned');
+        if (!empty($hrPermissions)) {
+            $hrRole->givePermissionTo($hrPermissions);
+            $this->command->info('✓ HR permissions assigned');
+        }
     }
 }
