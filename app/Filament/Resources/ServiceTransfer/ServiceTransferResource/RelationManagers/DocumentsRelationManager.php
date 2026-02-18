@@ -31,7 +31,6 @@ class DocumentsRelationManager extends RelationManager
                     ->previewable()
                     ->openable()
                     ->deletable()
-                    ->storeFileNamesIn('file_name')
                     ->visibility('public'),
             ]);
     }
@@ -72,23 +71,24 @@ class DocumentsRelationManager extends RelationManager
                         $data['service_transfer_id'] = $livewire->ownerRecord->id;
                         $data['uploaded_by'] = auth()->id();
                         
-                        // Ensure file_path is a string (not array) and extract file info
-                        if (isset($data['file_path'])) {
-                            $filePath = is_array($data['file_path']) ? ($data['file_path'][0] ?? null) : $data['file_path'];
-                            
-                            if ($filePath) {
-                                $data['file_path'] = $filePath;
-                                // These will be set automatically by model boot, but set them here too for safety
-                                if (empty($data['file_name'])) {
-                                    $data['file_name'] = basename($filePath);
-                                }
-                                if (empty($data['file_type'])) {
-                                    $data['file_type'] = pathinfo($data['file_name'], PATHINFO_EXTENSION);
-                                }
-                            }
+                        // Normalize file_path to string if it's an array
+                        if (isset($data['file_path']) && is_array($data['file_path'])) {
+                            $data['file_path'] = $data['file_path'][0] ?? null;
                         }
                         
                         return $data;
+                    })
+                    ->after(function (ServiceTransferDocument $record) {
+                        // Extract file_name and file_type after file is saved
+                        if ($record->file_path && (!$record->file_name || !$record->file_type)) {
+                            $fileName = basename($record->file_path);
+                            $fileType = pathinfo($fileName, PATHINFO_EXTENSION);
+                            
+                            $record->updateQuietly([
+                                'file_name' => $fileName,
+                                'file_type' => $fileType,
+                            ]);
+                        }
                     })
                     ->visible(fn () => auth()->user()?->can('service_transfers.documents.upload') ?? false),
             ])
