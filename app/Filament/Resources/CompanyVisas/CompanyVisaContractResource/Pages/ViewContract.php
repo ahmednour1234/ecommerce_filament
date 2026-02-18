@@ -54,9 +54,9 @@ class ViewContract extends ViewRecord
                                 Infolists\Components\Section::make(tr('company_visas.sections.workers_info', [], null, 'dashboard') ?: 'معلومات العمالة')
                                     ->schema([
                                         Infolists\Components\TextEntry::make('workers_required')
-                                            ->label(tr('company_visas.fields.workers_required', [], null, 'dashboard') ?: 'عدد العمالة المطلوبة')),
+                                            ->label(tr('company_visas.fields.workers_required', [], null, 'dashboard') ?: 'عدد العمالة المطلوبة'),
                                         Infolists\Components\TextEntry::make('linked_workers_count')
-                                            ->label(tr('company_visas.fields.linked_workers_count', [], null, 'dashboard') ?: 'عدد العمالة المرتبطة')),
+                                            ->label(tr('company_visas.fields.linked_workers_count', [], null, 'dashboard') ?: 'عدد العمالة المرتبطة'),
                                     ])
                                     ->columns(2),
                             ]),
