@@ -30,20 +30,7 @@ class DocumentsRelationManager extends RelationManager
                     ->downloadable()
                     ->previewable()
                     ->openable()
-                    ->deletable()
-                    ->afterStateUpdated(function ($state, callable $set, $record) {
-                        if ($state && is_array($state) && !empty($state)) {
-                            $filePath = is_array($state) ? $state[0] : $state;
-                            $fileName = basename($filePath);
-                            $fileType = pathinfo($fileName, PATHINFO_EXTENSION);
-                            
-                            $set('file_name', $fileName);
-                            $set('file_type', $fileType);
-                        }
-                    }),
-
-                Forms\Components\Hidden::make('file_name'),
-                Forms\Components\Hidden::make('file_type'),
+                    ->deletable(),
             ]);
     }
 
@@ -83,11 +70,16 @@ class DocumentsRelationManager extends RelationManager
                         $data['service_transfer_id'] = $livewire->ownerRecord->id;
                         $data['uploaded_by'] = auth()->id();
                         
-                        if (isset($data['file_path']) && is_array($data['file_path']) && !empty($data['file_path'])) {
-                            $filePath = $data['file_path'][0];
-                            $data['file_path'] = $filePath;
-                            $data['file_name'] = $data['file_name'] ?? basename($filePath);
-                            $data['file_type'] = $data['file_type'] ?? pathinfo($data['file_name'], PATHINFO_EXTENSION);
+                        if (isset($data['file_path'])) {
+                            // Handle both array and string formats
+                            $filePath = is_array($data['file_path']) ? ($data['file_path'][0] ?? null) : $data['file_path'];
+                            
+                            if ($filePath) {
+                                $data['file_path'] = $filePath;
+                                $fileName = basename($filePath);
+                                $data['file_name'] = $fileName;
+                                $data['file_type'] = pathinfo($fileName, PATHINFO_EXTENSION);
+                            }
                         }
                         
                         return $data;
