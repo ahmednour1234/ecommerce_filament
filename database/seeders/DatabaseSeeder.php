@@ -31,6 +31,8 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\Finance\FinanceTypesSeeder::class, // Finance types data
             \Database\Seeders\MainCore\CountriesSeeder::class,
             \Database\Seeders\ClientsPermissionsSeeder::class, // Clients module permissions
+            \Modules\CompanyVisas\Database\Seeders\CompanyVisasPermissionsSeeder::class, // Company Visas permissions
+            \Modules\CompanyVisas\Database\Seeders\CompanyVisasTranslationsSeeder::class, // Company Visas translations
             SuperAdminSeeder::class, // Create super_admin role with ALL permissions (must be last)
         ]);
 
