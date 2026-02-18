@@ -24,6 +24,7 @@ class CompanyVisasTranslationsSeeder extends Seeder
             'company_visas.menu.group' => ['en' => 'Visas', 'ar' => 'التأشيرات'],
             'company_visas.menu.requests' => ['en' => 'Visa Requests', 'ar' => 'طلبات التأشيرات'],
             'company_visas.menu.contracts' => ['en' => 'Company Visa Contracts', 'ar' => 'عقود استقدام الشركة'],
+            'sidebar.company_visas' => ['en' => 'Company Visas', 'ar' => 'تأشيرات الشركات'],
             'sidebar.company_visas.requests' => ['en' => 'Visa Requests', 'ar' => 'طلبات التأشيرات'],
             'sidebar.company_visas.contracts' => ['en' => 'Company Visa Contracts', 'ar' => 'عقود استقدام الشركة'],
 

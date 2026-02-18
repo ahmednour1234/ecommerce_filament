@@ -21,7 +21,7 @@ class CompanyVisasPermissionsSeeder extends Seeder
 
         foreach ($permissionGroups as $group => $actions) {
             foreach ($actions as $action) {
-                $permName = "company_visas.{$group}.{$action}";
+                $permName = "company_visas.{$action}";
 
                 $permission = Permission::firstOrCreate(
                     ['name' => $permName, 'guard_name' => 'web']
@@ -52,8 +52,8 @@ class CompanyVisasPermissionsSeeder extends Seeder
 
         $financeRole = Role::firstOrCreate(['name' => 'Finance', 'guard_name' => 'web']);
         $financePermissions = array_filter([
-            Permission::where('name', 'company_visas.requests.view_requests')->first(),
-            Permission::where('name', 'company_visas.contracts.view_contracts')->first(),
+            Permission::where('name', 'company_visas.view_requests')->first(),
+            Permission::where('name', 'company_visas.view_contracts')->first(),
             Permission::where('name', 'company_visas.add_expense')->first(),
             Permission::where('name', 'company_visas.manage_cost')->first(),
         ]);
@@ -64,8 +64,8 @@ class CompanyVisasPermissionsSeeder extends Seeder
 
         $hrRole = Role::firstOrCreate(['name' => 'HR', 'guard_name' => 'web']);
         $hrPermissions = array_filter([
-            Permission::where('name', 'company_visas.requests.view_requests')->first(),
-            Permission::where('name', 'company_visas.contracts.view_contracts')->first(),
+            Permission::where('name', 'company_visas.view_requests')->first(),
+            Permission::where('name', 'company_visas.view_contracts')->first(),
             Permission::where('name', 'company_visas.link_workers')->first(),
             Permission::where('name', 'company_visas.update_status')->first(),
         ]);

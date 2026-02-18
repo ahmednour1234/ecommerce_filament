@@ -134,6 +134,9 @@ class AdminPanelProvider extends PanelProvider
                 \Filament\Navigation\NavigationGroup::make()
                     ->label(fn () => tr('sidebar.hr', [], null, 'dashboard') ?: 'الموارد البشرية')
                     ->collapsible(false),
+                \Filament\Navigation\NavigationGroup::make('company_visas')
+                    ->label(fn () => tr('sidebar.company_visas', [], null, 'dashboard') ?: 'تأشيرات الشركات')
+                    ->collapsible(false),
             ]);
     }
 
