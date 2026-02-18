@@ -214,4 +214,41 @@ class RecruitmentContract extends Model
     {
         return $query->where('status', 'worker_received');
     }
+
+    public function scopeExpired($query)
+    {
+        return $query->where('status', 'closed');
+    }
+
+    public function scopeReturned($query)
+    {
+        return $query->whereIn('status', ['returned', 'cancelled']);
+    }
+
+    public function scopeInWarranty($query)
+    {
+        $warrantyDays = defined('self::WARRANTY_DAYS') ? self::WARRANTY_DAYS : 30;
+        return $query->where('created_at', '>=', now()->subDays($warrantyDays))
+            ->where('created_at', '<=', now());
+    }
+
+    public function scopeRejected($query)
+    {
+        return $query->where('status', 'rejected');
+    }
+
+    public function scopeSigned($query)
+    {
+        return $query->where('status', 'contract_signed');
+    }
+
+    public function scopeVisaIssued($query)
+    {
+        return $query->where('status', 'visa_issued');
+    }
+
+    public function scopeArrivalTicketIssued($query)
+    {
+        return $query->where('status', 'ticket_booked');
+    }
 }

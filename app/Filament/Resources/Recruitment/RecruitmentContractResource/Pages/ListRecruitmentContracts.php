@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Recruitment\RecruitmentContractResource\Pages;
 
 use App\Filament\Resources\Recruitment\RecruitmentContractResource;
+use App\Filament\Widgets\Recruitment\RecruitmentContractStatsWidget;
 use App\Imports\RecruitmentContractsImport;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
@@ -41,6 +42,13 @@ class ListRecruitmentContracts extends ListRecords
                 ->action(function (array $data) {
                     $this->importContracts($data['file']);
                 }),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            RecruitmentContractStatsWidget::class,
         ];
     }
 

@@ -140,6 +140,15 @@ class RecruitmentContractTranslationsSeeder extends Seeder
             'recruitment_contract.menu.expired_contracts' => ['en' => 'Expired Contracts', 'ar' => 'العقود المنتهية'],
             'recruitment_contract.menu.reports' => ['en' => 'Reports', 'ar' => 'التقارير'],
 
+            'recruitment_contract.stats.new' => ['en' => 'New Contracts', 'ar' => 'عقود جديدة'],
+            'recruitment_contract.stats.expired' => ['en' => 'Expired Contracts', 'ar' => 'العقود المنتهية'],
+            'recruitment_contract.stats.returned' => ['en' => 'Returned/Cancelled Contracts', 'ar' => 'عقود مسترجعة'],
+            'recruitment_contract.stats.warranty' => ['en' => 'Contracts in Warranty Period', 'ar' => 'عقود بفترة الضمان'],
+            'recruitment_contract.stats.rejected' => ['en' => 'Rejected Contracts', 'ar' => 'عقود مرفوضة'],
+            'recruitment_contract.stats.signed' => ['en' => 'Signed Contracts', 'ar' => 'عقود تم توقيع العقد'],
+            'recruitment_contract.stats.visa_issued' => ['en' => 'Visa Issued Contracts', 'ar' => 'عقود تم إصدار تأشيراتها'],
+            'recruitment_contract.stats.arrival_ticket_issued' => ['en' => 'Arrival Ticket Issued Contracts', 'ar' => 'عقود تم إصدار تذاكر الوصول'],
+
             'recruitment_contract.reports.total_contracts' => ['en' => 'Total Contracts', 'ar' => 'إجمالي العقود'],
             'recruitment_contract.reports.total_cost' => ['en' => 'Total Cost', 'ar' => 'إجمالي التكلفة'],
             'recruitment_contract.reports.paid_total' => ['en' => 'Paid Total', 'ar' => 'المبلغ المدفوع'],

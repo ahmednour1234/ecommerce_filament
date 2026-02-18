@@ -70,6 +70,14 @@ class RentalHousingRequestResource extends Resource
                             ->required()
                             ->columnSpan(1),
 
+                        Forms\Components\Select::make('status_id')
+                            ->label(tr('housing.requests.status', [], null, 'dashboard') ?: 'الحالة')
+                            ->relationship('status', 'name_ar', fn ($query) => $query->active()->ordered())
+                            ->searchable()
+                            ->placeholder(tr('housing.requests.select_status', [], null, 'dashboard') ?: 'Select option / اختر')
+                            ->nullable()
+                            ->columnSpan(1),
+
                         Forms\Components\Hidden::make('housing_type')
                             ->default('rental'),
 
@@ -119,6 +127,12 @@ class RentalHousingRequestResource extends Resource
                     ->formatStateUsing(fn ($state) => tr("housing.requests.type.{$state}", [], null, 'dashboard') ?: $state)
                     ->sortable(),
 
+                Tables\Columns\BadgeColumn::make('status.name_ar')
+                    ->label(tr('housing.requests.status', [], null, 'dashboard') ?: 'الحالة')
+                    ->color(fn ($record) => $record->status?->color ?? 'gray')
+                    ->sortable()
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('request_date')
                     ->label(tr('housing.requests.request_date', [], null, 'dashboard') ?: 'Request Date')
                     ->date()
@@ -141,6 +155,10 @@ class RentalHousingRequestResource extends Resource
                         'delivery' => tr('housing.requests.type.delivery', [], null, 'dashboard') ?: 'تسليم',
                         'return' => tr('housing.requests.type.return', [], null, 'dashboard') ?: 'استرجاع',
                     ]),
+
+                Tables\Filters\SelectFilter::make('status_id')
+                    ->label(tr('housing.requests.status', [], null, 'dashboard') ?: 'الحالة')
+                    ->relationship('status', 'name_ar', fn ($query) => $query->active()->ordered()),
 
                 Tables\Filters\Filter::make('request_date')
                     ->form([
