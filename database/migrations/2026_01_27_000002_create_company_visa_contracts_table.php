@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
+        Schema::dropIfExists('company_visa_contracts');
+
         Schema::create('company_visa_contracts', function (Blueprint $table) {
             $table->id();
             $table->string('contract_no')->unique();
