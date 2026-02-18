@@ -43,7 +43,6 @@ class Client extends Model
     ];
 
     protected $casts = [
-        'birth_date' => 'date',
         'marital_status' => 'string',
         'classification' => 'string',
         'housing_type' => 'string',

@@ -77,10 +77,11 @@ class RecruitmentContractResource extends Resource
                                     ->label(tr('general.clients.email', [], null, 'dashboard') ?: 'Email')
                                     ->email()
                                     ->maxLength(255),
-                                Forms\Components\DatePicker::make('birth_date')
-                                    ->label(tr('general.clients.birth_date', [], null, 'dashboard') ?: 'Birth Date')
+                                Forms\Components\TextInput::make('birth_date')
+                                    ->label(tr('general.clients.birth_date', [], null, 'dashboard') ?: 'تاريخ الميلاد')
                                     ->required()
-                                    ->native(false),
+                                    ->placeholder('هـ / / ')
+                                    ->helperText('أدخل التاريخ الهجري بصيغة: يوم/شهر/سنة (مثال: 15/03/1445)'),
                                 Forms\Components\Radio::make('marital_status')
                                     ->label(tr('general.clients.marital_status', [], null, 'dashboard') ?: 'Marital Status')
                                     ->required()
@@ -328,16 +329,20 @@ class RecruitmentContractResource extends Resource
                                 'sent_to_saudi_embassy' => tr('recruitment_contract.status.sent_to_saudi_embassy', [], null, 'dashboard') ?: 'تم الإرسال للسفارة السعودية',
                                 'visa_issued' => tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم إصدار التأشيرة',
                                 'arrived_in_saudi_arabia' => tr('recruitment_contract.status.arrived_in_saudi_arabia', [], null, 'dashboard') ?: 'وصل للمملكة العربية السعودية',
+                                'return_during_warranty' => tr('recruitment_contract.status.return_during_warranty', [], null, 'dashboard') ?: 'رجيع في فتره الضمان',
+                                'outside_kingdom_during_warranty' => tr('recruitment_contract.status.outside_kingdom_during_warranty', [], null, 'dashboard') ?: 'خارج المملكه في فتره الضمان',
+                                'labor_services_transfer' => tr('recruitment_contract.status.labor_services_transfer', [], null, 'dashboard') ?: 'نقل خدمات العماله',
+                                'runaway' => tr('recruitment_contract.status.runaway', [], null, 'dashboard') ?: 'هروب',
                                 'rejected' => tr('recruitment_contract.status.rejected', [], null, 'dashboard') ?: 'مرفوض',
                                 'cancelled' => tr('recruitment_contract.status.cancelled', [], null, 'dashboard') ?: 'ملغي',
                                 'visa_cancelled' => tr('recruitment_contract.status.visa_cancelled', [], null, 'dashboard') ?: 'إلغاء التأشيرة',
                                 'outside_kingdom' => tr('recruitment_contract.status.outside_kingdom', [], null, 'dashboard') ?: 'خارج المملكة',
-                                'processing' => tr('recruitment_contract.status.processing', [], null, 'dashboard') ?: 'Processing',
-                                'contract_signed' => tr('recruitment_contract.status.contract_signed', [], null, 'dashboard') ?: 'Contract Signed',
-                                'ticket_booked' => tr('recruitment_contract.status.ticket_booked', [], null, 'dashboard') ?: 'Ticket Booked',
-                                'worker_received' => tr('recruitment_contract.status.worker_received', [], null, 'dashboard') ?: 'Worker Received',
-                                'closed' => tr('recruitment_contract.status.closed', [], null, 'dashboard') ?: 'Closed',
-                                'returned' => tr('recruitment_contract.status.returned', [], null, 'dashboard') ?: 'Returned',
+                                'processing' => tr('recruitment_contract.status.processing', [], null, 'dashboard') ?: 'قيد المعالجة',
+                                'contract_signed' => tr('recruitment_contract.status.contract_signed', [], null, 'dashboard') ?: 'تم توقيع العقد',
+                                'ticket_booked' => tr('recruitment_contract.status.ticket_booked', [], null, 'dashboard') ?: 'تم حجز التذكرة',
+                                'worker_received' => tr('recruitment_contract.status.worker_received', [], null, 'dashboard') ?: 'تم استلام العمالة',
+                                'closed' => tr('recruitment_contract.status.closed', [], null, 'dashboard') ?: 'مغلق',
+                                'returned' => tr('recruitment_contract.status.returned', [], null, 'dashboard') ?: 'مرتجع',
                             ])
                             ->required()
                             ->default('new')
@@ -401,9 +406,9 @@ class RecruitmentContractResource extends Resource
                     ->color(fn (string $state): string => match ($state) {
                         'new' => 'primary',
                         'foreign_embassy_approval', 'external_sending_office_approval', 'foreign_labor_ministry_approval', 'contract_signed' => 'info',
-                        'accepted_by_external_sending_office', 'accepted_by_foreign_labor_ministry', 'visa_issued', 'arrived_in_saudi_arabia', 'ticket_booked', 'worker_received' => 'success',
-                        'sent_to_saudi_embassy', 'outside_kingdom', 'processing' => 'warning',
-                        'rejected', 'visa_cancelled', 'returned' => 'danger',
+                        'accepted_by_external_sending_office', 'accepted_by_foreign_labor_ministry', 'visa_issued', 'arrived_in_saudi_arabia', 'ticket_booked', 'worker_received', 'labor_services_transfer' => 'success',
+                        'sent_to_saudi_embassy', 'outside_kingdom', 'processing', 'return_during_warranty', 'outside_kingdom_during_warranty' => 'warning',
+                        'rejected', 'visa_cancelled', 'returned', 'runaway' => 'danger',
                         'cancelled', 'closed' => 'gray',
                         default => 'gray',
                     })
@@ -450,14 +455,18 @@ class RecruitmentContractResource extends Resource
                         'sent_to_saudi_embassy' => tr('recruitment_contract.status.sent_to_saudi_embassy', [], null, 'dashboard') ?: 'تم الإرسال للسفارة السعودية',
                         'visa_issued' => tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم إصدار التأشيرة',
                         'arrived_in_saudi_arabia' => tr('recruitment_contract.status.arrived_in_saudi_arabia', [], null, 'dashboard') ?: 'وصل للمملكة العربية السعودية',
+                        'return_during_warranty' => tr('recruitment_contract.status.return_during_warranty', [], null, 'dashboard') ?: 'رجيع في فتره الضمان',
+                        'outside_kingdom_during_warranty' => tr('recruitment_contract.status.outside_kingdom_during_warranty', [], null, 'dashboard') ?: 'خارج المملكه في فتره الضمان',
+                        'labor_services_transfer' => tr('recruitment_contract.status.labor_services_transfer', [], null, 'dashboard') ?: 'نقل خدمات العماله',
+                        'runaway' => tr('recruitment_contract.status.runaway', [], null, 'dashboard') ?: 'هروب',
                         'rejected' => tr('recruitment_contract.status.rejected', [], null, 'dashboard') ?: 'مرفوض',
                         'cancelled' => tr('recruitment_contract.status.cancelled', [], null, 'dashboard') ?: 'ملغي',
                         'visa_cancelled' => tr('recruitment_contract.status.visa_cancelled', [], null, 'dashboard') ?: 'إلغاء التأشيرة',
                         'outside_kingdom' => tr('recruitment_contract.status.outside_kingdom', [], null, 'dashboard') ?: 'خارج المملكة',
-                        'processing' => tr('recruitment_contract.status.processing', [], null, 'dashboard') ?: 'Processing',
-                        'contract_signed' => tr('recruitment_contract.status.contract_signed', [], null, 'dashboard') ?: 'Contract Signed',
-                        'ticket_booked' => tr('recruitment_contract.status.ticket_booked', [], null, 'dashboard') ?: 'Ticket Booked',
-                        'worker_received' => tr('recruitment_contract.status.worker_received', [], null, 'dashboard') ?: 'Worker Received',
+                        'processing' => tr('recruitment_contract.status.processing', [], null, 'dashboard') ?: 'قيد المعالجة',
+                        'contract_signed' => tr('recruitment_contract.status.contract_signed', [], null, 'dashboard') ?: 'تم توقيع العقد',
+                        'ticket_booked' => tr('recruitment_contract.status.ticket_booked', [], null, 'dashboard') ?: 'تم حجز التذكرة',
+                        'worker_received' => tr('recruitment_contract.status.worker_received', [], null, 'dashboard') ?: 'تم استلام العمالة',
                         'closed' => tr('recruitment_contract.status.closed', [], null, 'dashboard') ?: 'Closed',
                         'returned' => tr('recruitment_contract.status.returned', [], null, 'dashboard') ?: 'Returned',
                     ]),

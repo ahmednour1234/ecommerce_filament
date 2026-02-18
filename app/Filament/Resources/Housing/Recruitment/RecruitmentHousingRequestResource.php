@@ -60,6 +60,7 @@ class RecruitmentHousingRequestResource extends Resource
                             ->options([
                                 'delivery' => tr('housing.requests.type.delivery', [], null, 'dashboard') ?: 'تسليم',
                                 'return' => tr('housing.requests.type.return', [], null, 'dashboard') ?: 'استرجاع',
+                                'new_arrival' => tr('housing.requests.type.new_arrival', [], null, 'dashboard') ?: 'وافد جديد',
                             ])
                             ->required()
                             ->default('delivery')
@@ -122,6 +123,7 @@ class RecruitmentHousingRequestResource extends Resource
                     ->color(fn (string $state): string => match ($state) {
                         'delivery' => 'success',
                         'return' => 'warning',
+                        'new_arrival' => 'info',
                         default => 'gray',
                     })
                     ->formatStateUsing(fn ($state) => tr("housing.requests.type.{$state}", [], null, 'dashboard') ?: $state)
@@ -154,6 +156,7 @@ class RecruitmentHousingRequestResource extends Resource
                     ->options([
                         'delivery' => tr('housing.requests.type.delivery', [], null, 'dashboard') ?: 'تسليم',
                         'return' => tr('housing.requests.type.return', [], null, 'dashboard') ?: 'استرجاع',
+                        'new_arrival' => tr('housing.requests.type.new_arrival', [], null, 'dashboard') ?: 'وافد جديد',
                     ]),
 
                 Tables\Filters\SelectFilter::make('status_id')

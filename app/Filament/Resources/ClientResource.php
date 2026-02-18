@@ -73,10 +73,11 @@ class ClientResource extends Resource
                             ->maxLength(255)
                             ->columnSpan(1),
 
-                        Forms\Components\DatePicker::make('birth_date')
-                            ->label(tr('general.clients.birth_date', [], null, 'dashboard') ?: 'Birth Date')
+                        Forms\Components\TextInput::make('birth_date')
+                            ->label(tr('general.clients.birth_date', [], null, 'dashboard') ?: 'تاريخ الميلاد')
                             ->required()
-                            ->native(false)
+                            ->placeholder('هـ / / ')
+                            ->helperText('أدخل التاريخ الهجري بصيغة: يوم/شهر/سنة (مثال: 15/03/1445)')
                             ->columnSpan(1),
 
                         Forms\Components\Radio::make('marital_status')

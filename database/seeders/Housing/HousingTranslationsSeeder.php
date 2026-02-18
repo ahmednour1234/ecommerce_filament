@@ -86,6 +86,7 @@ class HousingTranslationsSeeder extends Seeder
             'housing.requests.actions' => ['en' => 'Actions', 'ar' => 'الإجراءات'],
             'housing.requests.type.delivery' => ['en' => 'Delivery', 'ar' => 'تسليم'],
             'housing.requests.type.return' => ['en' => 'Return', 'ar' => 'استرجاع'],
+            'housing.requests.type.new_arrival' => ['en' => 'New Arrival', 'ar' => 'وافد جديد'],
             'housing.requests.status' => ['en' => 'Status', 'ar' => 'الحالة'],
             'housing.requests.select_status' => ['en' => 'Select option / اختر', 'ar' => 'Select option / اختر'],
 
