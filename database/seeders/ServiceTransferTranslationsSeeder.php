@@ -68,6 +68,20 @@ class ServiceTransferTranslationsSeeder extends Seeder
             'general.archived' => ['en' => 'Archived', 'ar' => 'مؤرشف'],
             'general.created_at' => ['en' => 'Created At', 'ar' => 'تاريخ الإنشاء'],
             'general.created_by' => ['en' => 'Created By', 'ar' => 'أنشئ بواسطة'],
+            'service_transfer.payments' => ['en' => 'Payments', 'ar' => 'المدفوعات'],
+            'service_transfer.documents' => ['en' => 'Documents', 'ar' => 'الوثائق'],
+            'service_transfer.financial_documents' => ['en' => 'Financial Documents', 'ar' => 'الوثائق المالية'],
+            'service_transfer.upload_document' => ['en' => 'Upload Document', 'ar' => 'رفع وثيقة'],
+            'service_transfer.add_payment' => ['en' => 'Add Payment', 'ar' => 'إضافة دفعة'],
+            'service_transfer.print_invoice' => ['en' => 'Print Invoice', 'ar' => 'طباعة الفاتورة'],
+            'service_transfer.print_receipt' => ['en' => 'Print Receipt', 'ar' => 'طباعة إيصال'],
+            'service_transfer.payment_status' => ['en' => 'Payment Status', 'ar' => 'حالة الدفع'],
+            'service_transfer.paid' => ['en' => 'Paid', 'ar' => 'مدفوع'],
+            'service_transfer.partial' => ['en' => 'Partial', 'ar' => 'جزئي'],
+            'service_transfer.pending' => ['en' => 'Pending', 'ar' => 'قيد الانتظار'],
+            'service_transfer.from_account' => ['en' => 'From Account', 'ar' => 'من حساب'],
+            'service_transfer.to_account' => ['en' => 'To Account', 'ar' => 'إلى حساب'],
+            'service_transfer.reference' => ['en' => 'Reference', 'ar' => 'المرجع'],
         ];
 
         $langDir = public_path('lang');

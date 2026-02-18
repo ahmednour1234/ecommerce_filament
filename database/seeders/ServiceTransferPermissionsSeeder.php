@@ -25,7 +25,7 @@ class ServiceTransferPermissionsSeeder extends Seeder
             $permissions[] = $permission;
         }
 
-        $paymentActions = ['create', 'delete'];
+        $paymentActions = ['create', 'view', 'delete'];
         foreach ($paymentActions as $action) {
             $permName = "service_transfer.payments.{$action}";
 
@@ -35,6 +35,22 @@ class ServiceTransferPermissionsSeeder extends Seeder
 
             $permissions[] = $permission;
         }
+
+        $documentActions = ['upload', 'delete'];
+        foreach ($documentActions as $action) {
+            $permName = "service_transfers.documents.{$action}";
+
+            $permission = Permission::firstOrCreate(
+                ['name' => $permName, 'guard_name' => 'web']
+            );
+
+            $permissions[] = $permission;
+        }
+
+        $printPermission = Permission::firstOrCreate(
+            ['name' => 'service_transfers.print', 'guard_name' => 'web']
+        );
+        $permissions[] = $printPermission;
 
         $reportActions = ['view', 'export'];
         foreach ($reportActions as $action) {
@@ -69,13 +85,28 @@ class ServiceTransferPermissionsSeeder extends Seeder
             return in_array($perm->name, [
                 'service_transfer.view',
                 'service_transfer.payments.create',
+                'service_transfer.payments.view',
                 'service_transfer.payments.delete',
                 'service_transfer.reports.view',
                 'service_transfer.reports.export',
+                'service_transfers.print',
             ]);
         });
         $accountantRole->givePermissionTo($accountantPermissions);
         $this->command->info('✓ Service transfer view, payments, and reports permissions assigned to Accountant role');
+
+        $financeManagerRole = Role::firstOrCreate(['name' => 'Finance Manager', 'guard_name' => 'web']);
+        $financeManagerPermissions = array_filter($permissions, function ($perm) {
+            return in_array($perm->name, [
+                'service_transfer.view',
+                'service_transfer.payments.create',
+                'service_transfer.payments.view',
+                'service_transfers.documents.upload',
+                'service_transfers.print',
+            ]);
+        });
+        $financeManagerRole->givePermissionTo($financeManagerPermissions);
+        $this->command->info('✓ Service transfer permissions assigned to Finance Manager role');
 
         $viewerRole = Role::firstOrCreate(['name' => 'Viewer', 'guard_name' => 'web']);
         $viewerPermissions = array_filter($permissions, function ($perm) {

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Accounting\Account;
 use App\Models\MainCore\PaymentMethod;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -15,6 +16,9 @@ class ServiceTransferPayment extends Model
         'payment_no',
         'payment_date',
         'payment_method_id',
+        'from_account_id',
+        'to_account_id',
+        'reference',
         'amount',
         'notes',
         'created_by',
@@ -23,6 +27,8 @@ class ServiceTransferPayment extends Model
     protected $casts = [
         'payment_date' => 'date',
         'amount' => 'decimal:2',
+        'from_account_id' => 'integer',
+        'to_account_id' => 'integer',
     ];
 
     protected static function boot()
@@ -81,5 +87,15 @@ class ServiceTransferPayment extends Model
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function fromAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'from_account_id');
+    }
+
+    public function toAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'to_account_id');
     }
 }

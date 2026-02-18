@@ -118,7 +118,7 @@ class ServiceTransfer extends Model
         $totalAmount = $transfer->total_amount;
 
         if ($totalPaid == 0) {
-            $paymentStatus = 'unpaid';
+            $paymentStatus = 'pending';
         } elseif ($totalPaid < $totalAmount) {
             $paymentStatus = 'partial';
         } else {
@@ -166,6 +166,21 @@ class ServiceTransfer extends Model
         return $this->hasMany(ServiceTransferPayment::class, 'transfer_id');
     }
 
+    public function documents(): HasMany
+    {
+        return $this->hasMany(ServiceTransferDocument::class);
+    }
+
+    public function totalPaid(): float
+    {
+        return (float) $this->payments()->sum('amount');
+    }
+
+    public function remainingAmount(): float
+    {
+        return max(0, $this->total_amount - $this->totalPaid());
+    }
+
     public function scopeActive($query)
     {
         return $query->where('request_status', 'active');
@@ -184,6 +199,11 @@ class ServiceTransfer extends Model
     public function scopeUnpaid($query)
     {
         return $query->where('payment_status', 'unpaid');
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('payment_status', 'pending');
     }
 
     public function scopePartial($query)

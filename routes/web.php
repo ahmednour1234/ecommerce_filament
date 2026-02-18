@@ -62,6 +62,13 @@ Route::middleware(['web', 'auth'])->group(function () {
         $service = app(\App\Services\Rental\RentalContractPrintService::class);
         return $service->invoicePdf($contract)->download("invoice_{$contract->contract_no}.pdf");
     })->name('rental.contracts.invoice');
+
+    // Service Transfer PDF Routes
+    Route::get('/service-transfers/{id}/invoice', [App\Http\Controllers\ServiceTransfer\ServiceTransferPrintController::class, 'printInvoice'])
+        ->name('service-transfers.invoice');
+
+    Route::get('/service-transfers/payments/{paymentId}/receipt', [App\Http\Controllers\ServiceTransfer\ServiceTransferPrintController::class, 'printReceipt'])
+        ->name('service-transfers.payments.receipt');
 });
 
 Route::middleware(['web', 'auth'])

@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources\ServiceTransfer\ServiceTransferResource\RelationManagers;
 
+use App\Models\Accounting\Account;
 use App\Models\ServiceTransfer;
 use App\Models\ServiceTransferPayment;
 use App\Models\MainCore\PaymentMethod;
+use App\Services\ServiceTransfer\ServiceTransferPaymentService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -38,6 +40,34 @@ class PaymentsRelationManager extends RelationManager
                     ->required()
                     ->searchable(),
 
+                Forms\Components\Select::make('from_account_id')
+                    ->label('من حساب')
+                    ->options(function () {
+                        return Account::active()
+                            ->where('type', 'asset')
+                            ->get()
+                            ->pluck('full_path', 'id')
+                            ->toArray();
+                    })
+                    ->searchable()
+                    ->preload(),
+
+                Forms\Components\Select::make('to_account_id')
+                    ->label('إلى حساب')
+                    ->options(function () {
+                        return Account::active()
+                            ->where('type', 'asset')
+                            ->get()
+                            ->pluck('full_path', 'id')
+                            ->toArray();
+                    })
+                    ->searchable()
+                    ->preload(),
+
+                Forms\Components\TextInput::make('reference')
+                    ->label('المرجع')
+                    ->maxLength(255),
+
                 Forms\Components\TextInput::make('amount')
                     ->label('المبلغ')
                     ->numeric()
@@ -70,6 +100,24 @@ class PaymentsRelationManager extends RelationManager
                     ->searchable()
                     ->sortable(),
 
+                Tables\Columns\TextColumn::make('fromAccount.code')
+                    ->label('من حساب')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('toAccount.code')
+                    ->label('إلى حساب')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('reference')
+                    ->label('المرجع')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+
                 Tables\Columns\TextColumn::make('amount')
                     ->label('المبلغ')
                     ->money('SAR')
@@ -101,16 +149,20 @@ class PaymentsRelationManager extends RelationManager
                         $data['transfer_id'] = $livewire->ownerRecord->id;
                         return $data;
                     })
-                    ->after(function (ServiceTransferPayment $payment) {
-                        $transfer = $payment->transfer;
-                        if ($transfer) {
-                            ServiceTransfer::recalculatePaymentStatus($transfer);
-                        }
+                    ->using(function (array $data, RelationManager $livewire): Model {
+                        $service = app(ServiceTransferPaymentService::class);
+                        return $service->createPayment($data);
                     })
                     ->visible(fn () => auth()->user()?->can('service_transfer.payments.create') ?? false),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('print_receipt')
+                    ->label('طباعة إيصال')
+                    ->icon('heroicon-o-printer')
+                    ->url(fn (ServiceTransferPayment $record): string => route('service-transfers.payments.receipt', $record->id))
+                    ->openUrlInNewTab()
+                    ->visible(fn () => auth()->user()?->can('service_transfers.print') ?? false),
                 Tables\Actions\DeleteAction::make()
                     ->after(function (ServiceTransferPayment $payment) {
                         $transfer = $payment->transfer;

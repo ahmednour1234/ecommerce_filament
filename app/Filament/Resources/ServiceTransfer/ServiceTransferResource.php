@@ -291,13 +291,14 @@ class ServiceTransferResource extends Resource
                     ->label('حالة الدفع')
                     ->colors([
                         'success' => 'paid',
-                        'danger' => 'unpaid',
+                        'danger' => fn ($state) => in_array($state, ['unpaid', 'pending']),
                         'warning' => 'partial',
                         'gray' => 'refunded',
                     ])
                     ->formatStateUsing(fn ($state) => match($state) {
                         'paid' => 'مدفوع',
                         'unpaid' => 'غير مدفوع',
+                        'pending' => 'قيد الانتظار',
                         'partial' => 'جزئي',
                         'refunded' => 'مسترد',
                         default => $state,
@@ -326,6 +327,7 @@ class ServiceTransferResource extends Resource
                 Tables\Filters\SelectFilter::make('payment_status')
                     ->label('حالة الدفع')
                     ->options([
+                        'pending' => 'قيد الانتظار',
                         'unpaid' => 'غير مدفوع',
                         'partial' => 'جزئي',
                         'paid' => 'مدفوع',
@@ -393,6 +395,7 @@ class ServiceTransferResource extends Resource
     {
         return [
             RelationManagers\PaymentsRelationManager::class,
+            RelationManagers\DocumentsRelationManager::class,
         ];
     }
 

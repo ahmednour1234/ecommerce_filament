@@ -19,7 +19,7 @@ class ServiceTransferPaymentPolicy
 
     public function create(User $user): bool
     {
-        return $user->can('service_transfer.payments.create');
+        return $user->hasRole('Finance') || $user->can('service_transfer.payments.create');
     }
 
     public function update(User $user, ServiceTransferPayment $payment): bool
@@ -29,6 +29,6 @@ class ServiceTransferPaymentPolicy
 
     public function delete(User $user, ServiceTransferPayment $payment): bool
     {
-        return $user->can('service_transfer.payments.delete');
+        return $user->hasRole('Admin') || $user->hasRole('super_admin');
     }
 }

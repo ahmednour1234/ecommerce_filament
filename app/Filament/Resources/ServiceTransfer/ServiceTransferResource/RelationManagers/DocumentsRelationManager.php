@@ -1,0 +1,126 @@
+<?php
+
+namespace App\Filament\Resources\ServiceTransfer\ServiceTransferResource\RelationManagers;
+
+use App\Models\ServiceTransferDocument;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Support\Facades\Storage;
+
+class DocumentsRelationManager extends RelationManager
+{
+    protected static string $relationship = 'documents';
+
+    protected static ?string $title = 'الوثائق';
+
+    public function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\FileUpload::make('file_path')
+                    ->label('الملف')
+                    ->disk('public')
+                    ->directory('service_transfers/documents')
+                    ->acceptedFileTypes(['image/*', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'])
+                    ->maxSize(10240)
+                    ->required()
+                    ->downloadable()
+                    ->previewable()
+                    ->openable()
+                    ->deletable()
+                    ->afterStateUpdated(function ($state, callable $set, $record) {
+                        if ($state && is_array($state) && !empty($state)) {
+                            $filePath = is_array($state) ? $state[0] : $state;
+                            $fileName = basename($filePath);
+                            $fileType = pathinfo($fileName, PATHINFO_EXTENSION);
+                            
+                            $set('file_name', $fileName);
+                            $set('file_type', $fileType);
+                        }
+                    }),
+
+                Forms\Components\Hidden::make('file_name'),
+                Forms\Components\Hidden::make('file_type'),
+            ]);
+    }
+
+    public function table(Table $table): Table
+    {
+        return $table
+            ->recordTitleAttribute('file_name')
+            ->columns([
+                Tables\Columns\TextColumn::make('file_name')
+                    ->label('اسم الملف')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('file_type')
+                    ->label('نوع الملف')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('uploadedBy.name')
+                    ->label('رفع بواسطة')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('تاريخ الرفع')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(),
+            ])
+            ->filters([
+                //
+            ])
+            ->headerActions([
+                Tables\Actions\CreateAction::make()
+                    ->mutateFormDataUsing(function (array $data, RelationManager $livewire): array {
+                        $data['service_transfer_id'] = $livewire->ownerRecord->id;
+                        $data['uploaded_by'] = auth()->id();
+                        
+                        if (isset($data['file_path']) && is_array($data['file_path']) && !empty($data['file_path'])) {
+                            $filePath = $data['file_path'][0];
+                            $data['file_path'] = $filePath;
+                            $data['file_name'] = $data['file_name'] ?? basename($filePath);
+                            $data['file_type'] = $data['file_type'] ?? pathinfo($data['file_name'], PATHINFO_EXTENSION);
+                        }
+                        
+                        return $data;
+                    })
+                    ->visible(fn () => auth()->user()?->can('service_transfers.documents.upload') ?? false),
+            ])
+            ->actions([
+                Tables\Actions\Action::make('download')
+                    ->label('تحميل')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->url(fn (ServiceTransferDocument $record): string => Storage::disk('public')->url($record->file_path))
+                    ->openUrlInNewTab()
+                    ->visible(fn () => auth()->user()?->can('service_transfers.documents.view') ?? false),
+
+                Tables\Actions\DeleteAction::make()
+                    ->after(function (ServiceTransferDocument $record) {
+                        if ($record->file_path) {
+                            Storage::disk('public')->delete($record->file_path);
+                        }
+                    })
+                    ->visible(fn () => auth()->user()?->can('service_transfers.documents.delete') ?? false),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->after(function ($records) {
+                            foreach ($records as $record) {
+                                if ($record->file_path) {
+                                    Storage::disk('public')->delete($record->file_path);
+                                }
+                            }
+                        }),
+                ]),
+            ]);
+    }
+}
