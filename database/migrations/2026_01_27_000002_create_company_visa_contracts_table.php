@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('visa_request_id')->nullable();
             $table->unsignedBigInteger('agent_id')->nullable();
             $table->unsignedBigInteger('profession_id')->nullable();
-            $table->unsignedBigInteger('country_id')->nullable();
+            $table->unsignedInteger('country_id')->nullable();
             $table->unsignedInteger('workers_required');
             $table->unsignedInteger('linked_workers_count')->default(0);
             $table->enum('status', ['draft', 'active', 'completed', 'cancelled'])->default('draft')->index();
