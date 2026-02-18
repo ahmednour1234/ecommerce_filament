@@ -14,7 +14,8 @@ class RecruitmentContractStatsWidget extends BaseWidget
     {
         $baseQuery = $this->getBaseQuery();
         $baseUrl = RecruitmentContractResource::getUrl('index');
-        $publicUrl = '/public' . $baseUrl;
+        // Extract path from URL if it's a full URL
+        $publicUrl = $this->normalizeUrl($baseUrl);
 
         $currentFilters = $this->getCurrentFilters();
 
@@ -200,6 +201,28 @@ class RecruitmentContractStatsWidget extends BaseWidget
         }
 
         return $filters;
+    }
+
+    protected function normalizeUrl(string $url): string
+    {
+        // If it's already a full URL, extract just the path
+        if (str_starts_with($url, 'http://') || str_starts_with($url, 'https://')) {
+            $parsed = parse_url($url);
+            $path = $parsed['path'] ?? '/';
+            // Remove /public if it's already in the path
+            if (str_starts_with($path, '/public')) {
+                return $path;
+            }
+            return '/public' . $path;
+        }
+        
+        // If it's already a relative path starting with /public, return as is
+        if (str_starts_with($url, '/public')) {
+            return $url;
+        }
+        
+        // Otherwise, prepend /public
+        return '/public' . $url;
     }
 
     protected function buildUrl(string $baseUrl, array $filters): string
