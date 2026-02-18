@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Housing\Rental;
 
+use App\Enums\HousingRequestStatus;
 use App\Filament\Resources\Housing\Rental\RentalHousingRequestResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
 use Filament\Forms;
@@ -70,9 +71,9 @@ class RentalHousingRequestResource extends Resource
                             ->required()
                             ->columnSpan(1),
 
-                        Forms\Components\Select::make('status_id')
+                        Forms\Components\Select::make('status')
                             ->label(tr('housing.requests.status', [], null, 'dashboard') ?: 'الحالة')
-                            ->relationship('status', 'name_ar', fn ($query) => $query->active()->ordered())
+                            ->options(HousingRequestStatus::options())
                             ->searchable()
                             ->placeholder(tr('housing.requests.select_status', [], null, 'dashboard') ?: 'Select option / اختر')
                             ->nullable()
@@ -127,9 +128,10 @@ class RentalHousingRequestResource extends Resource
                     ->formatStateUsing(fn ($state) => tr("housing.requests.type.{$state}", [], null, 'dashboard') ?: $state)
                     ->sortable(),
 
-                Tables\Columns\BadgeColumn::make('status.name_ar')
+                Tables\Columns\BadgeColumn::make('status')
                     ->label(tr('housing.requests.status', [], null, 'dashboard') ?: 'الحالة')
-                    ->color(fn ($record) => $record->status?->color ?? 'gray')
+                    ->color(fn ($state) => $state ? HousingRequestStatus::getColor($state) : 'gray')
+                    ->formatStateUsing(fn ($state) => $state ? HousingRequestStatus::getLabel($state) : '-')
                     ->sortable()
                     ->searchable(),
 
@@ -156,9 +158,9 @@ class RentalHousingRequestResource extends Resource
                         'return' => tr('housing.requests.type.return', [], null, 'dashboard') ?: 'استرجاع',
                     ]),
 
-                Tables\Filters\SelectFilter::make('status_id')
+                Tables\Filters\SelectFilter::make('status')
                     ->label(tr('housing.requests.status', [], null, 'dashboard') ?: 'الحالة')
-                    ->relationship('status', 'name_ar', fn ($query) => $query->active()->ordered()),
+                    ->options(HousingRequestStatus::options()),
 
                 Tables\Filters\Filter::make('request_date')
                     ->form([
@@ -184,7 +186,7 @@ class RentalHousingRequestResource extends Resource
                     ->icon('heroicon-o-check')
                     ->color('success')
                     ->requiresConfirmation()
-                    ->action(fn ($record) => $record->update(['status_id' => 1])),
+                    ->action(fn ($record) => $record->update(['status' => \App\Enums\HousingRequestStatus::COMPLETED])),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
