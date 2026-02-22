@@ -64,12 +64,16 @@ class CommonTermsSeeder extends Seeder
 
             // Common Labels
             'common.name' => ['en' => 'Name', 'ar' => 'الاسم'],
+            'common.name_ar' => ['en' => 'Name (Arabic)', 'ar' => 'الاسم بالعربية'],
+            'common.name_en' => ['en' => 'Name (English)', 'ar' => 'الاسم بالإنجليزية'],
             'common.title' => ['en' => 'Title', 'ar' => 'العنوان'],
             'common.description' => ['en' => 'Description', 'ar' => 'الوصف'],
             'common.code' => ['en' => 'Code', 'ar' => 'الرمز'],
             'common.status' => ['en' => 'Status', 'ar' => 'الحالة'],
             'common.type' => ['en' => 'Type', 'ar' => 'النوع'],
             'common.category' => ['en' => 'Category', 'ar' => 'الفئة'],
+            'common.branch' => ['en' => 'Branch', 'ar' => 'الفرع'],
+            'common.address' => ['en' => 'Address', 'ar' => 'العنوان'],
             'common.notes' => ['en' => 'Notes', 'ar' => 'ملاحظات'],
             'common.remarks' => ['en' => 'Remarks', 'ar' => 'ملاحظات'],
 
