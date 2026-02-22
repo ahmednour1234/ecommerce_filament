@@ -234,35 +234,16 @@ return [
             'badge' => null,
             'children' => [
                 [
-                    'title' => 'sidebar.rental_housing.dashboard',
-                    'icon' => 'heroicon-o-home',
-                    'url' => fn() => \App\Filament\Pages\Housing\Rental\RentalHousingDashboardPage::getUrl(),
-                    'permission' => 'housing.dashboard.view',
-                ],
-                [
                     'title' => 'sidebar.rental_housing.laborers_list',
                     'icon' => 'heroicon-o-user-group',
                     'url' => fn() => LaborerResource::getUrl(),
                     'permission' => 'laborers.view_any',
                 ],
                 [
-                    'title' => 'sidebar.rental_housing.housing_requests',
-                    'icon' => 'heroicon-o-clipboard-document-list',
-                    'url' => fn() => \App\Filament\Resources\Housing\Rental\RentalHousingRequestResource::getUrl(),
-                    'permission' => 'housing.requests.view_any',
-                    'badge' => 'housing_requests_count',
-                ],
-                [
                     'title' => 'sidebar.rental_housing.accommodation_entries',
                     'icon' => 'heroicon-o-building-office',
                     'url' => fn() => \App\Filament\Pages\Housing\Rental\RentalAccommodationEntryPage::getUrl(),
                     'permission' => 'housing.accommodation_entries.create',
-                ],
-                [
-                    'title' => 'sidebar.rental_housing.reports',
-                    'icon' => 'heroicon-o-chart-bar',
-                    'url' => fn() => \App\Filament\Pages\Housing\Rental\RentalHousingReportsPage::getUrl(),
-                    'permission' => 'housing.reports.view',
                 ],
             ],
         ],
