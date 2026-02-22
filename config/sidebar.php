@@ -131,12 +131,6 @@ return [
                             'url' => fn() => RecruitmentContractResource::getUrl(),
                             'permission' => 'recruitment_contracts.view_any',
                         ],
-                        [
-                            'title' => 'sidebar.recruitment_contracts.add_contract',
-                            'icon' => 'heroicon-o-plus-circle',
-                            'url' => fn() => RecruitmentContractResource::getUrl('create'),
-                            'permission' => 'recruitment_contracts.create',
-                        ],
             ],
         ],
         [
