@@ -392,7 +392,12 @@ class RecruitmentContractResource extends Resource
                 Tables\Columns\TextColumn::make('client.name_ar')
                     ->label(tr('recruitment_contract.fields.client', [], null, 'dashboard') ?: 'Client')
                     ->formatStateUsing(fn ($state, $record) => app()->getLocale() === 'ar' ? $record->client->name_ar : $record->client->name_en)
-                    ->searchable()
+                    ->searchable(query: function ($query, string $search): \Illuminate\Database\Eloquent\Builder {
+                        return $query->whereHas('client', function ($q) use ($search) {
+                            $q->where('name_ar', 'like', "%{$search}%")
+                              ->orWhere('name_en', 'like', "%{$search}%");
+                        });
+                    })
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('branch.name')
@@ -428,7 +433,20 @@ class RecruitmentContractResource extends Resource
                 Tables\Columns\TextColumn::make('total_cost')
                     ->label(tr('recruitment_contract.fields.total_cost', [], null, 'dashboard') ?: 'Total Cost')
                     ->money('SAR')
+                    ->searchable()
                     ->sortable(),
+
+                Tables\Columns\TextColumn::make('visa_no')
+                    ->label(tr('recruitment_contract.fields.visa_no', [], null, 'dashboard') ?: 'Visa No')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('musaned_contract_no')
+                    ->label(tr('recruitment_contract.fields.musaned_contract_no', [], null, 'dashboard') ?: 'Musaned Contract No')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(tr('common.created_at', [], null, 'dashboard') ?: 'Created At')
