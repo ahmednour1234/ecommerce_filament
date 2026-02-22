@@ -176,13 +176,24 @@ class AdminPanelProvider extends PanelProvider
 <style>
 /* -------------------------------------------------------
    1) Hide Filament table search (prefer disabling per Resource)
+   Exception: Show search for recruitment contracts
 -------------------------------------------------------- */
-.fi-ta-search-field,
-.fi-ta-header-actions .fi-input-wrp input[type="search"],
-.fi-ta-header-actions input[type="search"],
-.fi-ta-header-actions input[placeholder*="Search"],
-.fi-ta-header-actions input[placeholder*="بحث"] {
+.fi-ta-search-field:not(.show-search),
+.fi-ta-header-actions .fi-input-wrp input[type="search"]:not(.show-search),
+.fi-ta-header-actions input[type="search"]:not(.show-search),
+.fi-ta-header-actions input[placeholder*="Search"]:not(.show-search),
+.fi-ta-header-actions input[placeholder*="بحث"]:not(.show-search) {
     display: none !important;
+}
+
+/* Show search for recruitment contracts and other resources that need it */
+body:has([href*="recruitment-contracts"]) .fi-ta-search-field,
+body:has([href*="recruitment-contracts"]) .fi-ta-header-actions .fi-input-wrp input[type="search"],
+body:has([href*="recruitment-contracts"]) .fi-ta-header-actions input[type="search"],
+.fi-ta-search-field.show-search,
+.fi-ta-header-actions .fi-input-wrp input[type="search"].show-search,
+.fi-ta-header-actions input[type="search"].show-search {
+    display: block !important;
 }
 
 /* -------------------------------------------------------

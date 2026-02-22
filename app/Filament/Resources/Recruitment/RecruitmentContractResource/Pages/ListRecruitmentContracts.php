@@ -10,6 +10,7 @@ use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use Filament\Notifications\Notification;
+use Filament\Support\Enums\MaxWidth;
 
 class ListRecruitmentContracts extends ListRecords
 {
@@ -112,5 +113,20 @@ class ListRecruitmentContracts extends ListRecords
                 ->danger()
                 ->send();
         }
+    }
+
+    protected function getHeader(): ?\Illuminate\Contracts\Support\Htmlable
+    {
+        return parent::getHeader();
+    }
+
+    public function mount(): void
+    {
+        parent::mount();
+        
+        \Filament\Support\Facades\FilamentView::registerRenderHook(
+            \Filament\View\PanelsRenderHook::HEAD_END,
+            fn () => view('filament.components.recruitment-contracts-search-style')
+        );
     }
 }
