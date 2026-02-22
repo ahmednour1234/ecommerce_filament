@@ -218,12 +218,6 @@ return [
                     'url' => fn() => \App\Filament\Pages\Housing\Recruitment\RecruitmentAccommodationEntryPage::getUrl(),
                     'permission' => 'housing.accommodation_entries.create',
                 ],
-                [
-                    'title' => 'sidebar.recruitment_housing.reports',
-                    'icon' => 'heroicon-o-chart-bar',
-                    'url' => fn() => \App\Filament\Pages\Housing\Recruitment\RecruitmentHousingReportsPage::getUrl(),
-                    'permission' => 'housing.reports.view',
-                ],
             ],
         ],
         [
