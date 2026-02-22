@@ -219,18 +219,6 @@ return [
                     'badge' => 'housing_requests_count',
                 ],
                 [
-                    'title' => 'sidebar.recruitment_housing.laborer_salaries',
-                    'icon' => 'heroicon-o-currency-dollar',
-                    'url' => fn() => \App\Filament\Pages\Housing\Recruitment\RecruitmentHousingSalaryPage::getUrl(),
-                    'permission' => 'housing.salaries.create',
-                ],
-                [
-                    'title' => 'sidebar.recruitment_housing.laborer_leaves',
-                    'icon' => 'heroicon-o-calendar',
-                    'url' => fn() => \App\Filament\Pages\Housing\Recruitment\RecruitmentHousingLeavePage::getUrl(),
-                    'permission' => 'housing.leaves.create',
-                ],
-                [
                     'title' => 'sidebar.recruitment_housing.accommodation_entries',
                     'icon' => 'heroicon-o-building-office',
                     'url' => fn() => \App\Filament\Pages\Housing\Recruitment\RecruitmentAccommodationEntryPage::getUrl(),
@@ -269,18 +257,6 @@ return [
                     'url' => fn() => \App\Filament\Resources\Housing\Rental\RentalHousingRequestResource::getUrl(),
                     'permission' => 'housing.requests.view_any',
                     'badge' => 'housing_requests_count',
-                ],
-                [
-                    'title' => 'sidebar.rental_housing.laborer_salaries',
-                    'icon' => 'heroicon-o-currency-dollar',
-                    'url' => fn() => \App\Filament\Pages\Housing\Rental\RentalHousingSalaryPage::getUrl(),
-                    'permission' => 'housing.salaries.create',
-                ],
-                [
-                    'title' => 'sidebar.rental_housing.laborer_leaves',
-                    'icon' => 'heroicon-o-calendar',
-                    'url' => fn() => \App\Filament\Pages\Housing\Rental\RentalHousingLeavePage::getUrl(),
-                    'permission' => 'housing.leaves.create',
                 ],
                 [
                     'title' => 'sidebar.rental_housing.accommodation_entries',
