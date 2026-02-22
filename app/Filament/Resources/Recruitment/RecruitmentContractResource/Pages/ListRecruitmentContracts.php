@@ -19,8 +19,6 @@ class ListRecruitmentContracts extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
-                ->label(tr('recruitment_contract.actions.create', [], null, 'dashboard') ?: 'Create Contract'),
             Actions\Action::make('download_template')
                 ->label(tr('recruitment_contract.actions.download_template', [], null, 'dashboard') ?: 'Download Template')
                 ->icon('heroicon-o-arrow-down-tray')
