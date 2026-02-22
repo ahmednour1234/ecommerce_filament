@@ -90,25 +90,22 @@ class RecruitmentHousingDashboardPage extends Page implements HasForms
     public function getCompletedCount(): int
     {
         return \App\Models\Housing\HousingRequest::recruitment()
-            ->whereHas('status', function ($q) {
-                $q->where('key', 'completed');
-            })->count();
+            ->where('status', 'completed')
+            ->count();
     }
 
     public function getApprovedCount(): int
     {
         return \App\Models\Housing\HousingRequest::recruitment()
-            ->whereHas('status', function ($q) {
-                $q->where('key', 'approved');
-            })->count();
+            ->where('status', 'approved')
+            ->count();
     }
 
     public function getPendingCount(): int
     {
         return \App\Models\Housing\HousingRequest::recruitment()
-            ->whereHas('status', function ($q) {
-                $q->where('key', 'pending');
-            })->count();
+            ->where('status', 'pending')
+            ->count();
     }
 
     public function search(): void
