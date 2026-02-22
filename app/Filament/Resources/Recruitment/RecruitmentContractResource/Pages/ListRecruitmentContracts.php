@@ -115,11 +115,6 @@ class ListRecruitmentContracts extends ListRecords
         }
     }
 
-    protected function getHeader(): ?\Illuminate\Contracts\Support\Htmlable
-    {
-        return parent::getHeader();
-    }
-
     public function mount(): void
     {
         parent::mount();
