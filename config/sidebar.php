@@ -200,12 +200,6 @@ return [
             'badge' => null,
             'children' => [
                 [
-                    'title' => 'sidebar.recruitment_housing.dashboard',
-                    'icon' => 'heroicon-o-home',
-                    'url' => fn() => \App\Filament\Pages\Housing\Recruitment\RecruitmentHousingDashboardPage::getUrl(),
-                    'permission' => 'housing.dashboard.view',
-                ],
-                [
                     'title' => 'sidebar.recruitment_housing.laborers_list',
                     'icon' => 'heroicon-o-user-group',
                     'url' => fn() => LaborerResource::getUrl(),
