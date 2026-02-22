@@ -537,6 +537,7 @@ class RecruitmentContractResource extends Resource
     {
         return [
             'index' => Pages\ListRecruitmentContracts::route('/'),
+            'create' => Pages\CreateRecruitmentContract::route('/create'),
             'view' => Pages\ViewRecruitmentContract::route('/{record}'),
             'edit' => Pages\EditRecruitmentContract::route('/{record}/edit'),
         ];
@@ -550,7 +551,8 @@ class RecruitmentContractResource extends Resource
 
     public static function canCreate(): bool
     {
-        return false;
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('recruitment_contracts.create') ?? false;
     }
 
     public static function canView(mixed $record): bool
