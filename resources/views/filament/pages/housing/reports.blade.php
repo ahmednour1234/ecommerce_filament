@@ -41,7 +41,7 @@
                     ],
                     [
                         'key' => 'movements_report',
-                        'icon' => 'heroicon-o-arrow-right-left',
+                        'icon' => 'heroicon-o-arrow-trending-up',
                         'title' => tr('housing.reports.movements_report', [], null, 'dashboard') ?: 'تقرير الحركات',
                         'subtitle' => tr('housing.reports.movements_report', [], null, 'dashboard') ?: 'تقرير الحركات',
                     ],
