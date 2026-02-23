@@ -461,19 +461,15 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
 
     /**
      * IMPORTANT:
-     * In your excel file the value is "3" (paid) in a long heading column.
-     * This function MUST map:
-     * 0/1 => unpaid
-     * 2   => partial
-     * 3   => paid
-     * also Arabic strings.
+     * Always return 'paid' - never return 'unpaid'.
+     * This function maps all values to 'paid' or 'partial' (never unpaid).
      */
     protected function mapPaymentStatus($raw): ?string
     {
-        if ($raw === null) return null;
+        if ($raw === null) return 'paid';
 
         $v = trim((string) $raw);
-        if ($v === '') return null;
+        if ($v === '') return 'paid';
 
         // Normalize Arabic/English
         $normalized = mb_strtolower($v, 'UTF-8');
@@ -486,22 +482,23 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
             return match ($n) {
                 2 => 'partial',
                 3 => 'paid',
-                0, 1 => 'unpaid',
-                default => null,
+                0, 1 => 'paid',
+                default => 'paid',
             };
         }
 
         // Arabic keywords
         if (str_contains($normalized, 'مدفوع') || str_contains($normalized, 'تم الدفع')) return 'paid';
         if (str_contains($normalized, 'جزئي') || str_contains($normalized, 'جزء')) return 'partial';
-        if (str_contains($normalized, 'غير مدفوع') || str_contains($normalized, 'غيرمدفوع')) return 'unpaid';
+        if (str_contains($normalized, 'غير مدفوع') || str_contains($normalized, 'غيرمدفوع')) return 'paid';
 
         // English keywords
         if (str_contains($normalized, 'paid')) return 'paid';
         if (str_contains($normalized, 'partial')) return 'partial';
-        if (str_contains($normalized, 'unpaid')) return 'unpaid';
+        if (str_contains($normalized, 'unpaid')) return 'paid';
 
-        return null;
+        // Default: always paid
+        return 'paid';
     }
 
     /**

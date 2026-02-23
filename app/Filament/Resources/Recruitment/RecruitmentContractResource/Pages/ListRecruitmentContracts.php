@@ -67,7 +67,6 @@ class ListRecruitmentContracts extends ListRecords
             'arrival_date' => 'arrival_date (YYYY-MM-DD) / تاريخ الوصول',
             'issue_date' => 'issue_date (YYYY-MM-DD) / تاريخ الإصدار',
             'status_code' => 'status_code (1-14) / رمز الحالة',
-            'payment_status_code' => 'payment_status_code (1=unpaid, 2=partial, 3=paid) / حالة الدفع',
             'name_of_the_airport' => 'NAME OF THE AIRPORT / اسم المطار',
         ];
 
