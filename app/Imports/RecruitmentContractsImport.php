@@ -42,6 +42,7 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                 $passportNo = $this->getValue($rowArray, ['passport_no', 'passport_number', 'passport', 'رقم الجواز']);
                 $clientName = $this->getValue($rowArray, ['client_name', 'client', 'العميل', 'اسم العميل']);
                 $sponsorName = $this->getValue($rowArray, ['sponsor_name', 'sponsor', 'الكفيل', 'اسم الكفيل']);
+                $branchName = $this->getValue($rowArray, ['branch_name', 'branch', 'الفرع', 'اسم الفرع']);
                 $visaNo = $this->getValue($rowArray, ['visa_no', 'visa_number', 'visa', 'رقم التأشيرة']);
                 $idNumber = $this->getValue($rowArray, ['id_number', 'id', 'national_id', 'رقم الهوية']);
                 $note = $this->getValue($rowArray, ['note', 'notes', 'ملاحظات', 'ملاحظة']);
@@ -58,17 +59,16 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                 $worker = $this->findOrCreateWorker($workerName, $passportNo, $sponsorName);
                 $client = $this->findOrCreateClient($clientName, $idNumber);
                 $agent = $this->findOrCreateAgent($sponsorName);
+                $branch = $this->findOrCreateBranch($branchName);
                 
                 if (!$worker) {
                     $this->errors[] = "Row " . ($index + 2) . ": Could not create worker";
                     continue;
                 }
                 
-                $defaultBranch = Branch::active()->first();
-                
                 $contractData = [
                     'client_id' => $client?->id,
-                    'branch_id' => $defaultBranch?->id,
+                    'branch_id' => $branch?->id,
                     'worker_id' => $worker->id,
                     'visa_no' => $visaNo ?: 'AUTO-' . time() . '-' . $index,
                     'notes' => $note,
@@ -191,6 +191,30 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
         }
         
         return $agent;
+    }
+
+    protected function findOrCreateBranch($name)
+    {
+        if (empty($name)) {
+            return Branch::active()->first();
+        }
+        
+        $branch = Branch::whereRaw('LOWER(name) = ?', [strtolower($name)])->first();
+        
+        if (!$branch) {
+            $code = 'BR-' . time() . '-' . rand(1000, 9999);
+            while (Branch::where('code', $code)->exists()) {
+                $code = 'BR-' . time() . '-' . rand(1000, 9999);
+            }
+            
+            $branch = Branch::create([
+                'name' => $name,
+                'code' => $code,
+                'status' => 'active',
+            ]);
+        }
+        
+        return $branch;
     }
 
     protected function getValue(array $row, array $keys)

@@ -60,6 +60,7 @@ class ListRecruitmentContracts extends ListRecords
             'passport_no' => 'passport_no / رقم الجواز',
             'client_name' => 'client_name / اسم العميل',
             'sponsor_name' => 'sponsor_name / اسم الكفيل',
+            'branch_name' => 'branch_name / اسم الفرع',
             'visa_no' => 'visa_no / رقم التأشيرة',
             'id_number' => 'ID number / رقم الهوية',
             'note' => 'note / ملاحظات',
