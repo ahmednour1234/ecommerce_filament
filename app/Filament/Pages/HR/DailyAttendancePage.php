@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\HR;
 
 use App\Models\HR\AttendanceDay;
+use App\Models\HR\AttendanceLog;
 use App\Models\HR\EmployeeSchedule;
 use App\Filament\Concerns\TranslatableNavigation;
 use Filament\Tables;
@@ -56,7 +57,7 @@ class DailyAttendancePage extends Page implements HasTable
             ->query(
                 AttendanceDay::query()
                     ->whereDate('date', $this->selectedDate ?? now())
-                    ->with(['employee.department', 'employee.position'])
+                    ->with(['employee.department', 'employee.position', 'employee.attendanceLogs'])
             )
             ->columns([
                 Tables\Columns\TextColumn::make('employee.employee_number')
@@ -78,6 +79,44 @@ class DailyAttendancePage extends Page implements HasTable
                     ->sortable()
                     ->default('—')
                     ->description(function ($record) {
+                        $descriptions = [];
+                        
+                        // Get expected time from work schedule
+                        if ($record->employee) {
+                            $employeeSchedule = EmployeeSchedule::where('employee_id', $record->employee_id)
+                                ->forDate($record->date)
+                                ->latest()
+                                ->first();
+                            
+                            if ($employeeSchedule && $employeeSchedule->schedule) {
+                                $startTime = $employeeSchedule->schedule->start_time;
+                                $timeStr = is_string($startTime) ? $startTime : $startTime->format('H:i:s');
+                                $expectedTime = Carbon::parse($record->date->format('Y-m-d') . ' ' . substr($timeStr, 0, 5));
+                                $descriptions[] = 'المتوقع: ' . $expectedTime->format('H:i');
+                            }
+                        }
+                        
+                        // Get all check-in logs for this day
+                        if ($record->employee) {
+                            $checkInLogs = AttendanceLog::where('employee_id', $record->employee_id)
+                                ->whereDate('log_datetime', $record->date)
+                                ->checkIn()
+                                ->orderBy('log_datetime')
+                                ->get();
+                            
+                            if ($checkInLogs->count() > 0) {
+                                $times = $checkInLogs->map(fn($log) => $log->log_datetime->format('H:i'))->join(', ');
+                                $descriptions[] = 'سجلات: ' . $times;
+                            }
+                        }
+                        
+                        return !empty($descriptions) ? implode(' | ', $descriptions) : null;
+                    }),
+
+                Tables\Columns\TextColumn::make('late_minutes')
+                    ->label(tr('fields.late_minutes', [], null, 'dashboard') ?: 'دقائق التأخير')
+                    ->formatStateUsing(function ($state, $record) {
+                        // Calculate late minutes from actual check-in time vs expected time
                         if ($record->first_in && $record->employee) {
                             $employeeSchedule = EmployeeSchedule::where('employee_id', $record->employee_id)
                                 ->forDate($record->date)
@@ -88,15 +127,23 @@ class DailyAttendancePage extends Page implements HasTable
                                 $startTime = $employeeSchedule->schedule->start_time;
                                 $timeStr = is_string($startTime) ? $startTime : $startTime->format('H:i:s');
                                 $expectedTime = Carbon::parse($record->date->format('Y-m-d') . ' ' . substr($timeStr, 0, 5));
-                                return 'المتوقع: ' . $expectedTime->format('H:i');
+                                $actualTime = Carbon::parse($record->first_in);
+                                
+                                $lateMinutes = max(0, $actualTime->diffInMinutes($expectedTime) - ($employeeSchedule->schedule->late_grace_minutes ?? 0));
+                                
+                                if ($lateMinutes > 0) {
+                                    $hours = floor($lateMinutes / 60);
+                                    $minutes = $lateMinutes % 60;
+                                    if ($hours > 0) {
+                                        return $hours . ' س ' . $minutes . ' د';
+                                    }
+                                    return $lateMinutes . ' دقيقة';
+                                }
+                                return '—';
                             }
                         }
-                        return null;
-                    }),
-
-                Tables\Columns\TextColumn::make('late_minutes')
-                    ->label(tr('fields.late_minutes', [], null, 'dashboard') ?: 'دقائق التأخير')
-                    ->formatStateUsing(function ($state, $record) {
+                        
+                        // Fallback to stored value
                         if ($state > 0) {
                             $hours = floor($state / 60);
                             $minutes = $state % 60;
@@ -108,7 +155,24 @@ class DailyAttendancePage extends Page implements HasTable
                         return '—';
                     })
                     ->badge()
-                    ->color(fn ($state) => $state > 0 ? 'warning' : 'success')
+                    ->color(function ($state, $record) {
+                        if ($record->first_in && $record->employee) {
+                            $employeeSchedule = EmployeeSchedule::where('employee_id', $record->employee_id)
+                                ->forDate($record->date)
+                                ->latest()
+                                ->first();
+                            
+                            if ($employeeSchedule && $employeeSchedule->schedule) {
+                                $startTime = $employeeSchedule->schedule->start_time;
+                                $timeStr = is_string($startTime) ? $startTime : $startTime->format('H:i:s');
+                                $expectedTime = Carbon::parse($record->date->format('Y-m-d') . ' ' . substr($timeStr, 0, 5));
+                                $actualTime = Carbon::parse($record->first_in);
+                                $lateMinutes = max(0, $actualTime->diffInMinutes($expectedTime) - ($employeeSchedule->schedule->late_grace_minutes ?? 0));
+                                return $lateMinutes > 0 ? 'warning' : 'success';
+                            }
+                        }
+                        return $state > 0 ? 'warning' : 'success';
+                    })
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('last_out')
@@ -117,7 +181,10 @@ class DailyAttendancePage extends Page implements HasTable
                     ->sortable()
                     ->default('—')
                     ->description(function ($record) {
-                        if ($record->last_out && $record->employee) {
+                        $descriptions = [];
+                        
+                        // Get expected time from work schedule
+                        if ($record->employee) {
                             $employeeSchedule = EmployeeSchedule::where('employee_id', $record->employee_id)
                                 ->forDate($record->date)
                                 ->latest()
@@ -127,10 +194,25 @@ class DailyAttendancePage extends Page implements HasTable
                                 $endTime = $employeeSchedule->schedule->end_time;
                                 $timeStr = is_string($endTime) ? $endTime : $endTime->format('H:i:s');
                                 $expectedTime = Carbon::parse($record->date->format('Y-m-d') . ' ' . substr($timeStr, 0, 5));
-                                return 'المتوقع: ' . $expectedTime->format('H:i');
+                                $descriptions[] = 'المتوقع: ' . $expectedTime->format('H:i');
                             }
                         }
-                        return null;
+                        
+                        // Get all check-out logs for this day
+                        if ($record->employee) {
+                            $checkOutLogs = AttendanceLog::where('employee_id', $record->employee_id)
+                                ->whereDate('log_datetime', $record->date)
+                                ->checkOut()
+                                ->orderBy('log_datetime')
+                                ->get();
+                            
+                            if ($checkOutLogs->count() > 0) {
+                                $times = $checkOutLogs->map(fn($log) => $log->log_datetime->format('H:i'))->join(', ');
+                                $descriptions[] = 'سجلات: ' . $times;
+                            }
+                        }
+                        
+                        return !empty($descriptions) ? implode(' | ', $descriptions) : null;
                     }),
 
                 Tables\Columns\TextColumn::make('worked_minutes')
