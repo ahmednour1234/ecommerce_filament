@@ -19,6 +19,8 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 class RecruitmentContractsImport implements ToCollection, WithHeadingRow
 {
     protected $errors = [];
+    protected $successCount = 0;
+    protected $skippedCount = 0;
     protected $defaultCountry;
     protected $defaultCurrency;
     protected $defaultNationality;
@@ -47,6 +49,7 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                 }
                 
                 if (!$hasData) {
+                    $this->skippedCount++;
                     continue;
                 }
                 
@@ -67,6 +70,7 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                 $passportNo = $passportNo ? trim($passportNo) : null;
                 
                 if (empty($workerName) && empty($passportNo)) {
+                    $this->skippedCount++;
                     continue;
                 }
                 
@@ -77,6 +81,7 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                 
                 if (!$worker) {
                     $this->errors[] = "Row " . ($index + 2) . ": Could not create worker";
+                    $this->skippedCount++;
                     continue;
                 }
                 
@@ -103,8 +108,11 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                 } else {
                     RecruitmentContract::create($contractData);
                 }
+                
+                $this->successCount++;
             } catch (\Exception $e) {
                 $this->errors[] = "Row " . ($index + 2) . ": " . $e->getMessage();
+                $this->skippedCount++;
             }
         }
     }
@@ -306,5 +314,15 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
     public function getErrors(): array
     {
         return $this->errors;
+    }
+
+    public function getSuccessCount(): int
+    {
+        return $this->successCount;
+    }
+
+    public function getSkippedCount(): int
+    {
+        return $this->skippedCount;
     }
 }

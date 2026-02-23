@@ -90,26 +90,37 @@ class ListRecruitmentContracts extends ListRecords
             $import = new RecruitmentContractsImport();
             Excel::import($import, $filePath, 'public');
             
+            $successCount = $import->getSuccessCount();
+            $skippedCount = $import->getSkippedCount();
             $errors = $import->getErrors();
             
-            $message = tr('recruitment_contract.actions.import_success', [], null, 'dashboard') ?: 'Recruitment contracts imported successfully.';
+            $message = "تم إضافة {$successCount} عقد بنجاح";
+            if ($skippedCount > 0) {
+                $message .= " | تم تخطي {$skippedCount} صف";
+            }
             
             Notification::make()
-                ->title(tr('recruitment_contract.actions.import_complete', [], null, 'dashboard') ?: 'Import Complete')
+                ->title('اكتمل الاستيراد')
                 ->body($message)
                 ->success()
                 ->send();
             
             if (!empty($errors)) {
+                $errorMessage = "عدد الأخطاء: " . count($errors) . "\n\n";
+                $errorMessage .= implode("\n", array_slice($errors, 0, 10));
+                if (count($errors) > 10) {
+                    $errorMessage .= "\n\n... و " . (count($errors) - 10) . " خطأ آخر";
+                }
+                
                 Notification::make()
-                    ->title(tr('recruitment_contract.actions.import_errors', [], null, 'dashboard') ?: 'Import Errors')
-                    ->body(implode("\n", array_slice($errors, 0, 5)))
+                    ->title('أخطاء الاستيراد')
+                    ->body($errorMessage)
                     ->warning()
                     ->send();
             }
         } catch (\Exception $e) {
             Notification::make()
-                ->title(tr('recruitment_contract.actions.import_failed', [], null, 'dashboard') ?: 'Import Failed')
+                ->title('فشل الاستيراد')
                 ->body($e->getMessage())
                 ->danger()
                 ->send();
