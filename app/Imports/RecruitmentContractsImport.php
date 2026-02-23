@@ -505,33 +505,28 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
     }
 
     /**
-     * FIX:
+     * Always set payment_status to 'paid' regardless of Excel value.
      * Update ALL columns if they exist (no elseif).
-     * Also: paid_at set now() when paid, else null.
-     * Default: if paymentStatus is null, set to 'paid' (not unpaid).
      */
     protected function applyPaymentStatus(array $contractData, ?string $paymentStatus): array
     {
-        // Default to 'paid' if no value provided
-        if ($paymentStatus === null) {
-            $paymentStatus = 'paid';
-        }
+        // Always set to 'paid' regardless of input
+        $paymentStatus = 'paid';
 
         if ($this->hasPaymentStatus) {
-            $contractData['payment_status'] = $paymentStatus; // unpaid|partial|paid
+            $contractData['payment_status'] = $paymentStatus;
         }
 
         if ($this->hasPaymentStatusCode) {
-            $codeMap = ['unpaid' => 1, 'partial' => 2, 'paid' => 3];
-            $contractData['payment_status_code'] = $codeMap[$paymentStatus] ?? 3;
+            $contractData['payment_status_code'] = 3; // 3 = paid
         }
 
         if ($this->hasIsPaid) {
-            $contractData['is_paid'] = ($paymentStatus === 'paid');
+            $contractData['is_paid'] = true;
         }
 
         if ($this->hasPaidAt) {
-            $contractData['paid_at'] = ($paymentStatus === 'paid') ? now() : null;
+            $contractData['paid_at'] = now();
         }
 
         return $contractData;
