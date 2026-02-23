@@ -18,9 +18,24 @@ class EditRecruitmentContract extends EditRecord
 
     protected static function addPublicToUrl(string $url): string
     {
-        if (str_contains($url, '/admin/') && !str_contains($url, '/admin/public/')) {
-            return str_replace('/admin/', '/admin/public/', $url);
+        $parsed = parse_url($url);
+        $path = $parsed['path'] ?? '';
+        
+        if (str_starts_with($path, '/public/')) {
+            $path = substr($path, 7);
         }
+        
+        if (str_contains($path, '/admin/') && !str_contains($path, '/admin/public/')) {
+            $newPath = str_replace('/admin/', '/admin/public/', $path);
+            
+            $scheme = $parsed['scheme'] ?? 'https';
+            $host = $parsed['host'] ?? '';
+            $query = isset($parsed['query']) ? '?' . $parsed['query'] : '';
+            $fragment = isset($parsed['fragment']) ? '#' . $parsed['fragment'] : '';
+            
+            return $scheme . '://' . $host . $newPath . $query . $fragment;
+        }
+        
         return $url;
     }
 
