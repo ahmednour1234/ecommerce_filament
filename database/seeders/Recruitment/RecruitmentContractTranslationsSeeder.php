@@ -83,6 +83,9 @@ class RecruitmentContractTranslationsSeeder extends Seeder
             'recruitment_contract.gender.male' => ['en' => 'Male', 'ar' => 'ذكر'],
             'recruitment_contract.gender.female' => ['en' => 'Female', 'ar' => 'أنثى'],
 
+            'recruitment_contract.experience.experienced' => ['en' => 'Experienced', 'ar' => 'خبرة'],
+            'recruitment_contract.experience.no_experience' => ['en' => 'No Experience', 'ar' => 'بدون خبرة'],
+
             'recruitment_contract.status.new' => ['en' => 'New', 'ar' => 'جديد'],
             'recruitment_contract.status.foreign_embassy_approval' => ['en' => 'Foreign Embassy Approval', 'ar' => 'موافقة السفارة الأجنبية'],
             'recruitment_contract.status.external_sending_office_approval' => ['en' => 'External Sending Office Approval', 'ar' => 'موافقة مكتب الإرسال الخارجيه'],
