@@ -67,9 +67,10 @@ class ListRecruitmentContracts extends ListRecords
             'arrival_date' => 'arrival_date (YYYY-MM-DD) / تاريخ الوصول',
             'issue_date' => 'issue_date (YYYY-MM-DD) / تاريخ الإصدار',
             'status_code' => 'status_code (1-14) / رمز الحالة',
+            'payment_status_code' => 'payment_status_code (1=unpaid, 2=partial, 3=paid) / حالة الدفع',
             'name_of_the_airport' => 'NAME OF THE AIRPORT / اسم المطار',
         ];
-        
+
         $export = new class($headers) implements \Maatwebsite\Excel\Concerns\FromArray, \Maatwebsite\Excel\Concerns\WithHeadings {
             public function __construct(protected array $headers) {}
             public function array(): array { return []; }
@@ -78,9 +79,9 @@ class ListRecruitmentContracts extends ListRecords
 
         $fileName = 'recruitment_contracts_template_' . date('Y-m-d_His') . '.xlsx';
         $path = 'templates/' . $fileName;
-        
+
         Excel::store($export, $path, 'public');
-        
+
         return Storage::disk('public')->download($path, $fileName);
     }
 
@@ -89,29 +90,29 @@ class ListRecruitmentContracts extends ListRecords
         try {
             $import = new RecruitmentContractsImport();
             Excel::import($import, $filePath, 'public');
-            
+
             $successCount = $import->getSuccessCount();
             $skippedCount = $import->getSkippedCount();
             $errors = $import->getErrors();
-            
+
             $message = "تم إضافة {$successCount} عقد بنجاح";
             if ($skippedCount > 0) {
                 $message .= " | تم تخطي {$skippedCount} صف";
             }
-            
+
             Notification::make()
                 ->title('اكتمل الاستيراد')
                 ->body($message)
                 ->success()
                 ->send();
-            
+
             if (!empty($errors)) {
                 $errorMessage = "عدد الأخطاء: " . count($errors) . "\n\n";
                 $errorMessage .= implode("\n", array_slice($errors, 0, 10));
                 if (count($errors) > 10) {
                     $errorMessage .= "\n\n... و " . (count($errors) - 10) . " خطأ آخر";
                 }
-                
+
                 Notification::make()
                     ->title('أخطاء الاستيراد')
                     ->body($errorMessage)
@@ -130,7 +131,7 @@ class ListRecruitmentContracts extends ListRecords
     public function mount(): void
     {
         parent::mount();
-        
+
         \Filament\Support\Facades\FilamentView::registerRenderHook(
             \Filament\View\PanelsRenderHook::HEAD_END,
             fn () => view('filament.components.recruitment-contracts-search-style')

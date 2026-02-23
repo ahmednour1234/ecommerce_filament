@@ -75,6 +75,7 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                 $arrivalDate = $this->getValue($rowArray, ['arrival_date', 'arrival', 'تاريخ الوصول']);
                 $issueDate = $this->getValue($rowArray, ['issue_date', 'issue', 'تاريخ الإصدار']);
                 $statusCode = $this->getValue($rowArray, ['status_code', 'status', 'الحالة']);
+                $paymentStatusCode = $this->getValue($rowArray, ['payment_status_code', 'payment_status', 'حالة الدفع', 'payment']);
                 $airportName = $this->getValue($rowArray, ['name_of_the_airport', 'airport', 'اسم المطار']);
 
                 $workerName = $workerName ? trim($workerName) : null;
@@ -113,6 +114,7 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                     'visa_no' => $visaNoValue,
                     'notes' => $note ? trim($note) : null,
                     'status' => $this->mapStatus($statusCode),
+                    'payment_status' => $this->mapPaymentStatus($paymentStatusCode),
                     'arrival_country_id' => $arrivalCountryId,
                     'departure_country_id' => $departureCountryId,
                     'receiving_station_id' => $receivingStationId,
@@ -422,6 +424,34 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
         ];
 
         return $statusMap[(int)$code] ?? 'new';
+    }
+
+    protected function mapPaymentStatus($code)
+    {
+        if (empty($code)) {
+            return null;
+        }
+
+        if (is_string($code)) {
+            $code = strtolower(trim($code));
+            if ($code === 'unpaid' || $code === '1') {
+                return 'unpaid';
+            }
+            if ($code === 'partial' || $code === '2') {
+                return 'partial';
+            }
+            if ($code === 'paid' || $code === '3') {
+                return 'paid';
+            }
+        }
+
+        $paymentStatusMap = [
+            1 => 'unpaid',
+            2 => 'partial',
+            3 => 'paid',
+        ];
+
+        return $paymentStatusMap[(int)$code] ?? null;
     }
 
     protected function addError(int $rowIndex, string $reason): void
