@@ -148,10 +148,10 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
 
                 $contractData = $this->applyPaymentStatus($contractData, $paymentStatus);
 
-                // ===== Persist (IMPORTANT: use saveQuietly to bypass observers that recalculate payment_status) =====
+                // ===== Persist (IMPORTANT: use forceFill to bypass fillable issues) =====
                 $contract = RecruitmentContract::firstOrNew(['visa_no' => $visaNoValue]);
                 $contract->forceFill($contractData);
-                $contract->saveQuietly();
+                $contract->save();
 
                 // ===== Debug (optional) =====
                 $this->debugLog($excelRowNumber, $paymentStatusRaw, $paymentStatus, $contractData);
