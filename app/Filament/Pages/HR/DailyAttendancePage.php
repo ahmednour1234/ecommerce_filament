@@ -3,12 +3,14 @@
 namespace App\Filament\Pages\HR;
 
 use App\Models\HR\AttendanceDay;
+use App\Models\HR\EmployeeSchedule;
 use App\Filament\Concerns\TranslatableNavigation;
 use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Filament\Pages\Page;
+use Carbon\Carbon;
 
 class DailyAttendancePage extends Page implements HasTable
 {
@@ -71,23 +73,79 @@ class DailyAttendancePage extends Page implements HasTable
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('first_in')
-                    ->label(tr('fields.first_in', [], null, 'dashboard') ?: 'First In')
+                    ->label(tr('fields.first_in', [], null, 'dashboard') ?: 'وقت الدخول')
                     ->dateTime('H:i')
+                    ->sortable()
+                    ->default('—')
+                    ->description(function ($record) {
+                        if ($record->first_in && $record->employee) {
+                            $employeeSchedule = EmployeeSchedule::where('employee_id', $record->employee_id)
+                                ->forDate($record->date)
+                                ->latest()
+                                ->first();
+                            
+                            if ($employeeSchedule && $employeeSchedule->schedule) {
+                                $startTime = $employeeSchedule->schedule->start_time;
+                                $timeStr = is_string($startTime) ? $startTime : $startTime->format('H:i:s');
+                                $expectedTime = Carbon::parse($record->date->format('Y-m-d') . ' ' . substr($timeStr, 0, 5));
+                                return 'المتوقع: ' . $expectedTime->format('H:i');
+                            }
+                        }
+                        return null;
+                    }),
+
+                Tables\Columns\TextColumn::make('late_minutes')
+                    ->label(tr('fields.late_minutes', [], null, 'dashboard') ?: 'دقائق التأخير')
+                    ->formatStateUsing(function ($state, $record) {
+                        if ($state > 0) {
+                            $hours = floor($state / 60);
+                            $minutes = $state % 60;
+                            if ($hours > 0) {
+                                return $hours . ' س ' . $minutes . ' د';
+                            }
+                            return $minutes . ' دقيقة';
+                        }
+                        return '—';
+                    })
+                    ->badge()
+                    ->color(fn ($state) => $state > 0 ? 'warning' : 'success')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('last_out')
-                    ->label(tr('fields.last_out', [], null, 'dashboard') ?: 'Last Out')
+                    ->label(tr('fields.last_out', [], null, 'dashboard') ?: 'وقت الخروج')
                     ->dateTime('H:i')
-                    ->sortable(),
+                    ->sortable()
+                    ->default('—')
+                    ->description(function ($record) {
+                        if ($record->last_out && $record->employee) {
+                            $employeeSchedule = EmployeeSchedule::where('employee_id', $record->employee_id)
+                                ->forDate($record->date)
+                                ->latest()
+                                ->first();
+                            
+                            if ($employeeSchedule && $employeeSchedule->schedule) {
+                                $endTime = $employeeSchedule->schedule->end_time;
+                                $timeStr = is_string($endTime) ? $endTime : $endTime->format('H:i:s');
+                                $expectedTime = Carbon::parse($record->date->format('Y-m-d') . ' ' . substr($timeStr, 0, 5));
+                                return 'المتوقع: ' . $expectedTime->format('H:i');
+                            }
+                        }
+                        return null;
+                    }),
 
                 Tables\Columns\TextColumn::make('worked_minutes')
-                    ->label(tr('fields.worked_minutes', [], null, 'dashboard') ?: 'Worked')
-                    ->formatStateUsing(fn ($state) => round($state / 60, 2) . ' h')
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('late_minutes')
-                    ->label(tr('fields.late_minutes', [], null, 'dashboard') ?: 'Late')
-                    ->formatStateUsing(fn ($state) => $state > 0 ? round($state / 60, 2) . ' h' : '—')
+                    ->label(tr('fields.worked_minutes', [], null, 'dashboard') ?: 'ساعات العمل')
+                    ->formatStateUsing(function ($state) {
+                        if ($state > 0) {
+                            $hours = floor($state / 60);
+                            $minutes = $state % 60;
+                            if ($hours > 0) {
+                                return $hours . ' س ' . $minutes . ' د';
+                            }
+                            return $minutes . ' دقيقة';
+                        }
+                        return '—';
+                    })
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('overtime_minutes')
