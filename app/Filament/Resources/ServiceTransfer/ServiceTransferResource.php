@@ -60,6 +60,7 @@ class ServiceTransferResource extends Resource
 
                         Forms\Components\Select::make('customer_id')
                             ->label('العميل')
+                            ->relationship('customer', 'name')
                             ->options(function () {
                                 return Cache::remember('service_transfer.customers', 21600, function () {
                                     return Customer::active()->get()->pluck('name', 'id')->toArray();
@@ -67,10 +68,31 @@ class ServiceTransferResource extends Resource
                             })
                             ->required()
                             ->searchable()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                    ->label('الاسم')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('phone')
+                                    ->label('الجوال')
+                                    ->tel()
+                                    ->maxLength(50),
+                                Forms\Components\TextInput::make('email')
+                                    ->label('البريد الإلكتروني')
+                                    ->email()
+                                    ->maxLength(255),
+                            ])
+                            ->createOptionUsing(function (array $data): int {
+                                $data['is_active'] = true;
+                                $customer = Customer::create($data);
+                                Cache::forget('service_transfer.customers');
+                                return $customer->id;
+                            })
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('worker_id')
                             ->label('العاملة')
+                            ->relationship('worker', 'name_ar')
                             ->options(function () {
                                 return Cache::remember('service_transfer.workers', 21600, function () {
                                     return Laborer::where('is_available', true)
@@ -83,6 +105,46 @@ class ServiceTransferResource extends Resource
                             })
                             ->required()
                             ->searchable()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name_ar')
+                                    ->label('الاسم بالعربية')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('name_en')
+                                    ->label('الاسم بالإنجليزية')
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('passport_number')
+                                    ->label('رقم الجواز')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->unique(Laborer::class, 'passport_number'),
+                                Forms\Components\Select::make('nationality_id')
+                                    ->label('الجنسية')
+                                    ->relationship('nationality', 'name_ar')
+                                    ->options(function () {
+                                        return Nationality::where('is_active', true)
+                                            ->get()
+                                            ->mapWithKeys(function ($nationality) {
+                                                return [$nationality->id => app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en];
+                                            })
+                                            ->toArray();
+                                    })
+                                    ->searchable()
+                                    ->required(),
+                                Forms\Components\Select::make('gender')
+                                    ->label('الجنس')
+                                    ->options([
+                                        'male' => 'ذكر',
+                                        'female' => 'أنثى',
+                                    ])
+                                    ->required(),
+                            ])
+                            ->createOptionUsing(function (array $data): int {
+                                $data['is_available'] = true;
+                                $worker = Laborer::create($data);
+                                Cache::forget('service_transfer.workers');
+                                return $worker->id;
+                            })
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('nationality_id')
