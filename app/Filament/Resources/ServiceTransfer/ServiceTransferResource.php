@@ -194,7 +194,6 @@ class ServiceTransferResource extends Resource
                             ->label(tr('service_transfer.trial_end_date', [], null, 'dashboard') ?: 'تاريخ انتهاء التجربة')
                             ->nullable()
                             ->native(false)
-                            ->visible(fn (callable $get) => in_array($get('status'), ['in_trial', 'multiple_trial']))
                             ->columnSpan(1),
                     ])
                     ->columns(2),
