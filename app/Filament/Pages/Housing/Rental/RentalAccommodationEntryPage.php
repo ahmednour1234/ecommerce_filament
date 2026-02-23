@@ -103,7 +103,6 @@ class RentalAccommodationEntryPage extends Page implements HasForms
                             ->options([
                                 'pending' => tr('housing.leave.status.pending', [], null, 'dashboard') ?: 'معلقة',
                                 'active' => tr('common.active', [], null, 'dashboard') ?: 'نشط',
-                                'completed' => tr('housing.dashboard.completed_requests', [], null, 'dashboard') ?: 'مكتمل',
                             ])
                             ->columnSpan(1),
 
