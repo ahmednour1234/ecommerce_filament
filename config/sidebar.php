@@ -190,6 +190,12 @@ return [
                             'permission' => 'laborers.view_any',
                             'badge' => 'available_workers_count',
                         ],
+                        [
+                            'title' => 'sidebar.rental_housing.accommodation_entries',
+                            'icon' => 'heroicon-o-building-office',
+                            'url' => fn() => \App\Filament\Pages\Housing\Rental\RentalAccommodationEntryPage::getUrl(),
+                            'permission' => 'housing.accommodation_entries.create',
+                        ],
             ],
         ],
         [
@@ -232,12 +238,6 @@ return [
                     'icon' => 'heroicon-o-user-group',
                     'url' => fn() => LaborerResource::getUrl(),
                     'permission' => 'laborers.view_any',
-                ],
-                [
-                    'title' => 'sidebar.rental_housing.accommodation_entries',
-                    'icon' => 'heroicon-o-building-office',
-                    'url' => fn() => \App\Filament\Pages\Housing\Rental\RentalAccommodationEntryPage::getUrl(),
-                    'permission' => 'housing.accommodation_entries.create',
                 ],
             ],
         ],
