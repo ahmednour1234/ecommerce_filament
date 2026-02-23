@@ -75,7 +75,13 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                 $arrivalDate = $this->getValue($rowArray, ['arrival_date', 'arrival', 'تاريخ الوصول']);
                 $issueDate = $this->getValue($rowArray, ['issue_date', 'issue', 'تاريخ الإصدار']);
                 $statusCode = $this->getValue($rowArray, ['status_code', 'status', 'الحالة']);
-                $paymentStatusCode = $this->getValue($rowArray, ['payment_status_code', 'payment_status', 'حالة الدفع', 'payment']);
+                $paymentStatusCode = $this->getValue($rowArray, [
+                    'payment_status_code',
+                    'payment_status',
+                    'حالة الدفع',
+                    'payment',
+                    'payment_status_code (1=unpaid, 2=partial, 3=paid) / حالة الدفع'
+                ]);
                 $airportName = $this->getValue($rowArray, ['name_of_the_airport', 'airport', 'اسم المطار']);
 
                 $workerName = $workerName ? trim($workerName) : null;
