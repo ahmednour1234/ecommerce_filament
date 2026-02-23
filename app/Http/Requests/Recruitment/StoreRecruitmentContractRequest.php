@@ -18,7 +18,7 @@ class StoreRecruitmentContractRequest extends FormRequest
             'branch_id' => ['required', 'exists:branches,id'],
             'gregorian_request_date' => ['required', 'date'],
             'hijri_request_date' => ['nullable', 'string'],
-            'visa_type' => ['required', 'in:paid,qualification,other'],
+            'visa_type' => ['required', 'in:paid,qualification,additional'],
             'visa_no' => ['required', 'string', 'max:255'],
             'visa_date' => ['nullable', 'date', 'required_if:visa_type,paid'],
             'arrival_country_id' => ['required', 'exists:countries,id'],

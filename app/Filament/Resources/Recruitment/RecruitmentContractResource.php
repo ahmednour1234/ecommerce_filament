@@ -137,7 +137,7 @@ class RecruitmentContractResource extends Resource
                             ->options([
                                 'paid' => tr('recruitment_contract.visa_type.paid', [], null, 'dashboard') ?: 'مدفوع',
                                 'qualification' => tr('recruitment_contract.visa_type.qualification', [], null, 'dashboard') ?: 'تأهيل',
-                                'other' => tr('recruitment_contract.visa_type.other', [], null, 'dashboard') ?: 'أخرى',
+                                'additional' => tr('recruitment_contract.visa_type.additional', [], null, 'dashboard') ?: 'تأشيرة إضافية',
                             ])
                             ->required()
                             ->reactive()

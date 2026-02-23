@@ -77,7 +77,7 @@ class RecruitmentContractTranslationsSeeder extends Seeder
 
             'recruitment_contract.visa_type.paid' => ['en' => 'Paid', 'ar' => 'مدفوع'],
             'recruitment_contract.visa_type.qualification' => ['en' => 'Qualification', 'ar' => 'تأهيل'],
-            'recruitment_contract.visa_type.other' => ['en' => 'Other', 'ar' => 'أخرى'],
+            'recruitment_contract.visa_type.additional' => ['en' => 'Additional Visa', 'ar' => 'تأشيرة إضافية'],
 
             'recruitment_contract.gender.male' => ['en' => 'Male', 'ar' => 'ذكر'],
             'recruitment_contract.gender.female' => ['en' => 'Female', 'ar' => 'أنثى'],
