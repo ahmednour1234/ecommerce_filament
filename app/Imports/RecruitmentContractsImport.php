@@ -14,6 +14,7 @@ use App\Models\MainCore\Branch;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -30,6 +31,10 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
     protected $defaultProfession;
     protected $defaultUserId;
     protected $firstRowProcessed = false;
+    protected $hasPaymentStatus = false;
+    protected $hasPaymentStatusCode = false;
+    protected $hasIsPaid = false;
+    protected $hasPaidAt = false;
 
     public function __construct()
     {
@@ -38,6 +43,17 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
         $this->defaultNationality = Nationality::where('is_active', true)->first() ?? Nationality::first();
         $this->defaultProfession = Profession::where('is_active', true)->first() ?? Profession::first();
         $this->defaultUserId = Auth::check() ? Auth::id() : config('app.default_user_id', 1);
+
+        $this->checkSchema();
+    }
+
+    protected function checkSchema(): void
+    {
+        $table = 'recruitment_contracts';
+        $this->hasPaymentStatus = Schema::hasColumn($table, 'payment_status');
+        $this->hasPaymentStatusCode = Schema::hasColumn($table, 'payment_status_code');
+        $this->hasIsPaid = Schema::hasColumn($table, 'is_paid');
+        $this->hasPaidAt = Schema::hasColumn($table, 'paid_at');
     }
 
     public function collection(Collection $rows)
@@ -79,8 +95,8 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                     'payment_status_code',
                     'payment_status',
                     'حالة الدفع',
-                    'payment',
-                    'payment_status_code (1=unpaid, 2=partial, 3=paid) / حالة الدفع'
+                    'حالة_الدفع',
+                    'payment'
                 ]);
                 $airportName = $this->getValue($rowArray, ['name_of_the_airport', 'airport', 'اسم المطار']);
 
@@ -108,7 +124,7 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                 $departureCountryId = $this->mapCountryIdByName($airportName);
                 $receivingStationId = $this->mapReceivingStationIdByName($airportName);
 
-                $visaNoValue = $visaNo ? trim($visaNo) : null;
+                $visaNoValue = $this->normalizeVisaNo($visaNo);
                 if (empty($visaNoValue)) {
                     $visaNoValue = $this->generateDeterministicVisaNo($passportNo, $workerName, $index);
                 }
@@ -120,7 +136,6 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                     'visa_no' => $visaNoValue,
                     'notes' => $note ? trim($note) : null,
                     'status' => $this->mapStatus($statusCode),
-                    'payment_status' => $this->mapPaymentStatus($paymentStatusCode),
                     'arrival_country_id' => $arrivalCountryId,
                     'departure_country_id' => $departureCountryId,
                     'receiving_station_id' => $receivingStationId,
@@ -128,6 +143,9 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                     'visa_date' => $issueDate ? $this->parseDate($issueDate) : null,
                     'created_by' => $this->defaultUserId,
                 ];
+
+                $paymentStatusValue = $this->mapPaymentStatus($paymentStatusCode);
+                $contractData = $this->applyPaymentStatus($contractData, $paymentStatusValue);
 
                 try {
                     RecruitmentContract::updateOrCreate(
@@ -187,8 +205,15 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                     }
                 }
 
-                if (str_starts_with($normalizedRowKey, $normalizedKey) ||
-                    str_contains($normalizedRowKey, $normalizedKey)) {
+                if (str_starts_with($normalizedRowKey, $normalizedKey)) {
+                    $value = trim($rowValue);
+                    if ($value !== '' && $value !== null) {
+                        return $value;
+                    }
+                }
+
+                if (str_contains($normalizedRowKey, $normalizedKey) &&
+                    strlen($normalizedKey) >= 5) {
                     $value = trim($rowValue);
                     if ($value !== '' && $value !== null) {
                         return $value;
@@ -434,30 +459,70 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
 
     protected function mapPaymentStatus($code)
     {
-        if (empty($code)) {
+        if (empty($code) && $code !== '0' && $code !== 0) {
             return null;
         }
 
         if (is_string($code)) {
             $code = strtolower(trim($code));
-            if ($code === 'unpaid' || $code === '1') {
+            if (in_array($code, ['unpaid', '1', '0'])) {
                 return 'unpaid';
             }
-            if ($code === 'partial' || $code === '2') {
+            if (in_array($code, ['partial', '2'])) {
                 return 'partial';
             }
-            if ($code === 'paid' || $code === '3') {
+            if (in_array($code, ['paid', '3'])) {
                 return 'paid';
             }
         }
 
+        $codeInt = (int)$code;
         $paymentStatusMap = [
+            0 => 'unpaid',
             1 => 'unpaid',
             2 => 'partial',
             3 => 'paid',
         ];
 
-        return $paymentStatusMap[(int)$code] ?? null;
+        return $paymentStatusMap[$codeInt] ?? null;
+    }
+
+    protected function applyPaymentStatus(array $contractData, ?string $paymentStatus): array
+    {
+        if ($paymentStatus === null) {
+            return $contractData;
+        }
+
+        if ($this->hasPaymentStatus) {
+            $contractData['payment_status'] = $paymentStatus;
+        } elseif ($this->hasPaymentStatusCode) {
+            $codeMap = ['unpaid' => 1, 'partial' => 2, 'paid' => 3];
+            $contractData['payment_status_code'] = $codeMap[$paymentStatus] ?? 1;
+        } elseif ($this->hasIsPaid) {
+            $contractData['is_paid'] = ($paymentStatus === 'paid');
+        }
+
+        if ($this->hasPaidAt && $paymentStatus === 'paid') {
+            $contractData['paid_at'] = now();
+        }
+
+        return $contractData;
+    }
+
+    protected function normalizeVisaNo(?string $visaNo): ?string
+    {
+        if (empty($visaNo)) {
+            return null;
+        }
+
+        $normalized = trim($visaNo);
+        $normalized = preg_replace('/\s+/', '', $normalized);
+
+        if (is_numeric($normalized)) {
+            $normalized = (string)(int)(float)$normalized;
+        }
+
+        return $normalized ?: null;
     }
 
     protected function addError(int $rowIndex, string $reason): void
