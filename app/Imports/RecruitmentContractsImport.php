@@ -38,6 +38,18 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
             try {
                 $rowArray = is_array($row) ? $row : $row->toArray();
                 
+                $hasData = false;
+                foreach ($rowArray as $value) {
+                    if (!empty(trim($value ?? ''))) {
+                        $hasData = true;
+                        break;
+                    }
+                }
+                
+                if (!$hasData) {
+                    continue;
+                }
+                
                 $workerName = $this->getValue($rowArray, ['name_of_the_worker', 'worker_name', 'name', 'الاسم', 'اسم العامل']);
                 $passportNo = $this->getValue($rowArray, ['passport_no', 'passport_number', 'passport', 'رقم الجواز']);
                 $clientName = $this->getValue($rowArray, ['client_name', 'client', 'العميل', 'اسم العميل']);
@@ -51,8 +63,10 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                 $statusCode = $this->getValue($rowArray, ['status_code', 'status', 'الحالة']);
                 $airportName = $this->getValue($rowArray, ['name_of_the_airport', 'airport', 'اسم المطار']);
                 
+                $workerName = $workerName ? trim($workerName) : null;
+                $passportNo = $passportNo ? trim($passportNo) : null;
+                
                 if (empty($workerName) && empty($passportNo)) {
-                    $this->errors[] = "Row " . ($index + 2) . ": Worker name or passport number is required";
                     continue;
                 }
                 
@@ -199,7 +213,7 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
             return Branch::active()->first();
         }
         
-        $branch = Branch::whereRaw('LOWER(name) = ?', [strtolower($name)])->first();
+        $branch = Branch::where('name', $name)->first();
         
         if (!$branch) {
             $code = 'BR-' . time() . '-' . rand(1000, 9999);
@@ -221,11 +235,31 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
     {
         foreach ($keys as $key) {
             $sanitizedKey = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $key));
+            
             if (isset($row[$key])) {
-                return $row[$key];
+                $value = trim($row[$key]);
+                if ($value !== '' && $value !== null) {
+                    return $value;
+                }
             }
+            
             if (isset($row[$sanitizedKey])) {
-                return $row[$sanitizedKey];
+                $value = trim($row[$sanitizedKey]);
+                if ($value !== '' && $value !== null) {
+                    return $value;
+                }
+            }
+            
+            foreach ($row as $rowKey => $rowValue) {
+                $normalizedRowKey = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $rowKey));
+                $normalizedKey = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $key));
+                
+                if ($normalizedRowKey === $normalizedKey || $normalizedRowKey === $sanitizedKey) {
+                    $value = trim($rowValue);
+                    if ($value !== '' && $value !== null) {
+                        return $value;
+                    }
+                }
             }
         }
         return null;

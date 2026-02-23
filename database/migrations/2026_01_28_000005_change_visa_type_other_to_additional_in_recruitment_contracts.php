@@ -10,7 +10,7 @@ return new class extends Migration {
     {
         Schema::table('recruitment_contracts', function (Blueprint $table) {
             DB::statement("ALTER TABLE recruitment_contracts MODIFY COLUMN visa_type ENUM('paid', 'qualification', 'additional') DEFAULT 'paid'");
-            
+
             DB::statement("UPDATE recruitment_contracts SET visa_type = 'additional' WHERE visa_type = 'other'");
         });
     }
@@ -19,7 +19,7 @@ return new class extends Migration {
     {
         Schema::table('recruitment_contracts', function (Blueprint $table) {
             DB::statement("UPDATE recruitment_contracts SET visa_type = 'other' WHERE visa_type = 'additional'");
-            
+
             DB::statement("ALTER TABLE recruitment_contracts MODIFY COLUMN visa_type ENUM('paid', 'qualification', 'other') DEFAULT 'paid'");
         });
     }

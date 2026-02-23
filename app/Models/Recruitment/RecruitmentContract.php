@@ -82,7 +82,7 @@ class RecruitmentContract extends Model
                 $service = app(RecruitmentContractService::class);
                 $contract->contract_no = $service->generateContractNo();
             }
-            
+
             if (empty($contract->created_by) && auth()->check()) {
                 $contract->created_by = auth()->id();
             }
@@ -98,7 +98,7 @@ class RecruitmentContract extends Model
             if ($contract->isDirty('status')) {
                 $oldStatus = $contract->getOriginal('status');
                 $newStatus = $contract->status;
-                
+
                 if ($oldStatus !== $newStatus) {
                     $service = app(RecruitmentContractService::class);
                     $service->logStatusChange($contract, $oldStatus, $newStatus);
