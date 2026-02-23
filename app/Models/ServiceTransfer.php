@@ -33,12 +33,15 @@ class ServiceTransfer extends Model
         'total_amount',
         'payment_status',
         'request_status',
+        'status',
+        'trial_end_date',
         'notes',
         'created_by',
     ];
 
     protected $casts = [
         'request_date' => 'date',
+        'trial_end_date' => 'date',
         'base_price' => 'decimal:2',
         'external_cost' => 'decimal:2',
         'government_fees' => 'decimal:2',

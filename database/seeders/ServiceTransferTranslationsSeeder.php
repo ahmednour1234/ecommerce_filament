@@ -82,6 +82,17 @@ class ServiceTransferTranslationsSeeder extends Seeder
             'service_transfer.from_account' => ['en' => 'From Account', 'ar' => 'من حساب'],
             'service_transfer.to_account' => ['en' => 'To Account', 'ar' => 'إلى حساب'],
             'service_transfer.reference' => ['en' => 'Reference', 'ar' => 'المرجع'],
+            
+            // Status field translations
+            'service_transfer.status' => ['en' => 'Status', 'ar' => 'الحالة'],
+            'service_transfer.status.transferred' => ['en' => 'Transferred', 'ar' => 'تم النقل'],
+            'service_transfer.status.cancelled' => ['en' => 'Cancelled', 'ar' => 'تم الإلغاء'],
+            'service_transfer.status.in_trial' => ['en' => 'In Trial', 'ar' => 'في مرحلة تجربة'],
+            'service_transfer.status.multiple_trial' => ['en' => 'Multiple Trial', 'ar' => 'عدة مرحلة تجربة'],
+            'service_transfer.status.no_action_taken' => ['en' => 'No Action Taken', 'ar' => 'ولم يتخذ إجراء'],
+            
+            // Trial end date field translation
+            'service_transfer.trial_end_date' => ['en' => 'Trial End Date', 'ar' => 'تاريخ انتهاء التجربة'],
         ];
 
         $langDir = public_path('lang');

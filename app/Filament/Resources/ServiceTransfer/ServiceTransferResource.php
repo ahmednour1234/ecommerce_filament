@@ -176,7 +176,26 @@ class ServiceTransferResource extends Resource
                             })
                             ->nullable()
                             ->searchable()
-                            ->columnSpan(2),
+                            ->columnSpan(1),
+
+                        Forms\Components\Select::make('status')
+                            ->label(tr('service_transfer.status', [], null, 'dashboard') ?: 'الحالة')
+                            ->options([
+                                'transferred' => tr('service_transfer.status.transferred', [], null, 'dashboard') ?: 'تم النقل',
+                                'cancelled' => tr('service_transfer.status.cancelled', [], null, 'dashboard') ?: 'تم الإلغاء',
+                                'in_trial' => tr('service_transfer.status.in_trial', [], null, 'dashboard') ?: 'في مرحلة تجربة',
+                                'multiple_trial' => tr('service_transfer.status.multiple_trial', [], null, 'dashboard') ?: 'عدة مرحلة تجربة',
+                                'no_action_taken' => tr('service_transfer.status.no_action_taken', [], null, 'dashboard') ?: 'ولم يتخذ إجراء',
+                            ])
+                            ->nullable()
+                            ->columnSpan(1),
+
+                        Forms\Components\DatePicker::make('trial_end_date')
+                            ->label(tr('service_transfer.trial_end_date', [], null, 'dashboard') ?: 'تاريخ انتهاء التجربة')
+                            ->nullable()
+                            ->native(false)
+                            ->visible(fn (callable $get) => in_array($get('status'), ['in_trial', 'multiple_trial']))
+                            ->columnSpan(1),
                     ])
                     ->columns(2),
 
@@ -348,6 +367,32 @@ class ServiceTransferResource extends Resource
                         default => $state,
                     })
                     ->sortable(),
+
+                Tables\Columns\BadgeColumn::make('status')
+                    ->label(tr('service_transfer.status', [], null, 'dashboard') ?: 'الحالة')
+                    ->colors([
+                        'success' => 'transferred',
+                        'danger' => 'cancelled',
+                        'warning' => 'in_trial',
+                        'info' => 'multiple_trial',
+                        'gray' => 'no_action_taken',
+                    ])
+                    ->formatStateUsing(fn ($state) => match($state) {
+                        'transferred' => tr('service_transfer.status.transferred', [], null, 'dashboard') ?: 'تم النقل',
+                        'cancelled' => tr('service_transfer.status.cancelled', [], null, 'dashboard') ?: 'تم الإلغاء',
+                        'in_trial' => tr('service_transfer.status.in_trial', [], null, 'dashboard') ?: 'في مرحلة تجربة',
+                        'multiple_trial' => tr('service_transfer.status.multiple_trial', [], null, 'dashboard') ?: 'عدة مرحلة تجربة',
+                        'no_action_taken' => tr('service_transfer.status.no_action_taken', [], null, 'dashboard') ?: 'ولم يتخذ إجراء',
+                        default => $state,
+                    })
+                    ->sortable()
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('trial_end_date')
+                    ->label(tr('service_transfer.trial_end_date', [], null, 'dashboard') ?: 'تاريخ انتهاء التجربة')
+                    ->date()
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\BadgeColumn::make('payment_status')
                     ->label('حالة الدفع')
