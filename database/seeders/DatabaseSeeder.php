@@ -33,6 +33,8 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\ClientsPermissionsSeeder::class, // Clients module permissions
             \Modules\CompanyVisas\Database\Seeders\CompanyVisasPermissionsSeeder::class, // Company Visas permissions
             \Modules\CompanyVisas\Database\Seeders\CompanyVisasTranslationsSeeder::class, // Company Visas translations
+            \Modules\ServiceTransfer\Database\Seeders\ServiceTransferPermissionsSeeder::class, // Service Transfer permissions
+            \Modules\ServiceTransfer\Database\Seeders\ServiceTransferTranslationsSeeder::class, // Service Transfer translations
             SuperAdminSeeder::class, // Create super_admin role with ALL permissions (must be last)
         ]);
 
