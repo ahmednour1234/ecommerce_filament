@@ -21,8 +21,12 @@ class ServiceTransferTranslationsSeeder extends Seeder
         }
 
         $translations = [
+            // General settings translations
+            'general_settings' => ['en' => 'General Settings', 'ar' => 'الإعدادات العامة'],
+            'general_settings.system_settings' => ['en' => 'System Settings', 'ar' => 'إعدادات النظام'],
+            
             // Sidebar navigation translations
-            'sidebar.servicetransfer' => ['en' => 'Service Transfers', 'ar' => 'طلبات نقل الخدمات'],
+            'sidebar.servicetransfer' => ['en' => 'Service Transfer Requests', 'ar' => 'طلبات نقل الخدمات'],
             'sidebar.servicetransferrequestsreport' => ['en' => 'Service Transfer Requests Report', 'ar' => 'تقرير طلبات نقل الخدمات'],
             'sidebar.servicetransferpaymentsreport' => ['en' => 'Service Transfer Payments Report', 'ar' => 'تقرير المدفوعات - نقل الخدمات'],
             'general.service_transfer' => ['en' => 'Service Transfer', 'ar' => 'نقل الخدمات'],
