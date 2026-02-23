@@ -18,6 +18,7 @@ class ServiceTransferTranslationsSeeder extends Seeder
 
         if (!$english || !$arabic) {
             $this->command->warn('English or Arabic language not found. Skipping database translations.');
+            return;
         }
 
         $translations = [
