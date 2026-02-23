@@ -486,7 +486,7 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
             return match ($n) {
                 2 => 'partial',
                 3 => 'paid',
-                0, 1 => 'unpaid',
+                0, 1 => 'paid',
                 default => null,
             };
         }
