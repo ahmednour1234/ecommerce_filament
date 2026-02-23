@@ -89,6 +89,9 @@ class HousingTranslationsSeeder extends Seeder
             'housing.requests.type.new_arrival' => ['en' => 'New Arrival', 'ar' => 'وافد جديد'],
             'housing.requests.status' => ['en' => 'Status', 'ar' => 'الحالة'],
             'housing.requests.select_status' => ['en' => 'Select Status', 'ar' => 'اختر الحالة'],
+            'housing.requests.passport_no' => ['en' => 'Passport Number', 'ar' => 'رقم الجواز'],
+            'housing.requests.sponsor_name' => ['en' => 'Sponsor Name', 'ar' => 'اسم الكفيل'],
+            'housing.requests.transferred_sponsor_name' => ['en' => 'Transferred Sponsor Name', 'ar' => 'اسم الكفيل المنقول له'],
 
             'housing.salary.create' => ['en' => 'Add Salary for Worker', 'ar' => 'إضافة راتب للعامل'],
             'housing.salary.employee' => ['en' => 'Employee', 'ar' => 'اسم العامل'],

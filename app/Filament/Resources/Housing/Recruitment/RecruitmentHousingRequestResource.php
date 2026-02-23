@@ -175,6 +175,18 @@ class RecruitmentHousingRequestResource extends Resource
                             })
                             ->columnSpan(1),
 
+                        Forms\Components\TextInput::make('passport_no')
+                            ->label(tr('housing.requests.passport_no', [], null, 'dashboard') ?: 'رقم الجواز')
+                            ->columnSpan(1),
+
+                        Forms\Components\TextInput::make('sponsor_name')
+                            ->label(tr('housing.requests.sponsor_name', [], null, 'dashboard') ?: 'اسم الكفيل')
+                            ->columnSpan(1),
+
+                        Forms\Components\TextInput::make('transferred_sponsor_name')
+                            ->label(tr('housing.requests.transferred_sponsor_name', [], null, 'dashboard') ?: 'اسم الكفيل المنقول له')
+                            ->columnSpan(1),
+
                         Forms\Components\Select::make('request_type')
                             ->label(tr('housing.requests.type', [], null, 'dashboard') ?: 'Type')
                             ->options([
