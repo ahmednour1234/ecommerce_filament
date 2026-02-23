@@ -38,6 +38,14 @@ class ComplaintTranslationsSeeder extends Seeder
             'complaint.fields.assigned_to' => ['en' => 'Assigned To', 'ar' => 'مكلف به'],
             'complaint.fields.resolution_notes' => ['en' => 'Resolution Notes', 'ar' => 'ملاحظات الحل'],
             'complaint.fields.resolved_at' => ['en' => 'Resolved At', 'ar' => 'تم الحل في'],
+            'complaint.fields.problem_type' => ['en' => 'Problem Type', 'ar' => 'نوع المشكلة'],
+            'complaint.fields.phone_number' => ['en' => 'Phone Number', 'ar' => 'رقم التليفون'],
+            'complaint.fields.nationality' => ['en' => 'Nationality', 'ar' => 'الجنسية'],
+
+            'complaint.problem_type.salary_issue' => ['en' => 'Salary Issue', 'ar' => 'مشكلة رواتب'],
+            'complaint.problem_type.food_issue' => ['en' => 'Food Issue', 'ar' => 'مشكلة طعام'],
+            'complaint.problem_type.escape' => ['en' => 'Escape', 'ar' => 'هروب'],
+            'complaint.problem_type.work_refusal' => ['en' => 'Work Refusal', 'ar' => 'رفض عمل'],
 
             'complaint.contract_type.rental' => ['en' => 'Rental Contract', 'ar' => 'عقد الإيجار'],
             'complaint.contract_type.recruitment' => ['en' => 'Recruitment Contract', 'ar' => 'عقد الاستقدام'],

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\MainCore\Branch;
+use App\Models\Recruitment\Nationality;
 use App\Models\User;
 use App\Services\ComplaintService;
 use Illuminate\Database\Eloquent\Model;
@@ -18,6 +19,9 @@ class Complaint extends Model
         'complaint_no',
         'contract_type',
         'contract_id',
+        'problem_type',
+        'phone_number',
+        'nationality_id',
         'subject',
         'description',
         'status',
@@ -73,6 +77,11 @@ class Complaint extends Model
     public function assignedUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_to');
+    }
+
+    public function nationality(): BelongsTo
+    {
+        return $this->belongsTo(Nationality::class);
     }
 
     public function scopePending($query)

@@ -7,6 +7,7 @@ use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\Complaint;
 use App\Models\MainCore\Branch;
 use App\Models\Rental\RentalContract;
+use App\Models\Recruitment\Nationality;
 use App\Models\Recruitment\RecruitmentContract;
 use App\Models\User;
 use Filament\Forms;
@@ -86,6 +87,41 @@ class ComplaintResource extends Resource
                             ->nullable()
                             ->searchable()
                             ->visible(fn (callable $get) => !empty($get('contract_type')))
+                            ->columnSpan(1),
+
+                        Forms\Components\Select::make('problem_type')
+                            ->label(tr('complaint.fields.problem_type', [], null, 'dashboard') ?: 'نوع المشكلة')
+                            ->options([
+                                'salary_issue' => tr('complaint.problem_type.salary_issue', [], null, 'dashboard') ?: 'مشكلة رواتب',
+                                'food_issue' => tr('complaint.problem_type.food_issue', [], null, 'dashboard') ?: 'مشكلة طعام',
+                                'escape' => tr('complaint.problem_type.escape', [], null, 'dashboard') ?: 'هروب',
+                                'work_refusal' => tr('complaint.problem_type.work_refusal', [], null, 'dashboard') ?: 'رفض عمل',
+                            ])
+                            ->nullable()
+                            ->columnSpan(1),
+
+                        Forms\Components\TextInput::make('phone_number')
+                            ->label(tr('complaint.fields.phone_number', [], null, 'dashboard') ?: 'رقم التليفون')
+                            ->tel()
+                            ->maxLength(50)
+                            ->nullable()
+                            ->columnSpan(1),
+
+                        Forms\Components\Select::make('nationality_id')
+                            ->label(tr('complaint.fields.nationality', [], null, 'dashboard') ?: 'الجنسية')
+                            ->relationship('nationality', 'name_ar')
+                            ->options(function () {
+                                return Cache::remember('complaints.nationalities', 21600, function () {
+                                    return Nationality::where('is_active', true)
+                                        ->get()
+                                        ->mapWithKeys(function ($nationality) {
+                                            return [$nationality->id => app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en];
+                                        })
+                                        ->toArray();
+                                });
+                            })
+                            ->nullable()
+                            ->searchable()
                             ->columnSpan(1),
 
                         Forms\Components\TextInput::make('subject')
@@ -187,6 +223,37 @@ class ComplaintResource extends Resource
                     ->searchable()
                     ->limit(50)
                     ->sortable(),
+
+                Tables\Columns\BadgeColumn::make('problem_type')
+                    ->label(tr('complaint.fields.problem_type', [], null, 'dashboard') ?: 'نوع المشكلة')
+                    ->colors([
+                        'warning' => 'salary_issue',
+                        'info' => 'food_issue',
+                        'danger' => 'escape',
+                        'gray' => 'work_refusal',
+                    ])
+                    ->formatStateUsing(fn ($state) => match($state) {
+                        'salary_issue' => tr('complaint.problem_type.salary_issue', [], null, 'dashboard') ?: 'مشكلة رواتب',
+                        'food_issue' => tr('complaint.problem_type.food_issue', [], null, 'dashboard') ?: 'مشكلة طعام',
+                        'escape' => tr('complaint.problem_type.escape', [], null, 'dashboard') ?: 'هروب',
+                        'work_refusal' => tr('complaint.problem_type.work_refusal', [], null, 'dashboard') ?: 'رفض عمل',
+                        default => $state,
+                    })
+                    ->sortable()
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('phone_number')
+                    ->label(tr('complaint.fields.phone_number', [], null, 'dashboard') ?: 'رقم التليفون')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('nationality.name_ar')
+                    ->label(tr('complaint.fields.nationality', [], null, 'dashboard') ?: 'الجنسية')
+                    ->formatStateUsing(fn ($state, $record) => $record->nationality ? (app()->getLocale() === 'ar' ? $record->nationality->name_ar : $record->nationality->name_en) : '-')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('contract_info')
                     ->label(tr('complaint.fields.contract', [], null, 'dashboard') ?: 'Contract')
