@@ -486,7 +486,7 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
             return match ($n) {
                 2 => 'partial',
                 3 => 'paid',
-                0, 1 => 'paid',
+                0, 1 => 'unpaid',
                 default => null,
             };
         }
@@ -508,11 +508,13 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
      * FIX:
      * Update ALL columns if they exist (no elseif).
      * Also: paid_at set now() when paid, else null.
+     * Default: if paymentStatus is null, set to 'paid' (not unpaid).
      */
     protected function applyPaymentStatus(array $contractData, ?string $paymentStatus): array
     {
+        // Default to 'paid' if no value provided
         if ($paymentStatus === null) {
-            return $contractData;
+            $paymentStatus = 'paid';
         }
 
         if ($this->hasPaymentStatus) {
@@ -521,7 +523,7 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
 
         if ($this->hasPaymentStatusCode) {
             $codeMap = ['unpaid' => 1, 'partial' => 2, 'paid' => 3];
-            $contractData['payment_status_code'] = $codeMap[$paymentStatus] ?? 1;
+            $contractData['payment_status_code'] = $codeMap[$paymentStatus] ?? 3;
         }
 
         if ($this->hasIsPaid) {
