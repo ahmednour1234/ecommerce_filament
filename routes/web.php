@@ -85,6 +85,9 @@ Route::middleware(['web', 'auth'])
 
         Route::get('hr/holidays-calendar/json', [App\Http\Controllers\HR\HolidaysCalendarController::class, 'getHolidaysJson'])
             ->name('filament.admin.pages.hr.holidays-calendar.json');
+
+        Route::get('hr/monthly-attendance-calendar/json', [App\Http\Controllers\HR\MonthlyAttendanceCalendarController::class, 'getAttendanceData'])
+            ->name('filament.admin.pages.hr.monthly-attendance-calendar.json');
     });
 
     Route::middleware(['web', 'auth'])

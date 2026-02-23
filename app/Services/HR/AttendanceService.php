@@ -167,5 +167,116 @@ class AttendanceService
             ];
         })->values();
     }
+
+    public function getEmployeeMonthlyAttendance(int $employeeId, int $year, int $month): array
+    {
+        $startDate = Carbon::create($year, $month, 1)->startOfMonth();
+        $endDate = $startDate->copy()->endOfMonth();
+
+        $attendanceDays = AttendanceDay::where('employee_id', $employeeId)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->orderBy('date')
+            ->get();
+
+        $employee = Employee::findOrFail($employeeId);
+        $days = [];
+        $summary = [
+            'present_days' => 0,
+            'absent_days' => 0,
+            'holiday_days' => 0,
+            'leave_days' => 0,
+            'total_worked_minutes' => 0,
+            'total_worked_hours' => 0,
+            'total_late_minutes' => 0,
+            'total_overtime_minutes' => 0,
+            'average_worked_hours_per_day' => 0,
+        ];
+
+        $currentDate = $startDate->copy();
+        while ($currentDate->lte($endDate)) {
+            $dateStr = $currentDate->format('Y-m-d');
+            $attendanceDay = $attendanceDays->firstWhere('date', $dateStr);
+
+            $employeeSchedule = EmployeeSchedule::where('employee_id', $employeeId)
+                ->forDate($dateStr)
+                ->latest()
+                ->first();
+
+            $workSchedule = $employeeSchedule?->schedule;
+            $expectedStartTime = null;
+            $expectedEndTime = null;
+            
+            if ($workSchedule) {
+                $startTimeStr = is_string($workSchedule->start_time) 
+                    ? $workSchedule->start_time 
+                    : $workSchedule->start_time->format('H:i:s');
+                $endTimeStr = is_string($workSchedule->end_time) 
+                    ? $workSchedule->end_time 
+                    : $workSchedule->end_time->format('H:i:s');
+                
+                $expectedStartTime = Carbon::parse($dateStr . ' ' . substr($startTimeStr, 0, 5));
+                $expectedEndTime = Carbon::parse($dateStr . ' ' . substr($endTimeStr, 0, 5));
+            }
+
+            $dayData = [
+                'date' => $dateStr,
+                'status' => $attendanceDay?->status ?? 'absent',
+                'first_in' => $attendanceDay?->first_in ? $attendanceDay->first_in->format('H:i') : null,
+                'last_out' => $attendanceDay?->last_out ? $attendanceDay->last_out->format('H:i') : null,
+                'worked_minutes' => $attendanceDay?->worked_minutes ?? 0,
+                'worked_hours' => round(($attendanceDay?->worked_minutes ?? 0) / 60, 2),
+                'late_minutes' => $attendanceDay?->late_minutes ?? 0,
+                'overtime_minutes' => $attendanceDay?->overtime_minutes ?? 0,
+                'expected_start_time' => $expectedStartTime ? $expectedStartTime->format('H:i') : null,
+                'expected_end_time' => $expectedEndTime ? $expectedEndTime->format('H:i') : null,
+                'schedule_name' => $workSchedule?->name ?? null,
+            ];
+
+            $days[] = $dayData;
+
+            if ($attendanceDay) {
+                switch ($attendanceDay->status) {
+                    case 'present':
+                        $summary['present_days']++;
+                        break;
+                    case 'absent':
+                        $summary['absent_days']++;
+                        break;
+                    case 'holiday':
+                        $summary['holiday_days']++;
+                        break;
+                    case 'leave':
+                        $summary['leave_days']++;
+                        break;
+                }
+
+                $summary['total_worked_minutes'] += $attendanceDay->worked_minutes;
+                $summary['total_late_minutes'] += $attendanceDay->late_minutes;
+                $summary['total_overtime_minutes'] += $attendanceDay->overtime_minutes;
+            } else {
+                $summary['absent_days']++;
+            }
+
+            $currentDate->addDay();
+        }
+
+        $summary['total_worked_hours'] = round($summary['total_worked_minutes'] / 60, 2);
+        $presentDaysCount = $summary['present_days'];
+        $summary['average_worked_hours_per_day'] = $presentDaysCount > 0 
+            ? round($summary['total_worked_hours'] / $presentDaysCount, 2) 
+            : 0;
+
+        return [
+            'employee' => [
+                'id' => $employee->id,
+                'employee_number' => $employee->employee_number,
+                'full_name' => $employee->full_name,
+            ],
+            'month' => $month,
+            'year' => $year,
+            'days' => $days,
+            'summary' => $summary,
+        ];
+    }
 }
 
