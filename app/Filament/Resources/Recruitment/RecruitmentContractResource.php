@@ -217,9 +217,12 @@ class RecruitmentContractResource extends Resource
                             ])
                             ->columnSpan(1),
 
-                        Forms\Components\TextInput::make('experience')
+                        Forms\Components\Select::make('experience')
                             ->label(tr('recruitment_contract.fields.experience', [], null, 'dashboard') ?: 'Experience')
-                            ->maxLength(255)
+                            ->options([
+                                'experienced' => tr('recruitment_contract.experience.experienced', [], null, 'dashboard') ?: 'خبرة',
+                                'no_experience' => tr('recruitment_contract.experience.no_experience', [], null, 'dashboard') ?: 'بدون خبرة',
+                            ])
                             ->columnSpan(1),
 
                         Forms\Components\TextInput::make('religion')
