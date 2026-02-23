@@ -122,10 +122,10 @@ class ServiceTransferTranslationsSeeder extends Seeder
             $enCurrent = &$enData;
 
             foreach ($keys as $k) {
-                if (!isset($arCurrent[$k])) {
+                if (!isset($arCurrent[$k]) || !is_array($arCurrent[$k])) {
                     $arCurrent[$k] = [];
                 }
-                if (!isset($enCurrent[$k])) {
+                if (!isset($enCurrent[$k]) || !is_array($enCurrent[$k])) {
                     $enCurrent[$k] = [];
                 }
                 $arCurrent = &$arCurrent[$k];
