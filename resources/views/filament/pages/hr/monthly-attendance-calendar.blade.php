@@ -1,10 +1,13 @@
 <x-filament-panels::page>
-    <div class="space-y-6">
-        <div class="rounded-lg bg-white dark:bg-gray-800 p-4 border border-gray-200 dark:border-gray-700">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {{ $this->filterForm }}
+    <div>
+        <div class="space-y-6">
+            <div class="rounded-lg bg-white dark:bg-gray-800 p-4 border border-gray-200 dark:border-gray-700">
+                <form wire:submit.prevent wire:key="filter-form">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {{ $this->filterForm }}
+                    </div>
+                </form>
             </div>
-        </div>
 
         <div
             x-data="{
@@ -198,6 +201,7 @@
                 x-ref="calendar"
                 id="monthly-attendance-calendar"
             ></div>
+        </div>
         </div>
     </div>
 </x-filament-panels::page>
