@@ -147,6 +147,10 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                 $paymentStatusValue = $this->mapPaymentStatus($paymentStatusCode);
                 $contractData = $this->applyPaymentStatus($contractData, $paymentStatusValue);
 
+                if (env('IMPORT_DEBUG', false) && $index < 5) {
+                    $this->logPaymentStatusDebug($index + 2, $paymentStatusCode, $paymentStatusValue, $contractData);
+                }
+
                 try {
                     RecruitmentContract::updateOrCreate(
                         ['visa_no' => $visaNoValue],
@@ -459,19 +463,35 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
 
     protected function mapPaymentStatus($code)
     {
-        if (empty($code) && $code !== '0' && $code !== 0) {
+        if ($code === null || $code === '') {
             return null;
         }
 
         if (is_string($code)) {
-            $code = strtolower(trim($code));
-            if (in_array($code, ['unpaid', '1', '0'])) {
+            $normalized = mb_strtolower(trim($code), 'UTF-8');
+            $normalized = preg_replace('/[\s_]+/', '', $normalized);
+
+            $unpaidVariants = ['unpaid', '1', '0', 'غيرمدفوع', 'غير_مدفوع', 'غير-مدفوع'];
+            $partialVariants = ['partial', '2', 'جزئي', 'دفعجزئي', 'دفع_جزئي', 'دفع-جزئي'];
+            $paidVariants = ['paid', '3', 'مدفوع', 'تمالدفع', 'تم_الدفع', 'تم-الدفع'];
+
+            if (in_array($normalized, $unpaidVariants)) {
                 return 'unpaid';
             }
-            if (in_array($code, ['partial', '2'])) {
+            if (in_array($normalized, $partialVariants)) {
                 return 'partial';
             }
-            if (in_array($code, ['paid', '3'])) {
+            if (in_array($normalized, $paidVariants)) {
+                return 'paid';
+            }
+
+            if (preg_match('/^(unpaid|غير\s*مدفوع)/i', $code)) {
+                return 'unpaid';
+            }
+            if (preg_match('/^(partial|جزئي|دفع\s*جزئي)/i', $code)) {
+                return 'partial';
+            }
+            if (preg_match('/^(paid|مدفوع|تم\s*الدفع)/i', $code)) {
                 return 'paid';
             }
         }
@@ -493,17 +513,22 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
             return $contractData;
         }
 
+        $codeMap = ['unpaid' => 1, 'partial' => 2, 'paid' => 3];
+
         if ($this->hasPaymentStatus) {
             $contractData['payment_status'] = $paymentStatus;
-        } elseif ($this->hasPaymentStatusCode) {
-            $codeMap = ['unpaid' => 1, 'partial' => 2, 'paid' => 3];
+        }
+
+        if ($this->hasPaymentStatusCode) {
             $contractData['payment_status_code'] = $codeMap[$paymentStatus] ?? 1;
-        } elseif ($this->hasIsPaid) {
+        }
+
+        if ($this->hasIsPaid) {
             $contractData['is_paid'] = ($paymentStatus === 'paid');
         }
 
-        if ($this->hasPaidAt && $paymentStatus === 'paid') {
-            $contractData['paid_at'] = now();
+        if ($this->hasPaidAt) {
+            $contractData['paid_at'] = ($paymentStatus === 'paid') ? now() : null;
         }
 
         return $contractData;
@@ -537,6 +562,30 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
             $normalized[$key] = $this->normalizeKey($key);
         }
         Log::debug('Import normalized headings', ['headings' => $normalized, 'original' => array_keys($rowArray)]);
+    }
+
+    protected function logPaymentStatusDebug(int $rowIndex, $rawCode, ?string $mappedStatus, array $contractData): void
+    {
+        $paymentFields = [];
+        if (isset($contractData['payment_status'])) {
+            $paymentFields['payment_status'] = $contractData['payment_status'];
+        }
+        if (isset($contractData['payment_status_code'])) {
+            $paymentFields['payment_status_code'] = $contractData['payment_status_code'];
+        }
+        if (isset($contractData['is_paid'])) {
+            $paymentFields['is_paid'] = $contractData['is_paid'];
+        }
+        if (isset($contractData['paid_at'])) {
+            $paymentFields['paid_at'] = $contractData['paid_at'];
+        }
+
+        Log::debug('Payment status import debug', [
+            'row' => $rowIndex,
+            'raw_code' => $rawCode,
+            'mapped_status' => $mappedStatus,
+            'payment_fields' => $paymentFields,
+        ]);
     }
 
     public function getErrors(): array
