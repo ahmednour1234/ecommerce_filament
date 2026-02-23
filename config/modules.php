@@ -16,5 +16,6 @@ return [
     'integrations' => env('MODULE_INTEGRATIONS', false),
     'recruitment_contracts' => env('MODULE_RECRUITMENT_CONTRACTS', true),
     'company_visas' => env('MODULE_COMPANY_VISAS', true),
+    'service_transfer' => env('MODULE_SERVICE_TRANSFER', true),
 
 ];

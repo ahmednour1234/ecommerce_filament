@@ -4,7 +4,7 @@ namespace App\Filament\Pages\ServiceTransfer;
 
 use App\Filament\Concerns\ExportsTable;
 use App\Filament\Concerns\TranslatableNavigation;
-use App\Models\ServiceTransferPayment;
+use Modules\ServiceTransfer\Entities\ServiceTransferPayment;
 use App\Models\MainCore\PaymentMethod;
 use Filament\Forms;
 use Filament\Forms\Form;

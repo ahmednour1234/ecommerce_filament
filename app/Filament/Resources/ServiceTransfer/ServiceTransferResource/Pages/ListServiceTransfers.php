@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\ServiceTransfer\ServiceTransferResource\Pages;
 
 use App\Filament\Resources\ServiceTransfer\ServiceTransferResource;
-use App\Models\ServiceTransfer;
+use Modules\ServiceTransfer\Entities\ServiceTransfer;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Pages\ListRecords\Tab;

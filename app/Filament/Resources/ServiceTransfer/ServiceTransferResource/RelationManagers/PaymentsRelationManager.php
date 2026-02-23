@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\ServiceTransfer\ServiceTransferResource\RelationManagers;
 
 use App\Models\Accounting\Account;
-use App\Models\ServiceTransfer;
-use App\Models\ServiceTransferPayment;
+use Modules\ServiceTransfer\Entities\ServiceTransfer;
+use Modules\ServiceTransfer\Entities\ServiceTransferPayment;
 use App\Models\MainCore\PaymentMethod;
 use App\Services\ServiceTransfer\ServiceTransferPaymentService;
 use Filament\Forms;

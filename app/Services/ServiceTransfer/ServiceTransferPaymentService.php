@@ -2,8 +2,8 @@
 
 namespace App\Services\ServiceTransfer;
 
-use App\Models\ServiceTransfer;
-use App\Models\ServiceTransferPayment;
+use Modules\ServiceTransfer\Entities\ServiceTransfer;
+use Modules\ServiceTransfer\Entities\ServiceTransferPayment;
 use App\Models\Finance\BranchTransaction;
 use App\Models\Finance\FinanceType;
 use App\Services\Finance\BranchTransactionService;

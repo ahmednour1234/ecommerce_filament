@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\ServiceTransfer\ServiceTransferResource\RelationManagers;
 
-use App\Models\ServiceTransferDocument;
+use Modules\ServiceTransfer\Entities\ServiceTransferDocument;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;

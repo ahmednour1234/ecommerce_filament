@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\ServiceTransfer;
 
 use App\Http\Controllers\Controller;
-use App\Models\ServiceTransfer;
-use App\Models\ServiceTransferPayment;
+use Modules\ServiceTransfer\Entities\ServiceTransfer;
+use Modules\ServiceTransfer\Entities\ServiceTransferPayment;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 

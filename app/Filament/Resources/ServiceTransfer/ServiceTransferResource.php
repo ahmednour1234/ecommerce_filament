@@ -5,7 +5,7 @@ namespace App\Filament\Resources\ServiceTransfer;
 use App\Filament\Resources\ServiceTransfer\ServiceTransferResource\Pages;
 use App\Filament\Resources\ServiceTransfer\ServiceTransferResource\RelationManagers;
 use App\Filament\Concerns\TranslatableNavigation;
-use App\Models\ServiceTransfer;
+use Modules\ServiceTransfer\Entities\ServiceTransfer;
 use App\Models\MainCore\Branch;
 use App\Models\Sales\Customer;
 use App\Models\Recruitment\Laborer;

@@ -4,7 +4,7 @@ namespace App\Filament\Pages\ServiceTransfer;
 
 use App\Filament\Concerns\ExportsTable;
 use App\Filament\Concerns\TranslatableNavigation;
-use App\Models\ServiceTransfer;
+use Modules\ServiceTransfer\Entities\ServiceTransfer;
 use App\Models\MainCore\Branch;
 use Filament\Forms;
 use Filament\Forms\Form;

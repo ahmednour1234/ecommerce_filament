@@ -3,7 +3,7 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\ServiceTransferPayment;
+use Modules\ServiceTransfer\Entities\ServiceTransferPayment;
 
 class ServiceTransferPaymentPolicy
 {
