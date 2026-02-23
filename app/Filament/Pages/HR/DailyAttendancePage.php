@@ -4,13 +4,16 @@ namespace App\Filament\Pages\HR;
 
 use App\Models\HR\AttendanceDay;
 use App\Models\HR\AttendanceLog;
+use App\Models\HR\Employee;
 use App\Models\HR\EmployeeSchedule;
+use App\Services\HR\AttendanceService;
 use App\Filament\Concerns\TranslatableNavigation;
 use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Filament\Pages\Page;
+use Filament\Actions\Action;
 use Carbon\Carbon;
 
 class DailyAttendancePage extends Page implements HasTable
@@ -49,14 +52,50 @@ class DailyAttendancePage extends Page implements HasTable
     public function mount(): void
     {
         $this->selectedDate = now()->format('Y-m-d');
+        $this->aggregateAttendanceForDate($this->selectedDate);
+    }
+
+    public function updatedSelectedDate($value): void
+    {
+        if ($value) {
+            $this->aggregateAttendanceForDate($value);
+        }
+    }
+
+    protected function aggregateAttendanceForDate(string $date): void
+    {
+        $attendanceService = app(AttendanceService::class);
+        $attendanceService->aggregateForDate($date);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('aggregate')
+                ->label(tr('actions.aggregate_attendance', [], null, 'dashboard') ?: 'تجميع بيانات الحضور')
+                ->icon('heroicon-o-arrow-path')
+                ->color('primary')
+                ->action(function () {
+                    $this->aggregateAttendanceForDate($this->selectedDate ?? now()->format('Y-m-d'));
+                    \Filament\Notifications\Notification::make()
+                        ->title(tr('messages.attendance_aggregated', [], null, 'dashboard') ?: 'تم تجميع بيانات الحضور بنجاح')
+                        ->success()
+                        ->send();
+                }),
+        ];
     }
 
     public function table(\Filament\Tables\Table $table): \Filament\Tables\Table
     {
+        $selectedDate = $this->selectedDate ?? now()->format('Y-m-d');
+        
+        // Auto-aggregate attendance for this date
+        $this->aggregateAttendanceForDate($selectedDate);
+        
         return $table
             ->query(
                 AttendanceDay::query()
-                    ->whereDate('date', $this->selectedDate ?? now())
+                    ->whereDate('date', $selectedDate)
                     ->with(['employee.department', 'employee.position', 'employee.attendanceLogs'])
             )
             ->columns([
