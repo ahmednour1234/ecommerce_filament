@@ -459,17 +459,12 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
         return $statusMap[(int) $code] ?? 'new';
     }
 
-    /**
-     * IMPORTANT:
-     * Always return 'paid' - never return 'unpaid'.
-     * This function maps all values to 'paid' or 'partial' (never unpaid).
-     */
     protected function mapPaymentStatus($raw): ?string
     {
-        if ($raw === null) return 'paid';
+        if ($raw === null) return 'unpaid';
 
         $v = trim((string) $raw);
-        if ($v === '') return 'paid';
+        if ($v === '') return 'unpaid';
 
         // Normalize Arabic/English
         $normalized = mb_strtolower($v, 'UTF-8');
@@ -482,48 +477,48 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
             return match ($n) {
                 2 => 'partial',
                 3 => 'paid',
-                0, 1 => 'paid',
-                default => 'paid',
+                0, 1 => 'unpaid',
+                default => 'unpaid',
             };
         }
 
         // Arabic keywords
         if (str_contains($normalized, 'مدفوع') || str_contains($normalized, 'تم الدفع')) return 'paid';
         if (str_contains($normalized, 'جزئي') || str_contains($normalized, 'جزء')) return 'partial';
-        if (str_contains($normalized, 'غير مدفوع') || str_contains($normalized, 'غيرمدفوع')) return 'paid';
+        if (str_contains($normalized, 'غير مدفوع') || str_contains($normalized, 'غيرمدفوع')) return 'unpaid';
 
         // English keywords
         if (str_contains($normalized, 'paid')) return 'paid';
         if (str_contains($normalized, 'partial')) return 'partial';
-        if (str_contains($normalized, 'unpaid')) return 'paid';
+        if (str_contains($normalized, 'unpaid')) return 'unpaid';
 
-        // Default: always paid
-        return 'paid';
+        return 'unpaid';
     }
 
-    /**
-     * Always set payment_status to 'paid' regardless of Excel value.
-     * Update ALL columns if they exist (no elseif).
-     */
     protected function applyPaymentStatus(array $contractData, ?string $paymentStatus): array
     {
-        // Always set to 'paid' regardless of input
-        $paymentStatus = 'paid';
+        if (!$paymentStatus) {
+            $paymentStatus = 'unpaid';
+        }
 
         if ($this->hasPaymentStatus) {
             $contractData['payment_status'] = $paymentStatus;
         }
 
         if ($this->hasPaymentStatusCode) {
-            $contractData['payment_status_code'] = 3; // 3 = paid
+            $contractData['payment_status_code'] = match ($paymentStatus) {
+                'paid' => 3,
+                'partial' => 2,
+                default => 1,
+            };
         }
 
         if ($this->hasIsPaid) {
-            $contractData['is_paid'] = true;
+            $contractData['is_paid'] = $paymentStatus === 'paid';
         }
 
         if ($this->hasPaidAt) {
-            $contractData['paid_at'] = now();
+            $contractData['paid_at'] = $paymentStatus === 'paid' ? now() : null;
         }
 
         return $contractData;
