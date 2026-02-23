@@ -145,6 +145,8 @@ class HousingTranslationsSeeder extends Seeder
             'housing.status.with_client' => ['en' => 'With Client', 'ar' => 'مع العميل'],
             'housing.status.in_completion' => ['en' => 'In Completion', 'ar' => 'في الإيماء'],
             'housing.status.completed' => ['en' => 'Completed', 'ar' => 'مكتمل'],
+            'housing.status.outside_warranty' => ['en' => 'Outside Warranty', 'ar' => 'خارج الضمان'],
+            'housing.status.inside_warranty' => ['en' => 'Inside Warranty', 'ar' => 'داخل الضمان'],
 
             'housing.reports.heading' => ['en' => 'Housing Reports', 'ar' => 'تقارير الإيواء'],
             'housing.reports.returns_this_month' => ['en' => 'Returns This Month', 'ar' => 'استرجاع هذا الشهر'],

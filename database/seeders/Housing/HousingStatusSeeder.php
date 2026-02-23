@@ -92,6 +92,22 @@ class HousingStatusSeeder extends Seeder
                 'order' => 10,
                 'is_active' => true,
             ],
+            [
+                'key' => 'outside_warranty',
+                'name_ar' => 'خارج الضمان',
+                'name_en' => 'Outside Warranty',
+                'color' => 'warning',
+                'order' => 11,
+                'is_active' => true,
+            ],
+            [
+                'key' => 'inside_warranty',
+                'name_ar' => 'داخل الضمان',
+                'name_en' => 'Inside Warranty',
+                'color' => 'success',
+                'order' => 12,
+                'is_active' => true,
+            ],
         ];
 
         $created = 0;

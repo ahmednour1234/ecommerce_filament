@@ -14,6 +14,8 @@ class HousingRequestStatus
     public const WITH_CLIENT = 'with_client';
     public const IN_COMPLETION = 'in_completion';
     public const COMPLETED = 'completed';
+    public const OUTSIDE_WARRANTY = 'outside_warranty';
+    public const INSIDE_WARRANTY = 'inside_warranty';
 
     public static function options(): array
     {
@@ -28,6 +30,8 @@ class HousingRequestStatus
             self::WITH_CLIENT => 'مع العميل',
             self::IN_COMPLETION => 'في الإيواء',
             self::COMPLETED => 'مكتمل',
+            self::OUTSIDE_WARRANTY => 'خارج الضمان',
+            self::INSIDE_WARRANTY => 'داخل الضمان',
         ];
     }
 
@@ -44,6 +48,8 @@ class HousingRequestStatus
             self::WITH_CLIENT => 'housing.status.with_client',
             self::IN_COMPLETION => 'housing.status.in_completion',
             self::COMPLETED => 'housing.status.completed',
+            self::OUTSIDE_WARRANTY => 'housing.status.outside_warranty',
+            self::INSIDE_WARRANTY => 'housing.status.inside_warranty',
         ];
     }
 
@@ -64,6 +70,8 @@ class HousingRequestStatus
             self::READY_FOR_DELIVERY, self::COMPLETED => 'success',
             self::TRANSFER_SPONSORSHIP, self::WITH_CLIENT => 'info',
             self::IN_COMPLETION => 'primary',
+            self::OUTSIDE_WARRANTY => 'warning',
+            self::INSIDE_WARRANTY => 'success',
             default => 'gray',
         };
     }
