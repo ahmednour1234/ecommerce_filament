@@ -209,19 +209,18 @@
         @if(app()->getLocale() === 'ar')
             <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/ar.js"></script>
         @endif
-    @endpush
-
-    <script>
-        document.addEventListener('livewire:init', () => {
-            Livewire.hook('morph.updated', ({ el, component }) => {
-                const calendarEl = document.querySelector('[x-data*="calendar"]');
-                if (calendarEl && calendarEl._x_dataStack) {
-                    const alpineData = calendarEl._x_dataStack[0];
-                    if (alpineData && typeof alpineData.loadEventsIfNeeded === 'function') {
-                        alpineData.loadEventsIfNeeded();
+        <script>
+            document.addEventListener('livewire:init', () => {
+                Livewire.hook('morph.updated', ({ el, component }) => {
+                    const calendarEl = document.querySelector('[x-data*="calendar"]');
+                    if (calendarEl && calendarEl._x_dataStack) {
+                        const alpineData = calendarEl._x_dataStack[0];
+                        if (alpineData && typeof alpineData.loadEventsIfNeeded === 'function') {
+                            alpineData.loadEventsIfNeeded();
+                        }
                     }
-                }
+                });
             });
-        });
-    </script>
+        </script>
+    @endpush
 </x-filament-panels::page>
