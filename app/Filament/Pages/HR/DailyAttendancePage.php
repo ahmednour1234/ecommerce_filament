@@ -116,7 +116,7 @@ class DailyAttendancePage extends Page implements HasTable
                     ->label(tr('fields.first_in', [], null, 'dashboard') ?: 'First In')
                     ->dateTime('H:i')
                     ->sortable()
-                    ->default('-')
+                    ->placeholder('-')
                     ->description(function ($record) {
                         $descriptions = [];
                         
@@ -156,7 +156,7 @@ class DailyAttendancePage extends Page implements HasTable
                     ->label(tr('fields.late_minutes', [], null, 'dashboard') ?: 'Late Minutes')
                     ->formatStateUsing(function ($state, $record) {
                         // Calculate late minutes from actual check-in time vs expected time
-                        if ($record->first_in && $record->employee) {
+                        if ($record->first_in && $record->employee && $record->first_in instanceof \Carbon\Carbon) {
                             $employeeSchedule = EmployeeSchedule::where('employee_id', $record->employee_id)
                                 ->forDate($record->date)
                                 ->latest()
@@ -166,7 +166,7 @@ class DailyAttendancePage extends Page implements HasTable
                                 $startTime = $employeeSchedule->schedule->start_time;
                                 $timeStr = is_string($startTime) ? $startTime : $startTime->format('H:i:s');
                                 $expectedTime = Carbon::parse($record->date->format('Y-m-d') . ' ' . substr($timeStr, 0, 5));
-                                $actualTime = Carbon::parse($record->first_in);
+                                $actualTime = $record->first_in;
                                 
                                 $lateMinutes = max(0, $actualTime->diffInMinutes($expectedTime) - ($employeeSchedule->schedule->late_grace_minutes ?? 0));
                                 
@@ -195,7 +195,7 @@ class DailyAttendancePage extends Page implements HasTable
                     })
                     ->badge()
                     ->color(function ($state, $record) {
-                        if ($record->first_in && $record->employee) {
+                        if ($record->first_in && $record->employee && $record->first_in instanceof \Carbon\Carbon) {
                             $employeeSchedule = EmployeeSchedule::where('employee_id', $record->employee_id)
                                 ->forDate($record->date)
                                 ->latest()
@@ -205,7 +205,7 @@ class DailyAttendancePage extends Page implements HasTable
                                 $startTime = $employeeSchedule->schedule->start_time;
                                 $timeStr = is_string($startTime) ? $startTime : $startTime->format('H:i:s');
                                 $expectedTime = Carbon::parse($record->date->format('Y-m-d') . ' ' . substr($timeStr, 0, 5));
-                                $actualTime = Carbon::parse($record->first_in);
+                                $actualTime = $record->first_in;
                                 $lateMinutes = max(0, $actualTime->diffInMinutes($expectedTime) - ($employeeSchedule->schedule->late_grace_minutes ?? 0));
                                 return $lateMinutes > 0 ? 'warning' : 'success';
                             }
@@ -218,7 +218,7 @@ class DailyAttendancePage extends Page implements HasTable
                     ->label(tr('fields.last_out', [], null, 'dashboard') ?: 'Last Out')
                     ->dateTime('H:i')
                     ->sortable()
-                    ->default('-')
+                    ->placeholder('-')
                     ->description(function ($record) {
                         $descriptions = [];
                         
