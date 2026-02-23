@@ -1,15 +1,12 @@
 <x-filament-panels::page>
     <div class="space-y-6">
         <div class="rounded-lg bg-white dark:bg-gray-800 p-4 border border-gray-200 dark:border-gray-700">
-            <form wire:submit.prevent="filterForm">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {{ $this->filterForm }}
-                </div>
-            </form>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {{ $this->filterForm }}
+            </div>
         </div>
 
-        <div 
-            wire:ignore
+        <div
             x-data="{
                 calendar: null,
                 events: [],
@@ -44,7 +41,7 @@
                         this.events = data.events || [];
                         this.summary = data.summary || null;
                         this.employee = data.employee || null;
-                        
+
                         if (this.calendar) {
                             this.calendar.removeAllEvents();
                             this.calendar.addEventSource(this.events);
@@ -74,35 +71,35 @@
                             const props = info.event.extendedProps;
                             let content = '<div class="p-4 space-y-2">';
                             content += '<h3 class="font-bold text-lg">' + info.event.title + '</h3>';
-                            
+
                             if (props.expected_start_time && props.expected_end_time) {
                                 content += '<p><strong>موعد العمل المتوقع:</strong> ' + props.expected_start_time + ' - ' + props.expected_end_time + '</p>';
                             }
-                            
+
                             if (props.schedule_name) {
                                 content += '<p><strong>جدول العمل:</strong> ' + props.schedule_name + '</p>';
                             }
-                            
+
                             if (props.first_in) {
                                 content += '<p><strong>وقت الدخول:</strong> ' + props.first_in + '</p>';
                             }
-                            
+
                             if (props.last_out) {
                                 content += '<p><strong>وقت الخروج:</strong> ' + props.last_out + '</p>';
                             }
-                            
+
                             content += '<p><strong>ساعات العمل:</strong> ' + props.worked_hours + ' ساعة</p>';
-                            
+
                             if (props.late_minutes > 0) {
                                 content += '<p><strong>دقائق التأخير:</strong> ' + props.late_minutes + ' دقيقة</p>';
                             }
-                            
+
                             if (props.overtime_minutes > 0) {
                                 content += '<p><strong>دقائق الإضافي:</strong> ' + props.overtime_minutes + ' دقيقة</p>';
                             }
-                            
+
                             content += '</div>';
-                            
+
                             alert(content.replace(/<[^>]*>/g, ''));
                         }
                     });
@@ -119,14 +116,14 @@
             x-init="init()"
             class="w-full"
         >
-            <div 
-                x-show="loading" 
+            <div
+                x-show="loading"
                 class="flex items-center justify-center p-8"
             >
                 <x-filament::loading-indicator />
             </div>
 
-            <div 
+            <div
                 x-show="!loading && !jsonUrl"
                 class="rounded-lg bg-info-50 dark:bg-info-900/20 p-4 border border-info-200 dark:border-info-800"
             >
@@ -142,7 +139,7 @@
                 </div>
             </div>
 
-            <div 
+            <div
                 x-show="!loading && jsonUrl && summary"
                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
             >
@@ -196,31 +193,31 @@
                 </div>
             </div>
 
-            <div 
+            <div
                 x-show="!loading && jsonUrl"
                 x-ref="calendar"
                 id="monthly-attendance-calendar"
             ></div>
         </div>
     </div>
-
-    @push('scripts')
-        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
-        @if(app()->getLocale() === 'ar')
-            <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/ar.js"></script>
-        @endif
-        <script>
-            document.addEventListener('livewire:init', () => {
-                Livewire.hook('morph.updated', ({ el, component }) => {
-                    const calendarEl = document.querySelector('[x-data*="calendar"]');
-                    if (calendarEl && calendarEl._x_dataStack) {
-                        const alpineData = calendarEl._x_dataStack[0];
-                        if (alpineData && typeof alpineData.loadEventsIfNeeded === 'function') {
-                            alpineData.loadEventsIfNeeded();
-                        }
-                    }
-                });
-            });
-        </script>
-    @endpush
 </x-filament-panels::page>
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+    @if(app()->getLocale() === 'ar')
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/ar.js"></script>
+    @endif
+    <script>
+        document.addEventListener('livewire:init', () => {
+            Livewire.hook('morph.updated', ({ el, component }) => {
+                const calendarEl = document.querySelector('[x-data*="calendar"]');
+                if (calendarEl && calendarEl._x_dataStack) {
+                    const alpineData = calendarEl._x_dataStack[0];
+                    if (alpineData && typeof alpineData.loadEventsIfNeeded === 'function') {
+                        alpineData.loadEventsIfNeeded();
+                    }
+                }
+            });
+        });
+    </script>
+@endpush
