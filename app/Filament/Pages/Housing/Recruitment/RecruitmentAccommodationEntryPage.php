@@ -25,6 +25,7 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
     public ?string $contract_no = null;
     public ?string $entry_type = null;
     public ?string $entry_date = null;
+    public ?string $exit_date = null;
     public ?string $status = null;
     public ?int $building_id = null;
 
@@ -95,6 +96,11 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                         \Filament\Forms\Components\DateTimePicker::make('entry_date')
                             ->label(tr('housing.accommodation.entry_date', [], null, 'dashboard') ?: 'تاريخ الدخول')
                             ->required()
+                            ->native(false)
+                            ->columnSpan(1),
+
+                        \Filament\Forms\Components\DateTimePicker::make('exit_date')
+                            ->label(tr('housing.accommodation.exit_date', [], null, 'dashboard') ?: 'تاريخ خروج')
                             ->native(false)
                             ->columnSpan(1),
 
