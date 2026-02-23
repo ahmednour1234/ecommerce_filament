@@ -88,11 +88,9 @@ class RecruitmentContract extends Model
         });
 
         static::saving(function ($contract) {
-            if ($contract->isDirty(['direct_cost', 'internal_ticket_cost', 'external_cost', 'vat_cost', 'gov_cost']) || $contract->isNew()) {
-                $service = app(RecruitmentContractService::class);
-                $totals = $service->computeTotals($contract);
-                $contract->fill($totals);
-            }
+            $service = app(RecruitmentContractService::class);
+            $totals = $service->computeTotals($contract);
+            $contract->fill($totals);
         });
 
         static::updating(function ($contract) {

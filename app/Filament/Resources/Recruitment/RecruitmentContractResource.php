@@ -11,6 +11,8 @@ use App\Models\MainCore\Branch;
 use App\Models\Client;
 use App\Models\Recruitment\Laborer;
 use App\Models\Recruitment\Profession;
+use App\Models\Recruitment\Nationality;
+use App\Models\Recruitment\Agent;
 use App\Models\MainCore\Country;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -158,9 +160,19 @@ class RecruitmentContractResource extends Resource
                             ->maxLength(255)
                             ->columnSpan(1),
 
-                        Forms\Components\TextInput::make('departure_country_id')
+                        Forms\Components\Select::make('departure_country_id')
                             ->label(tr('recruitment_contract.fields.departure_country', [], null, 'dashboard') ?: 'محطة القدوم')
-                            ->maxLength(255)
+                            ->options([
+                                'نيروبي' => 'نيروبي',
+                                'كمبالا' => 'كمبالا',
+                                'مانيلا' => 'مانيلا',
+                                'كولومبو' => 'كولومبو',
+                                'دكا' => 'دكا',
+                                'اديس ابابا' => 'اديس ابابا',
+                                'دار السلام' => 'دار السلام',
+                            ])
+                            ->searchable()
+                            ->nullable()
                             ->columnSpan(1),
 
                         Forms\Components\TextInput::make('receiving_station_id')
@@ -315,8 +327,30 @@ class RecruitmentContractResource extends Resource
                                 'partial' => tr('recruitment_contract.payment_status.partial', [], null, 'dashboard') ?: 'Partial',
                                 'paid' => tr('recruitment_contract.payment_status.paid', [], null, 'dashboard') ?: 'Paid',
                             ])
+                            ->default(function ($get, $record) {
+                                if ($record) {
+                                    return $record->payment_status;
+                                }
+
+                                $directCost = (float) ($get('direct_cost') ?? 0);
+                                $internalTicketCost = (float) ($get('internal_ticket_cost') ?? 0);
+                                $externalCost = (float) ($get('external_cost') ?? 0);
+                                $vatCost = (float) ($get('vat_cost') ?? 0);
+                                $govCost = (float) ($get('gov_cost') ?? 0);
+
+                                $totalCost = $directCost + $internalTicketCost + $externalCost + $vatCost + $govCost;
+                                $paidTotal = (float) ($get('paid_total') ?? 0);
+                                $remainingTotal = max(0, $totalCost - $paidTotal);
+
+                                if ($remainingTotal <= 0 && $totalCost > 0) {
+                                    return 'paid';
+                                } elseif ($paidTotal > 0) {
+                                    return 'partial';
+                                }
+                                return 'unpaid';
+                            })
                             ->disabled()
-                            ->dehydrated(false)
+                            ->dehydrated()
                             ->columnSpan(1),
                     ])
                     ->columns(2),
@@ -367,6 +401,71 @@ class RecruitmentContractResource extends Resource
                                 });
                             })
                             ->searchable()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name_ar')
+                                    ->label(tr('recruitment.fields.name_ar', [], null, 'dashboard') ?: 'Name (Arabic)')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('name_en')
+                                    ->label(tr('recruitment.fields.name_en', [], null, 'dashboard') ?: 'Name (English)')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('passport_number')
+                                    ->label(tr('recruitment.fields.passport_number', [], null, 'dashboard') ?: 'Passport Number')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->unique(Laborer::class, 'passport_number'),
+                                Forms\Components\Select::make('nationality_id')
+                                    ->label(tr('recruitment.fields.nationality', [], null, 'dashboard') ?: 'Nationality')
+                                    ->options(function () {
+                                        return Nationality::where('is_active', true)
+                                            ->get()
+                                            ->mapWithKeys(function ($nationality) {
+                                                $label = app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en;
+                                                return [$nationality->id => $label];
+                                            });
+                                    })
+                                    ->searchable()
+                                    ->required(),
+                                Forms\Components\Select::make('profession_id')
+                                    ->label(tr('recruitment.fields.profession', [], null, 'dashboard') ?: 'Profession')
+                                    ->options(function () {
+                                        return Profession::where('is_active', true)
+                                            ->get()
+                                            ->mapWithKeys(function ($profession) {
+                                                $label = app()->getLocale() === 'ar' ? $profession->name_ar : $profession->name_en;
+                                                return [$profession->id => $label];
+                                            });
+                                    })
+                                    ->searchable()
+                                    ->required(),
+                                Forms\Components\Select::make('gender')
+                                    ->label(tr('recruitment.fields.gender', [], null, 'dashboard') ?: 'Gender')
+                                    ->options([
+                                        'male' => tr('recruitment_contract.gender.male', [], null, 'dashboard') ?: 'Male',
+                                        'female' => tr('recruitment_contract.gender.female', [], null, 'dashboard') ?: 'Female',
+                                    ])
+                                    ->nullable(),
+                                Forms\Components\TextInput::make('phone_1')
+                                    ->label(tr('recruitment.fields.phone_1', [], null, 'dashboard') ?: 'Phone 1')
+                                    ->tel()
+                                    ->maxLength(50)
+                                    ->nullable(),
+                            ])
+                            ->createOptionUsing(function (array $data): int {
+                                $laborer = Laborer::create([
+                                    'name_ar' => $data['name_ar'],
+                                    'name_en' => $data['name_en'],
+                                    'passport_number' => $data['passport_number'],
+                                    'nationality_id' => $data['nationality_id'],
+                                    'profession_id' => $data['profession_id'],
+                                    'gender' => $data['gender'] ?? null,
+                                    'phone_1' => $data['phone_1'] ?? null,
+                                    'is_available' => true,
+                                ]);
+                                Cache::forget('recruitment_contracts.workers');
+                                return $laborer->id;
+                            })
                             ->columnSpan(1),
 
                         Forms\Components\Textarea::make('notes')
