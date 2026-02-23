@@ -193,6 +193,22 @@ class RecruitmentContractResource extends Resource
                             ->searchable()
                             ->columnSpan(1),
 
+                        Forms\Components\Select::make('nationality_id')
+                            ->label(tr('recruitment_contract.fields.nationality', [], null, 'dashboard') ?: 'Nationality')
+                            ->options(function () {
+                                return Cache::remember('recruitment_contracts.nationalities', 21600, function () {
+                                    return Nationality::where('is_active', true)
+                                        ->get()
+                                        ->mapWithKeys(function ($nationality) {
+                                            $label = app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en;
+                                            return [$nationality->id => $label];
+                                        })
+                                        ->toArray();
+                                });
+                            })
+                            ->searchable()
+                            ->columnSpan(1),
+
                         Forms\Components\Select::make('gender')
                             ->label(tr('recruitment_contract.fields.gender', [], null, 'dashboard') ?: 'Gender')
                             ->options([

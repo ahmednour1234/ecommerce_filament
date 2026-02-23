@@ -42,6 +42,7 @@ class RecruitmentContractTranslationsSeeder extends Seeder
             'recruitment_contract.fields.departure_country' => ['en' => 'Departure Country', 'ar' => 'محطة القدوم'],
             'recruitment_contract.fields.receiving_station' => ['en' => 'Receiving Station', 'ar' => 'محطة الاستلام'],
             'recruitment_contract.fields.profession' => ['en' => 'Profession', 'ar' => 'المهنة'],
+            'recruitment_contract.fields.nationality' => ['en' => 'Nationality', 'ar' => 'الجنسية'],
             'recruitment_contract.fields.gender' => ['en' => 'Gender', 'ar' => 'الجنس'],
             'recruitment_contract.fields.experience' => ['en' => 'Experience', 'ar' => 'الخبرة'],
             'recruitment_contract.fields.religion' => ['en' => 'Religion', 'ar' => 'الدين'],

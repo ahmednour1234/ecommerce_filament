@@ -30,6 +30,7 @@ class RecruitmentContract extends Model
         'departure_country_id',
         'receiving_station_id',
         'profession_id',
+        'nationality_id',
         'gender',
         'experience',
         'religion',
@@ -147,6 +148,11 @@ class RecruitmentContract extends Model
     public function profession(): BelongsTo
     {
         return $this->belongsTo(Profession::class);
+    }
+
+    public function nationality(): BelongsTo
+    {
+        return $this->belongsTo(Nationality::class);
     }
 
     public function worker(): BelongsTo
