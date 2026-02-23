@@ -72,13 +72,13 @@ class DailyAttendancePage extends Page implements HasTable
     {
         return [
             Action::make('aggregate')
-                ->label(tr('actions.aggregate_attendance', [], null, 'dashboard') ?: 'تجميع بيانات الحضور')
+                ->label(tr('actions.aggregate_attendance', [], null, 'dashboard') ?: 'Aggregate Attendance')
                 ->icon('heroicon-o-arrow-path')
                 ->color('primary')
                 ->action(function () {
                     $this->aggregateAttendanceForDate($this->selectedDate ?? now()->format('Y-m-d'));
                     \Filament\Notifications\Notification::make()
-                        ->title(tr('messages.attendance_aggregated', [], null, 'dashboard') ?: 'تم تجميع بيانات الحضور بنجاح')
+                        ->title(tr('messages.attendance_aggregated', [], null, 'dashboard') ?: 'Attendance aggregated successfully')
                         ->success()
                         ->send();
                 }),
@@ -113,10 +113,10 @@ class DailyAttendancePage extends Page implements HasTable
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('first_in')
-                    ->label(tr('fields.first_in', [], null, 'dashboard') ?: 'وقت الدخول')
+                    ->label(tr('fields.first_in', [], null, 'dashboard') ?: 'First In')
                     ->dateTime('H:i')
                     ->sortable()
-                    ->default('—')
+                    ->default('-')
                     ->description(function ($record) {
                         $descriptions = [];
                         
@@ -131,7 +131,7 @@ class DailyAttendancePage extends Page implements HasTable
                                 $startTime = $employeeSchedule->schedule->start_time;
                                 $timeStr = is_string($startTime) ? $startTime : $startTime->format('H:i:s');
                                 $expectedTime = Carbon::parse($record->date->format('Y-m-d') . ' ' . substr($timeStr, 0, 5));
-                                $descriptions[] = 'المتوقع: ' . $expectedTime->format('H:i');
+                                $descriptions[] = (tr('fields.expected_time', [], null, 'dashboard') ?: 'Expected') . ': ' . $expectedTime->format('H:i');
                             }
                         }
                         
@@ -145,7 +145,7 @@ class DailyAttendancePage extends Page implements HasTable
                             
                             if ($checkInLogs->count() > 0) {
                                 $times = $checkInLogs->map(fn($log) => $log->log_datetime->format('H:i'))->join(', ');
-                                $descriptions[] = 'سجلات: ' . $times;
+                                $descriptions[] = (tr('fields.logs', [], null, 'dashboard') ?: 'Logs') . ': ' . $times;
                             }
                         }
                         
@@ -153,7 +153,7 @@ class DailyAttendancePage extends Page implements HasTable
                     }),
 
                 Tables\Columns\TextColumn::make('late_minutes')
-                    ->label(tr('fields.late_minutes', [], null, 'dashboard') ?: 'دقائق التأخير')
+                    ->label(tr('fields.late_minutes', [], null, 'dashboard') ?: 'Late Minutes')
                     ->formatStateUsing(function ($state, $record) {
                         // Calculate late minutes from actual check-in time vs expected time
                         if ($record->first_in && $record->employee) {
@@ -174,11 +174,11 @@ class DailyAttendancePage extends Page implements HasTable
                                     $hours = floor($lateMinutes / 60);
                                     $minutes = $lateMinutes % 60;
                                     if ($hours > 0) {
-                                        return $hours . ' س ' . $minutes . ' د';
+                                        return $hours . 'h ' . $minutes . 'm';
                                     }
-                                    return $lateMinutes . ' دقيقة';
+                                    return $lateMinutes . 'm';
                                 }
-                                return '—';
+                                return '-';
                             }
                         }
                         
@@ -187,11 +187,11 @@ class DailyAttendancePage extends Page implements HasTable
                             $hours = floor($state / 60);
                             $minutes = $state % 60;
                             if ($hours > 0) {
-                                return $hours . ' س ' . $minutes . ' د';
+                                return $hours . 'h ' . $minutes . 'm';
                             }
-                            return $minutes . ' دقيقة';
+                            return $minutes . 'm';
                         }
-                        return '—';
+                        return '-';
                     })
                     ->badge()
                     ->color(function ($state, $record) {
@@ -215,10 +215,10 @@ class DailyAttendancePage extends Page implements HasTable
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('last_out')
-                    ->label(tr('fields.last_out', [], null, 'dashboard') ?: 'وقت الخروج')
+                    ->label(tr('fields.last_out', [], null, 'dashboard') ?: 'Last Out')
                     ->dateTime('H:i')
                     ->sortable()
-                    ->default('—')
+                    ->default('-')
                     ->description(function ($record) {
                         $descriptions = [];
                         
@@ -233,7 +233,7 @@ class DailyAttendancePage extends Page implements HasTable
                                 $endTime = $employeeSchedule->schedule->end_time;
                                 $timeStr = is_string($endTime) ? $endTime : $endTime->format('H:i:s');
                                 $expectedTime = Carbon::parse($record->date->format('Y-m-d') . ' ' . substr($timeStr, 0, 5));
-                                $descriptions[] = 'المتوقع: ' . $expectedTime->format('H:i');
+                                $descriptions[] = (tr('fields.expected_time', [], null, 'dashboard') ?: 'Expected') . ': ' . $expectedTime->format('H:i');
                             }
                         }
                         
@@ -247,7 +247,7 @@ class DailyAttendancePage extends Page implements HasTable
                             
                             if ($checkOutLogs->count() > 0) {
                                 $times = $checkOutLogs->map(fn($log) => $log->log_datetime->format('H:i'))->join(', ');
-                                $descriptions[] = 'سجلات: ' . $times;
+                                $descriptions[] = (tr('fields.logs', [], null, 'dashboard') ?: 'Logs') . ': ' . $times;
                             }
                         }
                         
@@ -255,23 +255,23 @@ class DailyAttendancePage extends Page implements HasTable
                     }),
 
                 Tables\Columns\TextColumn::make('worked_minutes')
-                    ->label(tr('fields.worked_minutes', [], null, 'dashboard') ?: 'ساعات العمل')
+                    ->label(tr('fields.worked_minutes', [], null, 'dashboard') ?: 'Worked Hours')
                     ->formatStateUsing(function ($state) {
                         if ($state > 0) {
                             $hours = floor($state / 60);
                             $minutes = $state % 60;
                             if ($hours > 0) {
-                                return $hours . ' س ' . $minutes . ' د';
+                                return $hours . 'h ' . $minutes . 'm';
                             }
-                            return $minutes . ' دقيقة';
+                            return $minutes . 'm';
                         }
-                        return '—';
+                        return '-';
                     })
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('overtime_minutes')
                     ->label(tr('fields.overtime_minutes', [], null, 'dashboard') ?: 'Overtime')
-                    ->formatStateUsing(fn ($state) => $state > 0 ? round($state / 60, 2) . ' h' : '—')
+                    ->formatStateUsing(fn ($state) => $state > 0 ? round($state / 60, 2) . ' h' : '-')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('status')
