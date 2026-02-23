@@ -75,6 +75,7 @@ class HrTranslationsSeeder extends Seeder
             'fields.description' => ['en' => 'Description', 'ar' => 'الوصف'],
             'fields.active' => ['en' => 'Active', 'ar' => 'نشط'],
             'fields.employee_number' => ['en' => 'Employee Number', 'ar' => 'رقم الموظف'],
+            'fields.employee_name' => ['en' => 'Employee Name', 'ar' => 'اسم الموظف'],
             'fields.first_name' => ['en' => 'First Name', 'ar' => 'الاسم الأول'],
             'fields.last_name' => ['en' => 'Last Name', 'ar' => 'اسم العائلة'],
             'fields.email' => ['en' => 'Email', 'ar' => 'البريد الإلكتروني'],
@@ -113,6 +114,25 @@ class HrTranslationsSeeder extends Seeder
             'fields.days_count' => ['en' => 'Days Count', 'ar' => 'عدد الأيام'],
             'fields.days_count.helper' => ['en' => 'Number of days for this holiday', 'ar' => 'عدد الأيام (>=1)'],
             'fields.end_date' => ['en' => 'End Date', 'ar' => 'تاريخ نهاية العطلة'],
+            'fields.first_in' => ['en' => 'First In', 'ar' => 'وقت الدخول'],
+            'fields.last_out' => ['en' => 'Last Out', 'ar' => 'وقت الخروج'],
+            'fields.late_minutes' => ['en' => 'Late Minutes', 'ar' => 'دقائق التأخير'],
+            'fields.worked_minutes' => ['en' => 'Worked Minutes', 'ar' => 'ساعات العمل'],
+            'fields.overtime_minutes' => ['en' => 'Overtime Minutes', 'ar' => 'دقائق الإضافي'],
+            'fields.expected_time' => ['en' => 'Expected Time', 'ar' => 'المتوقع'],
+            'fields.logs' => ['en' => 'Logs', 'ar' => 'سجلات'],
+            'fields.present' => ['en' => 'Present', 'ar' => 'حضور'],
+            'fields.absent' => ['en' => 'Absent', 'ar' => 'غياب'],
+            'fields.leave' => ['en' => 'Leave', 'ar' => 'إجازة'],
+            'fields.holiday' => ['en' => 'Holiday', 'ar' => 'عطلة'],
+            'fields.present_days' => ['en' => 'Present Days', 'ar' => 'أيام الحضور'],
+            'fields.absent_days' => ['en' => 'Absent Days', 'ar' => 'أيام الغياب'],
+            'fields.holiday_days' => ['en' => 'Holiday Days', 'ar' => 'أيام العطلات'],
+            'fields.total_worked_hours' => ['en' => 'Total Worked Hours', 'ar' => 'إجمالي ساعات العمل'],
+            'fields.total_late_minutes' => ['en' => 'Total Late Minutes', 'ar' => 'إجمالي دقائق التأخير'],
+            'fields.total_overtime_minutes' => ['en' => 'Total Overtime Minutes', 'ar' => 'إجمالي دقائق الإضافي'],
+            'fields.average_worked_hours' => ['en' => 'Average Worked Hours', 'ar' => 'متوسط ساعات العمل'],
+            'fields.month' => ['en' => 'Month', 'ar' => 'الشهر'],
 
             // Actions
             'actions.add' => ['en' => 'Add', 'ar' => 'إضافة'],
@@ -124,6 +144,7 @@ class HrTranslationsSeeder extends Seeder
             'actions.add_new_holiday' => ['en' => 'Add New Holiday', 'ar' => 'إضافة عطلة جديدة'],
             'actions.show_calendar' => ['en' => 'Show Calendar', 'ar' => 'عرض التقويم'],
             'actions.holiday_list' => ['en' => 'Holiday List', 'ar' => 'قائمة العطلات'],
+            'actions.aggregate_attendance' => ['en' => 'Aggregate Attendance', 'ar' => 'تجميع بيانات الحضور'],
 
             // Messages
             'messages.saved_successfully' => ['en' => 'Saved successfully', 'ar' => 'تم الحفظ بنجاح'],
@@ -131,6 +152,8 @@ class HrTranslationsSeeder extends Seeder
             'messages.employee_updated' => ['en' => 'Employee updated successfully', 'ar' => 'تم تحديث الموظف بنجاح'],
             'messages.no_holidays' => ['en' => 'No holidays found. Please add holidays to view them on the calendar.', 'ar' => 'لا توجد عطلات. يرجى إضافة العطلات لعرضها في التقويم.'],
             'messages.no_holidays.info' => ['en' => 'Click "Add New Holiday" button to create your first holiday.', 'ar' => 'انقر على زر "إضافة عطلة جديدة" لإنشاء أول عطلة.'],
+            'messages.attendance_aggregated' => ['en' => 'Attendance aggregated successfully', 'ar' => 'تم تجميع بيانات الحضور بنجاح'],
+            'messages.select_employee_and_month' => ['en' => 'Please select an employee and month to view attendance calendar.', 'ar' => 'يرجى اختيار موظف وشهر لعرض تقويم الحضور.'],
 
             // Tabs
             'tabs.basic_info' => ['en' => 'Basic Info', 'ar' => 'المعلومات الأساسية'],
