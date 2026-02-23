@@ -131,7 +131,8 @@ class DailyAttendancePage extends Page implements HasTable
                                 $startTime = $employeeSchedule->schedule->start_time;
                                 $timeStr = is_string($startTime) ? $startTime : $startTime->format('H:i:s');
                                 $expectedTime = Carbon::parse($record->date->format('Y-m-d') . ' ' . substr($timeStr, 0, 5));
-                                $descriptions[] = (tr('fields.expected_time', [], null, 'dashboard') ?: 'Expected') . ': ' . $expectedTime->format('H:i');
+                                $expectedLabel = tr('fields.expected_time', [], null, 'dashboard') ?: tr('tables.attendance.expected_time', [], null, 'dashboard') ?: 'Expected';
+                                $descriptions[] = $expectedLabel . ': ' . $expectedTime->format('H:i');
                             }
                         }
                         
@@ -145,7 +146,8 @@ class DailyAttendancePage extends Page implements HasTable
                             
                             if ($checkInLogs->count() > 0) {
                                 $times = $checkInLogs->map(fn($log) => $log->log_datetime->format('H:i'))->join(', ');
-                                $descriptions[] = (tr('fields.logs', [], null, 'dashboard') ?: 'Logs') . ': ' . $times;
+                                $logsLabel = tr('fields.logs', [], null, 'dashboard') ?: tr('tables.biometric_attendances.logs', [], null, 'dashboard') ?: 'Logs';
+                                $descriptions[] = $logsLabel . ': ' . $times;
                             }
                         }
                         
@@ -233,7 +235,8 @@ class DailyAttendancePage extends Page implements HasTable
                                 $endTime = $employeeSchedule->schedule->end_time;
                                 $timeStr = is_string($endTime) ? $endTime : $endTime->format('H:i:s');
                                 $expectedTime = Carbon::parse($record->date->format('Y-m-d') . ' ' . substr($timeStr, 0, 5));
-                                $descriptions[] = (tr('fields.expected_time', [], null, 'dashboard') ?: 'Expected') . ': ' . $expectedTime->format('H:i');
+                                $expectedLabel = tr('fields.expected_time', [], null, 'dashboard') ?: tr('tables.attendance.expected_time', [], null, 'dashboard') ?: 'Expected';
+                                $descriptions[] = $expectedLabel . ': ' . $expectedTime->format('H:i');
                             }
                         }
                         
@@ -247,7 +250,8 @@ class DailyAttendancePage extends Page implements HasTable
                             
                             if ($checkOutLogs->count() > 0) {
                                 $times = $checkOutLogs->map(fn($log) => $log->log_datetime->format('H:i'))->join(', ');
-                                $descriptions[] = (tr('fields.logs', [], null, 'dashboard') ?: 'Logs') . ': ' . $times;
+                                $logsLabel = tr('fields.logs', [], null, 'dashboard') ?: tr('tables.biometric_attendances.logs', [], null, 'dashboard') ?: 'Logs';
+                                $descriptions[] = $logsLabel . ': ' . $times;
                             }
                         }
                         
@@ -277,6 +281,13 @@ class DailyAttendancePage extends Page implements HasTable
                 Tables\Columns\TextColumn::make('status')
                     ->label(tr('fields.status', [], null, 'dashboard') ?: 'Status')
                     ->badge()
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'present' => tr('fields.present', [], null, 'dashboard') ?: 'Present',
+                        'absent' => tr('fields.absent', [], null, 'dashboard') ?: 'Absent',
+                        'leave' => tr('fields.leave', [], null, 'dashboard') ?: 'Leave',
+                        'holiday' => tr('fields.holiday', [], null, 'dashboard') ?: 'Holiday',
+                        default => $state,
+                    })
                     ->color(fn (string $state): string => match ($state) {
                         'present' => 'success',
                         'absent' => 'danger',
