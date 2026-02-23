@@ -5,12 +5,17 @@ namespace App\Filament\Resources\Housing\Recruitment;
 use App\Enums\HousingRequestStatus;
 use App\Filament\Resources\Housing\Recruitment\RecruitmentHousingRequestResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Models\Client;
+use App\Models\Recruitment\Laborer;
+use App\Models\Recruitment\Nationality;
+use App\Models\Recruitment\Profession;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 
 class RecruitmentHousingRequestResource extends Resource
 {
@@ -48,12 +53,126 @@ class RecruitmentHousingRequestResource extends Resource
                             ->label(tr('housing.requests.client', [], null, 'dashboard') ?: 'Client')
                             ->relationship('client', 'name_ar')
                             ->searchable()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name_ar')
+                                    ->label(tr('general.clients.name_ar', [], null, 'dashboard') ?: 'Name (Arabic)')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('name_en')
+                                    ->label(tr('general.clients.name_en', [], null, 'dashboard') ?: 'Name (English)')
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('national_id')
+                                    ->label(tr('general.clients.national_id', [], null, 'dashboard') ?: 'National ID')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->unique(Client::class, 'national_id'),
+                                Forms\Components\TextInput::make('mobile')
+                                    ->label(tr('general.clients.mobile', [], null, 'dashboard') ?: 'Mobile')
+                                    ->required()
+                                    ->tel()
+                                    ->maxLength(50),
+                                Forms\Components\TextInput::make('email')
+                                    ->label(tr('general.clients.email', [], null, 'dashboard') ?: 'Email')
+                                    ->email()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('birth_date')
+                                    ->label(tr('general.clients.birth_date', [], null, 'dashboard') ?: 'تاريخ الميلاد')
+                                    ->required()
+                                    ->placeholder('هـ / / ')
+                                    ->helperText('أدخل التاريخ الهجري بصيغة: يوم/شهر/سنة (مثال: 15/03/1445)'),
+                                Forms\Components\Radio::make('marital_status')
+                                    ->label(tr('general.clients.marital_status', [], null, 'dashboard') ?: 'Marital Status')
+                                    ->required()
+                                    ->options([
+                                        'single' => tr('general.clients.single', [], null, 'dashboard') ?: 'Single',
+                                        'married' => tr('general.clients.married', [], null, 'dashboard') ?: 'Married',
+                                        'divorced' => tr('general.clients.divorced', [], null, 'dashboard') ?: 'Divorced',
+                                        'widowed' => tr('general.clients.widowed', [], null, 'dashboard') ?: 'Widowed',
+                                    ]),
+                                Forms\Components\Radio::make('classification')
+                                    ->label(tr('general.clients.classification', [], null, 'dashboard') ?: 'Classification')
+                                    ->required()
+                                    ->options([
+                                        'new' => tr('general.clients.new', [], null, 'dashboard') ?: 'New',
+                                        'vip' => tr('general.clients.vip', [], null, 'dashboard') ?: 'VIP',
+                                        'blocked' => tr('general.clients.blocked', [], null, 'dashboard') ?: 'Blocked',
+                                    ])
+                                    ->default('new'),
+                            ])
+                            ->createOptionUsing(function (array $data): int {
+                                $client = Client::create($data);
+                                return $client->id;
+                            })
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('laborer_id')
                             ->label(tr('housing.requests.laborer', [], null, 'dashboard') ?: 'Laborer')
                             ->relationship('laborer', 'name_ar')
                             ->searchable()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name_ar')
+                                    ->label(tr('recruitment.fields.name_ar', [], null, 'dashboard') ?: 'Name (Arabic)')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('name_en')
+                                    ->label(tr('recruitment.fields.name_en', [], null, 'dashboard') ?: 'Name (English)')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('passport_number')
+                                    ->label(tr('recruitment.fields.passport_number', [], null, 'dashboard') ?: 'Passport Number')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->unique(Laborer::class, 'passport_number'),
+                                Forms\Components\Select::make('nationality_id')
+                                    ->label(tr('recruitment.fields.nationality', [], null, 'dashboard') ?: 'Nationality')
+                                    ->options(function () {
+                                        return Nationality::where('is_active', true)
+                                            ->get()
+                                            ->mapWithKeys(function ($nationality) {
+                                                $label = app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en;
+                                                return [$nationality->id => $label];
+                                            });
+                                    })
+                                    ->searchable()
+                                    ->required(),
+                                Forms\Components\Select::make('profession_id')
+                                    ->label(tr('recruitment.fields.profession', [], null, 'dashboard') ?: 'Profession')
+                                    ->options(function () {
+                                        return Profession::where('is_active', true)
+                                            ->get()
+                                            ->mapWithKeys(function ($profession) {
+                                                $label = app()->getLocale() === 'ar' ? $profession->name_ar : $profession->name_en;
+                                                return [$profession->id => $label];
+                                            });
+                                    })
+                                    ->searchable()
+                                    ->required(),
+                                Forms\Components\Select::make('gender')
+                                    ->label(tr('recruitment.fields.gender', [], null, 'dashboard') ?: 'Gender')
+                                    ->options([
+                                        'male' => tr('recruitment_contract.gender.male', [], null, 'dashboard') ?: 'Male',
+                                        'female' => tr('recruitment_contract.gender.female', [], null, 'dashboard') ?: 'Female',
+                                    ])
+                                    ->nullable(),
+                                Forms\Components\TextInput::make('phone_1')
+                                    ->label(tr('recruitment.fields.phone_1', [], null, 'dashboard') ?: 'Phone 1')
+                                    ->tel()
+                                    ->maxLength(50)
+                                    ->nullable(),
+                            ])
+                            ->createOptionUsing(function (array $data): int {
+                                $laborer = Laborer::create([
+                                    'name_ar' => $data['name_ar'],
+                                    'name_en' => $data['name_en'],
+                                    'passport_number' => $data['passport_number'],
+                                    'nationality_id' => $data['nationality_id'],
+                                    'profession_id' => $data['profession_id'],
+                                    'gender' => $data['gender'] ?? null,
+                                    'phone_1' => $data['phone_1'] ?? null,
+                                    'is_available' => true,
+                                ]);
+                                return $laborer->id;
+                            })
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('request_type')

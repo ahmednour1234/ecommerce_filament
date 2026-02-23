@@ -26,7 +26,7 @@ class HousingRequestStatus
             self::DISPUTE => 'نزاع',
             self::READY_FOR_DELIVERY => 'جاهز للتسليم',
             self::WITH_CLIENT => 'مع العميل',
-            self::IN_COMPLETION => 'في الإيماء',
+            self::IN_COMPLETION => 'في الإيواء',
             self::COMPLETED => 'مكتمل',
         ];
     }
