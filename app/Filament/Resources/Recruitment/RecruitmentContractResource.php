@@ -229,6 +229,12 @@ class RecruitmentContractResource extends Resource
                             ->maxLength(255)
                             ->columnSpan(1),
 
+                        Forms\Components\TextInput::make('musaned_documentation_contract_no')
+                            ->label(tr('recruitment_contract.fields.musaned_documentation_contract_no', [], null, 'dashboard') ?: 'رقم عقد مساند توثيق')
+                            ->maxLength(255)
+                            ->nullable()
+                            ->columnSpan(1),
+
                         Forms\Components\TextInput::make('musaned_auth_no')
                             ->label(tr('recruitment_contract.fields.musaned_auth_no', [], null, 'dashboard') ?: 'Musaned Auth No')
                             ->maxLength(255)

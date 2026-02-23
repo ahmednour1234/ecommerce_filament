@@ -37,6 +37,7 @@ class RecruitmentContract extends Model
         'workplace_en',
         'monthly_salary',
         'musaned_contract_no',
+        'musaned_documentation_contract_no',
         'musaned_auth_no',
         'musaned_contract_date',
         'direct_cost',
