@@ -149,7 +149,8 @@ class ViewContract extends ViewRecord
                                                     return tr('common.no_data', [], null, 'dashboard') ?: 'لا توجد بيانات';
                                                 }
                                                 return $documents->map(function ($doc) {
-                                                    $url = Storage::url($doc->file_path);
+                                                    $baseUrl = rtrim(config('app.url'), '/');
+                                                    $url = $baseUrl . '/storage/' . ltrim($doc->file_path, '/');
                                                     $date = $doc->created_at->format('Y-m-d H:i');
                                                     return "<a href='{$url}' target='_blank'>{$doc->title}</a> - {$date}";
                                                 })->join("\n");

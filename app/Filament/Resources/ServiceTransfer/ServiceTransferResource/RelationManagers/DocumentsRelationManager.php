@@ -96,7 +96,10 @@ class DocumentsRelationManager extends RelationManager
                 Tables\Actions\Action::make('download')
                     ->label('تحميل')
                     ->icon('heroicon-o-arrow-down-tray')
-                    ->url(fn (ServiceTransferDocument $record): string => Storage::disk('public')->url($record->file_path))
+                    ->url(function (ServiceTransferDocument $record): string {
+                        $baseUrl = rtrim(config('app.url'), '/');
+                        return $baseUrl . '/storage/' . ltrim($record->file_path, '/');
+                    })
                     ->openUrlInNewTab()
                     ->visible(fn () => auth()->user()?->can('service_transfers.documents.view') ?? false),
 

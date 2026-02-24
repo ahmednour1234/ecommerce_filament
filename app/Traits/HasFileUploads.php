@@ -65,6 +65,12 @@ trait HasFileUploads
             return null;
         }
         
+        // Use direct URL format for public access
+        if ($disk === 'public') {
+            $baseUrl = rtrim(config('app.url'), '/');
+            return $baseUrl . '/storage/' . ltrim($path, '/');
+        }
+        
         return Storage::disk($disk)->url($path);
     }
 

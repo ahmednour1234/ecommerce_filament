@@ -273,7 +273,13 @@ class IncomeReportPage extends Page implements HasTable, HasForms
                 Tables\Columns\IconColumn::make('attachment_path')
                     ->label(tr('reports.income.columns.attachment', [], null, 'dashboard') ?: 'Attachment')
                     ->icon(fn($record) => $record->attachment_path ? 'heroicon-o-paper-clip' : null)
-                    ->url(fn($record) => $record->attachment_path ? asset('storage/' . $record->attachment_path) : null)
+                    ->url(function($record) {
+                        if (!$record->attachment_path) {
+                            return null;
+                        }
+                        $baseUrl = rtrim(config('app.url'), '/');
+                        return $baseUrl . '/storage/' . ltrim($record->attachment_path, '/');
+                    })
                     ->openUrlInNewTab(),
 
                 Tables\Columns\TextColumn::make('creator.name')

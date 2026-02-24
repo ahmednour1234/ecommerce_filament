@@ -60,9 +60,12 @@ class VoucherPrintService
                 ->orderBy('sort_order')
                 ->get()
                 ->map(function ($sig) {
-                    $sig->image_url = $sig->image_path
-                        ? Storage::disk('public')->url($sig->image_path)
-                        : null;
+                    if ($sig->image_path) {
+                        $baseUrl = rtrim(config('app.url'), '/');
+                        $sig->image_url = $baseUrl . '/storage/' . ltrim($sig->image_path, '/');
+                    } else {
+                        $sig->image_url = null;
+                    }
                     return $sig;
                 });
         }

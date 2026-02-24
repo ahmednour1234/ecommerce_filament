@@ -82,7 +82,8 @@ class VoucherSignature extends Model
             return null;
         }
 
-        return Storage::disk('public')->url($this->image_path);
+        $baseUrl = rtrim(config('app.url'), '/');
+        return $baseUrl . '/storage/' . ltrim($this->image_path, '/');
     }
 
     /**
