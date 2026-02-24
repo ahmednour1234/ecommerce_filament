@@ -563,8 +563,18 @@ class RecruitmentContractResource extends Resource
                             ->rows(3)
                             ->columnSpanFull(),
 
-                        Forms\Components\Checkbox::make('client_rating')
-                            ->label('نعم')
+                        Forms\Components\Textarea::make('client_text_message')
+                            ->label(tr('recruitment_contract.fields.client_text_message', [], null, 'dashboard') ?: 'رسالة نصية للعميل')
+                            ->rows(3)
+                            ->columnSpanFull(),
+
+                        Forms\Components\Radio::make('client_rating')
+                            ->label(tr('recruitment_contract.fields.client_rating', [], null, 'dashboard') ?: 'تقييم العميل')
+                            ->options([
+                                'yes' => 'نعم',
+                                'no' => 'لا',
+                            ])
+                            ->nullable()
                             ->columnSpan(1),
 
                         FileUpload::document('client_rating_proof_image', 'recruitment_contracts/client_rating')
