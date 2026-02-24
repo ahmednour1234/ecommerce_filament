@@ -265,6 +265,18 @@ body:has([href*="recruitment-contracts"]) .fi-ta-header-actions input[type="sear
 .fi-topbar .fi-topbar-actions [aria-label*="user menu"] {
     order: 99 !important;
 }
+
+/* Hide sidebar */
+.fi-sidebar,
+.fi-sidebar-nav,
+.fi-sidebar-header,
+.fi-sidebar-footer {
+    display: none !important;
+}
+
+.fi-main {
+    margin-left: 0 !important;
+}
 </style>
 HTML
         );
