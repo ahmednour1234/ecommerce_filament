@@ -60,6 +60,7 @@ class RecruitmentContract extends Model
         'musaned_contract_file',
         'worker_id',
         'created_by',
+        'marketer_id',
     ];
 
     protected $casts = [
@@ -167,6 +168,11 @@ class RecruitmentContract extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function marketer(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\HR\Employee::class, 'marketer_id');
     }
 
     public function financeLinks(): HasMany

@@ -14,6 +14,7 @@ use App\Models\Recruitment\Profession;
 use App\Models\Recruitment\Nationality;
 use App\Models\Recruitment\Agent;
 use App\Models\MainCore\Country;
+use App\Models\HR\Employee;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -120,6 +121,22 @@ class RecruitmentContractResource extends Resource
                             ->required()
                             ->searchable()
                             ->reactive()
+                            ->columnSpan(1),
+
+                        Forms\Components\Select::make('marketer_id')
+                            ->label(tr('recruitment_contract.fields.marketer', [], null, 'dashboard') ?: 'اسم المسوق')
+                            ->options(function () {
+                                return Cache::remember('recruitment_contracts.employees', 21600, function () {
+                                    return Employee::active()
+                                        ->get()
+                                        ->mapWithKeys(function ($employee) {
+                                            return [$employee->id => $employee->full_name];
+                                        })
+                                        ->toArray();
+                                });
+                            })
+                            ->searchable()
+                            ->nullable()
                             ->columnSpan(1),
 
                         Forms\Components\DatePicker::make('gregorian_request_date')
