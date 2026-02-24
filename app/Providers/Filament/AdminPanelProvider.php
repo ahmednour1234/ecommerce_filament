@@ -28,22 +28,23 @@ class AdminPanelProvider extends PanelProvider
     private function navLabel(string $key, string $fallback): \Closure
     {
         return function () use ($key, $fallback) {
-            $translationService = app(TranslationService::class);
+            try {
+                $translationService = app(TranslationService::class);
 
-            // Try Arabic first (priority)
-            $arabicTranslation = $translationService->get($key, 'ar', 'dashboard', null);
-            if ($arabicTranslation && $arabicTranslation !== $key) {
-                return $arabicTranslation;
+                // Always try Arabic first (priority)
+                $arabicTranslation = $translationService->get($key, 'ar', 'dashboard', null);
+
+                // If we got a valid translation (not the key itself and not empty), return it
+                if ($arabicTranslation && $arabicTranslation !== $key && $arabicTranslation !== '' && $arabicTranslation !== null) {
+                    return $arabicTranslation;
+                }
+
+                // Fallback to provided Arabic text
+                return $fallback;
+            } catch (\Exception $e) {
+                // If anything fails, return fallback
+                return $fallback;
             }
-
-            // Fallback to current language
-            $currentTranslation = $translationService->get($key, null, 'dashboard', null);
-            if ($currentTranslation && $currentTranslation !== $key) {
-                return $currentTranslation;
-            }
-
-            // Final fallback
-            return $fallback;
         };
     }
 
