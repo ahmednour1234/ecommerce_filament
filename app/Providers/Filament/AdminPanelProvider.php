@@ -54,8 +54,9 @@ class AdminPanelProvider extends PanelProvider
         
         $logoUrl = null;
         if ($appLogo) {
-            // Use route to ensure public access
-            $logoUrl = route('storage.file', ['path' => $appLogo]);
+            // Generate URL directly - route will handle it
+            $baseUrl = rtrim(config('app.url'), '/');
+            $logoUrl = $baseUrl . '/storage/' . ltrim($appLogo, '/');
         }
 
         return $panel
