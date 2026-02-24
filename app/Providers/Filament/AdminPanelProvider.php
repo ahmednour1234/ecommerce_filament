@@ -25,27 +25,18 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
 {
-    private function navLabel(string $key, string $fallback): \Closure
+    private function navLabel(string $key, string $fallback): string
     {
-        return function () use ($key, $fallback) {
-            try {
-                $translationService = app(TranslationService::class);
+        // Use tr() helper with Arabic locale first
+        $translation = tr($key, [], 'ar', 'dashboard');
 
-                // Always try Arabic first (priority)
-                $arabicTranslation = $translationService->get($key, 'ar', 'dashboard', null);
+        // If translation found and not the key itself, return it
+        if ($translation && $translation !== $key && $translation !== '') {
+            return $translation;
+        }
 
-                // If we got a valid translation (not the key itself and not empty), return it
-                if ($arabicTranslation && $arabicTranslation !== $key && $arabicTranslation !== '' && $arabicTranslation !== null) {
-                    return $arabicTranslation;
-                }
-
-                // Fallback to provided Arabic text
-                return $fallback;
-            } catch (\Exception $e) {
-                // If anything fails, return fallback
-                return $fallback;
-            }
-        };
+        // Fallback to provided Arabic text
+        return $fallback;
     }
 
     public function panel(Panel $panel): Panel
