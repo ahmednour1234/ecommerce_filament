@@ -15,6 +15,7 @@ use App\Models\Recruitment\Nationality;
 use App\Models\Recruitment\Agent;
 use App\Models\MainCore\Country;
 use App\Models\HR\Employee;
+use App\Data\SaudiGovernorates;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -205,38 +206,7 @@ class RecruitmentContractResource extends Resource
 
                         Forms\Components\Select::make('receiving_station_id')
                             ->label(tr('recruitment_contract.fields.receiving_station', [], null, 'dashboard') ?: 'محطة الاستلام')
-                            ->options([
-                                'الرياض' => tr('recruitment_contract.receiving_station.riyadh', [], null, 'dashboard') ?: 'الرياض',
-                                'جدة' => tr('recruitment_contract.receiving_station.jeddah', [], null, 'dashboard') ?: 'جدة',
-                                'مكة المكرمة' => tr('recruitment_contract.receiving_station.makkah', [], null, 'dashboard') ?: 'مكة المكرمة',
-                                'المدينة المنورة' => tr('recruitment_contract.receiving_station.madinah', [], null, 'dashboard') ?: 'المدينة المنورة',
-                                'الدمام' => tr('recruitment_contract.receiving_station.dammam', [], null, 'dashboard') ?: 'الدمام',
-                                'الخبر' => tr('recruitment_contract.receiving_station.khobar', [], null, 'dashboard') ?: 'الخبر',
-                                'الطائف' => tr('recruitment_contract.receiving_station.taif', [], null, 'dashboard') ?: 'الطائف',
-                                'بريدة' => tr('recruitment_contract.receiving_station.buraydah', [], null, 'dashboard') ?: 'بريدة',
-                                'تبوك' => tr('recruitment_contract.receiving_station.tabuk', [], null, 'dashboard') ?: 'تبوك',
-                                'حائل' => tr('recruitment_contract.receiving_station.hail', [], null, 'dashboard') ?: 'حائل',
-                                'جازان' => tr('recruitment_contract.receiving_station.jazan', [], null, 'dashboard') ?: 'جازان',
-                                'نجران' => tr('recruitment_contract.receiving_station.najran', [], null, 'dashboard') ?: 'نجران',
-                                'أبها' => tr('recruitment_contract.receiving_station.abha', [], null, 'dashboard') ?: 'أبها',
-                                'سكاكا' => tr('recruitment_contract.receiving_station.sakaka', [], null, 'dashboard') ?: 'سكاكا',
-                                'الباحة' => tr('recruitment_contract.receiving_station.al_baha', [], null, 'dashboard') ?: 'الباحة',
-                                'عرعر' => tr('recruitment_contract.receiving_station.arar', [], null, 'dashboard') ?: 'عرعر',
-                                'القطيف' => tr('recruitment_contract.receiving_station.qatif', [], null, 'dashboard') ?: 'القطيف',
-                                'الخفجي' => tr('recruitment_contract.receiving_station.khafji', [], null, 'dashboard') ?: 'الخفجي',
-                                'ينبع' => tr('recruitment_contract.receiving_station.yanbu', [], null, 'dashboard') ?: 'ينبع',
-                                'جيزان' => tr('recruitment_contract.receiving_station.jizan', [], null, 'dashboard') ?: 'جيزان',
-                                'القريات' => tr('recruitment_contract.receiving_station.al_qurayyat', [], null, 'dashboard') ?: 'القريات',
-                                'الجبيل' => tr('recruitment_contract.receiving_station.jubail', [], null, 'dashboard') ?: 'الجبيل',
-                                'الرس' => tr('recruitment_contract.receiving_station.al_rass', [], null, 'dashboard') ?: 'الرس',
-                                'عنيزة' => tr('recruitment_contract.receiving_station.onaizah', [], null, 'dashboard') ?: 'عنيزة',
-                                'الزلفي' => tr('recruitment_contract.receiving_station.al_zulfi', [], null, 'dashboard') ?: 'الزلفي',
-                                'الدوادمي' => tr('recruitment_contract.receiving_station.al_dawadmi', [], null, 'dashboard') ?: 'الدوادمي',
-                                'المذنب' => tr('recruitment_contract.receiving_station.al_mithnab', [], null, 'dashboard') ?: 'المذنب',
-                                'الشماسية' => tr('recruitment_contract.receiving_station.al_shamasiyah', [], null, 'dashboard') ?: 'الشماسية',
-                                'البكيرية' => tr('recruitment_contract.receiving_station.al_bukayriyah', [], null, 'dashboard') ?: 'البكيرية',
-                                'البدائع' => tr('recruitment_contract.receiving_station.al_badaei', [], null, 'dashboard') ?: 'البدائع',
-                            ])
+                            ->options(SaudiGovernorates::all())
                             ->searchable()
                             ->nullable()
                             ->columnSpan(1),
