@@ -109,87 +109,66 @@ class AdminPanelProvider extends PanelProvider
             ->navigationGroups([
                 \Filament\Navigation\NavigationGroup::make('recruitment_contracts')
                     ->label('عقود الاستقدام')
-                    ->icon('heroicon-o-document-text')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('housing')
                     ->label('الإيواء')
-                    ->icon('heroicon-o-home')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('rental')
                     ->label('قسم التأجير')
-                    ->icon('heroicon-o-clipboard-document')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('service_transfer')
                     ->label('نقل الخدمات')
-                    ->icon('heroicon-o-arrow-path')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('packages')
                     ->label('باقات العروض')
-                    ->icon('heroicon-o-gift')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('candidates')
                     ->label('المرشحين')
-                    ->icon('heroicon-o-users')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('clients')
                     ->label('العملاء')
-                    ->icon('heroicon-o-user')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('agents')
                     ->label('الوكلاء')
-                    ->icon('heroicon-o-user-group')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('finance')
                     ->label('قسم الحسابات')
-                    ->icon('heroicon-o-banknotes')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('follow_up')
                     ->label('المتابعة')
-                    ->icon('heroicon-o-exclamation-triangle')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('messages')
                     ->label('قسم الرسائل')
-                    ->icon('heroicon-o-chat-bubble-left-right')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('company_visas')
                     ->label('تأشيرات الشركة')
-                    ->icon('heroicon-o-identification')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('app_management')
                     ->label('إدارة التطبيق')
-                    ->icon('heroicon-o-cog-6-tooth')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('profile')
                     ->label('الملف الشخصي')
-                    ->icon('heroicon-o-user-circle')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('employee_commissions')
                     ->label('عمولات الموظفين')
-                    ->icon('heroicon-o-currency-dollar')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('hr')
                     ->label('الموارد البشرية')
-                    ->icon('heroicon-o-briefcase')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('system_movement')
                     ->label('حركة النظام المرجعي')
-                    ->icon('heroicon-o-shield-check')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('notifications')
                     ->label('التنبيهات')
-                    ->icon('heroicon-o-bell')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('settings')
                     ->label('الإعدادات')
-                    ->icon('heroicon-o-adjustments-horizontal')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('branches')
                     ->label('الفروع')
-                    ->icon('heroicon-o-building-office-2')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('website_management')
                     ->label('إدارة الموقع')
-                    ->icon('heroicon-o-globe-alt')
                     ->collapsible(false),
             ]);
     }
