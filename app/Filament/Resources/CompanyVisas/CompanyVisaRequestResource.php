@@ -218,21 +218,33 @@ class CompanyVisaRequestResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->can('company_visas.view_requests') ?? false;
+        $user = auth()->user();
+        if (!$user) return false;
+        
+        return $user->hasRole('super_admin') || $user->can('company_visas.view_requests');
     }
 
     public static function canCreate(): bool
     {
-        return auth()->user()?->can('company_visas.create_requests') ?? false;
+        $user = auth()->user();
+        if (!$user) return false;
+        
+        return $user->hasRole('super_admin') || $user->can('company_visas.create_requests');
     }
 
     public static function canView(mixed $record): bool
     {
-        return auth()->user()?->can('company_visas.view_requests') ?? false;
+        $user = auth()->user();
+        if (!$user) return false;
+        
+        return $user->hasRole('super_admin') || $user->can('company_visas.view_requests');
     }
 
     public static function shouldRegisterNavigation(): bool
     {
-        return static::canViewAny();
+        $user = auth()->user();
+        if (!$user) return false;
+        
+        return $user->hasRole('super_admin') || $user->can('company_visas.view_requests');
     }
 }

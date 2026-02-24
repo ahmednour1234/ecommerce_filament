@@ -253,26 +253,41 @@ class CompanyVisaContractResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->can('company_visas.view_contracts') ?? false;
+        $user = auth()->user();
+        if (!$user) return false;
+        
+        return $user->hasRole('super_admin') || $user->can('company_visas.view_contracts');
     }
 
     public static function canCreate(): bool
     {
-        return auth()->user()?->can('company_visas.create_contracts') ?? false;
+        $user = auth()->user();
+        if (!$user) return false;
+        
+        return $user->hasRole('super_admin') || $user->can('company_visas.create_contracts');
     }
 
     public static function canView(mixed $record): bool
     {
-        return auth()->user()?->can('company_visas.view_contracts') ?? false;
+        $user = auth()->user();
+        if (!$user) return false;
+        
+        return $user->hasRole('super_admin') || $user->can('company_visas.view_contracts');
     }
 
     public static function canEdit(mixed $record): bool
     {
-        return auth()->user()?->can('company_visas.update_contracts') ?? false;
+        $user = auth()->user();
+        if (!$user) return false;
+        
+        return $user->hasRole('super_admin') || $user->can('company_visas.update_contracts');
     }
 
     public static function shouldRegisterNavigation(): bool
     {
-        return static::canViewAny();
+        $user = auth()->user();
+        if (!$user) return false;
+        
+        return $user->hasRole('super_admin') || $user->can('company_visas.view_contracts');
     }
 }
