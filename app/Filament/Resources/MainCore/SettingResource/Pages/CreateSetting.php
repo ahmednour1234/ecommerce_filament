@@ -23,11 +23,13 @@ class CreateSetting extends CreateRecord
 
     protected function afterCreate(): void
     {
-        parent::afterCreate();
-        
-        // Set logo file visibility to public
+        // Set logo file visibility to public after creation
         if ($this->record->logo) {
-            \Illuminate\Support\Facades\Storage::disk('public')->setVisibility($this->record->logo, 'public');
+            try {
+                \Illuminate\Support\Facades\Storage::disk('public')->setVisibility($this->record->logo, 'public');
+            } catch (\Exception $e) {
+                // Ignore if visibility cannot be set
+            }
         }
     }
 }
