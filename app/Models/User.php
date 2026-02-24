@@ -65,8 +65,8 @@ class User extends Authenticatable implements FilamentUser, HasName
     // دخول لوحة Filament
     public function canAccessPanel(Panel $panel): bool
     {
-        // اسمح لأي يوزر عنده role اسمه 'super_admin'
-        return $this->hasRole('super_admin');
+        // اسمح لأي مستخدم في جدول users بتسجيل الدخول
+        return true;
     }
 
     public function getFilamentName(): string
