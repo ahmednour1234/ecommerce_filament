@@ -54,10 +54,8 @@ class AdminPanelProvider extends PanelProvider
         
         $logoUrl = null;
         if ($appLogo) {
-            // Generate storage URL and remove /public if exists
-            $baseUrl = \Illuminate\Support\Facades\Storage::disk('public')->url($appLogo);
-            // Remove /public from path if it exists (for installations in public subdirectory)
-            $logoUrl = str_replace(['/public/storage/', '//storage/'], '/storage/', $baseUrl);
+            // Use route to ensure public access
+            $logoUrl = route('storage.file', ['path' => $appLogo]);
         }
 
         return $panel

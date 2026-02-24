@@ -8,6 +8,23 @@ Route::get('/', function () {
     return redirect()->route('filament.admin.pages.dashboard');
 });
 
+// Public storage files route - allow direct access to all storage files
+Route::get('/storage/{path}', function ($path) {
+    $filePath = storage_path('app/public/' . $path);
+    
+    if (!file_exists($filePath)) {
+        abort(404);
+    }
+    
+    $mimeType = mime_content_type($filePath);
+    $headers = [
+        'Content-Type' => $mimeType,
+        'Cache-Control' => 'public, max-age=31536000',
+    ];
+    
+    return response()->file($filePath, $headers);
+})->where('path', '.*')->name('storage.file');
+
 // Debug route - remove after testing
 Route::get('/debug/session', function () {
     return [
