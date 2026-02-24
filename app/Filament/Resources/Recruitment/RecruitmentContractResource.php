@@ -136,8 +136,8 @@ class RecruitmentContractResource extends Resource
                             ->label(tr('recruitment_contract.fields.visa_type', [], null, 'dashboard') ?: 'Visa Type')
                             ->options([
                                 'paid' => tr('recruitment_contract.visa_type.paid', [], null, 'dashboard') ?: 'مدفوع',
-                                'qualification' => tr('recruitment_contract.visa_type.qualification', [], null, 'dashboard') ?: 'تأهيل',
-                                'additional' => tr('recruitment_contract.visa_type.additional', [], null, 'dashboard') ?: 'تأشيرة إضافية',
+                                'domestic_labor' => tr('recruitment_contract.visa_type.domestic_labor', [], null, 'dashboard') ?: 'تأشيرة عمالة منزلية',
+                                'comprehensive_qualification' => tr('recruitment_contract.visa_type.comprehensive_qualification', [], null, 'dashboard') ?: 'تأشيرة التأهيل الشامل',
                             ])
                             ->required()
                             ->reactive()
@@ -155,9 +155,20 @@ class RecruitmentContractResource extends Resource
                             ->required(fn (callable $get) => $get('visa_type') === 'paid')
                             ->columnSpan(1),
 
-                        Forms\Components\TextInput::make('arrival_country_id')
-                            ->label(tr('recruitment_contract.fields.arrival_country', [], null, 'dashboard') ?: 'محطة الوصول والقدوم والاستلام')
-                            ->maxLength(255)
+                        Forms\Components\Select::make('arrival_country_id')
+                            ->label(tr('recruitment_contract.fields.arrival_country', [], null, 'dashboard') ?: 'محطة الوصول')
+                            ->options([
+                                'الرياض' => tr('recruitment_contract.arrival_station.riyadh', [], null, 'dashboard') ?: 'الرياض',
+                                'الدمام' => tr('recruitment_contract.arrival_station.dammam', [], null, 'dashboard') ?: 'الدمام',
+                                'جده' => tr('recruitment_contract.arrival_station.jeddah', [], null, 'dashboard') ?: 'جده',
+                                'الطائف' => tr('recruitment_contract.arrival_station.taif', [], null, 'dashboard') ?: 'الطائف',
+                                'القصيم' => tr('recruitment_contract.arrival_station.qassim', [], null, 'dashboard') ?: 'القصيم',
+                                'جيزان' => tr('recruitment_contract.arrival_station.jizan', [], null, 'dashboard') ?: 'جيزان',
+                                'سكاكا' => tr('recruitment_contract.arrival_station.sakaka', [], null, 'dashboard') ?: 'سكاكا',
+                                'المدينة المنورة' => tr('recruitment_contract.arrival_station.madinah', [], null, 'dashboard') ?: 'المدينة المنورة',
+                            ])
+                            ->searchable()
+                            ->nullable()
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('departure_country_id')
@@ -175,9 +186,42 @@ class RecruitmentContractResource extends Resource
                             ->nullable()
                             ->columnSpan(1),
 
-                        Forms\Components\TextInput::make('receiving_station_id')
+                        Forms\Components\Select::make('receiving_station_id')
                             ->label(tr('recruitment_contract.fields.receiving_station', [], null, 'dashboard') ?: 'محطة الاستلام')
-                            ->maxLength(255)
+                            ->options([
+                                'الرياض' => tr('recruitment_contract.receiving_station.riyadh', [], null, 'dashboard') ?: 'الرياض',
+                                'جدة' => tr('recruitment_contract.receiving_station.jeddah', [], null, 'dashboard') ?: 'جدة',
+                                'مكة المكرمة' => tr('recruitment_contract.receiving_station.makkah', [], null, 'dashboard') ?: 'مكة المكرمة',
+                                'المدينة المنورة' => tr('recruitment_contract.receiving_station.madinah', [], null, 'dashboard') ?: 'المدينة المنورة',
+                                'الدمام' => tr('recruitment_contract.receiving_station.dammam', [], null, 'dashboard') ?: 'الدمام',
+                                'الخبر' => tr('recruitment_contract.receiving_station.khobar', [], null, 'dashboard') ?: 'الخبر',
+                                'الطائف' => tr('recruitment_contract.receiving_station.taif', [], null, 'dashboard') ?: 'الطائف',
+                                'بريدة' => tr('recruitment_contract.receiving_station.buraydah', [], null, 'dashboard') ?: 'بريدة',
+                                'تبوك' => tr('recruitment_contract.receiving_station.tabuk', [], null, 'dashboard') ?: 'تبوك',
+                                'حائل' => tr('recruitment_contract.receiving_station.hail', [], null, 'dashboard') ?: 'حائل',
+                                'جازان' => tr('recruitment_contract.receiving_station.jazan', [], null, 'dashboard') ?: 'جازان',
+                                'نجران' => tr('recruitment_contract.receiving_station.najran', [], null, 'dashboard') ?: 'نجران',
+                                'أبها' => tr('recruitment_contract.receiving_station.abha', [], null, 'dashboard') ?: 'أبها',
+                                'سكاكا' => tr('recruitment_contract.receiving_station.sakaka', [], null, 'dashboard') ?: 'سكاكا',
+                                'الباحة' => tr('recruitment_contract.receiving_station.al_baha', [], null, 'dashboard') ?: 'الباحة',
+                                'عرعر' => tr('recruitment_contract.receiving_station.arar', [], null, 'dashboard') ?: 'عرعر',
+                                'القطيف' => tr('recruitment_contract.receiving_station.qatif', [], null, 'dashboard') ?: 'القطيف',
+                                'الخفجي' => tr('recruitment_contract.receiving_station.khafji', [], null, 'dashboard') ?: 'الخفجي',
+                                'ينبع' => tr('recruitment_contract.receiving_station.yanbu', [], null, 'dashboard') ?: 'ينبع',
+                                'جيزان' => tr('recruitment_contract.receiving_station.jizan', [], null, 'dashboard') ?: 'جيزان',
+                                'القريات' => tr('recruitment_contract.receiving_station.al_qurayyat', [], null, 'dashboard') ?: 'القريات',
+                                'الجبيل' => tr('recruitment_contract.receiving_station.jubail', [], null, 'dashboard') ?: 'الجبيل',
+                                'الرس' => tr('recruitment_contract.receiving_station.al_rass', [], null, 'dashboard') ?: 'الرس',
+                                'عنيزة' => tr('recruitment_contract.receiving_station.onaizah', [], null, 'dashboard') ?: 'عنيزة',
+                                'الزلفي' => tr('recruitment_contract.receiving_station.al_zulfi', [], null, 'dashboard') ?: 'الزلفي',
+                                'الدوادمي' => tr('recruitment_contract.receiving_station.al_dawadmi', [], null, 'dashboard') ?: 'الدوادمي',
+                                'المذنب' => tr('recruitment_contract.receiving_station.al_mithnab', [], null, 'dashboard') ?: 'المذنب',
+                                'الشماسية' => tr('recruitment_contract.receiving_station.al_shamasiyah', [], null, 'dashboard') ?: 'الشماسية',
+                                'البكيرية' => tr('recruitment_contract.receiving_station.al_bukayriyah', [], null, 'dashboard') ?: 'البكيرية',
+                                'البدائع' => tr('recruitment_contract.receiving_station.al_badaei', [], null, 'dashboard') ?: 'البدائع',
+                            ])
+                            ->searchable()
+                            ->nullable()
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('profession_id')
@@ -220,14 +264,20 @@ class RecruitmentContractResource extends Resource
                         Forms\Components\Select::make('experience')
                             ->label(tr('recruitment_contract.fields.experience', [], null, 'dashboard') ?: 'Experience')
                             ->options([
-                                'experienced' => tr('recruitment_contract.experience.experienced', [], null, 'dashboard') ?: 'خبرة',
-                                'no_experience' => tr('recruitment_contract.experience.no_experience', [], null, 'dashboard') ?: 'بدون خبرة',
+                                'unspecified' => tr('recruitment_contract.experience.unspecified', [], null, 'dashboard') ?: 'غير محدد',
+                                'new' => tr('recruitment_contract.experience.new', [], null, 'dashboard') ?: 'جديد',
+                                'ex_worker' => tr('recruitment_contract.experience.ex_worker', [], null, 'dashboard') ?: 'سبق العمل EX',
                             ])
+                            ->nullable()
                             ->columnSpan(1),
 
-                        Forms\Components\TextInput::make('religion')
+                        Forms\Components\Select::make('religion')
                             ->label(tr('recruitment_contract.fields.religion', [], null, 'dashboard') ?: 'Religion')
-                            ->maxLength(255)
+                            ->options([
+                                'مسلم' => tr('recruitment_contract.religion.muslim', [], null, 'dashboard') ?: 'مسلم',
+                                'غير مسلم' => tr('recruitment_contract.religion.non_muslim', [], null, 'dashboard') ?: 'غير مسلم',
+                            ])
+                            ->nullable()
                             ->columnSpan(1),
                     ])
                     ->columns(2),
@@ -261,14 +311,9 @@ class RecruitmentContractResource extends Resource
                             ->columnSpan(1),
 
                         Forms\Components\TextInput::make('musaned_documentation_contract_no')
-                            ->label(tr('recruitment_contract.fields.musaned_documentation_contract_no', [], null, 'dashboard') ?: 'رقم عقد مساند توثيق')
+                            ->label(tr('recruitment_contract.fields.musaned_documentation_contract_no', [], null, 'dashboard') ?: 'رقم التوثيق الالكتروني بمساند')
                             ->maxLength(255)
                             ->nullable()
-                            ->columnSpan(1),
-
-                        Forms\Components\TextInput::make('musaned_auth_no')
-                            ->label(tr('recruitment_contract.fields.musaned_auth_no', [], null, 'dashboard') ?: 'Musaned Auth No')
-                            ->maxLength(255)
                             ->columnSpan(1),
 
                         Forms\Components\DatePicker::make('musaned_contract_date')
@@ -388,20 +433,11 @@ class RecruitmentContractResource extends Resource
                                 'sent_to_saudi_embassy' => tr('recruitment_contract.status.sent_to_saudi_embassy', [], null, 'dashboard') ?: 'تم الإرسال للسفارة السعودية',
                                 'visa_issued' => tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم إصدار التأشيرة',
                                 'arrived_in_saudi_arabia' => tr('recruitment_contract.status.arrived_in_saudi_arabia', [], null, 'dashboard') ?: 'وصل للمملكة العربية السعودية',
-                                'return_during_warranty' => tr('recruitment_contract.status.return_during_warranty', [], null, 'dashboard') ?: 'رجيع في فتره الضمان',
-                                'outside_kingdom_during_warranty' => tr('recruitment_contract.status.outside_kingdom_during_warranty', [], null, 'dashboard') ?: 'خارج المملكه في فتره الضمان',
-                                'labor_services_transfer' => tr('recruitment_contract.status.labor_services_transfer', [], null, 'dashboard') ?: 'نقل خدمات العماله',
+                                'return_during_warranty' => tr('recruitment_contract.status.return_during_warranty', [], null, 'dashboard') ?: 'رجيع خلال فتره الضمان',
+                                'outside_kingdom_during_warranty' => tr('recruitment_contract.status.outside_kingdom_during_warranty', [], null, 'dashboard') ?: 'خارج المملكه خلال فتره الضمان',
+                                'labor_services_transfer' => tr('recruitment_contract.status.labor_services_transfer', [], null, 'dashboard') ?: 'نقل خدمات العماله المنزليه',
                                 'runaway' => tr('recruitment_contract.status.runaway', [], null, 'dashboard') ?: 'هروب',
-                                'rejected' => tr('recruitment_contract.status.rejected', [], null, 'dashboard') ?: 'مرفوض',
-                                'cancelled' => tr('recruitment_contract.status.cancelled', [], null, 'dashboard') ?: 'ملغي',
-                                'visa_cancelled' => tr('recruitment_contract.status.visa_cancelled', [], null, 'dashboard') ?: 'إلغاء التأشيرة',
-                                'outside_kingdom' => tr('recruitment_contract.status.outside_kingdom', [], null, 'dashboard') ?: 'خارج المملكة',
-                                'processing' => tr('recruitment_contract.status.processing', [], null, 'dashboard') ?: 'قيد المعالجة',
-                                'contract_signed' => tr('recruitment_contract.status.contract_signed', [], null, 'dashboard') ?: 'تم توقيع العقد',
-                                'ticket_booked' => tr('recruitment_contract.status.ticket_booked', [], null, 'dashboard') ?: 'تم حجز التذكرة',
-                                'worker_received' => tr('recruitment_contract.status.worker_received', [], null, 'dashboard') ?: 'تم استلام العمالة',
-                                'closed' => tr('recruitment_contract.status.closed', [], null, 'dashboard') ?: 'مغلق',
-                                'returned' => tr('recruitment_contract.status.returned', [], null, 'dashboard') ?: 'مرتجع',
+                                'temporary' => tr('recruitment_contract.status.temporary', [], null, 'dashboard') ?: 'مؤقته',
                             ])
                             ->required()
                             ->default('new')
@@ -492,6 +528,11 @@ class RecruitmentContractResource extends Resource
                             ->rows(3)
                             ->columnSpanFull(),
 
+                        Forms\Components\Textarea::make('client_text_message')
+                            ->label(tr('recruitment_contract.fields.client_text_message', [], null, 'dashboard') ?: 'رسالة نصية للعميل')
+                            ->rows(3)
+                            ->columnSpanFull(),
+
                         FileUpload::document('visa_image', 'recruitment_contracts/visa')
                             ->label(tr('recruitment_contract.fields.visa_image', [], null, 'dashboard') ?: 'Visa Image')
                             ->columnSpan(1),
@@ -535,11 +576,10 @@ class RecruitmentContractResource extends Resource
                     ->label(tr('recruitment_contract.fields.status', [], null, 'dashboard') ?: 'Status')
                     ->color(fn (string $state): string => match ($state) {
                         'new' => 'primary',
-                        'foreign_embassy_approval', 'external_sending_office_approval', 'foreign_labor_ministry_approval', 'contract_signed' => 'info',
-                        'accepted_by_external_sending_office', 'accepted_by_foreign_labor_ministry', 'visa_issued', 'arrived_in_saudi_arabia', 'ticket_booked', 'worker_received', 'labor_services_transfer' => 'success',
-                        'sent_to_saudi_embassy', 'outside_kingdom', 'processing', 'return_during_warranty', 'outside_kingdom_during_warranty' => 'warning',
-                        'rejected', 'visa_cancelled', 'returned', 'runaway' => 'danger',
-                        'cancelled', 'closed' => 'gray',
+                        'foreign_embassy_approval', 'external_sending_office_approval', 'foreign_labor_ministry_approval' => 'info',
+                        'accepted_by_external_sending_office', 'accepted_by_foreign_labor_ministry', 'visa_issued', 'arrived_in_saudi_arabia', 'labor_services_transfer' => 'success',
+                        'sent_to_saudi_embassy', 'return_during_warranty', 'outside_kingdom_during_warranty', 'temporary' => 'warning',
+                        'runaway' => 'danger',
                         default => 'gray',
                     })
                     ->formatStateUsing(fn ($state) => tr("recruitment_contract.status.{$state}", [], null, 'dashboard') ?: $state)
@@ -593,19 +633,16 @@ class RecruitmentContractResource extends Resource
                         'foreign_embassy_approval' => tr('recruitment_contract.status.foreign_embassy_approval', [], null, 'dashboard') ?: 'موافقة السفارة الأجنبية',
                         'external_sending_office_approval' => tr('recruitment_contract.status.external_sending_office_approval', [], null, 'dashboard') ?: 'موافقة مكتب الإرسال الخارجيه',
                         'accepted_by_external_sending_office' => tr('recruitment_contract.status.accepted_by_external_sending_office', [], null, 'dashboard') ?: 'تم القبول من مكتب الإرسال الخارجيه',
-                        'cancelled' => tr('recruitment_contract.status.cancelled', [], null, 'dashboard') ?: 'ملغي',
                         'foreign_labor_ministry_approval' => tr('recruitment_contract.status.foreign_labor_ministry_approval', [], null, 'dashboard') ?: 'موافقة وزارة العمل الأجنبية',
                         'accepted_by_foreign_labor_ministry' => tr('recruitment_contract.status.accepted_by_foreign_labor_ministry', [], null, 'dashboard') ?: 'تم القبول من وزارة العمل الأجنبية',
                         'sent_to_saudi_embassy' => tr('recruitment_contract.status.sent_to_saudi_embassy', [], null, 'dashboard') ?: 'تم الإرسال للسفارة السعودية',
                         'visa_issued' => tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم إصدار التأشيرة',
                         'arrived_in_saudi_arabia' => tr('recruitment_contract.status.arrived_in_saudi_arabia', [], null, 'dashboard') ?: 'وصل للمملكة العربية السعودية',
-                        'return_during_warranty' => tr('recruitment_contract.status.return_during_warranty', [], null, 'dashboard') ?: 'رجيع في فتره الضمان',
-                        'outside_kingdom_during_warranty' => tr('recruitment_contract.status.outside_kingdom_during_warranty', [], null, 'dashboard') ?: 'خارج المملكه في فتره الضمان',
-                        'labor_services_transfer' => tr('recruitment_contract.status.labor_services_transfer', [], null, 'dashboard') ?: 'نقل خدمات العماله',
+                        'return_during_warranty' => tr('recruitment_contract.status.return_during_warranty', [], null, 'dashboard') ?: 'رجيع خلال فتره الضمان',
+                        'outside_kingdom_during_warranty' => tr('recruitment_contract.status.outside_kingdom_during_warranty', [], null, 'dashboard') ?: 'خارج المملكه خلال فتره الضمان',
+                        'labor_services_transfer' => tr('recruitment_contract.status.labor_services_transfer', [], null, 'dashboard') ?: 'نقل خدمات العماله المنزليه',
                         'runaway' => tr('recruitment_contract.status.runaway', [], null, 'dashboard') ?: 'هروب',
-                        'rejected' => tr('recruitment_contract.status.rejected', [], null, 'dashboard') ?: 'مرفوض',
-                        'cancelled' => tr('recruitment_contract.status.cancelled', [], null, 'dashboard') ?: 'ملغي',
-                        'returned' => tr('recruitment_contract.status.returned', [], null, 'dashboard') ?: 'Returned',
+                        'temporary' => tr('recruitment_contract.status.temporary', [], null, 'dashboard') ?: 'مؤقته',
                     ]),
 
                 Tables\Filters\SelectFilter::make('payment_status')

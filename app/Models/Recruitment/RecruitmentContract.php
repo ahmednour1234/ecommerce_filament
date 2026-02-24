@@ -55,6 +55,7 @@ class RecruitmentContract extends Model
         'paid_at',
         'status',
         'notes',
+        'client_text_message',
         'visa_image',
         'musaned_contract_file',
         'worker_id',
