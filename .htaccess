@@ -9,6 +9,15 @@
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
+    # Redirect public/storage to storage
+    RewriteCond %{REQUEST_URI} ^/public/storage/
+    RewriteRule ^public/storage/(.*)$ /storage/$1 [R=301,L]
+
+    # Allow direct access to storage files if file exists
+    RewriteCond %{REQUEST_URI} ^/storage/
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$

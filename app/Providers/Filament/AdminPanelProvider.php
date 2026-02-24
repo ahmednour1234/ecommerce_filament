@@ -50,14 +50,6 @@ class AdminPanelProvider extends PanelProvider
         $accentHex    = $theme?->accent_color    ?: '#22C55E';
 
         $brandName = setting('app.name', 'MainCore Dashboard');
-        $appLogo = \App\Models\MainCore\Setting::where('key', 'app.name')->first()?->logo;
-        
-        $logoUrl = null;
-        if ($appLogo) {
-            // Generate URL directly - route will handle it
-            $baseUrl = rtrim(config('app.url'), '/');
-            $logoUrl = $baseUrl . '/storage/' . ltrim($appLogo, '/');
-        }
 
         return $panel
             ->default()
@@ -66,7 +58,18 @@ class AdminPanelProvider extends PanelProvider
             ->login()
 
             ->brandName($brandName)
-            ->brandLogo(fn () => $logoUrl ?? $theme?->logo_light_url ?? null)
+            ->brandLogo(function () use ($theme) {
+                // Get logo from settings dynamically
+                $appLogo = \App\Models\MainCore\Setting::where('key', 'app.name')->first()?->logo;
+                
+                if ($appLogo) {
+                    $baseUrl = rtrim(config('app.url'), '/');
+                    return $baseUrl . '/storage/' . ltrim($appLogo, '/');
+                }
+                
+                // Fallback to theme logo
+                return $theme?->logo_light_url ?? null;
+            })
 
             ->colors([
                 'primary'   => Color::hex($primaryHex),
