@@ -20,7 +20,7 @@ class ComplaintsStatsWidget extends BaseWidget
 
     public function getHeading(): string
     {
-        return tr('complaint.dashboard.heading', [], null, 'dashboard') ?: 'إحصائيات الشكاوي';
+        return 'إحصائيات الشكاوي';
     }
 
     protected function getFilters(): array
@@ -88,8 +88,8 @@ class ComplaintsStatsWidget extends BaseWidget
             if ($totalComplaints === 0) {
                 return [
                     Stat::make(
-                        tr('complaint.dashboard.no_data', [], null, 'dashboard') ?: 'لا توجد بيانات',
-                        tr('complaint.dashboard.no_complaints_period', [], null, 'dashboard') ?: 'لا توجد شكاوي في الفترة المحددة'
+                        'لا توجد بيانات',
+                        'لا توجد شكاوي في الفترة المحددة'
                     )
                         ->description('')
                         ->color('gray')
@@ -99,10 +99,10 @@ class ComplaintsStatsWidget extends BaseWidget
 
             // Total Complaints - Main Overview
             $stats[] = Stat::make(
-                tr('complaint.dashboard.total_complaints', [], null, 'dashboard') ?: 'إجمالي الشكاوي',
+                'إجمالي الشكاوي',
                 Number::format($totalComplaints)
             )
-                ->description(tr('complaint.dashboard.in_period', [], null, 'dashboard') ?: 'في الفترة المحددة')
+                ->description('في الفترة المحددة')
                 ->descriptionIcon('heroicon-m-chart-bar')
                 ->color('primary')
                 ->icon('heroicon-o-clipboard-document-list')
@@ -113,11 +113,11 @@ class ComplaintsStatsWidget extends BaseWidget
                 $urgentPending = (clone $query)->where('priority', 'urgent')->where('status', 'pending')->count();
                 $urgentInProgress = (clone $query)->where('priority', 'urgent')->where('status', 'in_progress')->count();
                 $urgentDescription = ($urgentPending > 0 || $urgentInProgress > 0)
-                    ? (tr('complaint.dashboard.requires_attention', [], null, 'dashboard') ?: 'يحتاج إلى انتباه فوري')
-                    : (tr('complaint.priority.urgent', [], null, 'dashboard') ?: 'عاجل');
+                    ? 'يحتاج إلى انتباه فوري'
+                    : 'عاجل';
                 
                 $stats[] = Stat::make(
-                    tr('complaint.dashboard.urgent_complaints', [], null, 'dashboard') ?: 'شكاوي عاجلة',
+                    'شكاوي عاجلة',
                     Number::format($urgentComplaints)
                 )
                     ->description($urgentDescription)
@@ -131,10 +131,10 @@ class ComplaintsStatsWidget extends BaseWidget
 
             if ($highComplaints > 0) {
                 $stats[] = Stat::make(
-                    tr('complaint.dashboard.high_priority_complaints', [], null, 'dashboard') ?: 'شكاوي عالية الأولوية',
+                    'شكاوي عالية الأولوية',
                     Number::format($highComplaints)
                 )
-                    ->description(tr('complaint.priority.high', [], null, 'dashboard') ?: 'عالي')
+                    ->description('عالي')
                     ->descriptionIcon('heroicon-m-arrow-trending-up')
                     ->color('warning')
                     ->icon('heroicon-o-arrow-trending-up')
@@ -145,10 +145,10 @@ class ComplaintsStatsWidget extends BaseWidget
 
             if ($mediumComplaints > 0) {
                 $stats[] = Stat::make(
-                    tr('complaint.dashboard.medium_priority_complaints', [], null, 'dashboard') ?: 'شكاوي متوسطة الأولوية',
+                    'شكاوي متوسطة الأولوية',
                     Number::format($mediumComplaints)
                 )
-                    ->description(tr('complaint.priority.medium', [], null, 'dashboard') ?: 'متوسط')
+                    ->description('متوسط')
                     ->descriptionIcon('heroicon-m-minus-circle')
                     ->color('info')
                     ->icon('heroicon-o-minus-circle')
@@ -159,10 +159,10 @@ class ComplaintsStatsWidget extends BaseWidget
 
             if ($lowComplaints > 0) {
                 $stats[] = Stat::make(
-                    tr('complaint.dashboard.low_priority_complaints', [], null, 'dashboard') ?: 'شكاوي منخفضة الأولوية',
+                    'شكاوي منخفضة الأولوية',
                     Number::format($lowComplaints)
                 )
-                    ->description(tr('complaint.priority.low', [], null, 'dashboard') ?: 'منخفض')
+                    ->description('منخفض')
                     ->descriptionIcon('heroicon-m-arrow-down')
                     ->color('gray')
                     ->icon('heroicon-o-arrow-down')
@@ -174,10 +174,10 @@ class ComplaintsStatsWidget extends BaseWidget
             // Status Section - Organized by Status
             if ($pendingComplaints > 0) {
                 $stats[] = Stat::make(
-                    tr('complaint.dashboard.pending_complaints', [], null, 'dashboard') ?: 'شكاوي قيد الانتظار',
+                    'شكاوي قيد الانتظار',
                     Number::format($pendingComplaints)
                 )
-                    ->description(tr('complaint.status.pending', [], null, 'dashboard') ?: 'قيد الانتظار')
+                    ->description('قيد الانتظار')
                     ->descriptionIcon('heroicon-m-clock')
                     ->color('warning')
                     ->icon('heroicon-o-clock')
@@ -188,10 +188,10 @@ class ComplaintsStatsWidget extends BaseWidget
 
             if ($inProgressComplaints > 0) {
                 $stats[] = Stat::make(
-                    tr('complaint.dashboard.in_progress_complaints', [], null, 'dashboard') ?: 'شكاوي قيد المعالجة',
+                    'شكاوي قيد المعالجة',
                     Number::format($inProgressComplaints)
                 )
-                    ->description(tr('complaint.status.in_progress', [], null, 'dashboard') ?: 'قيد المعالجة')
+                    ->description('قيد المعالجة')
                     ->descriptionIcon('heroicon-m-arrow-path')
                     ->color('info')
                     ->icon('heroicon-o-arrow-path-rounded-square')
@@ -202,10 +202,10 @@ class ComplaintsStatsWidget extends BaseWidget
 
             if ($resolvedComplaints > 0) {
                 $stats[] = Stat::make(
-                    tr('complaint.dashboard.resolved_complaints', [], null, 'dashboard') ?: 'شكاوي تم حلها',
+                    'شكاوي تم حلها',
                     Number::format($resolvedComplaints)
                 )
-                    ->description(tr('complaint.status.resolved', [], null, 'dashboard') ?: 'تم الحل')
+                    ->description('تم الحل')
                     ->descriptionIcon('heroicon-m-check-circle')
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
@@ -216,10 +216,10 @@ class ComplaintsStatsWidget extends BaseWidget
 
             if ($closedComplaints > 0) {
                 $stats[] = Stat::make(
-                    tr('complaint.dashboard.closed_complaints', [], null, 'dashboard') ?: 'شكاوي مغلقة',
+                    'شكاوي مغلقة',
                     Number::format($closedComplaints)
                 )
-                    ->description(tr('complaint.status.closed', [], null, 'dashboard') ?: 'مغلق')
+                    ->description('مغلق')
                     ->descriptionIcon('heroicon-m-check-badge')
                     ->color('gray')
                     ->icon('heroicon-o-check-badge')

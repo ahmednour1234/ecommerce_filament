@@ -20,7 +20,7 @@ class RecruitmentContractsStatsWidget extends BaseWidget
 
     public function getHeading(): string
     {
-        return tr('recruitment_contract.dashboard.heading', [], null, 'dashboard') ?: 'إحصائيات عقود الاستقدام';
+        return 'إحصائيات عقود الاستقدام';
     }
 
     protected function getFilters(): array
@@ -86,8 +86,8 @@ class RecruitmentContractsStatsWidget extends BaseWidget
             if ($totalContracts === 0) {
                 return [
                     Stat::make(
-                        tr('recruitment_contract.dashboard.no_data', [], null, 'dashboard') ?: 'لا توجد بيانات',
-                        tr('recruitment_contract.dashboard.no_contracts_period', [], null, 'dashboard') ?: 'لا توجد عقود في الفترة المحددة'
+                        'لا توجد بيانات',
+                        'لا توجد عقود في الفترة المحددة'
                     )
                         ->description('')
                         ->color('gray')
@@ -96,10 +96,10 @@ class RecruitmentContractsStatsWidget extends BaseWidget
             }
 
             $stats[] = Stat::make(
-                tr('recruitment_contract.dashboard.total_contracts', [], null, 'dashboard') ?: 'إجمالي العقود',
+                'إجمالي العقود',
                 Number::format($totalContracts)
             )
-                ->description(tr('recruitment_contract.dashboard.in_period', [], null, 'dashboard') ?: 'في الفترة المحددة')
+                ->description('في الفترة المحددة')
                 ->descriptionIcon('heroicon-o-document-text')
                 ->color('primary')
                 ->icon('heroicon-o-document-text')
@@ -107,10 +107,10 @@ class RecruitmentContractsStatsWidget extends BaseWidget
 
             if ($newContracts > 0) {
                 $stats[] = Stat::make(
-                    tr('recruitment_contract.dashboard.new_contracts', [], null, 'dashboard') ?: 'عقود جديدة',
+                    'عقود جديدة',
                     Number::format($newContracts)
                 )
-                    ->description(tr('recruitment_contract.status.new', [], null, 'dashboard') ?: 'جديد')
+                    ->description('جديد')
                     ->descriptionIcon('heroicon-o-plus-circle')
                     ->color('info')
                     ->icon('heroicon-o-plus-circle')
@@ -121,10 +121,10 @@ class RecruitmentContractsStatsWidget extends BaseWidget
 
             if ($processingContracts > 0) {
                 $stats[] = Stat::make(
-                    tr('recruitment_contract.dashboard.processing_contracts', [], null, 'dashboard') ?: 'عقود قيد المعالجة',
+                    'عقود قيد المعالجة',
                     Number::format($processingContracts)
                 )
-                    ->description(tr('recruitment_contract.status.processing', [], null, 'dashboard') ?: 'قيد المعالجة')
+                    ->description('قيد المعالجة')
                     ->descriptionIcon('heroicon-o-clock')
                     ->color('warning')
                     ->icon('heroicon-o-clock')
@@ -135,10 +135,10 @@ class RecruitmentContractsStatsWidget extends BaseWidget
 
             if ($visaIssued > 0) {
                 $stats[] = Stat::make(
-                    tr('recruitment_contract.dashboard.visa_issued', [], null, 'dashboard') ?: 'تم إصدار التأشيرة',
+                    'تم إصدار التأشيرة',
                     Number::format($visaIssued)
                 )
-                    ->description(tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم إصدار التأشيرة')
+                    ->description('تم إصدار التأشيرة')
                     ->descriptionIcon('heroicon-o-check-circle')
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
@@ -149,10 +149,10 @@ class RecruitmentContractsStatsWidget extends BaseWidget
 
             if ($arrived > 0) {
                 $stats[] = Stat::make(
-                    tr('recruitment_contract.dashboard.arrived', [], null, 'dashboard') ?: 'وصل للمملكة',
+                    'وصل للمملكة',
                     Number::format($arrived)
                 )
-                    ->description(tr('recruitment_contract.status.arrived_in_saudi_arabia', [], null, 'dashboard') ?: 'وصل للمملكة العربية السعودية')
+                    ->description('وصل للمملكة العربية السعودية')
                     ->descriptionIcon('heroicon-o-map-pin')
                     ->color('success')
                     ->icon('heroicon-o-map-pin')
@@ -163,10 +163,10 @@ class RecruitmentContractsStatsWidget extends BaseWidget
 
             if ($closed > 0) {
                 $stats[] = Stat::make(
-                    tr('recruitment_contract.dashboard.closed_contracts', [], null, 'dashboard') ?: 'عقود مغلقة',
+                    'عقود مغلقة',
                     Number::format($closed)
                 )
-                    ->description(tr('recruitment_contract.status.closed', [], null, 'dashboard') ?: 'مغلق')
+                    ->description('مغلق')
                     ->descriptionIcon('heroicon-o-check-badge')
                     ->color('gray')
                     ->icon('heroicon-o-check-badge')
@@ -177,10 +177,10 @@ class RecruitmentContractsStatsWidget extends BaseWidget
 
             if ($rejected > 0) {
                 $stats[] = Stat::make(
-                    tr('recruitment_contract.dashboard.rejected_contracts', [], null, 'dashboard') ?: 'عقود مرفوضة',
+                    'عقود مرفوضة',
                     Number::format($rejected)
                 )
-                    ->description(tr('recruitment_contract.status.rejected', [], null, 'dashboard') ?: 'مرفوض')
+                    ->description('مرفوض')
                     ->descriptionIcon('heroicon-o-x-circle')
                     ->color('danger')
                     ->icon('heroicon-o-x-circle')
@@ -190,21 +190,20 @@ class RecruitmentContractsStatsWidget extends BaseWidget
             }
 
             $stats[] = Stat::make(
-                tr('recruitment_contract.dashboard.total_cost', [], null, 'dashboard') ?: 'إجمالي التكلفة',
+                'إجمالي التكلفة',
                 Number::currency($totalCost, 'SAR')
             )
-                ->description(tr('recruitment_contract.dashboard.all_contracts', [], null, 'dashboard') ?: 'جميع العقود')
+                ->description('جميع العقود')
                 ->descriptionIcon('heroicon-o-currency-dollar')
                 ->color('success')
                 ->icon('heroicon-o-banknotes')
                 ->url($this->buildUrl($publicUrl, $baseFilters));
 
-            $remainingLabel = tr('recruitment_contract.dashboard.remaining', [], null, 'dashboard') ?: 'المتبقي';
             $stats[] = Stat::make(
-                tr('recruitment_contract.dashboard.paid_total', [], null, 'dashboard') ?: 'المبلغ المدفوع',
+                'المبلغ المدفوع',
                 Number::currency($paidTotal, 'SAR')
             )
-                ->description($remainingLabel . ': ' . Number::currency($remainingTotal, 'SAR'))
+                ->description('المتبقي: ' . Number::currency($remainingTotal, 'SAR'))
                 ->descriptionIcon('heroicon-o-arrow-trending-up')
                 ->color('info')
                 ->icon('heroicon-o-arrow-trending-up')

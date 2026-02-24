@@ -177,6 +177,8 @@ class RecruitmentContractTranslationsSeeder extends Seeder
             'recruitment_contract.dashboard.rejected_contracts' => ['en' => 'Rejected Contracts', 'ar' => 'عقود مرفوضة'],
             'recruitment_contract.dashboard.all_contracts' => ['en' => 'All Contracts', 'ar' => 'جميع العقود'],
             'recruitment_contract.dashboard.remaining' => ['en' => 'Remaining', 'ar' => 'المتبقي'],
+            'recruitment_contract.dashboard.total_cost' => ['en' => 'Total Cost', 'ar' => 'إجمالي التكلفة'],
+            'recruitment_contract.dashboard.paid_total' => ['en' => 'Paid Total', 'ar' => 'المبلغ المدفوع'],
 
             'sidebar.عقود_الاستقدام' => ['en' => 'Recruitment Contracts', 'ar' => 'عقود الاستقدام'],
             'sidebar.عقود_الاستقدام.recruitment_contract' => ['en' => 'Recruitment Contracts', 'ar' => 'عقود الاستقدام'],
