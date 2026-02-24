@@ -21,7 +21,7 @@ class SidebarNavigationTranslationsSeeder extends Seeder
         $this->command->info('Creating sidebar navigation translations...');
 
         $translations = [
-            // Navigation Groups
+            // Navigation Groups (with sidebar prefix)
             'sidebar.recruitment_contracts' => ['en' => 'Recruitment Contracts', 'ar' => 'عقود الاستقدام'],
             'sidebar.housing' => ['en' => 'Housing', 'ar' => 'الإيواء'],
             'sidebar.rental' => ['en' => 'Rental', 'ar' => 'قسم التأجير'],
@@ -43,6 +43,29 @@ class SidebarNavigationTranslationsSeeder extends Seeder
             'sidebar.settings' => ['en' => 'Settings', 'ar' => 'الإعدادات'],
             'sidebar.branches' => ['en' => 'Branches', 'ar' => 'الفروع'],
             'sidebar.website_management' => ['en' => 'Website Management', 'ar' => 'إدارة الموقع'],
+
+            // Navigation Groups (direct keys - for Filament group translation)
+            'recruitment_contracts' => ['en' => 'Recruitment Contracts', 'ar' => 'عقود الاستقدام'],
+            'housing' => ['en' => 'Housing', 'ar' => 'الإيواء'],
+            'rental' => ['en' => 'Rental', 'ar' => 'قسم التأجير'],
+            'service_transfer' => ['en' => 'Service Transfer', 'ar' => 'نقل الخدمات'],
+            'packages' => ['en' => 'Packages', 'ar' => 'باقات العروض'],
+            'candidates' => ['en' => 'Candidates', 'ar' => 'المرشحين'],
+            'clients' => ['en' => 'Clients', 'ar' => 'العملاء'],
+            'agents' => ['en' => 'Agents', 'ar' => 'الوكلاء'],
+            'finance' => ['en' => 'Finance', 'ar' => 'قسم الحسابات'],
+            'follow_up' => ['en' => 'Follow-up', 'ar' => 'المتابعة'],
+            'messages' => ['en' => 'Messages', 'ar' => 'قسم الرسائل'],
+            'company_visas' => ['en' => 'Company Visas', 'ar' => 'تأشيرات الشركة'],
+            'app_management' => ['en' => 'App Management', 'ar' => 'إدارة التطبيق'],
+            'profile' => ['en' => 'Profile', 'ar' => 'الملف الشخصي'],
+            'employee_commissions' => ['en' => 'Employee Commissions', 'ar' => 'عمولات الموظفين'],
+            'hr' => ['en' => 'Human Resources', 'ar' => 'الموارد البشرية'],
+            'system_movement' => ['en' => 'System Movement', 'ar' => 'حركة النظام المرجعي'],
+            'notifications' => ['en' => 'Notifications', 'ar' => 'التنبيهات'],
+            'settings' => ['en' => 'Settings', 'ar' => 'الإعدادات'],
+            'branches' => ['en' => 'Branches', 'ar' => 'الفروع'],
+            'website_management' => ['en' => 'Website Management', 'ar' => 'إدارة الموقع'],
 
             // Recruitment Contracts
             'sidebar.recruitment_contracts.recruitmentcontract' => ['en' => 'Recruitment Contracts', 'ar' => 'عقود الاستقدام'],
@@ -163,7 +186,16 @@ class SidebarNavigationTranslationsSeeder extends Seeder
         $created = 0;
         $updated = 0;
 
+        // Group keys that should also be added to 'navigation' group for Filament compatibility
+        $navigationGroupKeys = [
+            'recruitment_contracts', 'housing', 'rental', 'service_transfer', 'packages',
+            'candidates', 'clients', 'agents', 'finance', 'follow_up', 'messages',
+            'company_visas', 'app_management', 'profile', 'employee_commissions',
+            'hr', 'system_movement', 'notifications', 'settings', 'branches', 'website_management'
+        ];
+
         foreach ($translations as $key => $values) {
+            // Save to 'dashboard' group (primary)
             $resultEn = Translation::updateOrCreate(
                 [
                     'key' => $key,
@@ -190,6 +222,31 @@ class SidebarNavigationTranslationsSeeder extends Seeder
                 $created++;
             } else {
                 $updated++;
+            }
+
+            // Also add direct group keys to 'navigation' group for Filament compatibility
+            if (in_array($key, $navigationGroupKeys)) {
+                Translation::updateOrCreate(
+                    [
+                        'key' => $key,
+                        'group' => 'navigation',
+                        'language_id' => $english->id,
+                    ],
+                    [
+                        'value' => $values['en'],
+                    ]
+                );
+
+                Translation::updateOrCreate(
+                    [
+                        'key' => $key,
+                        'group' => 'navigation',
+                        'language_id' => $arabic->id,
+                    ],
+                    [
+                        'value' => $values['ar'],
+                    ]
+                );
             }
         }
 
