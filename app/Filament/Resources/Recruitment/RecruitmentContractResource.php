@@ -259,6 +259,7 @@ class RecruitmentContractResource extends Resource
                             ->options(function () {
                                 return Cache::remember('recruitment_contracts.nationalities', 21600, function () {
                                     return Nationality::where('is_active', true)
+                                        ->whereIn('name_ar', ['الفلبين', 'بنغلادش', 'سريلانكا', 'اثيوبيا', 'اوغندا', 'كينيا', 'بورندي'])
                                         ->get()
                                         ->mapWithKeys(function ($nationality) {
                                             $label = app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en;
@@ -491,6 +492,7 @@ class RecruitmentContractResource extends Resource
                                     ->label(tr('recruitment.fields.nationality', [], null, 'dashboard') ?: 'Nationality')
                                     ->options(function () {
                                         return Nationality::where('is_active', true)
+                                            ->whereIn('name_ar', ['الفلبين', 'بنغلادش', 'سريلانكا', 'اثيوبيا', 'اوغندا', 'كينيا', 'بورندي'])
                                             ->get()
                                             ->mapWithKeys(function ($nationality) {
                                                 $label = app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en;
