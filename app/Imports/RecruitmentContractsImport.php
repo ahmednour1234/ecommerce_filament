@@ -95,6 +95,7 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                 ]);
 
                 $airportName = $this->getValue($rowArray, ['name_of_the_airport', 'airport', 'اسم المطار']);
+                $visaTypeRaw = $this->getValue($rowArray, ['visa_type', 'type', 'نوع التأشيرة', 'نوع_التأشيرة']);
 
                 $workerName = $workerName ? trim((string) $workerName) : null;
                 $passportNo = $passportNo ? trim((string) $passportNo) : null;
@@ -126,6 +127,9 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                 // ===== Map payment status =====
                 $paymentStatus = $this->mapPaymentStatus($paymentStatusRaw);
 
+                // ===== Map visa type =====
+                $visaType = $this->mapVisaType($visaTypeRaw);
+
                 // ===== Build contract data =====
                 $arrivalCountryId     = $this->mapCountryIdByName($airportName);
                 $departureCountryId   = $this->mapCountryIdByName($airportName);
@@ -136,6 +140,7 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                     'branch_id' => $branch?->id,
                     'worker_id' => $worker->id,
                     'visa_no' => $visaNoValue,
+                    'visa_type' => $visaType,
                     'notes' => $note ? trim((string) $note) : null,
                     'status' => $this->mapStatus($statusCode),
                     'arrival_country_id' => $arrivalCountryId,
@@ -493,6 +498,24 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
         if (str_contains($normalized, 'unpaid')) return 'unpaid';
 
         return 'unpaid';
+    }
+
+    protected function mapVisaType($raw): string
+    {
+        if ($raw === null || $raw === '') return 'paid';
+
+        $v = trim((string) $raw);
+        if ($v === '') return 'paid';
+
+        $normalized = mb_strtolower($v, 'UTF-8');
+        $normalized = str_replace(['_', '-', '  ', "\t", "\n", "\r"], ' ', $normalized);
+        $normalized = preg_replace('/\s+/', ' ', $normalized);
+
+        if (in_array($normalized, ['paid', 'مدفوع', 'paid visa'])) return 'paid';
+        if (str_contains($normalized, 'عمالة منزلية') || str_contains($normalized, 'domestic labor') || str_contains($normalized, 'domestic_labor')) return 'domestic_labor';
+        if (str_contains($normalized, 'تأهيل شامل') || str_contains($normalized, 'comprehensive qualification') || str_contains($normalized, 'comprehensive_qualification')) return 'comprehensive_qualification';
+
+        return 'paid';
     }
 
     protected function applyPaymentStatus(array $contractData, ?string $paymentStatus): array
