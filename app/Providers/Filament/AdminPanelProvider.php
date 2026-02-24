@@ -127,87 +127,87 @@ class AdminPanelProvider extends PanelProvider
             ->navigationGroups([
                 \Filament\Navigation\NavigationGroup::make('عقود الاستقدام')
                     ->label('عقود الاستقدام')
-                    ->collapsible(false),
+                    ->collapsible(true),
 
                 \Filament\Navigation\NavigationGroup::make('الإيواء')
                     ->label('الإيواء')
-                    ->collapsible(false),
+                    ->collapsible(true),
 
                 \Filament\Navigation\NavigationGroup::make('قسم التأجير')
                     ->label('قسم التأجير')
-                    ->collapsible(false),
+                    ->collapsible(true),
 
                 \Filament\Navigation\NavigationGroup::make('نقل الخدمات')
                     ->label('نقل الخدمات')
-                    ->collapsible(false),
+                    ->collapsible(true),
 
                 \Filament\Navigation\NavigationGroup::make('باقات العروض')
                     ->label('باقات العروض')
-                    ->collapsible(false),
+                    ->collapsible(true),
 
                 \Filament\Navigation\NavigationGroup::make('المرشحين')
                     ->label('المرشحين')
-                    ->collapsible(false),
+                    ->collapsible(true),
 
                 \Filament\Navigation\NavigationGroup::make('العملاء')
                     ->label('العملاء')
-                    ->collapsible(false),
+                    ->collapsible(true),
 
                 \Filament\Navigation\NavigationGroup::make('الوكلاء')
                     ->label('الوكلاء')
-                    ->collapsible(false),
+                    ->collapsible(true),
 
                 \Filament\Navigation\NavigationGroup::make('قسم الحسابات')
                     ->label('قسم الحسابات')
-                    ->collapsible(false),
+                    ->collapsible(true),
 
                 \Filament\Navigation\NavigationGroup::make('المتابعة')
                     ->label('المتابعة')
-                    ->collapsible(false),
+                    ->collapsible(true),
 
                 \Filament\Navigation\NavigationGroup::make('قسم الرسائل')
                     ->label('قسم الرسائل')
-                    ->collapsible(false),
+                    ->collapsible(true),
 
                 \Filament\Navigation\NavigationGroup::make('تأشيرات الشركة')
                     ->label('تأشيرات الشركة')
-                    ->collapsible(false),
+                    ->collapsible(true),
 
                 \Filament\Navigation\NavigationGroup::make('إدارة التطبيق')
                     ->label('إدارة التطبيق')
-                    ->collapsible(false),
+                    ->collapsible(true),
 
                 \Filament\Navigation\NavigationGroup::make('الملف الشخصي')
                     ->label('الملف الشخصي')
-                    ->collapsible(false),
+                    ->collapsible(true),
 
                 \Filament\Navigation\NavigationGroup::make('عمولات الموظفين')
                     ->label('عمولات الموظفين')
-                    ->collapsible(false),
+                    ->collapsible(true),
 
                 \Filament\Navigation\NavigationGroup::make('الموارد البشرية')
                     ->label('الموارد البشرية')
-                    ->collapsible(false),
+                    ->collapsible(true),
 
                 \Filament\Navigation\NavigationGroup::make('حركة النظام المرجعي')
                     ->label('حركة النظام المرجعي')
-                    ->collapsible(false),
+                    ->collapsible(true),
 
                 \Filament\Navigation\NavigationGroup::make('التنبيهات')
                     ->label('التنبيهات')
-                    ->collapsible(false),
+                    ->collapsible(true),
 
                 \Filament\Navigation\NavigationGroup::make('الإعدادات')
                     ->label('الإعدادات')
-                    ->collapsible(false),
+                    ->collapsible(true),
 
                 \Filament\Navigation\NavigationGroup::make('الفروع')
                     ->label('الفروع')
-                    ->collapsible(false),
+                    ->collapsible(true),
 
                 \Filament\Navigation\NavigationGroup::make('إدارة الموقع')
                     ->label('إدارة الموقع')
-                    ->collapsible(false),
+                    ->collapsible(true),
             ]);
     }
 
