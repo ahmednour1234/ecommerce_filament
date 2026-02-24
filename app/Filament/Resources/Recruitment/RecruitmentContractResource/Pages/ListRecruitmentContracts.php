@@ -5,6 +5,8 @@ namespace App\Filament\Resources\Recruitment\RecruitmentContractResource\Pages;
 use App\Filament\Resources\Recruitment\RecruitmentContractResource;
 use App\Filament\Widgets\Recruitment\RecruitmentContractStatsWidget;
 use App\Imports\RecruitmentContractsImport;
+use App\Jobs\Recruitment\CalculateContractAlertsJob;
+use App\Services\Recruitment\ContractAlertsService;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Facades\Storage;
@@ -46,7 +48,17 @@ class ListRecruitmentContracts extends ListRecords
 
     protected function getHeaderActions(): array
     {
+        $alertsService = app(ContractAlertsService::class);
+        $alertsCount = $alertsService->getAlertsCount();
+
         return [
+            Actions\Action::make('alerts')
+                ->label(tr('recruitment_contract.alerts.title', [], null, 'dashboard') ?: 'تنبيهات العقود')
+                ->icon('heroicon-o-bell')
+                ->color($alertsCount > 0 ? 'warning' : 'gray')
+                ->badge($alertsCount > 0 ? $alertsCount : null)
+                ->badgeColor('danger')
+                ->url(\App\Filament\Pages\Recruitment\ContractAlertsPage::getUrl()),
             Actions\CreateAction::make()
                 ->label(tr('recruitment_contract.actions.create', [], null, 'dashboard') ?: 'Create Contract'),
             Actions\Action::make('download_template')
@@ -158,6 +170,8 @@ class ListRecruitmentContracts extends ListRecords
     public function mount(): void
     {
         parent::mount();
+
+        CalculateContractAlertsJob::dispatch();
 
         \Filament\Support\Facades\FilamentView::registerRenderHook(
             \Filament\View\PanelsRenderHook::HEAD_END,

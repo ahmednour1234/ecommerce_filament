@@ -205,6 +205,17 @@ class RecruitmentContractTranslationsSeeder extends Seeder
             'common.date_from' => ['en' => 'From Date', 'ar' => 'من تاريخ'],
             'common.date_to' => ['en' => 'To Date', 'ar' => 'إلى تاريخ'],
             'common.view_all' => ['en' => 'View All', 'ar' => 'عرض الكل'],
+
+            'recruitment_contract.alerts.title' => ['en' => 'Contract Alerts', 'ar' => 'تنبيهات العقود'],
+            'recruitment_contract.alerts.description' => ['en' => 'Contracts Requiring Follow-up', 'ar' => 'عقود تحتاج إلى متابعة'],
+            'recruitment_contract.alerts.description_text' => ['en' => 'The following contracts require immediate follow-up', 'ar' => 'العقود التالية تحتاج إلى متابعة فورية'],
+            'recruitment_contract.alerts.alert_type' => ['en' => 'Alert Type', 'ar' => 'نوع التنبيه'],
+            'recruitment_contract.alerts.over_25_days' => ['en' => 'Over 25 Days', 'ar' => 'مر عليه 25 يوم'],
+            'recruitment_contract.alerts.over_3_months' => ['en' => 'Over 3 Months', 'ar' => 'مر عليه 3 شهور'],
+            'recruitment_contract.alerts.days_overdue' => ['en' => 'Days Overdue', 'ar' => 'الأيام المتأخرة'],
+            'recruitment_contract.alerts.days' => ['en' => 'Days', 'ar' => 'يوم'],
+            'recruitment_contract.alerts.months' => ['en' => 'Months', 'ar' => 'شهر'],
+            'sidebar.recruitment_contracts.contract_alerts' => ['en' => 'Contract Alerts', 'ar' => 'تنبيهات العقود'],
         ];
 
         $created = 0;
