@@ -13,7 +13,7 @@ return [
     'follow_up' => 'Follow-up',
     'messages' => 'Messages',
     'company_visas' => 'Company Visas',
-    'app_management' => 'App Management',
+    'anagement' => 'App Management',
     'profile' => 'Profile',
     'employee_commissions' => 'Employee Commissions',
     'hr' => 'Human Resources',

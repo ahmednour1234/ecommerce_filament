@@ -20,7 +20,7 @@ class MainSettings extends Page implements Forms\Contracts\HasForms
     use TranslatablePage;
 
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
-    protected static ?string $navigationGroup = 'app_management';
+    protected static ?string $navigationGroup = 'إعدادات التطبيق';
     protected static ?string $navigationLabel = 'إعدادات التطبيق';
     protected static ?int $navigationSort = 1;
     protected static ?string $title = 'System Settings';
