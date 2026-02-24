@@ -108,67 +108,67 @@ class AdminPanelProvider extends PanelProvider
 
             ->navigationGroups([
                 \Filament\Navigation\NavigationGroup::make('recruitment_contracts')
-                    ->label('عقود الاستقدام')
+                    ->label(fn () => tr('sidebar.recruitment_contracts', [], null, 'dashboard') ?: 'عقود الاستقدام')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('housing')
-                    ->label('الإيواء')
+                    ->label(fn () => tr('sidebar.housing', [], null, 'dashboard') ?: 'الإيواء')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('rental')
-                    ->label('قسم التأجير')
+                    ->label(fn () => tr('sidebar.rental', [], null, 'dashboard') ?: 'قسم التأجير')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('service_transfer')
-                    ->label('نقل الخدمات')
+                    ->label(fn () => tr('sidebar.service_transfer', [], null, 'dashboard') ?: 'نقل الخدمات')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('packages')
-                    ->label('باقات العروض')
+                    ->label(fn () => tr('sidebar.packages', [], null, 'dashboard') ?: 'باقات العروض')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('candidates')
-                    ->label('المرشحين')
+                    ->label(fn () => tr('sidebar.candidates', [], null, 'dashboard') ?: 'المرشحين')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('clients')
-                    ->label('العملاء')
+                    ->label(fn () => tr('sidebar.clients', [], null, 'dashboard') ?: 'العملاء')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('agents')
-                    ->label('الوكلاء')
+                    ->label(fn () => tr('sidebar.agents', [], null, 'dashboard') ?: 'الوكلاء')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('finance')
-                    ->label('قسم الحسابات')
+                    ->label(fn () => tr('sidebar.finance', [], null, 'dashboard') ?: 'قسم الحسابات')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('follow_up')
-                    ->label('المتابعة')
+                    ->label(fn () => tr('sidebar.follow_up', [], null, 'dashboard') ?: 'المتابعة')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('messages')
-                    ->label('قسم الرسائل')
+                    ->label(fn () => tr('sidebar.messages', [], null, 'dashboard') ?: 'قسم الرسائل')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('company_visas')
-                    ->label('تأشيرات الشركة')
+                    ->label(fn () => tr('sidebar.company_visas', [], null, 'dashboard') ?: 'تأشيرات الشركة')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('app_management')
-                    ->label('إدارة التطبيق')
+                    ->label(fn () => tr('sidebar.app_management', [], null, 'dashboard') ?: 'إدارة التطبيق')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('profile')
-                    ->label('الملف الشخصي')
+                    ->label(fn () => tr('sidebar.profile', [], null, 'dashboard') ?: 'الملف الشخصي')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('employee_commissions')
-                    ->label('عمولات الموظفين')
+                    ->label(fn () => tr('sidebar.employee_commissions', [], null, 'dashboard') ?: 'عمولات الموظفين')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('hr')
-                    ->label('الموارد البشرية')
+                    ->label(fn () => tr('sidebar.hr', [], null, 'dashboard') ?: 'الموارد البشرية')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('system_movement')
-                    ->label('حركة النظام المرجعي')
+                    ->label(fn () => tr('sidebar.system_movement', [], null, 'dashboard') ?: 'حركة النظام المرجعي')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('notifications')
-                    ->label('التنبيهات')
+                    ->label(fn () => tr('sidebar.notifications', [], null, 'dashboard') ?: 'التنبيهات')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('settings')
-                    ->label('الإعدادات')
+                    ->label(fn () => tr('sidebar.settings', [], null, 'dashboard') ?: 'الإعدادات')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('branches')
-                    ->label('الفروع')
+                    ->label(fn () => tr('sidebar.branches', [], null, 'dashboard') ?: 'الفروع')
                     ->collapsible(false),
                 \Filament\Navigation\NavigationGroup::make('website_management')
-                    ->label('إدارة الموقع')
+                    ->label(fn () => tr('sidebar.website_management', [], null, 'dashboard') ?: 'إدارة الموقع')
                     ->collapsible(false),
             ]);
     }
