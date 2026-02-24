@@ -5,6 +5,7 @@ namespace App\Filament\Pages\Recruitment;
 use App\Filament\Concerns\TranslatableNavigation;
 use App\Filament\Resources\Recruitment\RecruitmentContractResource;
 use App\Services\Recruitment\ContractAlertsService;
+use App\Models\Recruitment\Nationality;
 use Filament\Pages\Page;
 use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
@@ -50,7 +51,7 @@ class ContractAlertsPage extends Page implements HasTable
             ->query(
                 \App\Models\Recruitment\RecruitmentContract::query()
                     ->whereIn('id', $alertIds ?: [0])
-                    ->with(['client', 'branch'])
+                    ->with(['client', 'branch', 'nationality'])
             )
             ->columns([
                 Tables\Columns\TextColumn::make('contract_no')
@@ -134,6 +135,19 @@ class ContractAlertsPage extends Page implements HasTable
                         $filteredIds = $filteredAlerts->pluck('id')->toArray();
                         return $query->whereIn('id', $filteredIds ?: [0]);
                     }),
+
+                Tables\Filters\SelectFilter::make('nationality_id')
+                    ->label(tr('recruitment_contract.fields.nationality', [], null, 'dashboard') ?: 'بالجنسية')
+                    ->options(function () {
+                        return Nationality::where('is_active', true)
+                            ->get()
+                            ->mapWithKeys(function ($nationality) {
+                                $label = app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en;
+                                return [$nationality->id => $label];
+                            })
+                            ->toArray();
+                    })
+                    ->searchable(),
             ])
             ->actions([
                 Tables\Actions\Action::make('view')
