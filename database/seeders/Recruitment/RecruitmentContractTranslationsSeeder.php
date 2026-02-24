@@ -103,6 +103,8 @@ class RecruitmentContractTranslationsSeeder extends Seeder
             'recruitment_contract.fields.status' => ['en' => 'Status', 'ar' => 'الحالة'],
             'recruitment_contract.fields.notes' => ['en' => 'Notes', 'ar' => 'ملاحظات'],
             'recruitment_contract.fields.client_text_message' => ['en' => 'Text Message for Client', 'ar' => 'رسالة نصية للعميل'],
+            'recruitment_contract.fields.client_rating' => ['en' => 'Client Rating', 'ar' => 'تقييم العميل'],
+            'recruitment_contract.fields.client_rating_proof_image' => ['en' => 'Client Rating Proof Image', 'ar' => 'صورة إثبات التقييم'],
             'recruitment_contract.fields.visa_image' => ['en' => 'Visa Image', 'ar' => 'صورة التأشيرة'],
             'recruitment_contract.fields.musaned_contract_file' => ['en' => 'Musaned Contract File', 'ar' => 'ملف عقد مساند'],
             'recruitment_contract.fields.worker' => ['en' => 'Worker', 'ar' => 'العامل'],

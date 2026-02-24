@@ -56,6 +56,8 @@ class RecruitmentContract extends Model
         'status',
         'notes',
         'client_text_message',
+        'client_rating',
+        'client_rating_proof_image',
         'visa_image',
         'musaned_contract_file',
         'worker_id',

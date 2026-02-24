@@ -550,6 +550,15 @@ class RecruitmentContractResource extends Resource
                             ->rows(3)
                             ->columnSpanFull(),
 
+                        Forms\Components\Textarea::make('client_rating')
+                            ->label(tr('recruitment_contract.fields.client_rating', [], null, 'dashboard') ?: 'تقييم العميل')
+                            ->rows(3)
+                            ->columnSpanFull(),
+
+                        FileUpload::document('client_rating_proof_image', 'recruitment_contracts/client_rating')
+                            ->label(tr('recruitment_contract.fields.client_rating_proof_image', [], null, 'dashboard') ?: 'صورة إثبات التقييم')
+                            ->columnSpan(1),
+
                         FileUpload::document('visa_image', 'recruitment_contracts/visa')
                             ->label(tr('recruitment_contract.fields.visa_image', [], null, 'dashboard') ?: 'Visa Image')
                             ->columnSpan(1),
