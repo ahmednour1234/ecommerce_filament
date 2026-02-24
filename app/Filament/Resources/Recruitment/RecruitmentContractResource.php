@@ -563,10 +563,14 @@ class RecruitmentContractResource extends Resource
                             ->rows(3)
                             ->columnSpanFull(),
 
-                        Forms\Components\Textarea::make('client_text_message')
+                        Forms\Components\Radio::make('client_text_message')
                             ->label(tr('recruitment_contract.fields.client_text_message', [], null, 'dashboard') ?: 'رسالة نصية للعميل')
-                            ->rows(3)
-                            ->columnSpanFull(),
+                            ->options([
+                                'yes' => 'نعم',
+                                'no' => 'لا',
+                            ])
+                            ->nullable()
+                            ->columnSpan(1),
 
                         Forms\Components\Radio::make('client_rating')
                             ->label(tr('recruitment_contract.fields.client_rating', [], null, 'dashboard') ?: 'تقييم العميل')
