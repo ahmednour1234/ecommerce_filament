@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\FileUpload;
 
 class SettingResource extends Resource
 {
@@ -103,6 +104,24 @@ class SettingResource extends Resource
 
             Forms\Components\Toggle::make('is_public')->label(tr('forms.settings.is_public.label', [], null, 'dashboard')),
             Forms\Components\Toggle::make('autoload')->label(tr('forms.settings.autoload.label', [], null, 'dashboard')),
+            
+            Forms\Components\FileUpload::make('logo')
+                ->label('الشعار')
+                ->image()
+                ->directory('settings/logos')
+                ->visibility('public')
+                ->acceptedFileTypes(['image/*'])
+                ->maxSize(5120)
+                ->imageEditor()
+                ->imageEditorAspectRatios([
+                    null,
+                    '16:9',
+                    '4:3',
+                    '1:1',
+                ])
+                ->imagePreviewHeight('200')
+                ->helperText('رفع شعار الشركة (الحد الأقصى 5 ميجابايت)')
+                ->visible(fn (Forms\Get $get) => $get('key') === 'app.name'),
         ]);
     }
 
@@ -113,6 +132,10 @@ class SettingResource extends Resource
                 Tables\Columns\TextColumn::make('key')->label(tr('tables.settings.key', [], null, 'dashboard'))->searchable(),
                 Tables\Columns\TextColumn::make('group')->label(tr('tables.settings.group', [], null, 'dashboard')),
                 Tables\Columns\TextColumn::make('type')->label(tr('tables.settings.type', [], null, 'dashboard')),
+                Tables\Columns\ImageColumn::make('logo')
+                    ->label('الشعار')
+                    ->circular()
+                    ->visible(fn ($record) => $record?->key === 'app.name' && $record?->logo),
                 Tables\Columns\IconColumn::make('is_public')->boolean()->label(tr('tables.settings.is_public', [], null, 'dashboard')),
                 Tables\Columns\IconColumn::make('autoload')->boolean()->label(tr('tables.settings.autoload', [], null, 'dashboard')),
             ])

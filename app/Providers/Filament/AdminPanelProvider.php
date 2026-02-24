@@ -50,6 +50,8 @@ class AdminPanelProvider extends PanelProvider
         $accentHex    = $theme?->accent_color    ?: '#22C55E';
 
         $brandName = setting('app.name', 'MainCore Dashboard');
+        $appLogo = \App\Models\MainCore\Setting::where('key', 'app.name')->first()?->logo;
+        $logoUrl = $appLogo ? asset('storage/' . $appLogo) : null;
 
         return $panel
             ->default()
@@ -58,7 +60,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
 
             ->brandName($brandName)
-            ->brandLogo(fn () => $theme?->logo_light_url ?? null)
+            ->brandLogo(fn () => $logoUrl ?? $theme?->logo_light_url ?? null)
 
             ->colors([
                 'primary'   => Color::hex($primaryHex),
