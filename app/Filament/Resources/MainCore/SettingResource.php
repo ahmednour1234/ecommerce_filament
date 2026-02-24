@@ -109,6 +109,7 @@ class SettingResource extends Resource
                 ->label('الشعار')
                 ->image()
                 ->directory('settings/logos')
+                ->disk('public')
                 ->visibility('public')
                 ->acceptedFileTypes(['image/*'])
                 ->maxSize(5120)
@@ -121,7 +122,13 @@ class SettingResource extends Resource
                 ])
                 ->imagePreviewHeight('200')
                 ->helperText('رفع شعار الشركة (الحد الأقصى 5 ميجابايت)')
-                ->visible(fn (Forms\Get $get) => $get('key') === 'app.name'),
+                ->visible(fn (Forms\Get $get) => $get('key') === 'app.name')
+                ->afterStateUpdated(function ($state, $set, $get) {
+                    // Ensure file is public after upload
+                    if ($state && is_string($state)) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->setVisibility($state, 'public');
+                    }
+                }),
         ]);
     }
 

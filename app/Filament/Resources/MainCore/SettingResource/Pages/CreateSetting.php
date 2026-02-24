@@ -20,4 +20,14 @@ class CreateSetting extends CreateRecord
         }
         return $data;
     }
+
+    protected function afterCreate(): void
+    {
+        parent::afterCreate();
+        
+        // Set logo file visibility to public
+        if ($this->record->logo) {
+            \Illuminate\Support\Facades\Storage::disk('public')->setVisibility($this->record->logo, 'public');
+        }
+    }
 }

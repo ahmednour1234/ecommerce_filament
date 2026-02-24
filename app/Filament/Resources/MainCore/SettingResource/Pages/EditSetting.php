@@ -41,4 +41,14 @@ class EditSetting extends EditRecord
         }
         return $data;
     }
+
+    protected function afterSave(): void
+    {
+        parent::afterSave();
+        
+        // Set logo file visibility to public
+        if ($this->record->logo) {
+            \Illuminate\Support\Facades\Storage::disk('public')->setVisibility($this->record->logo, 'public');
+        }
+    }
 }
