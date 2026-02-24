@@ -468,37 +468,32 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
     {
         if (empty($code)) return 'new';
 
-        if (is_string($code)) {
-            $code = trim($code);
-            $allowed = [
-                'new', 'processing', 'contract_signed', 'ticket_booked', 'worker_received', 'closed', 'returned',
-                'foreign_embassy_approval', 'visa_issued', 'arrived_in_saudi_arabia',
-                'rejected', 'cancelled', 'visa_cancelled', 'outside_kingdom',
-                'external_sending_office_approval', 'accepted_by_external_sending_office',
-                'foreign_labor_ministry_approval', 'accepted_by_foreign_labor_ministry',
-                'sent_to_saudi_embassy',
-            ];
-            if (in_array($code, $allowed, true)) return $code;
+        // Convert to integer
+        $codeInt = (int) $code;
+        
+        // Validate range
+        if ($codeInt < 1 || $codeInt > 14) {
+            return 'new';
         }
 
         $statusMap = [
-            1 => 'new',
-            2 => 'foreign_embassy_approval',
-            3 => 'external_sending_office_approval',
-            4 => 'accepted_by_external_sending_office',
-            5 => 'foreign_labor_ministry_approval',
-            6 => 'accepted_by_foreign_labor_ministry',
-            7 => 'sent_to_saudi_embassy',
-            8 => 'visa_issued',
-            9 => 'arrived_in_saudi_arabia',
-            10 => 'rejected',
-            11 => 'cancelled',
-            12 => 'visa_cancelled',
-            13 => 'outside_kingdom',
-            14 => 'processing',
+            1 => 'new', // جديد
+            2 => 'foreign_embassy_approval', // موافقة السفارة الأجنبية
+            3 => 'external_sending_office_approval', // موافقة مكتب الإرسال الخارجيه
+            4 => 'accepted_by_external_sending_office', // تم القبول من مكتب الإرسال الخارجيه
+            5 => 'foreign_labor_ministry_approval', // موافقة وزارة العمل الأجنبية
+            6 => 'accepted_by_foreign_labor_ministry', // تم القبول من وزارة العمل الأجنبية
+            7 => 'sent_to_saudi_embassy', // تم الإرسال للسفارة السعودية
+            8 => 'visa_issued', // تم إصدار التأشيرة
+            9 => 'arrived_in_saudi_arabia', // وصل للمملكة العربية السعودية
+            10 => 'return_during_warranty', // رجيع خلال فتره الضمان
+            11 => 'outside_kingdom_during_warranty', // خارج المملكه خلال فتره الضمان
+            12 => 'labor_services_transfer', // نقل خدمات العمالة المنزليه
+            13 => 'runaway', // هروب
+            14 => 'temporary', // مؤقته
         ];
 
-        return $statusMap[(int) $code] ?? 'new';
+        return $statusMap[$codeInt] ?? 'new';
     }
 
     protected function findProfession(?string $name)
@@ -551,36 +546,21 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
     {
         if ($raw === null) return 'unpaid';
 
-        $v = trim((string) $raw);
-        if ($v === '') return 'unpaid';
-
-        // Normalize Arabic/English
-        $normalized = mb_strtolower($v, 'UTF-8');
-        $normalized = str_replace(['_', '-', '  ', "\t", "\n", "\r"], ' ', $normalized);
-        $normalized = preg_replace('/\s+/', ' ', $normalized);
-
-        // Numeric-like
-        if (is_numeric($normalized)) {
-            $n = (int) $normalized;
-            return match ($n) {
-                2 => 'partial',
-                3 => 'paid',
-                0, 1 => 'unpaid',
-                default => 'unpaid',
-            };
+        // Convert to integer
+        $codeInt = (int) $raw;
+        
+        // Validate range (1-3)
+        if ($codeInt < 1 || $codeInt > 3) {
+            return 'unpaid';
         }
 
-        // Arabic keywords
-        if (str_contains($normalized, 'مدفوع') || str_contains($normalized, 'تم الدفع')) return 'paid';
-        if (str_contains($normalized, 'جزئي') || str_contains($normalized, 'جزء')) return 'partial';
-        if (str_contains($normalized, 'غير مدفوع') || str_contains($normalized, 'غيرمدفوع')) return 'unpaid';
-
-        // English keywords
-        if (str_contains($normalized, 'paid')) return 'paid';
-        if (str_contains($normalized, 'partial')) return 'partial';
-        if (str_contains($normalized, 'unpaid')) return 'unpaid';
-
-        return 'unpaid';
+        // Map: 1=unpaid, 2=partial, 3=paid
+        return match ($codeInt) {
+            1 => 'unpaid',   // غير مدفوع
+            2 => 'partial',  // جزئي
+            3 => 'paid',     // مدفوع
+            default => 'unpaid',
+        };
     }
 
     protected function mapVisaType($raw): string
