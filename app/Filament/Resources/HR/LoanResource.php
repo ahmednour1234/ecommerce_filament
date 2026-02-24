@@ -28,8 +28,8 @@ class LoanResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-credit-card';
     protected static ?string $navigationGroup = 'hr';
-    protected static ?int $navigationSort = 50;
-    protected static ?string $navigationTranslationKey = 'sidebar.hr.loans.loans';
+    protected static ?string $navigationLabel = 'القروض';
+    protected static ?int $navigationSort = 25;
 
     public static function form(Form $form): Form
     {

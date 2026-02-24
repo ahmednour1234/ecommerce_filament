@@ -22,6 +22,8 @@ class LeaveBalancePage extends Page implements HasTable
 
     protected static ?string $navigationIcon = 'heroicon-o-calculator';
     protected static ?string $navigationGroup = 'hr';
+    protected static ?string $navigationLabel = 'رصيد الإجازات';
+    protected static ?int $navigationSort = 22;
     protected static ?int $navigationSort = 40;
     protected static ?string $navigationTranslationKey = 'sidebar.hr.leaves_holidays.leave_balance';
     protected static string $view = 'filament.pages.hr.leave-balance';

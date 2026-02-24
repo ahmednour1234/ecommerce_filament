@@ -11,8 +11,8 @@ class RentalReportsPage extends Page
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
     protected static ?string $navigationGroup = 'rental';
+    protected static ?string $navigationLabel = 'تقارير التأجير';
     protected static ?int $navigationSort = 6;
-    protected static ?string $navigationTranslationKey = 'sidebar.rental.reports';
 
     protected static string $view = 'filament.pages.rental.reports';
 

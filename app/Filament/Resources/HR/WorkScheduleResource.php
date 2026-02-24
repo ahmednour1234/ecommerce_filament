@@ -20,8 +20,8 @@ class WorkScheduleResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clock';
     protected static ?string $navigationGroup = 'hr';
-    protected static ?int $navigationSort = 32;
-    protected static ?string $navigationTranslationKey = 'sidebar.hr.attendance.work_schedules';
+    protected static ?string $navigationLabel = 'مواعيد العمل';
+    protected static ?int $navigationSort = 17;
 
     public static function form(Form $form): Form
     {

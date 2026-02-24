@@ -18,9 +18,9 @@ class ProfessionResource extends Resource
     protected static ?string $model = Profession::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-briefcase';
-    protected static ?string $navigationGroup = 'recruitment';
-    protected static ?int $navigationSort = 5;
-    protected static ?string $navigationTranslationKey = 'sidebar.recruitment.professions';
+    protected static ?string $navigationGroup = 'candidates';
+    protected static ?string $navigationLabel = 'المهن';
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {

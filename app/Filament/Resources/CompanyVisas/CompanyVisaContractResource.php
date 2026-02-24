@@ -24,8 +24,8 @@ class CompanyVisaContractResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-duplicate';
     protected static ?string $navigationGroup = 'company_visas';
+    protected static ?string $navigationLabel = 'عقود استقدام الشركة';
     protected static ?int $navigationSort = 2;
-    protected static ?string $navigationTranslationKey = 'sidebar.company_visas.contracts';
 
     public static function form(Form $form): Form
     {

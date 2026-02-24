@@ -31,7 +31,8 @@ class ExpenseReportPage extends Page implements HasTable
 
     protected static ?string $navigationIcon = 'heroicon-o-arrow-trending-down';
     protected static ?string $navigationGroup = 'finance';
-    protected static ?int $navigationSort = 7;
+    protected static ?string $navigationLabel = 'تقرير المصروفات';
+    protected static ?int $navigationSort = 6;
     protected static string $view = 'filament.pages.finance.expense-report';
     protected static ?string $navigationTranslationKey = 'sidebar.finance.expense_report';
 

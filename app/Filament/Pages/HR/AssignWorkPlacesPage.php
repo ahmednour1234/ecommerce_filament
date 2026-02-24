@@ -25,8 +25,8 @@ class AssignWorkPlacesPage extends Page implements HasForms, HasTable
 
     protected static ?string $navigationIcon = 'heroicon-o-map-pin';
     protected static ?string $navigationGroup = 'hr';
-    protected static ?int $navigationSort = 16;
-    protected static ?string $navigationTranslationKey = 'sidebar.hr.settings.assign_work_places';
+    protected static ?string $navigationLabel = 'تعيين أماكن العمل';
+    protected static ?int $navigationSort = 7;
     protected static string $view = 'filament.pages.hr.assign-work-places';
 
     public ?int $departmentId = null;
@@ -89,7 +89,7 @@ class AssignWorkPlacesPage extends Page implements HasForms, HasTable
         if ($this->departmentId) {
             $service = app(EmployeeWorkPlaceService::class);
             $this->employees = $service->getEmployeesByDepartment($this->departmentId);
-            
+
             // Load existing assignments
             foreach ($this->employees as $employee) {
                 $workPlace = $employee->workPlace?->workPlace;
@@ -148,9 +148,9 @@ class AssignWorkPlacesPage extends Page implements HasForms, HasTable
     {
         $service = app(EmployeeWorkPlaceService::class);
         $service->bulkAssign($this->assignments);
-        
+
         $this->loadEmployees();
-        
+
         \Filament\Notifications\Notification::make()
             ->title(tr('messages.saved_successfully', [], null, 'dashboard') ?: 'Saved successfully')
             ->success()

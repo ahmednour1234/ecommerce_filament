@@ -24,9 +24,9 @@ class RecruitmentHousingRequestResource extends Resource
     protected static ?string $model = \App\Models\Housing\HousingRequest::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
-    protected static ?string $navigationGroup = 'recruitment_housing';
-    protected static ?int $navigationSort = 2;
-    protected static ?string $navigationTranslationKey = 'sidebar.recruitment_housing.housing_requests';
+    protected static ?string $navigationGroup = 'housing';
+    protected static ?string $navigationLabel = 'طلبات الإيواء';
+    protected static ?int $navigationSort = 3;
 
     public static function getEloquentQuery(): Builder
     {

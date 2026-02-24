@@ -23,8 +23,8 @@ class EmployeeFinancialProfileResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
     protected static ?string $navigationGroup = 'hr';
-    protected static ?int $navigationSort = 24;
-    protected static ?string $navigationTranslationKey = 'sidebar.hr.employees.employee_financial';
+    protected static ?string $navigationLabel = 'البيانات المالية للموظفين';
+    protected static ?int $navigationSort = 14;
 
     public static function form(Form $form): Form
     {

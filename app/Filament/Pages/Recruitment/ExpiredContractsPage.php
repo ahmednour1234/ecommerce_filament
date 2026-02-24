@@ -12,8 +12,8 @@ class ExpiredContractsPage extends Page
 
     protected static ?string $navigationIcon = 'heroicon-o-trash';
     protected static ?string $navigationGroup = 'recruitment_contracts';
+    protected static ?string $navigationLabel = 'العقود المنتهية';
     protected static ?int $navigationSort = 4;
-    protected static ?string $navigationTranslationKey = 'sidebar.recruitment_contracts.expired_contracts';
 
     public static function shouldRegisterNavigation(): bool
     {

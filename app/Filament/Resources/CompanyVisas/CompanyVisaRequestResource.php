@@ -22,8 +22,8 @@ class CompanyVisaRequestResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationGroup = 'company_visas';
+    protected static ?string $navigationLabel = 'طلبات التأشيرات';
     protected static ?int $navigationSort = 1;
-    protected static ?string $navigationTranslationKey = 'sidebar.company_visas.requests';
 
     public static function form(Form $form): Form
     {

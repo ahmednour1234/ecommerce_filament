@@ -21,9 +21,10 @@ class AgentResource extends Resource
 
     protected static ?string $model = Agent::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
-    protected static ?string $navigationGroup = 'recruitment';
-    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    protected static ?string $navigationGroup = 'agents';
+    protected static ?string $navigationLabel = 'الوكلاء';
+    protected static ?int $navigationSort = 1;
     protected static ?string $navigationTranslationKey = 'sidebar.recruitment.agents';
 
     public static function form(Form $form): Form

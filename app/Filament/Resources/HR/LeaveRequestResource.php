@@ -24,8 +24,8 @@ class LeaveRequestResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationGroup = 'hr';
-    protected static ?int $navigationSort = 41;
-    protected static ?string $navigationTranslationKey = 'sidebar.hr.leaves_holidays.leave_requests';
+    protected static ?string $navigationLabel = 'طلبات الإجازات';
+    protected static ?int $navigationSort = 23;
 
     public static function form(Form $form): Form
     {

@@ -19,8 +19,8 @@ class BiometricAttendanceResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clock';
     protected static ?string $navigationGroup = 'hr';
-    protected static ?int $navigationSort = 31;
-    protected static ?string $navigationTranslationKey = 'sidebar.hr.attendance.biometric_attendance';
+    protected static ?string $navigationLabel = 'سجلات الحضور الحيوية';
+    protected static ?int $navigationSort = 16;
 
     public static function form(Form $form): Form
     {

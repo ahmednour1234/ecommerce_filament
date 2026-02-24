@@ -16,9 +16,9 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
-    protected static ?string $navigationGroup = 'recruitment_housing';
-    protected static ?int $navigationSort = 5;
-    protected static ?string $navigationTranslationKey = 'sidebar.recruitment_housing.accommodation_entries';
+    protected static ?string $navigationGroup = 'housing';
+    protected static ?string $navigationLabel = 'إدخالات الإيواء';
+    protected static ?int $navigationSort = 4;
     protected static string $view = 'filament.pages.housing.create-accommodation-entry';
 
     public ?int $laborer_id = null;
@@ -31,7 +31,7 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
 
     public static function getNavigationLabel(): string
     {
-        return tr('sidebar.recruitment_housing.accommodation_entries', [], null, 'dashboard') ?: 'إدخالات الإيواء';
+        return 'إدخالات الإيواء';
     }
 
     public function getTitle(): string

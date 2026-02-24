@@ -23,8 +23,8 @@ class PayrollRunResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
     protected static ?string $navigationGroup = 'hr';
-    protected static ?int $navigationSort = 60;
-    protected static ?string $navigationTranslationKey = 'sidebar.hr.payroll.payroll';
+    protected static ?string $navigationLabel = 'الرواتب';
+    protected static ?int $navigationSort = 26;
 
     public static function form(Form $form): Form
     {

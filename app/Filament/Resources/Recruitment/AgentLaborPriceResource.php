@@ -24,9 +24,9 @@ class AgentLaborPriceResource extends Resource
     protected static ?string $model = AgentLaborPrice::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
-    protected static ?string $navigationGroup = 'recruitment';
-    protected static ?int $navigationSort = 3;
-    protected static ?string $navigationTranslationKey = 'sidebar.recruitment.agent_labor_prices';
+    protected static ?string $navigationGroup = 'agents';
+    protected static ?string $navigationLabel = 'أسعار عمل الوكلاء';
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {

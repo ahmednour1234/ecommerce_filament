@@ -20,8 +20,8 @@ class LeaveTypeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
     protected static ?string $navigationGroup = 'hr';
-    protected static ?int $navigationSort = 17;
-    protected static ?string $navigationTranslationKey = 'sidebar.hr.settings.leave_types';
+    protected static ?string $navigationLabel = 'أنواع الإجازات';
+    protected static ?int $navigationSort = 8;
 
     public static function form(Form $form): Form
     {

@@ -20,8 +20,8 @@ class IdentityTypeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-identification';
     protected static ?string $navigationGroup = 'hr';
-    protected static ?int $navigationSort = 12;
-    protected static ?string $navigationTranslationKey = 'sidebar.hr.settings.identity_types';
+    protected static ?string $navigationLabel = 'نوع الهوية';
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {

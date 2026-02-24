@@ -20,8 +20,8 @@ class BloodTypeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-heart';
     protected static ?string $navigationGroup = 'hr';
-    protected static ?int $navigationSort = 13;
-    protected static ?string $navigationTranslationKey = 'sidebar.hr.settings.blood_types';
+    protected static ?string $navigationLabel = 'فصائل الدم';
+    protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
     {

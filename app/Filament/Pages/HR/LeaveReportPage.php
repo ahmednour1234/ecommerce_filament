@@ -24,8 +24,8 @@ class LeaveReportPage extends Page implements HasTable
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
     protected static ?string $navigationGroup = 'hr';
-    protected static ?int $navigationSort = 42;
-    protected static ?string $navigationTranslationKey = 'sidebar.hr.leaves_holidays.leave_report';
+    protected static ?string $navigationLabel = 'تقرير الإجازات';
+    protected static ?int $navigationSort = 24;
     protected static string $view = 'filament.pages.hr.leave-report';
 
     public array $filters = [];

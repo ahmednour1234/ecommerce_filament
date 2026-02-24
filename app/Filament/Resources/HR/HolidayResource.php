@@ -20,8 +20,8 @@ class HolidayResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
     protected static ?string $navigationGroup = 'hr';
-    protected static ?int $navigationSort = 18;
-    protected static ?string $navigationTranslationKey = 'sidebar.hr.settings.holidays';
+    protected static ?string $navigationLabel = 'العطلات الرسمية';
+    protected static ?int $navigationSort = 9;
 
     public static function form(Form $form): Form
     {

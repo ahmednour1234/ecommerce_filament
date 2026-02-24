@@ -22,19 +22,10 @@ class BranchTransactionResource extends Resource
     protected static ?string $model = BranchTransaction::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
-    protected static ?string $navigationGroup = null;
-    protected static ?string $navigationLabel = null;
-    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationGroup = 'finance';
+    protected static ?string $navigationLabel = 'الإيرادات والمصروفات';
+    protected static ?int $navigationSort = 1;
 
-    public static function getNavigationGroup(): ?string
-    {
-        return tr('navigation.groups.finance', [], null, 'dashboard') ?: 'Finance';
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return tr('navigation.bar.finance.branch_transactions', [], null, 'dashboard') ?: 'Branch Transactions';
-    }
 
     public static function getModelLabel(): string
     {

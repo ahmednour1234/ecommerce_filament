@@ -20,10 +20,9 @@ class TranslationResource extends Resource
     protected static ?string $model = Translation::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-language';
-
-    protected static ?string $navigationGroup = 'general_settings';
-    protected static ?int $navigationSort = 2;
-    protected static ?string $navigationTranslationKey = 'sidebar.general_settings.translations';
+    protected static ?string $navigationGroup = 'settings';
+    protected static ?string $navigationLabel = 'الترجمات';
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {

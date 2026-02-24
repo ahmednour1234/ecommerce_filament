@@ -20,9 +20,9 @@ class SettingResource extends Resource
     protected static ?string $model = Setting::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-cog-8-tooth';
-    protected static ?string $navigationGroup = 'general_settings';
-    protected static ?int $navigationSort = 6;
-    protected static ?string $navigationTranslationKey = 'sidebar.general_settings.app_settings';
+    protected static ?string $navigationGroup = 'settings';
+    protected static ?string $navigationLabel = 'إعدادات النظام';
+    protected static ?int $navigationSort = 5;
 
     public static function form(Form $form): Form
     {

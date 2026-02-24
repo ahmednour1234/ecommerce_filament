@@ -18,8 +18,8 @@ class MonthlyAttendanceCalendarPage extends Page implements HasForms
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
     protected static ?string $navigationGroup = 'hr';
-    protected static ?int $navigationSort = 35;
-    protected static ?string $navigationTranslationKey = 'sidebar.hr.attendance.monthly_attendance_calendar';
+    protected static ?string $navigationLabel = 'monthly_attendance_calendar';
+    protected static ?int $navigationSort = 20;
     protected static string $view = 'filament.pages.hr.monthly-attendance-calendar';
 
     public ?int $employee_id = null;
@@ -32,7 +32,7 @@ class MonthlyAttendanceCalendarPage extends Page implements HasForms
 
     public static function getNavigationLabel(): string
     {
-        return tr('navigation.hr_monthly_attendance_calendar', [], null, 'dashboard') ?: 'Monthly Attendance Calendar';
+        return 'monthly_attendance_calendar';
     }
 
     public function getTitle(): string

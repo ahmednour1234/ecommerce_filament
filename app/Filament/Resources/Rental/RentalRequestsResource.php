@@ -21,8 +21,8 @@ class RentalRequestsResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     protected static ?string $navigationGroup = 'rental';
+    protected static ?string $navigationLabel = 'طلبات التأجير';
     protected static ?int $navigationSort = 2;
-    protected static ?string $navigationTranslationKey = 'sidebar.rental.requests';
 
     public static function form(Form $form): Form
     {

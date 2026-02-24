@@ -19,10 +19,10 @@ class ContractAlertsPage extends Page implements HasTable
     use TranslatableNavigation;
     use InteractsWithTable;
 
-    protected static ?string $navigationIcon = 'heroicon-o-bell-alert';
-    protected static ?string $navigationGroup = 'recruitment_contracts';
-    protected static ?int $navigationSort = 2;
-    protected static ?string $navigationTranslationKey = 'sidebar.recruitment_contracts.contract_alerts';
+    protected static ?string $navigationIcon = 'heroicon-o-bell';
+    protected static ?string $navigationGroup = 'notifications';
+    protected static ?string $navigationLabel = 'تنبيهات العقود';
+    protected static ?int $navigationSort = 1;
     protected static string $view = 'filament.pages.recruitment.contract-alerts';
     protected static ?string $title = null;
 
@@ -38,7 +38,7 @@ class ContractAlertsPage extends Page implements HasTable
 
     public static function getNavigationLabel(): string
     {
-        return tr('sidebar.recruitment_contracts.contract_alerts', [], null, 'dashboard') ?: 'تنبيهات العقود';
+        return 'تنبيهات العقود';
     }
 
     public function table(Table $table): Table

@@ -33,9 +33,9 @@ class BranchStatementPage extends Page implements HasTable, HasForms
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationGroup = 'finance';
-    protected static ?int $navigationSort = 4;
+    protected static ?string $navigationLabel = 'كشف حساب الفرع';
+    protected static ?int $navigationSort = 3;
     protected static string $view = 'filament.pages.finance.branch-statement';
-    protected static ?string $navigationTranslationKey = 'sidebar.finance.branch_statement';
 
     public ?array $data = [];
 

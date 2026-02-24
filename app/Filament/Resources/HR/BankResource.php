@@ -20,8 +20,8 @@ class BankResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-building-library';
     protected static ?string $navigationGroup = 'hr';
-    protected static ?int $navigationSort = 14;
-    protected static ?string $navigationTranslationKey = 'sidebar.hr.settings.banks';
+    protected static ?string $navigationLabel = 'البنوك';
+    protected static ?int $navigationSort = 5;
 
     public static function form(Form $form): Form
     {

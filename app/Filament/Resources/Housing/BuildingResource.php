@@ -18,9 +18,9 @@ class BuildingResource extends Resource
     protected static ?string $model = \App\Models\Housing\Building::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
-    protected static ?string $navigationGroup = 'housing_management';
+    protected static ?string $navigationGroup = 'housing';
+    protected static ?string $navigationLabel = 'إدارة المباني';
     protected static ?int $navigationSort = 2;
-    protected static ?string $navigationTranslationKey = 'sidebar.housing_management.buildings_management';
 
     public static function form(Form $form): Form
     {

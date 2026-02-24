@@ -20,8 +20,8 @@ class DeviceResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-finger-print';
     protected static ?string $navigationGroup = 'hr';
-    protected static ?int $navigationSort = 30;
-    protected static ?string $navigationTranslationKey = 'sidebar.hr.attendance.devices';
+    protected static ?string $navigationLabel = 'أجهزة البصمة';
+    protected static ?int $navigationSort = 15;
 
     public static function form(Form $form): Form
     {

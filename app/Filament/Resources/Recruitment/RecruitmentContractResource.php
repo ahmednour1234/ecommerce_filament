@@ -30,8 +30,8 @@ class RecruitmentContractResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationGroup = 'recruitment_contracts';
+    protected static ?string $navigationLabel = 'عقود الاستقدام';
     protected static ?int $navigationSort = 1;
-    protected static ?string $navigationTranslationKey = 'sidebar.recruitment_contracts.contracts';
 
     public static function form(Form $form): Form
     {

@@ -21,8 +21,8 @@ class FinanceTypeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
     protected static ?string $navigationGroup = 'finance';
+    protected static ?string $navigationLabel = 'أنواع المالية';
     protected static ?int $navigationSort = 2;
-    protected static ?string $navigationTranslationKey = 'sidebar.finance.types';
 
     public static function form(Form $form): Form
     {

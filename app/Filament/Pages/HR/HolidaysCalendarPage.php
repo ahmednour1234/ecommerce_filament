@@ -12,13 +12,13 @@ class HolidaysCalendarPage extends Page
     use TranslatableNavigation;
     protected static ?string $navigationIcon = 'heroicon-o-calendar';
     protected static ?string $navigationGroup = 'hr';
-    protected static ?int $navigationSort = 19;
-    protected static ?string $navigationTranslationKey = 'sidebar.hr.settings.holidays_calendar';
+    protected static ?string $navigationLabel = 'تقويم العطلات';
+    protected static ?int $navigationSort = 10;
     protected static string $view = 'filament.pages.hr.holidays-calendar';
 
     public static function getNavigationLabel(): string
     {
-        return tr('navigation.hr_holidays_calendar', [], null, 'dashboard') ?: 'Holidays Calendar';
+        return 'تقويم العطلات';
     }
 
     public function getTitle(): string

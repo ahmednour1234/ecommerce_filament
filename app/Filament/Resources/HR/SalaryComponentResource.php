@@ -21,7 +21,8 @@ class SalaryComponentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-calculator';
     protected static ?string $navigationGroup = 'hr';
-    protected static ?int $navigationSort = 21;
+    protected static ?string $navigationLabel = 'المكونات المالية';
+    protected static ?int $navigationSort = 12;
     protected static ?string $navigationTranslationKey = 'sidebar.hr.settings.salary_components';
 
     public static function form(Form $form): Form

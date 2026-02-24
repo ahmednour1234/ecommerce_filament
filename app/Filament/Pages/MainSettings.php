@@ -20,10 +20,10 @@ class MainSettings extends Page implements Forms\Contracts\HasForms
     use TranslatablePage;
 
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
-    protected static ?string $navigationGroup = 'general_settings';
-    protected static ?int $navigationSort = 7;
+    protected static ?string $navigationGroup = 'app_management';
+    protected static ?string $navigationLabel = 'إعدادات التطبيق';
+    protected static ?int $navigationSort = 1;
     protected static ?string $title = 'System Settings';
-    protected static ?string $navigationTranslationKey = 'sidebar.general_settings.system_settings';
 
     protected static string $view = 'filament.pages.main-settings'; // مش هنستخدمه، هنشتغل بـ form()
 

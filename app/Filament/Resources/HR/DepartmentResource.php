@@ -20,8 +20,8 @@ class DepartmentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
     protected static ?string $navigationGroup = 'hr';
-    protected static ?int $navigationSort = 10;
-    protected static ?string $navigationTranslationKey = 'sidebar.hr.settings.departments';
+    protected static ?string $navigationLabel = 'الإدارات';
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
