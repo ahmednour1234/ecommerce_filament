@@ -3,12 +3,12 @@
 namespace App\Providers\Filament;
 
 use App\Services\MainCore\ThemeService;
+use App\Services\MainCore\TranslationService;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\MenuItem;
-use Filament\Navigation\NavigationItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -25,11 +25,17 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
 {
+    private function navLabel(string $key, string $fallback): \Closure
+    {
+        return fn () => app(TranslationService::class)
+                ->get($key, null, 'dashboard', $fallback)
+            ?: $fallback;
+    }
+
     public function panel(Panel $panel): Panel
     {
         /** @var ThemeService $themeService */
         $themeService = app(ThemeService::class);
-
         $theme = $themeService->defaultTheme();
 
         $primaryHex   = $theme?->primary_color   ?: '#F59E0B';
@@ -79,10 +85,10 @@ class AdminPanelProvider extends PanelProvider
                 Widgets\AccountWidget::class,
             ])
 
-            // ✅ User menu items (Profile) - stays in user menu, but we will force it visually LAST via CSS.
+            // User menu (profile) - stays in user menu
             ->userMenuItems([
                 MenuItem::make()
-                    ->label(fn () => app(\App\Services\MainCore\TranslationService::class)
+                    ->label(fn () => app(TranslationService::class)
                         ->get('navigation.my_profile', null, 'dashboard', 'My Profile'))
                     ->icon('heroicon-o-user-circle')
                     ->url(fn () => \App\Filament\Pages\UserProfile::getUrl())
@@ -106,69 +112,94 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
 
+            /**
+             * IMPORTANT:
+             * These are GROUP KEYS, not Arabic labels.
+             * Your Resources/Pages MUST use the same key in $navigationGroup.
+             */
             ->navigationGroups([
                 \Filament\Navigation\NavigationGroup::make('recruitment_contracts')
-                    ->label(fn () => tr('sidebar.recruitment_contracts', [], null, 'dashboard') ?: 'عقود الاستقدام')
+                    ->label($this->navLabel('sidebar.recruitment_contracts', 'عقود الاستقدام'))
                     ->collapsible(false),
+
                 \Filament\Navigation\NavigationGroup::make('housing')
-                    ->label(fn () => tr('sidebar.housing', [], null, 'dashboard') ?: 'الإيواء')
+                    ->label($this->navLabel('sidebar.housing', 'الإيواء'))
                     ->collapsible(false),
+
                 \Filament\Navigation\NavigationGroup::make('rental')
-                    ->label(fn () => tr('sidebar.rental', [], null, 'dashboard') ?: 'قسم التأجير')
+                    ->label($this->navLabel('sidebar.rental', 'قسم التأجير'))
                     ->collapsible(false),
+
                 \Filament\Navigation\NavigationGroup::make('service_transfer')
-                    ->label(fn () => tr('sidebar.service_transfer', [], null, 'dashboard') ?: 'نقل الخدمات')
+                    ->label($this->navLabel('sidebar.service_transfer', 'نقل الخدمات'))
                     ->collapsible(false),
+
                 \Filament\Navigation\NavigationGroup::make('packages')
-                    ->label(fn () => tr('sidebar.packages', [], null, 'dashboard') ?: 'باقات العروض')
+                    ->label($this->navLabel('sidebar.packages', 'باقات العروض'))
                     ->collapsible(false),
+
                 \Filament\Navigation\NavigationGroup::make('candidates')
-                    ->label(fn () => tr('sidebar.candidates', [], null, 'dashboard') ?: 'المرشحين')
+                    ->label($this->navLabel('sidebar.candidates', 'المرشحين'))
                     ->collapsible(false),
+
                 \Filament\Navigation\NavigationGroup::make('clients')
-                    ->label(fn () => tr('sidebar.clients', [], null, 'dashboard') ?: 'العملاء')
+                    ->label($this->navLabel('sidebar.clients', 'العملاء'))
                     ->collapsible(false),
+
                 \Filament\Navigation\NavigationGroup::make('agents')
-                    ->label(fn () => tr('sidebar.agents', [], null, 'dashboard') ?: 'الوكلاء')
+                    ->label($this->navLabel('sidebar.agents', 'الوكلاء'))
                     ->collapsible(false),
+
                 \Filament\Navigation\NavigationGroup::make('finance')
-                    ->label(fn () => tr('sidebar.finance', [], null, 'dashboard') ?: 'قسم الحسابات')
+                    ->label($this->navLabel('sidebar.finance', 'قسم الحسابات'))
                     ->collapsible(false),
+
                 \Filament\Navigation\NavigationGroup::make('follow_up')
-                    ->label(fn () => tr('sidebar.follow_up', [], null, 'dashboard') ?: 'المتابعة')
+                    ->label($this->navLabel('sidebar.follow_up', 'المتابعة'))
                     ->collapsible(false),
+
                 \Filament\Navigation\NavigationGroup::make('messages')
-                    ->label(fn () => tr('sidebar.messages', [], null, 'dashboard') ?: 'قسم الرسائل')
+                    ->label($this->navLabel('sidebar.messages', 'قسم الرسائل'))
                     ->collapsible(false),
+
                 \Filament\Navigation\NavigationGroup::make('company_visas')
-                    ->label(fn () => tr('sidebar.company_visas', [], null, 'dashboard') ?: 'تأشيرات الشركة')
+                    ->label($this->navLabel('sidebar.company_visas', 'تأشيرات الشركة'))
                     ->collapsible(false),
+
                 \Filament\Navigation\NavigationGroup::make('app_management')
-                    ->label(fn () => tr('sidebar.app_management', [], null, 'dashboard') ?: 'إدارة التطبيق')
+                    ->label($this->navLabel('sidebar.app_management', 'إدارة التطبيق'))
                     ->collapsible(false),
+
                 \Filament\Navigation\NavigationGroup::make('profile')
-                    ->label(fn () => tr('sidebar.profile', [], null, 'dashboard') ?: 'الملف الشخصي')
+                    ->label($this->navLabel('sidebar.profile', 'الملف الشخصي'))
                     ->collapsible(false),
+
                 \Filament\Navigation\NavigationGroup::make('employee_commissions')
-                    ->label(fn () => tr('sidebar.employee_commissions', [], null, 'dashboard') ?: 'عمولات الموظفين')
+                    ->label($this->navLabel('sidebar.employee_commissions', 'عمولات الموظفين'))
                     ->collapsible(false),
+
                 \Filament\Navigation\NavigationGroup::make('hr')
-                    ->label(fn () => tr('sidebar.hr', [], null, 'dashboard') ?: 'الموارد البشرية')
+                    ->label($this->navLabel('sidebar.hr', 'الموارد البشرية'))
                     ->collapsible(false),
+
                 \Filament\Navigation\NavigationGroup::make('system_movement')
-                    ->label(fn () => tr('sidebar.system_movement', [], null, 'dashboard') ?: 'حركة النظام المرجعي')
+                    ->label($this->navLabel('sidebar.system_movement', 'حركة النظام المرجعي'))
                     ->collapsible(false),
+
                 \Filament\Navigation\NavigationGroup::make('notifications')
-                    ->label(fn () => tr('sidebar.notifications', [], null, 'dashboard') ?: 'التنبيهات')
+                    ->label($this->navLabel('sidebar.notifications', 'التنبيهات'))
                     ->collapsible(false),
+
                 \Filament\Navigation\NavigationGroup::make('settings')
-                    ->label(fn () => tr('sidebar.settings', [], null, 'dashboard') ?: 'الإعدادات')
+                    ->label($this->navLabel('sidebar.settings', 'الإعدادات'))
                     ->collapsible(false),
+
                 \Filament\Navigation\NavigationGroup::make('branches')
-                    ->label(fn () => tr('sidebar.branches', [], null, 'dashboard') ?: 'الفروع')
+                    ->label($this->navLabel('sidebar.branches', 'الفروع'))
                     ->collapsible(false),
+
                 \Filament\Navigation\NavigationGroup::make('website_management')
-                    ->label(fn () => tr('sidebar.website_management', [], null, 'dashboard') ?: 'إدارة الموقع')
+                    ->label($this->navLabel('sidebar.website_management', 'إدارة الموقع'))
                     ->collapsible(false),
             ]);
     }
@@ -177,40 +208,18 @@ class AdminPanelProvider extends PanelProvider
     {
         parent::register();
 
-        /**
-         * ✅ Insert Global Search into topbar actions.
-         * We keep it in TOPBAR_END so it stays near the user menu,
-         * then we force ordering via CSS so Profile becomes LAST visually.
-         */
+        // Global search in topbar
         FilamentView::registerRenderHook(
             PanelsRenderHook::TOPBAR_END,
             fn (): string => view('filament.components.global-search')->render(),
         );
 
-        /**
-         * ✅ Custom Sidebar Navigation
-         * Replace default Filament sidebar with custom nested menu
-         */
-        // FilamentView::registerRenderHook(
-        //     PanelsRenderHook::SIDEBAR_NAV_START,
-        //     fn (): string => view('filament.components.custom-sidebar')->render(),
-        // );
-
-        /**
-         * ✅ Global styling fixes:
-         * - Hide table search (temporary) – better to disable per Resource later.
-         * - Make topbar actions a flex row with RTL row-reverse.
-         * - Ensure Search comes first, Profile comes last (in both LTR/RTL).
-         * - Hide default Filament navigation items, show only custom sidebar.
-         */
+        // Global styles
         FilamentView::registerRenderHook(
             PanelsRenderHook::HEAD_END,
             fn (): string => <<<'HTML'
 <style>
-/* -------------------------------------------------------
-   1) Hide Filament table search (prefer disabling per Resource)
-   Exception: Show search for recruitment contracts
--------------------------------------------------------- */
+/* Hide Filament table search (temporary) */
 .fi-ta-search-field:not(.show-search),
 .fi-ta-header-actions .fi-input-wrp input[type="search"]:not(.show-search),
 .fi-ta-header-actions input[type="search"]:not(.show-search),
@@ -219,7 +228,7 @@ class AdminPanelProvider extends PanelProvider
     display: none !important;
 }
 
-/* Show search for recruitment contracts and other resources that need it */
+/* Show search for recruitment contracts */
 body:has([href*="recruitment-contracts"]) .fi-ta-search-field,
 body:has([href*="recruitment-contracts"]) .fi-ta-header-actions .fi-input-wrp input[type="search"],
 body:has([href*="recruitment-contracts"]) .fi-ta-header-actions input[type="search"],
@@ -229,47 +238,25 @@ body:has([href*="recruitment-contracts"]) .fi-ta-header-actions input[type="sear
     display: block !important;
 }
 
-/* -------------------------------------------------------
-   2) Topbar actions layout
-   Use stable class: .fi-topbar-actions (Filament v3)
--------------------------------------------------------- */
 .fi-topbar .fi-topbar-actions {
     display: flex !important;
     align-items: center !important;
     gap: .75rem !important;
 }
 
-/* RTL: reverse visual flow so the "last" item is on the far left */
 [dir="rtl"] .fi-topbar .fi-topbar-actions {
     flex-direction: row-reverse !important;
 }
 
-/* -------------------------------------------------------
-   3) Force ordering:
-   - Global search should come BEFORE profile (order:1)
-   - Profile menu should be visually LAST (order:99)
-   Notes:
-   - In RTL, row-reverse makes LAST appear on the far left (as requested).
--------------------------------------------------------- */
-
-/* Our global search wrapper in topbar */
 .fi-topbar .fi-topbar-actions [data-global-search] {
     order: 1 !important;
 }
 
-/* Try to catch Filament user menu button/container */
 .fi-topbar .fi-topbar-actions [data-user-menu],
 .fi-topbar .fi-topbar-actions button[aria-label*="user"],
 .fi-topbar .fi-topbar-actions button[aria-label*="User"],
 .fi-topbar .fi-topbar-actions [aria-label*="user menu"] {
     order: 99 !important;
-}
-
-/* -------------------------------------------------------
-   4) Hide default Filament navigation items, show only custom sidebar
--------------------------------------------------------- */
-.fi-sidebar-nav-items > li:not(.custom-sidebar-item) {
-    display: none !important;
 }
 </style>
 HTML
