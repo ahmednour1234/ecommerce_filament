@@ -190,7 +190,7 @@ class RecruitmentContractTranslationsSeeder extends Seeder
             'recruitment_contract.stats.expired' => ['en' => 'Expired Contracts', 'ar' => 'العقود المنتهية'],
             'recruitment_contract.stats.returned' => ['en' => 'Returned/Cancelled Contracts', 'ar' => 'عقود مسترجعة'],
             'recruitment_contract.stats.warranty' => ['en' => 'Contracts in Warranty Period', 'ar' => 'عقود بفترة الضمان'],
-            'recruitment_contract.stats.rejected' => ['en' => 'Rejected Contracts', 'ar' => 'عقود مرفوضة'],
+            'recruitment_contract.stats.delegated' => ['en' => 'Delegated Contracts', 'ar' => 'مفوضة'],
             'recruitment_contract.stats.signed' => ['en' => 'Signed Contracts', 'ar' => 'عقود تم توقيع العقد'],
             'recruitment_contract.stats.visa_issued' => ['en' => 'Visa Issued Contracts', 'ar' => 'عقود تم إصدار تأشيراتها'],
             'recruitment_contract.stats.arrival_ticket_issued' => ['en' => 'Arrival Ticket Issued Contracts', 'ar' => 'عقود تم إصدار تذاكر الوصول'],

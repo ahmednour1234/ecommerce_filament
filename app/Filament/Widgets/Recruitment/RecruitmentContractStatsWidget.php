@@ -25,7 +25,7 @@ class RecruitmentContractStatsWidget extends BaseWidget
         $expiredCount = (clone $baseQuery)->expired()->count();
         $returnedCount = (clone $baseQuery)->returned()->count();
         $warrantyCount = (clone $baseQuery)->inWarranty()->count();
-        $rejectedCount = (clone $baseQuery)->rejected()->count();
+        $delegatedCount = (clone $baseQuery)->where('status', 'foreign_labor_ministry_approval')->count();
         $signedCount = (clone $baseQuery)->signed()->count();
         $visaIssuedCount = (clone $baseQuery)->visaIssued()->count();
         $arrivalTicketCount = (clone $baseQuery)->arrivalTicketIssued()->count();
@@ -67,12 +67,12 @@ class RecruitmentContractStatsWidget extends BaseWidget
             ->extraAttributes(['class' => 'recruitment-stats-card']);
 
         $stats[] = Stat::make(
-            '❌ ' . (tr('recruitment_contract.stats.rejected', [], null, 'dashboard') ?: 'عقود مرفوضة'),
-            Number::format($rejectedCount)
+            '📝 ' . (tr('recruitment_contract.stats.delegated', [], null, 'dashboard') ?: 'مفوضة'),
+            Number::format($delegatedCount)
         )
-            ->description(tr('recruitment_contract.status.rejected', [], null, 'dashboard') ?: 'مرفوض')
-            ->color('danger')
-            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'rejected']])))
+            ->description(tr('recruitment_contract.stats.delegated', [], null, 'dashboard') ?: 'مفوضة')
+            ->color('info')
+            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'foreign_labor_ministry_approval']])))
             ->extraAttributes(['class' => 'recruitment-stats-card']);
 
         $stats[] = Stat::make(
