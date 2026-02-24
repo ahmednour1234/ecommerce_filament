@@ -51,7 +51,13 @@ class AdminPanelProvider extends PanelProvider
 
         $brandName = setting('app.name', 'MainCore Dashboard');
         $appLogo = \App\Models\MainCore\Setting::where('key', 'app.name')->first()?->logo;
-        $logoUrl = $appLogo ? asset('storage/' . $appLogo) : null;
+        
+        $logoUrl = null;
+        if ($appLogo) {
+            $logoUrl = \Illuminate\Support\Facades\Storage::disk('public')->url($appLogo);
+            // Remove /public from URL if exists (for subdirectory installations)
+            $logoUrl = str_replace('/public/storage/', '/storage/', $logoUrl);
+        }
 
         return $panel
             ->default()
