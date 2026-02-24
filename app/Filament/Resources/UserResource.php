@@ -42,9 +42,9 @@ class UserResource extends Resource
                     ->label(tr('forms.users.password', [], null, 'dashboard') ?: 'Password')
                     ->password()
                     ->revealable()
-                    ->dehydrateStateUsing(fn ($state) => filled($state) ? bcrypt($state) : null)
                     ->dehydrated(fn ($state) => filled($state))
-                    ->required(fn (string $operation) => $operation === 'create'),
+                    ->required(fn (string $operation) => $operation === 'create')
+                    ->helperText(fn (string $operation) => $operation === 'edit' ? 'اتركه فارغاً إذا لم ترد تغيير كلمة المرور' : null),
 
                 Forms\Components\Select::make('roles')
                     ->label(tr('forms.users.roles', [], null, 'dashboard') ?: 'Roles')
