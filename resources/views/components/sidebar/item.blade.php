@@ -1,12 +1,17 @@
 @props(['item', 'level' => 0])
 
 @php
-    $hasChildren = !empty($item['children']);
+    if (empty($item) || !is_array($item)) {
+        return;
+    }
+    
+    $hasChildren = !empty($item['children'] ?? []);
     $url = $item['url'] ?? null;
-    $title = tr($item['title'], [], null, 'dashboard') ?: $item['title'];
+    $titleKey = $item['title'] ?? '';
+    $title = $titleKey ? (tr($titleKey, [], null, 'dashboard') ?: $titleKey) : '';
     $icon = $item['icon'] ?? null;
     $badge = $item['badge'] ?? null;
-    $itemId = 'sidebar-item-' . md5($item['title'] . $level);
+    $itemId = 'sidebar-item-' . md5($titleKey . $level);
     
     $currentUrl = request()->url();
     $isActive = false;
@@ -15,15 +20,21 @@
         $isActive = true;
     }
     
-    if ($hasChildren) {
+    if ($hasChildren && isset($item['children']) && is_array($item['children'])) {
         foreach ($item['children'] as $child) {
+            if (!is_array($child)) {
+                continue;
+            }
             $childUrl = $child['url'] ?? null;
             if ($childUrl && $currentUrl === $childUrl) {
                 $isActive = true;
                 break;
             }
-            if (isset($child['children'])) {
+            if (isset($child['children']) && is_array($child['children'])) {
                 foreach ($child['children'] as $grandchild) {
+                    if (!is_array($grandchild)) {
+                        continue;
+                    }
                     $grandchildUrl = $grandchild['url'] ?? null;
                     if ($grandchildUrl && $currentUrl === $grandchildUrl) {
                         $isActive = true;
@@ -71,9 +82,13 @@
                 x-collapse
                 class="fi-sidebar-group-items mt-1 space-y-1 ps-7"
             >
-                @foreach($item['children'] as $child)
-                    <x-sidebar.item :item="$child" :level="$level + 1" />
-                @endforeach
+                @if(isset($item['children']) && is_array($item['children']))
+                    @foreach($item['children'] as $child)
+                        @if(!empty($child) && is_array($child))
+                            <x-sidebar.item :item="$child" :level="$level + 1" />
+                        @endif
+                    @endforeach
+                @endif
             </ul>
         </div>
     @else

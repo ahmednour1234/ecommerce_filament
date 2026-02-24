@@ -3,10 +3,14 @@
     $menuItems = $menuBuilder->build();
 @endphp
 
+@if(!empty($menuItems))
 <nav class="fi-sidebar-nav">
     <ul class="fi-sidebar-nav-items space-y-1" role="list">
         @foreach($menuItems as $item)
-            <x-sidebar.item :item="$item" :level="0" />
+            @if(!empty($item) && is_array($item))
+                <x-sidebar.item :item="$item" :level="0" />
+            @endif
         @endforeach
     </ul>
 </nav>
+@endif
