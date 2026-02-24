@@ -47,8 +47,7 @@ class MonthlyAttendanceCalendarPage extends Page implements HasForms
 
     public static function shouldRegisterNavigation(): bool
     {
-        $user = auth()->user();
-        return $user?->hasRole('super_admin') ?? false;
+        return false;
     }
 
     public function mount(): void
