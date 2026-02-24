@@ -88,7 +88,7 @@ class RecruitmentContractTranslationsSeeder extends Seeder
             'recruitment_contract.fields.workplace_en' => ['en' => 'Workplace (English)', 'ar' => 'مكان العمل (إنجليزي)'],
             'recruitment_contract.fields.monthly_salary' => ['en' => 'Monthly Salary', 'ar' => 'الراتب الشهري'],
             'recruitment_contract.fields.musaned_contract_no' => ['en' => 'Musaned Contract No', 'ar' => 'رقم عقد مساند'],
-            'recruitment_contract.fields.musaned_documentation_contract_no' => ['en' => 'Musaned Documentation Contract No', 'ar' => 'رقم عقد مساند توثيق'],
+            'recruitment_contract.fields.musaned_documentation_contract_no' => ['en' => 'Electronic Documentation Number in Musaned', 'ar' => 'رقم التوثيق الالكتروني بمساند'],
             'recruitment_contract.fields.musaned_auth_no' => ['en' => 'Musaned Auth No', 'ar' => 'رقم تفويض مساند'],
             'recruitment_contract.fields.musaned_contract_date' => ['en' => 'Musaned Contract Date', 'ar' => 'تاريخ عقد مساند'],
             'recruitment_contract.fields.direct_cost' => ['en' => 'Direct Cost', 'ar' => 'التكلفة المباشرة'],
