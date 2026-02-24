@@ -28,7 +28,6 @@ class ServiceTransferResource extends Resource
     protected static ?string $navigationGroup = 'service_transfer';
     protected static ?string $navigationLabel = 'طلبات نقل الخدمات';
     protected static ?int $navigationSort = 1;
-    protected static ?string $navigationTranslationKey = 'sidebar.servicetransfer';
 
     public static function form(Form $form): Form
     {

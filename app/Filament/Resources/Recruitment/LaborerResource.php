@@ -28,7 +28,6 @@ class LaborerResource extends Resource
     protected static ?string $navigationGroup = 'candidates';
     protected static ?string $navigationLabel = 'العمال';
     protected static ?int $navigationSort = 1;
-    protected static ?string $navigationTranslationKey = 'sidebar.recruitment.laborers';
 
     public static function form(Form $form): Form
     {

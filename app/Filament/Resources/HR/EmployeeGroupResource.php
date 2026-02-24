@@ -23,7 +23,6 @@ class EmployeeGroupResource extends Resource
     protected static ?string $navigationGroup = 'hr';
     protected static ?string $navigationLabel = 'مجموعات الموظفين';
     protected static ?int $navigationSort = 13;
-    protected static ?string $navigationTranslationKey = 'sidebar.hr.employees.employee_groups';
 
     public static function form(Form $form): Form
     {

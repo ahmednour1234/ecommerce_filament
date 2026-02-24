@@ -28,7 +28,7 @@ class LeaveBalancePage extends Page implements HasTable
 
     public static function getNavigationLabel(): string
     {
-        return tr('navigation.hr_leave_balance', [], null, 'dashboard') ?: 'Leave Balance';
+        return 'رصيد الإجازات';
     }
 
     public function getTitle(): string

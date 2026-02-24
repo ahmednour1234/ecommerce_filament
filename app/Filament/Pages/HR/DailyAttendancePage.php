@@ -25,7 +25,6 @@ class DailyAttendancePage extends Page implements HasTable
     protected static ?string $navigationGroup = 'hr';
     protected static ?string $navigationLabel = 'الحضور اليومي';
     protected static ?int $navigationSort = 19;
-    protected static ?string $navigationTranslationKey = 'sidebar.hr.attendance.daily_attendance';
     protected static string $view = 'filament.pages.hr.daily-attendance';
 
     public ?string $selectedDate = null;

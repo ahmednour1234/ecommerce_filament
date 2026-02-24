@@ -23,7 +23,6 @@ class CopySchedulesPage extends Page implements HasForms
     protected static ?string $navigationGroup = 'hr';
     protected static ?string $navigationLabel = 'نسخ المواعيد';
     protected static ?int $navigationSort = 18;
-    protected static ?string $navigationTranslationKey = 'sidebar.hr.attendance.copy_schedules';
     protected static string $view = 'filament.pages.hr.copy-schedules';
 
     public ?string $sourceType = null;

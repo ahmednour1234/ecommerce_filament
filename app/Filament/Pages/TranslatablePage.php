@@ -11,8 +11,13 @@ trait TranslatablePage
      */
     public static function getNavigationLabel(): string
     {
+        // If navigationLabel is explicitly set, use it directly (highest priority)
+        if (isset(static::$navigationLabel) && !empty(static::$navigationLabel)) {
+            return static::$navigationLabel;
+        }
+        
         $translationService = app(TranslationService::class);
-        $defaultLabel = static::$navigationLabel ?? static::$title ?? 'Page';
+        $defaultLabel = static::$title ?? 'Page';
         
         // Try to get translation - use page title or navigation label
         $pageName = strtolower(str_replace([' ', '-'], '_', $defaultLabel));
@@ -23,21 +28,12 @@ trait TranslatablePage
     }
 
     /**
-     * Get translated navigation group
+     * Get navigation group
+     * Returns the group name directly as it's defined in AdminPanelProvider
      */
     public static function getNavigationGroup(): ?string
     {
-        $group = static::$navigationGroup;
-        
-        if (!$group) {
-            return null;
-        }
-        
-        $translationService = app(TranslationService::class);
-        $translationKey = 'navigation.' . strtolower(str_replace(' ', '_', $group));
-        $translated = $translationService->get($translationKey, null, 'dashboard', $group);
-        
-        return $translated !== $translationKey ? $translated : $group;
+        return static::$navigationGroup;
     }
 }
 

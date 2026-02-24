@@ -10,9 +10,13 @@ trait TranslatableNavigation
      */
     public static function getNavigationLabel(): string
     {
-        // Get default label - check for navigationLabel, then title, then modelLabel (if exists), then class name
-        $defaultLabel = static::$navigationLabel 
-            ?? (property_exists(static::class, 'title') ? static::$title : null)
+        // If navigationLabel is explicitly set, use it directly (highest priority)
+        if (isset(static::$navigationLabel) && !empty(static::$navigationLabel)) {
+            return static::$navigationLabel;
+        }
+        
+        // Get default label - check for title, then modelLabel (if exists), then class name
+        $defaultLabel = (property_exists(static::class, 'title') ? static::$title : null)
             ?? (method_exists(static::class, 'getModelLabel') ? static::getModelLabel() : null)
             ?? class_basename(static::class);
         
@@ -25,7 +29,7 @@ trait TranslatableNavigation
                 return tr($key, $defaultLabel, null, 'menu');
             }
             // New sidebar.* key - use dashboard group
-            return tr($key, [], null, 'dashboard');
+            return tr($key, [], null, 'dashboard') ?: $defaultLabel;
         }
         
         // Try to get translation - use model name or navigation label
@@ -68,29 +72,12 @@ trait TranslatableNavigation
     }
 
     /**
-     * Get translated navigation group
-     * Uses tr() helper with sidebar.* keys
+     * Get navigation group
+     * Returns the group name directly as it's defined in AdminPanelProvider
      */
     public static function getNavigationGroup(): ?string
     {
-        $group = static::$navigationGroup;
-        
-        if (!$group) {
-            return null;
-        }
-        
-        // Translate the group name using sidebar.* keys
-        // Normalize: remove special characters, replace spaces and & with underscore
-        $groupKey = strtolower($group);
-        $groupKey = str_replace([' & ', ' &', '& ', '&'], '_', $groupKey);
-        $groupKey = str_replace([' ', '-', '/'], '_', $groupKey);
-        $groupKey = preg_replace('/[^a-z0-9_]/', '', $groupKey);
-        $groupKey = preg_replace('/_+/', '_', $groupKey); // Remove multiple underscores
-        $groupKey = trim($groupKey, '_'); // Remove leading/trailing underscores
-        
-        $translationKey = "sidebar.{$groupKey}";
-        
-        return tr($translationKey, [], null, 'dashboard') ?: $group;
+        return static::$navigationGroup;
     }
 }
 

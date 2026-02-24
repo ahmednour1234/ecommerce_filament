@@ -23,7 +23,6 @@ class ClientResource extends Resource
     protected static ?string $navigationGroup = 'clients';
     protected static ?string $navigationLabel = 'العملاء';
     protected static ?int $navigationSort = 1;
-    protected static ?string $navigationTranslationKey = 'sidebar.clients';
 
     public static function form(Form $form): Form
     {

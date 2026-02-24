@@ -24,7 +24,6 @@ class ServiceTransferRequestsReportPage extends Page implements HasTable
     protected static ?string $navigationGroup = 'service_transfer';
     protected static ?string $navigationLabel = 'تقرير طلبات نقل الخدمات';
     protected static ?int $navigationSort = 2;
-    protected static ?string $navigationTranslationKey = 'sidebar.servicetransferrequestsreport';
     protected static string $view = 'filament.pages.service-transfer.requests-report';
 
     public ?array $data = [];
