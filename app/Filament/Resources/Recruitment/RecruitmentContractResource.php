@@ -257,9 +257,10 @@ class RecruitmentContractResource extends Resource
                         Forms\Components\Select::make('nationality_id')
                             ->label(tr('recruitment_contract.fields.nationality', [], null, 'dashboard') ?: 'Nationality')
                             ->options(function () {
-                                return Cache::remember('recruitment_contracts.nationalities', 21600, function () {
+                                $allowedNames = ['الفلبين', 'بنغلادش', 'سريلانكا', 'اثيوبيا', 'اوغندا', 'كينيا', 'بورندي'];
+                                return Cache::remember('recruitment_contracts.nationalities', 21600, function () use ($allowedNames) {
                                     return Nationality::where('is_active', true)
-                                        ->whereIn('name_ar', ['الفلبين', 'بنغلادش', 'سريلانكا', 'اثيوبيا', 'اوغندا', 'كينيا', 'بورندي'])
+                                        ->whereIn('name_ar', $allowedNames)
                                         ->get()
                                         ->mapWithKeys(function ($nationality) {
                                             $label = app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en;
@@ -269,6 +270,21 @@ class RecruitmentContractResource extends Resource
                                 });
                             })
                             ->searchable()
+                            ->getSearchResultsUsing(function (string $search) {
+                                $allowedNames = ['الفلبين', 'بنغلادش', 'سريلانكا', 'اثيوبيا', 'اوغندا', 'كينيا', 'بورندي'];
+                                return Nationality::where('is_active', true)
+                                    ->whereIn('name_ar', $allowedNames)
+                                    ->where(function ($query) use ($search) {
+                                        $query->where('name_ar', 'like', "%{$search}%")
+                                              ->orWhere('name_en', 'like', "%{$search}%");
+                                    })
+                                    ->get()
+                                    ->mapWithKeys(function ($nationality) {
+                                        $label = app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en;
+                                        return [$nationality->id => $label];
+                                    })
+                                    ->toArray();
+                            })
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('gender')
@@ -552,13 +568,9 @@ class RecruitmentContractResource extends Resource
                             ->rows(3)
                             ->columnSpanFull(),
 
-                        Forms\Components\Radio::make('client_rating')
+                        Forms\Components\Checkbox::make('client_rating')
                             ->label(tr('recruitment_contract.fields.client_rating', [], null, 'dashboard') ?: 'تقييم العميل')
-                            ->options([
-                                'yes' => 'نعم',
-                                'no' => 'لا',
-                            ])
-                            ->nullable()
+                            ->label('نعم')
                             ->columnSpan(1),
 
                         FileUpload::document('client_rating_proof_image', 'recruitment_contracts/client_rating')
