@@ -150,7 +150,7 @@ class SidebarNavigationTranslationsSeeder extends Seeder
             'sidebar.hr.attendance.work_schedules' => ['en' => 'Work Schedules', 'ar' => 'مواعيد العمل'],
             'sidebar.hr.attendance.copy_schedules' => ['en' => 'Copy Schedules', 'ar' => 'نسخ المواعيد'],
             'sidebar.hr.attendance.daily_attendance' => ['en' => 'Daily Attendance', 'ar' => 'الحضور اليومي'],
-            'sidebar.hr.attendance.monthly_attendance_calendar' => ['en' => 'Monthly Attendance Calendar', 'ar' => 'monthly_attendance_calendar'],
+            'sidebar.hr.attendance.monthly_attendance_calendar' => ['en' => 'Monthly Attendance Calendar', 'ar' => 'تقرير الحضور الشهري'],
             'sidebar.hr.attendance.monthly_attendance_report' => ['en' => 'Monthly Attendance Report', 'ar' => 'تقرير الحضور الشهري'],
             'sidebar.hr.leaves_holidays.leave_balance' => ['en' => 'Leave Balance', 'ar' => 'رصيد الإجازات'],
             'sidebar.hr.leaves_holidays.leave_requests' => ['en' => 'Leave Requests', 'ar' => 'طلبات الإجازات'],
@@ -241,6 +241,29 @@ class SidebarNavigationTranslationsSeeder extends Seeder
                     [
                         'key' => $key,
                         'group' => 'navigation',
+                        'language_id' => $arabic->id,
+                    ],
+                    [
+                        'value' => $values['ar'],
+                    ]
+                );
+
+                // Also add to 'filament' group for Filament's default translation system
+                Translation::updateOrCreate(
+                    [
+                        'key' => $key,
+                        'group' => 'filament',
+                        'language_id' => $english->id,
+                    ],
+                    [
+                        'value' => $values['en'],
+                    ]
+                );
+
+                Translation::updateOrCreate(
+                    [
+                        'key' => $key,
+                        'group' => 'filament',
                         'language_id' => $arabic->id,
                     ],
                     [
