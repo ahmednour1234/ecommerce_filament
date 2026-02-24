@@ -20,7 +20,7 @@ class CopySchedulesPage extends Page implements HasForms
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-duplicate';
-    protected static ?string $navigationGroup = 'hr';
+    protected static ?string $navigationGroup = 'الموارد البشرية';
     protected static ?string $navigationLabel = 'نسخ المواعيد';
     protected static ?int $navigationSort = 18;
     protected static string $view = 'filament.pages.hr.copy-schedules';

@@ -18,7 +18,7 @@ class HousingRequestResource extends Resource
     protected static ?string $model = \App\Models\Housing\HousingRequest::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
-    protected static ?string $navigationGroup = 'housing';
+    protected static ?string $navigationGroup = 'الإيواء';
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationTranslationKey = 'sidebar.housing.housing_requests';
 

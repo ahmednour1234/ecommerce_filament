@@ -25,7 +25,7 @@ class ReceivingRecruitmentReportPage extends Page implements HasTable
     protected ReceivingRecruitmentReportService $reportService;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
-    protected static ?string $navigationGroup = 'recruitment_contracts';
+    protected static ?string $navigationGroup = 'عقود الاستقدام';
     protected static ?string $navigationLabel = 'استلام العمالة';
     protected static ?int $navigationSort = 2;
     protected static string $view = 'filament.pages.recruitment.receiving-recruitment-report';

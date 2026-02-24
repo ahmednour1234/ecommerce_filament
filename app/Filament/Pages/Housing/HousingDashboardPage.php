@@ -14,7 +14,7 @@ class HousingDashboardPage extends Page implements HasForms
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-home';
-    protected static ?string $navigationGroup = 'housing';
+    protected static ?string $navigationGroup = 'الإيواء';
     protected static ?int $navigationSort = 1;
     protected static ?string $navigationTranslationKey = 'sidebar.housing.dashboard';
     protected static string $view = 'filament.pages.housing.dashboard';

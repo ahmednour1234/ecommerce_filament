@@ -18,7 +18,7 @@ class BiometricAttendanceResource extends Resource
     protected static ?string $model = AttendanceLog::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clock';
-    protected static ?string $navigationGroup = 'hr';
+    protected static ?string $navigationGroup = 'الموارد البشرية';
     protected static ?string $navigationLabel = 'سجلات الحضور الحيوية';
     protected static ?int $navigationSort = 16;
 

@@ -20,7 +20,7 @@ class ClientResource extends Resource
     protected static ?string $model = Client::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user';
-    protected static ?string $navigationGroup = 'clients';
+    protected static ?string $navigationGroup = 'العملاء';
     protected static ?string $navigationLabel = 'العملاء';
     protected static ?int $navigationSort = 1;
 

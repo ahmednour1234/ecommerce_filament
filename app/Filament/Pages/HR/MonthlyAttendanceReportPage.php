@@ -25,7 +25,7 @@ class MonthlyAttendanceReportPage extends Page implements HasForms, HasTable
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
-    protected static ?string $navigationGroup = 'hr';
+    protected static ?string $navigationGroup = 'الموارد البشرية';
     protected static ?string $navigationLabel = 'تقرير الحضور الشهري';
     protected static ?int $navigationSort = 21;
     protected static string $view = 'filament.pages.hr.monthly-attendance-report';

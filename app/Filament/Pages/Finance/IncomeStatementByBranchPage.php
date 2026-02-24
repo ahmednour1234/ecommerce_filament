@@ -29,7 +29,7 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
     use ExportsTable;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-pie';
-    protected static ?string $navigationGroup = 'finance';
+    protected static ?string $navigationGroup = 'قسم الحسابات';
     protected static ?string $navigationLabel = 'قائمة الدخل حسب الفرع';
     protected static ?int $navigationSort = 4;
     protected static string $view = 'filament.pages.finance.income-statement-by-branch';

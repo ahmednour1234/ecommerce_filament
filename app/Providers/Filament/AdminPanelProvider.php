@@ -125,88 +125,88 @@ class AdminPanelProvider extends PanelProvider
              * Your Resources/Pages MUST use the same key in $navigationGroup.
              */
             ->navigationGroups([
-                \Filament\Navigation\NavigationGroup::make('recruitment_contracts')
-                    ->label($this->navLabel('sidebar.recruitment_contracts', 'عقود الاستقدام'))
+                \Filament\Navigation\NavigationGroup::make('عقود الاستقدام')
+                    ->label('عقود الاستقدام')
                     ->collapsible(false),
 
-                \Filament\Navigation\NavigationGroup::make('housing')
-                    ->label($this->navLabel('sidebar.housing', 'الإيواء'))
+                \Filament\Navigation\NavigationGroup::make('الإيواء')
+                    ->label('الإيواء')
                     ->collapsible(false),
 
-                \Filament\Navigation\NavigationGroup::make('rental')
-                    ->label($this->navLabel('sidebar.rental', 'قسم التأجير'))
+                \Filament\Navigation\NavigationGroup::make('قسم التأجير')
+                    ->label('قسم التأجير')
                     ->collapsible(false),
 
-                \Filament\Navigation\NavigationGroup::make('service_transfer')
-                    ->label($this->navLabel('sidebar.service_transfer', 'نقل الخدمات'))
+                \Filament\Navigation\NavigationGroup::make('نقل الخدمات')
+                    ->label('نقل الخدمات')
                     ->collapsible(false),
 
-                \Filament\Navigation\NavigationGroup::make('packages')
-                    ->label($this->navLabel('sidebar.packages', 'باقات العروض'))
+                \Filament\Navigation\NavigationGroup::make('باقات العروض')
+                    ->label('باقات العروض')
                     ->collapsible(false),
 
-                \Filament\Navigation\NavigationGroup::make('candidates')
-                    ->label($this->navLabel('sidebar.candidates', 'المرشحين'))
+                \Filament\Navigation\NavigationGroup::make('المرشحين')
+                    ->label('المرشحين')
                     ->collapsible(false),
 
-                \Filament\Navigation\NavigationGroup::make('clients')
-                    ->label($this->navLabel('sidebar.clients', 'العملاء'))
+                \Filament\Navigation\NavigationGroup::make('العملاء')
+                    ->label('العملاء')
                     ->collapsible(false),
 
-                \Filament\Navigation\NavigationGroup::make('agents')
-                    ->label($this->navLabel('sidebar.agents', 'الوكلاء'))
+                \Filament\Navigation\NavigationGroup::make('الوكلاء')
+                    ->label('الوكلاء')
                     ->collapsible(false),
 
-                \Filament\Navigation\NavigationGroup::make('finance')
-                    ->label($this->navLabel('sidebar.finance', 'قسم الحسابات'))
+                \Filament\Navigation\NavigationGroup::make('قسم الحسابات')
+                    ->label('قسم الحسابات')
                     ->collapsible(false),
 
-                \Filament\Navigation\NavigationGroup::make('follow_up')
-                    ->label($this->navLabel('sidebar.follow_up', 'المتابعة'))
+                \Filament\Navigation\NavigationGroup::make('المتابعة')
+                    ->label('المتابعة')
                     ->collapsible(false),
 
-                \Filament\Navigation\NavigationGroup::make('messages')
-                    ->label($this->navLabel('sidebar.messages', 'قسم الرسائل'))
+                \Filament\Navigation\NavigationGroup::make('قسم الرسائل')
+                    ->label('قسم الرسائل')
                     ->collapsible(false),
 
-                \Filament\Navigation\NavigationGroup::make('company_visas')
-                    ->label($this->navLabel('sidebar.company_visas', 'تأشيرات الشركة'))
+                \Filament\Navigation\NavigationGroup::make('تأشيرات الشركة')
+                    ->label('تأشيرات الشركة')
                     ->collapsible(false),
 
-                \Filament\Navigation\NavigationGroup::make('app_management')
-                    ->label($this->navLabel('sidebar.app_management', 'إدارة التطبيق'))
+                \Filament\Navigation\NavigationGroup::make('إدارة التطبيق')
+                    ->label('إدارة التطبيق')
                     ->collapsible(false),
 
-                \Filament\Navigation\NavigationGroup::make('profile')
-                    ->label($this->navLabel('sidebar.profile', 'الملف الشخصي'))
+                \Filament\Navigation\NavigationGroup::make('الملف الشخصي')
+                    ->label('الملف الشخصي')
                     ->collapsible(false),
 
-                \Filament\Navigation\NavigationGroup::make('employee_commissions')
-                    ->label($this->navLabel('sidebar.employee_commissions', 'عمولات الموظفين'))
+                \Filament\Navigation\NavigationGroup::make('عمولات الموظفين')
+                    ->label('عمولات الموظفين')
                     ->collapsible(false),
 
-                \Filament\Navigation\NavigationGroup::make('hr')
-                    ->label($this->navLabel('sidebar.hr', 'الموارد البشرية'))
+                \Filament\Navigation\NavigationGroup::make('الموارد البشرية')
+                    ->label('الموارد البشرية')
                     ->collapsible(false),
 
-                \Filament\Navigation\NavigationGroup::make('system_movement')
-                    ->label($this->navLabel('sidebar.system_movement', 'حركة النظام المرجعي'))
+                \Filament\Navigation\NavigationGroup::make('حركة النظام المرجعي')
+                    ->label('حركة النظام المرجعي')
                     ->collapsible(false),
 
-                \Filament\Navigation\NavigationGroup::make('notifications')
-                    ->label($this->navLabel('sidebar.notifications', 'التنبيهات'))
+                \Filament\Navigation\NavigationGroup::make('التنبيهات')
+                    ->label('التنبيهات')
                     ->collapsible(false),
 
-                \Filament\Navigation\NavigationGroup::make('settings')
-                    ->label($this->navLabel('sidebar.settings', 'الإعدادات'))
+                \Filament\Navigation\NavigationGroup::make('الإعدادات')
+                    ->label('الإعدادات')
                     ->collapsible(false),
 
-                \Filament\Navigation\NavigationGroup::make('branches')
-                    ->label($this->navLabel('sidebar.branches', 'الفروع'))
+                \Filament\Navigation\NavigationGroup::make('الفروع')
+                    ->label('الفروع')
                     ->collapsible(false),
 
-                \Filament\Navigation\NavigationGroup::make('website_management')
-                    ->label($this->navLabel('sidebar.website_management', 'إدارة الموقع'))
+                \Filament\Navigation\NavigationGroup::make('إدارة الموقع')
+                    ->label('إدارة الموقع')
                     ->collapsible(false),
             ]);
     }

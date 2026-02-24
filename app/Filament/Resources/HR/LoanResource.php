@@ -27,7 +27,7 @@ class LoanResource extends Resource
     protected static ?string $model = Loan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-credit-card';
-    protected static ?string $navigationGroup = 'hr';
+    protected static ?string $navigationGroup = 'الموارد البشرية';
     protected static ?string $navigationLabel = 'القروض';
     protected static ?int $navigationSort = 25;
 

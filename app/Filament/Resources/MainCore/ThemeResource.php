@@ -22,7 +22,7 @@ class ThemeResource extends Resource
     protected static ?string $model = Theme::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-swatch';
-    protected static ?string $navigationGroup = 'app_management';
+    protected static ?string $navigationGroup = 'إدارة التطبيق';
     protected static ?string $navigationLabel = 'النواة الرئيسية';
     protected static ?int $navigationSort = 2;
 

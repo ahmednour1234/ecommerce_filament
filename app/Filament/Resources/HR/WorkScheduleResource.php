@@ -19,7 +19,7 @@ class WorkScheduleResource extends Resource
     protected static ?string $model = WorkSchedule::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clock';
-    protected static ?string $navigationGroup = 'hr';
+    protected static ?string $navigationGroup = 'الموارد البشرية';
     protected static ?string $navigationLabel = 'مواعيد العمل';
     protected static ?int $navigationSort = 17;
 

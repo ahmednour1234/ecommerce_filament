@@ -25,7 +25,7 @@ class ServiceTransferResource extends Resource
     protected static ?string $model = ServiceTransfer::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-arrow-path';
-    protected static ?string $navigationGroup = 'service_transfer';
+    protected static ?string $navigationGroup = 'نقل الخدمات';
     protected static ?string $navigationLabel = 'طلبات نقل الخدمات';
     protected static ?int $navigationSort = 1;
 

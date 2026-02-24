@@ -19,7 +19,7 @@ class HolidayResource extends Resource
     protected static ?string $model = Holiday::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
-    protected static ?string $navigationGroup = 'hr';
+    protected static ?string $navigationGroup = 'الموارد البشرية';
     protected static ?string $navigationLabel = 'العطلات الرسمية';
     protected static ?int $navigationSort = 9;
 

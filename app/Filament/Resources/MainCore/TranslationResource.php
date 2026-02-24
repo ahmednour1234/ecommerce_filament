@@ -20,7 +20,7 @@ class TranslationResource extends Resource
     protected static ?string $model = Translation::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-language';
-    protected static ?string $navigationGroup = 'settings';
+    protected static ?string $navigationGroup = 'الإعدادات';
     protected static ?string $navigationLabel = 'الترجمات';
     protected static ?int $navigationSort = 1;
 

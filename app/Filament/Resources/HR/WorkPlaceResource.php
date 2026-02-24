@@ -19,7 +19,7 @@ class WorkPlaceResource extends Resource
     protected static ?string $model = WorkPlace::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-map-pin';
-    protected static ?string $navigationGroup = 'hr';
+    protected static ?string $navigationGroup = 'الموارد البشرية';
     protected static ?string $navigationLabel = 'أماكن العمل';
     protected static ?int $navigationSort = 6;
 

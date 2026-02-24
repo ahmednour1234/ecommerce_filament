@@ -19,7 +19,7 @@ class IdentityTypeResource extends Resource
     protected static ?string $model = IdentityType::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-identification';
-    protected static ?string $navigationGroup = 'hr';
+    protected static ?string $navigationGroup = 'الموارد البشرية';
     protected static ?string $navigationLabel = 'نوع الهوية';
     protected static ?int $navigationSort = 3;
 

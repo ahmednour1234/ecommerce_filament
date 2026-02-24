@@ -20,7 +20,7 @@ class EmployeeGroupResource extends Resource
     protected static ?string $model = EmployeeGroup::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
-    protected static ?string $navigationGroup = 'hr';
+    protected static ?string $navigationGroup = 'الموارد البشرية';
     protected static ?string $navigationLabel = 'مجموعات الموظفين';
     protected static ?int $navigationSort = 13;
 

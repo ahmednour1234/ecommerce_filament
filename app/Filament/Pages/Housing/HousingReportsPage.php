@@ -11,7 +11,7 @@ class HousingReportsPage extends Page
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
-    protected static ?string $navigationGroup = 'housing';
+    protected static ?string $navigationGroup = 'الإيواء';
     protected static ?int $navigationSort = 7;
     protected static ?string $navigationTranslationKey = 'sidebar.housing.reports';
     protected static string $view = 'filament.pages.housing.reports';

@@ -18,7 +18,7 @@ class HousingStatusResource extends Resource
     protected static ?string $model = \App\Models\Housing\HousingStatus::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
-    protected static ?string $navigationGroup = 'housing';
+    protected static ?string $navigationGroup = 'الإيواء';
     protected static ?string $navigationLabel = 'إدارة الحالات';
     protected static ?int $navigationSort = 1;
 

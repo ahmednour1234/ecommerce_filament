@@ -21,7 +21,7 @@ class RoleResource extends Resource
     protected static ?string $model = Role::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-shield-check';
-    protected static ?string $navigationGroup = 'system_movement';
+    protected static ?string $navigationGroup = 'حركة النظام المرجعي';
     protected static ?string $navigationLabel = 'الأدوار';
     protected static ?int $navigationSort = 2;
 

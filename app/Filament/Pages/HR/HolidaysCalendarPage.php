@@ -11,7 +11,7 @@ class HolidaysCalendarPage extends Page
 {
     use TranslatableNavigation;
     protected static ?string $navigationIcon = 'heroicon-o-calendar';
-    protected static ?string $navigationGroup = 'hr';
+    protected static ?string $navigationGroup = 'الموارد البشرية';
     protected static ?string $navigationLabel = 'تقويم العطلات';
     protected static ?int $navigationSort = 10;
     protected static string $view = 'filament.pages.hr.holidays-calendar';

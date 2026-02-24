@@ -20,7 +20,7 @@ class SalaryComponentResource extends Resource
     protected static ?string $model = SalaryComponent::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-calculator';
-    protected static ?string $navigationGroup = 'hr';
+    protected static ?string $navigationGroup = 'الموارد البشرية';
     protected static ?string $navigationLabel = 'المكونات المالية';
     protected static ?int $navigationSort = 12;
 

@@ -22,7 +22,7 @@ class CurrencyRateResource extends Resource
     protected static ?string $model = CurrencyRate::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-arrow-path-rounded-square';
-    protected static ?string $navigationGroup = 'settings';
+    protected static ?string $navigationGroup = 'الإعدادات';
     protected static ?string $navigationLabel = 'أسعار العملات';
     protected static ?int $navigationSort = 4;
 

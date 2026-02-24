@@ -19,7 +19,7 @@ class CancelRefundRequestsResource extends Resource
     protected static ?string $model = RentalCancelRefundRequest::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-x-circle';
-    protected static ?string $navigationGroup = 'rental';
+    protected static ?string $navigationGroup = 'قسم التأجير';
     protected static ?string $navigationLabel = 'طلبات الإلغاء/الاسترجاع';
     protected static ?int $navigationSort = 3;
 

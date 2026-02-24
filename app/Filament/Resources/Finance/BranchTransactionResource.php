@@ -22,7 +22,7 @@ class BranchTransactionResource extends Resource
     protected static ?string $model = BranchTransaction::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
-    protected static ?string $navigationGroup = 'finance';
+    protected static ?string $navigationGroup = 'قسم الحسابات';
     protected static ?string $navigationLabel = 'الإيرادات والمصروفات';
     protected static ?int $navigationSort = 1;
 

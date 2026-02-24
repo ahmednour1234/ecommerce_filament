@@ -22,7 +22,7 @@ class EmployeeFinancialProfileResource extends Resource
     protected static ?string $model = EmployeeFinancialProfile::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
-    protected static ?string $navigationGroup = 'hr';
+    protected static ?string $navigationGroup = 'الموارد البشرية';
     protected static ?string $navigationLabel = 'البيانات المالية للموظفين';
     protected static ?int $navigationSort = 14;
 

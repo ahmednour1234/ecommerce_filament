@@ -22,7 +22,7 @@ class PayrollRunResource extends Resource
     protected static ?string $model = PayrollRun::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
-    protected static ?string $navigationGroup = 'hr';
+    protected static ?string $navigationGroup = 'الموارد البشرية';
     protected static ?string $navigationLabel = 'الرواتب';
     protected static ?int $navigationSort = 26;
 

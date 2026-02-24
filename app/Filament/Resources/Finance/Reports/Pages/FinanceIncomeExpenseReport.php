@@ -20,7 +20,7 @@ class FinanceIncomeExpenseReport extends Page implements HasForms
     use HasFinanceReportFilters;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
-    protected static ?string $navigationGroup = 'finance';
+    protected static ?string $navigationGroup = 'قسم الحسابات';
     protected static ?int $navigationSort = 3;
     protected static ?string $title = 'Finance Reports - Income & Expense';
     protected static ?string $navigationTranslationKey = 'sidebar.finance.income_expenses';

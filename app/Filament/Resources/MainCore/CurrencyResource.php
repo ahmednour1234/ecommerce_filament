@@ -21,7 +21,7 @@ class CurrencyResource extends Resource
     protected static ?string $model = Currency::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
-    protected static ?string $navigationGroup = 'settings';
+    protected static ?string $navigationGroup = 'الإعدادات';
     protected static ?string $navigationLabel = 'العملات';
     protected static ?int $navigationSort = 3;
 

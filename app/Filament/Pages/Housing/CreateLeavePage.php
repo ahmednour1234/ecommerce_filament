@@ -18,7 +18,7 @@ class CreateLeavePage extends Page implements HasForms
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar';
-    protected static ?string $navigationGroup = 'housing';
+    protected static ?string $navigationGroup = 'الإيواء';
     protected static ?int $navigationSort = 4;
     protected static ?string $navigationTranslationKey = 'sidebar.housing.laborer_leaves';
     protected static string $view = 'filament.pages.housing.create-leave';

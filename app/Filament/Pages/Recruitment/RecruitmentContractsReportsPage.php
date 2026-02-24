@@ -15,7 +15,7 @@ class RecruitmentContractsReportsPage extends Page implements HasForms
     use InteractsWithForms;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
-    protected static ?string $navigationGroup = 'recruitment_contracts';
+    protected static ?string $navigationGroup = 'عقود الاستقدام';
     protected static ?string $navigationLabel = 'تقارير عقود الاستقدام';
     protected static ?int $navigationSort = 5;
 

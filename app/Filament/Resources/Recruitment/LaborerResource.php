@@ -25,7 +25,7 @@ class LaborerResource extends Resource
     protected static ?string $model = Laborer::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
-    protected static ?string $navigationGroup = 'candidates';
+    protected static ?string $navigationGroup = 'المرشحين';
     protected static ?string $navigationLabel = 'العمال';
     protected static ?int $navigationSort = 1;
 

@@ -22,7 +22,7 @@ class LaborerUsedResource extends Resource
     protected static ?string $model = LaborerUsed::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
-    protected static ?string $navigationGroup = 'recruitment_contracts';
+    protected static ?string $navigationGroup = 'عقود الاستقدام';
     protected static ?string $navigationLabel = 'العمالة المستلمة';
     protected static ?int $navigationSort = 3;
 

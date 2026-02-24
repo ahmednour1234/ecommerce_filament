@@ -21,7 +21,7 @@ class ExcuseRequestResource extends Resource
     protected static ?string $model = ExcuseRequest::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clock';
-    protected static ?string $navigationGroup = 'hr';
+    protected static ?string $navigationGroup = 'الموارد البشرية';
     protected static ?string $navigationLabel = 'طلبات الاستئذان';
     protected static ?int $navigationSort = 27;
 

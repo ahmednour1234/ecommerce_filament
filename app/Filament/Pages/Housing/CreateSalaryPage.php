@@ -16,7 +16,7 @@ class CreateSalaryPage extends Page implements HasForms
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
-    protected static ?string $navigationGroup = 'housing';
+    protected static ?string $navigationGroup = 'الإيواء';
     protected static ?int $navigationSort = 3;
     protected static ?string $navigationTranslationKey = 'sidebar.housing.laborer_salaries';
     protected static string $view = 'filament.pages.housing.create-salary';

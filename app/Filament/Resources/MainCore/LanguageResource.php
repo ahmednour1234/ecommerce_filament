@@ -20,7 +20,7 @@ class LanguageResource extends Resource
     protected static ?string $model = Language::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-language';
-    protected static ?string $navigationGroup = 'settings';
+    protected static ?string $navigationGroup = 'الإعدادات';
     protected static ?string $navigationLabel = 'اللغات';
     protected static ?int $navigationSort = 2;
 

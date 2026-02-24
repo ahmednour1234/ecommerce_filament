@@ -29,7 +29,7 @@ class RecruitmentContractResource extends Resource
     protected static ?string $model = RecruitmentContract::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
-    protected static ?string $navigationGroup = 'recruitment_contracts';
+    protected static ?string $navigationGroup = 'عقود الاستقدام';
     protected static ?string $navigationLabel = 'عقود الاستقدام';
     protected static ?int $navigationSort = 1;
 

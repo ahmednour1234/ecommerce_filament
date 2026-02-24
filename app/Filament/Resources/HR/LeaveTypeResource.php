@@ -19,7 +19,7 @@ class LeaveTypeResource extends Resource
     protected static ?string $model = LeaveType::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
-    protected static ?string $navigationGroup = 'hr';
+    protected static ?string $navigationGroup = 'الموارد البشرية';
     protected static ?string $navigationLabel = 'أنواع الإجازات';
     protected static ?int $navigationSort = 8;
 

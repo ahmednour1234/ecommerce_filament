@@ -19,7 +19,7 @@ class PositionResource extends Resource
     protected static ?string $model = Position::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-briefcase';
-    protected static ?string $navigationGroup = 'hr';
+    protected static ?string $navigationGroup = 'الموارد البشرية';
     protected static ?string $navigationLabel = 'المسميات الوظيفية';
     protected static ?int $navigationSort = 2;
 

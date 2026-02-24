@@ -18,7 +18,7 @@ class NationalityResource extends Resource
     protected static ?string $model = Nationality::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-flag';
-    protected static ?string $navigationGroup = 'candidates';
+    protected static ?string $navigationGroup = 'المرشحين';
     protected static ?string $navigationLabel = 'الجنسيات';
     protected static ?int $navigationSort = 2;
 

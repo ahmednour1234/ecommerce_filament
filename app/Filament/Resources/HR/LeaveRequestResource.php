@@ -23,7 +23,7 @@ class LeaveRequestResource extends Resource
     protected static ?string $model = LeaveRequest::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
-    protected static ?string $navigationGroup = 'hr';
+    protected static ?string $navigationGroup = 'الموارد البشرية';
     protected static ?string $navigationLabel = 'طلبات الإجازات';
     protected static ?int $navigationSort = 23;
 

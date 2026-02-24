@@ -11,7 +11,7 @@ class ExpiredContractsPage extends Page
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-trash';
-    protected static ?string $navigationGroup = 'recruitment_contracts';
+    protected static ?string $navigationGroup = 'عقود الاستقدام';
     protected static ?string $navigationLabel = 'العقود المنتهية';
     protected static ?int $navigationSort = 4;
 

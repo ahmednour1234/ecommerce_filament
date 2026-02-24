@@ -20,7 +20,7 @@ class FinanceTypeResource extends Resource
     protected static ?string $model = FinanceType::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
-    protected static ?string $navigationGroup = 'finance';
+    protected static ?string $navigationGroup = 'قسم الحسابات';
     protected static ?string $navigationLabel = 'أنواع المالية';
     protected static ?int $navigationSort = 2;
 

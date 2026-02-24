@@ -19,7 +19,7 @@ class BloodTypeResource extends Resource
     protected static ?string $model = BloodType::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-heart';
-    protected static ?string $navigationGroup = 'hr';
+    protected static ?string $navigationGroup = 'الموارد البشرية';
     protected static ?string $navigationLabel = 'فصائل الدم';
     protected static ?int $navigationSort = 4;
 

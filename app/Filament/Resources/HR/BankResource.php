@@ -19,7 +19,7 @@ class BankResource extends Resource
     protected static ?string $model = Bank::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-library';
-    protected static ?string $navigationGroup = 'hr';
+    protected static ?string $navigationGroup = 'الموارد البشرية';
     protected static ?string $navigationLabel = 'البنوك';
     protected static ?int $navigationSort = 5;
 

@@ -22,7 +22,7 @@ class AgentResource extends Resource
     protected static ?string $model = Agent::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
-    protected static ?string $navigationGroup = 'agents';
+    protected static ?string $navigationGroup = 'الوكلاء';
     protected static ?string $navigationLabel = 'الوكلاء';
     protected static ?int $navigationSort = 1;
 

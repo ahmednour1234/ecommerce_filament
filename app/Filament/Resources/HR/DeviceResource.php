@@ -19,7 +19,7 @@ class DeviceResource extends Resource
     protected static ?string $model = Device::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-finger-print';
-    protected static ?string $navigationGroup = 'hr';
+    protected static ?string $navigationGroup = 'الموارد البشرية';
     protected static ?string $navigationLabel = 'أجهزة البصمة';
     protected static ?int $navigationSort = 15;
 

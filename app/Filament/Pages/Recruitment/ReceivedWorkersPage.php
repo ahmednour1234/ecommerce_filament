@@ -11,7 +11,7 @@ class ReceivedWorkersPage extends Page
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-arrow-down-tray';
-    protected static ?string $navigationGroup = 'recruitment_contracts';
+    protected static ?string $navigationGroup = 'عقود الاستقدام';
     protected static ?string $navigationLabel = 'العمالة المستلمة';
     protected static ?int $navigationSort = 3;
 

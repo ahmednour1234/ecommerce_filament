@@ -24,7 +24,7 @@ class ComplaintResource extends Resource
     protected static ?string $model = Complaint::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-exclamation-triangle';
-    protected static ?string $navigationGroup = 'follow_up';
+    protected static ?string $navigationGroup = 'المتابعة';
     protected static ?string $navigationLabel = 'قسم الشكاوي';
     protected static ?int $navigationSort = 1;
     protected static ?string $navigationTranslationKey = 'sidebar.complaints.complaints';

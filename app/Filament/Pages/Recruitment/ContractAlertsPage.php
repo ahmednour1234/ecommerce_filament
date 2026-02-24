@@ -20,7 +20,7 @@ class ContractAlertsPage extends Page implements HasTable
     use InteractsWithTable;
 
     protected static ?string $navigationIcon = 'heroicon-o-bell';
-    protected static ?string $navigationGroup = 'notifications';
+    protected static ?string $navigationGroup = 'التنبيهات';
     protected static ?string $navigationLabel = 'تنبيهات العقود';
     protected static ?int $navigationSort = 1;
     protected static string $view = 'filament.pages.recruitment.contract-alerts';

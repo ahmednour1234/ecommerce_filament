@@ -21,7 +21,7 @@ class PackageResource extends Resource
     protected static ?string $model = Package::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-gift';
-    protected static ?string $navigationGroup = 'packages';
+    protected static ?string $navigationGroup = 'باقات العروض';
     protected static ?string $navigationLabel = 'الباقات';
     protected static ?int $navigationSort = 1;
 

@@ -17,7 +17,7 @@ class MonthlyAttendanceCalendarPage extends Page implements HasForms
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
-    protected static ?string $navigationGroup = 'hr';
+    protected static ?string $navigationGroup = 'الموارد البشرية';
     protected static ?string $navigationLabel = 'monthly_attendance_calendar';
     protected static ?int $navigationSort = 20;
     protected static string $view = 'filament.pages.hr.monthly-attendance-calendar';

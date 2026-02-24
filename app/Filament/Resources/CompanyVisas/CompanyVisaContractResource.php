@@ -23,7 +23,7 @@ class CompanyVisaContractResource extends Resource
     protected static ?string $model = CompanyVisaContract::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-duplicate';
-    protected static ?string $navigationGroup = 'company_visas';
+    protected static ?string $navigationGroup = 'تأشيرات الشركة';
     protected static ?string $navigationLabel = 'عقود استقدام الشركة';
     protected static ?int $navigationSort = 2;
 
