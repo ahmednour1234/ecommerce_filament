@@ -31,76 +31,84 @@ class RecruitmentContractStatsWidget extends BaseWidget
         $arrivalTicketCount = (clone $baseQuery)->arrivalTicketIssued()->count();
 
         $stats[] = Stat::make(
-            tr('recruitment_contract.stats.new', [], null, 'dashboard') ?: 'عقود جديدة',
+            '📄 ' . (tr('recruitment_contract.stats.new', [], null, 'dashboard') ?: 'عقود جديدة'),
             Number::format($newCount)
         )
             ->description(tr('recruitment_contract.status.new', [], null, 'dashboard') ?: 'جديد')
             ->color('primary')
             ->icon('heroicon-o-document-text')
-            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'new']])));
+            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'new']])))
+            ->extraAttributes(['class' => 'recruitment-stats-card']);
 
         $stats[] = Stat::make(
-            tr('recruitment_contract.stats.expired', [], null, 'dashboard') ?: 'العقود المنتهية',
+            '⏰ ' . (tr('recruitment_contract.stats.expired', [], null, 'dashboard') ?: 'العقود المنتهية'),
             Number::format($expiredCount)
         )
             ->description(tr('recruitment_contract.status.closed', [], null, 'dashboard') ?: 'مغلق')
             ->color('gray')
             ->icon('heroicon-o-clock')
-            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'closed']])));
+            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'closed']])))
+            ->extraAttributes(['class' => 'recruitment-stats-card']);
 
         $stats[] = Stat::make(
-            tr('recruitment_contract.stats.returned', [], null, 'dashboard') ?: 'عقود مسترجعة',
+            '🔄 ' . (tr('recruitment_contract.stats.returned', [], null, 'dashboard') ?: 'عقود مسترجعة'),
             Number::format($returnedCount)
         )
             ->description(tr('recruitment_contract.status.returned', [], null, 'dashboard') ?: 'مرتجع')
             ->color('warning')
             ->icon('heroicon-o-arrow-path')
-            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'returned']])));
+            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'returned']])))
+            ->extraAttributes(['class' => 'recruitment-stats-card']);
 
         $stats[] = Stat::make(
-            tr('recruitment_contract.stats.warranty', [], null, 'dashboard') ?: 'عقود بفترة الضمان',
+            '🛡️ ' . (tr('recruitment_contract.stats.warranty', [], null, 'dashboard') ?: 'عقود بفترة الضمان'),
             Number::format($warrantyCount)
         )
             ->description(tr('recruitment_contract.stats.warranty', [], null, 'dashboard') ?: 'بفترة الضمان')
             ->color('info')
             ->icon('heroicon-o-shield-check')
-            ->url($publicUrl);
+            ->url($publicUrl)
+            ->extraAttributes(['class' => 'recruitment-stats-card']);
 
         $stats[] = Stat::make(
-            tr('recruitment_contract.stats.rejected', [], null, 'dashboard') ?: 'عقود مرفوضة',
+            '❌ ' . (tr('recruitment_contract.stats.rejected', [], null, 'dashboard') ?: 'عقود مرفوضة'),
             Number::format($rejectedCount)
         )
             ->description(tr('recruitment_contract.status.rejected', [], null, 'dashboard') ?: 'مرفوض')
             ->color('danger')
             ->icon('heroicon-o-x-circle')
-            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'rejected']])));
+            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'rejected']])))
+            ->extraAttributes(['class' => 'recruitment-stats-card']);
 
         $stats[] = Stat::make(
-            tr('recruitment_contract.stats.signed', [], null, 'dashboard') ?: 'عقود تم توقيع العقد',
+            '✅ ' . (tr('recruitment_contract.stats.signed', [], null, 'dashboard') ?: 'عقود تم توقيع العقد'),
             Number::format($signedCount)
         )
             ->description(tr('recruitment_contract.status.contract_signed', [], null, 'dashboard') ?: 'تم توقيع العقد')
             ->color('success')
             ->icon('heroicon-o-check-circle')
-            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'contract_signed']])));
+            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'contract_signed']])))
+            ->extraAttributes(['class' => 'recruitment-stats-card']);
 
         $stats[] = Stat::make(
-            tr('recruitment_contract.stats.visa_issued', [], null, 'dashboard') ?: 'عقود تم إصدار تأشيراتها',
+            '📋 ' . (tr('recruitment_contract.stats.visa_issued', [], null, 'dashboard') ?: 'عقود تم إصدار تأشيراتها'),
             Number::format($visaIssuedCount)
         )
             ->description(tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم إصدار التأشيرة')
             ->color('success')
             ->icon('heroicon-o-document-check')
-            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'visa_issued']])));
+            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'visa_issued']])))
+            ->extraAttributes(['class' => 'recruitment-stats-card']);
 
         $stats[] = Stat::make(
-            tr('recruitment_contract.stats.arrival_ticket_issued', [], null, 'dashboard') ?: 'عقود تم إصدار تذاكر الوصول',
+            '🎫 ' . (tr('recruitment_contract.stats.arrival_ticket_issued', [], null, 'dashboard') ?: 'عقود تم إصدار تذاكر الوصول'),
             Number::format($arrivalTicketCount)
         )
             ->description(tr('recruitment_contract.status.ticket_booked', [], null, 'dashboard') ?: 'تم حجز التذكرة')
             ->color('success')
             ->icon('heroicon-o-ticket')
-            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'ticket_booked']])));
+            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'ticket_booked']])))
+            ->extraAttributes(['class' => 'recruitment-stats-card']);
 
         return $stats;
     }
