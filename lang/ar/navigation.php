@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'recruitment_contracts' => 'عقود الاستقدام',
+    'housing' => 'الإيواء',
+    'rental' => 'قسم التأجير',
+    'service_transfer' => 'نقل الخدمات',
+    'packages' => 'باقات العروض',
+    'candidates' => 'المرشحين',
+    'clients' => 'العملاء',
+    'agents' => 'الوكلاء',
+    'finance' => 'قسم الحسابات',
+    'follow_up' => 'المتابعة',
+    'messages' => 'قسم الرسائل',
+    'company_visas' => 'تأشيرات الشركة',
+    'app_management' => 'إدارة التطبيق',
+    'profile' => 'الملف الشخصي',
+    'employee_commissions' => 'عمولات الموظفين',
+    'hr' => 'الموارد البشرية',
+    'system_movement' => 'حركة النظام المرجعي',
+    'notifications' => 'التنبيهات',
+    'settings' => 'الإعدادات',
+    'branches' => 'الفروع',
+    'website_management' => 'إدارة الموقع',
+];

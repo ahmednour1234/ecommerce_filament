@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'recruitment_contracts' => 'Recruitment Contracts',
+    'housing' => 'Housing',
+    'rental' => 'Rental',
+    'service_transfer' => 'Service Transfer',
+    'packages' => 'Packages',
+    'candidates' => 'Candidates',
+    'clients' => 'Clients',
+    'agents' => 'Agents',
+    'finance' => 'Finance',
+    'follow_up' => 'Follow-up',
+    'messages' => 'Messages',
+    'company_visas' => 'Company Visas',
+    'app_management' => 'App Management',
+    'profile' => 'Profile',
+    'employee_commissions' => 'Employee Commissions',
+    'hr' => 'Human Resources',
+    'system_movement' => 'System Movement',
+    'notifications' => 'Notifications',
+    'settings' => 'Settings',
+    'branches' => 'Branches',
+    'website_management' => 'Website Management',
+];
