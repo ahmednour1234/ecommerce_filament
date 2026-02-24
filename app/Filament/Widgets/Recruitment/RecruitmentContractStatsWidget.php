@@ -36,7 +36,6 @@ class RecruitmentContractStatsWidget extends BaseWidget
         )
             ->description(tr('recruitment_contract.status.new', [], null, 'dashboard') ?: 'جديد')
             ->color('primary')
-            ->icon('heroicon-o-document-text')
             ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'new']])))
             ->extraAttributes(['class' => 'recruitment-stats-card']);
 
@@ -46,7 +45,6 @@ class RecruitmentContractStatsWidget extends BaseWidget
         )
             ->description(tr('recruitment_contract.status.closed', [], null, 'dashboard') ?: 'مغلق')
             ->color('gray')
-            ->icon('heroicon-o-clock')
             ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'closed']])))
             ->extraAttributes(['class' => 'recruitment-stats-card']);
 
@@ -56,7 +54,6 @@ class RecruitmentContractStatsWidget extends BaseWidget
         )
             ->description(tr('recruitment_contract.status.returned', [], null, 'dashboard') ?: 'مرتجع')
             ->color('warning')
-            ->icon('heroicon-o-arrow-path')
             ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'returned']])))
             ->extraAttributes(['class' => 'recruitment-stats-card']);
 
@@ -66,7 +63,6 @@ class RecruitmentContractStatsWidget extends BaseWidget
         )
             ->description(tr('recruitment_contract.stats.warranty', [], null, 'dashboard') ?: 'بفترة الضمان')
             ->color('info')
-            ->icon('heroicon-o-shield-check')
             ->url($publicUrl)
             ->extraAttributes(['class' => 'recruitment-stats-card']);
 
@@ -76,7 +72,6 @@ class RecruitmentContractStatsWidget extends BaseWidget
         )
             ->description(tr('recruitment_contract.status.rejected', [], null, 'dashboard') ?: 'مرفوض')
             ->color('danger')
-            ->icon('heroicon-o-x-circle')
             ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'rejected']])))
             ->extraAttributes(['class' => 'recruitment-stats-card']);
 
@@ -86,7 +81,6 @@ class RecruitmentContractStatsWidget extends BaseWidget
         )
             ->description(tr('recruitment_contract.status.contract_signed', [], null, 'dashboard') ?: 'تم توقيع العقد')
             ->color('success')
-            ->icon('heroicon-o-check-circle')
             ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'contract_signed']])))
             ->extraAttributes(['class' => 'recruitment-stats-card']);
 
@@ -96,7 +90,6 @@ class RecruitmentContractStatsWidget extends BaseWidget
         )
             ->description(tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم إصدار التأشيرة')
             ->color('success')
-            ->icon('heroicon-o-document-check')
             ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'visa_issued']])))
             ->extraAttributes(['class' => 'recruitment-stats-card']);
 
@@ -106,7 +99,6 @@ class RecruitmentContractStatsWidget extends BaseWidget
         )
             ->description(tr('recruitment_contract.status.ticket_booked', [], null, 'dashboard') ?: 'تم حجز التذكرة')
             ->color('success')
-            ->icon('heroicon-o-ticket')
             ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'ticket_booked']])))
             ->extraAttributes(['class' => 'recruitment-stats-card']);
 
