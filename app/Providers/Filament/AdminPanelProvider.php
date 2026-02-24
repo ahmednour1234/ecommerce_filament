@@ -27,9 +27,24 @@ class AdminPanelProvider extends PanelProvider
 {
     private function navLabel(string $key, string $fallback): \Closure
     {
-        return fn () => app(TranslationService::class)
-                ->get($key, null, 'dashboard', $fallback)
-            ?: $fallback;
+        return function () use ($key, $fallback) {
+            $translationService = app(TranslationService::class);
+
+            // Try Arabic first (priority)
+            $arabicTranslation = $translationService->get($key, 'ar', 'dashboard', null);
+            if ($arabicTranslation && $arabicTranslation !== $key) {
+                return $arabicTranslation;
+            }
+
+            // Fallback to current language
+            $currentTranslation = $translationService->get($key, null, 'dashboard', null);
+            if ($currentTranslation && $currentTranslation !== $key) {
+                return $currentTranslation;
+            }
+
+            // Final fallback
+            return $fallback;
+        };
     }
 
     public function panel(Panel $panel): Panel
