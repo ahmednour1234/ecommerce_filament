@@ -11,6 +11,7 @@ use App\Models\MainCore\Currency;
 use App\Models\Recruitment\Nationality;
 use App\Models\Recruitment\Profession;
 use App\Models\MainCore\Branch;
+use App\Data\SaudiGovernorates;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
@@ -75,27 +76,38 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                 $workerName = $this->getValue($rowArray, ['name_of_the_worker', 'worker_name', 'name', 'الاسم', 'اسم العامل']);
                 $passportNo = $this->getValue($rowArray, ['passport_no', 'passport_number', 'passport', 'رقم الجواز']);
                 $clientName = $this->getValue($rowArray, ['client_name', 'client', 'العميل', 'اسم العميل']);
+                $clientNationalId = $this->getValue($rowArray, ['client_national_id', 'client_id_number', 'رقم هوية العميل']);
                 $sponsorName = $this->getValue($rowArray, ['sponsor_name', 'sponsor', 'الكفيل', 'اسم الكفيل']);
                 $branchName  = $this->getValue($rowArray, ['branch_name', 'branch', 'الفرع', 'اسم الفرع']);
                 $visaNo      = $this->getValue($rowArray, ['visa_no', 'visa_number', 'visa', 'رقم التأشيرة']);
-                $idNumber    = $this->getValue($rowArray, ['id_number', 'id', 'national_id', 'رقم الهوية', 'ID number']);
-                $note        = $this->getValue($rowArray, ['note', 'notes', 'ملاحظات', 'ملاحظة']);
-                $arrivalDate = $this->getValue($rowArray, ['arrival_date', 'arrival', 'تاريخ الوصول']);
-                $issueDate   = $this->getValue($rowArray, ['issue_date', 'issue', 'تاريخ الإصدار']);
-                $statusCode  = $this->getValue($rowArray, ['status_code', 'status', 'الحالة']);
-
-                // مهم: عمود الدفع عندك طويل في الإكسل، فهنا بنديله مفاتيح كثيرة + matching ذكي
+                $visaTypeRaw = $this->getValue($rowArray, ['visa_type', 'type', 'نوع التأشيرة', 'نوع_التأشيرة']);
+                $visaDate   = $this->getValue($rowArray, ['visa_date', 'visa_date', 'تاريخ التأشيرة']);
+                $arrivalCountry = $this->getValue($rowArray, ['arrival_country', 'arrival_country', 'محطة الوصول']);
+                $departureCountry = $this->getValue($rowArray, ['departure_country', 'departure_country', 'محطة القدوم']);
+                $receivingStation = $this->getValue($rowArray, ['receiving_station', 'receiving_station', 'محطة الاستلام']);
+                $professionName = $this->getValue($rowArray, ['profession', 'profession', 'المهنة']);
+                $nationalityName = $this->getValue($rowArray, ['nationality', 'nationality', 'الجنسية']);
+                $gender = $this->getValue($rowArray, ['gender', 'gender', 'الجنس']);
+                $experience = $this->getValue($rowArray, ['experience', 'experience', 'الخبرة']);
+                $religion = $this->getValue($rowArray, ['religion', 'religion', 'الدين']);
+                $workplaceAr = $this->getValue($rowArray, ['workplace_ar', 'workplace_ar', 'مكان العمل (عربي)']);
+                $workplaceEn = $this->getValue($rowArray, ['workplace_en', 'workplace_en', 'مكان العمل (إنجليزي)']);
+                $monthlySalary = $this->getValue($rowArray, ['monthly_salary', 'monthly_salary', 'الراتب الشهري']);
+                $gregorianRequestDate = $this->getValue($rowArray, ['gregorian_request_date', 'gregorian_request_date', 'تاريخ الطلب']);
+                $hijriRequestDate = $this->getValue($rowArray, ['hijri_request_date', 'hijri_request_date', 'التاريخ الهجري']);
+                $statusRaw = $this->getValue($rowArray, ['status', 'status', 'الحالة']);
                 $paymentStatusRaw = $this->getValue($rowArray, [
-                    'payment_status_code',
                     'payment_status',
+                    'payment_status_code',
                     'payment status',
                     'حالة الدفع',
                     'حالة_الدفع',
                     'payment',
                 ]);
-
-                $airportName = $this->getValue($rowArray, ['name_of_the_airport', 'airport', 'اسم المطار']);
-                $visaTypeRaw = $this->getValue($rowArray, ['visa_type', 'type', 'نوع التأشيرة', 'نوع_التأشيرة']);
+                $musanedContractNo = $this->getValue($rowArray, ['musaned_contract_no', 'musaned_contract_no', 'رقم عقد مساند']);
+                $musanedDocumentationContractNo = $this->getValue($rowArray, ['musaned_documentation_contract_no', 'musaned_documentation_contract_no', 'رقم عقد توثيق مساند']);
+                $musanedAuthNo = $this->getValue($rowArray, ['musaned_auth_no', 'musaned_auth_no', 'رقم تفويض مساند']);
+                $musanedContractDate = $this->getValue($rowArray, ['musaned_contract_date', 'musaned_contract_date', 'تاريخ عقد مساند']);
 
                 $workerName = $workerName ? trim((string) $workerName) : null;
                 $passportNo = $passportNo ? trim((string) $passportNo) : null;
@@ -114,7 +126,7 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                     continue;
                 }
 
-                $client = $this->findOrCreateClient($clientName, $idNumber);
+                $client = $this->findOrCreateClient($clientName, $clientNationalId ?: null);
                 $this->findOrCreateAgent($sponsorName); // ensures sponsor exists if needed
                 $branch = $this->findOrCreateBranch($branchName);
 
@@ -130,28 +142,47 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                 // ===== Map visa type =====
                 $visaType = $this->mapVisaType($visaTypeRaw);
 
-                // ===== Build contract data =====
-                $arrivalCountryId     = $this->mapCountryIdByName($airportName);
-                $departureCountryId   = $this->mapCountryIdByName($airportName);
-                $receivingStationId   = $this->mapReceivingStationIdByName($airportName);
+                // ===== Map status =====
+                $status = $this->mapStatus($statusRaw);
 
+                // ===== Find relations =====
+                $profession = $this->findProfession($professionName);
+                $nationality = $this->findNationality($nationalityName);
+                $arrivalCountryId = $this->mapCountryIdByName($arrivalCountry);
+                $departureCountryId = $this->mapCountryIdByName($departureCountry);
+                $receivingStationId = $this->mapReceivingStationIdByName($receivingStation);
+
+                // ===== Build contract data =====
                 $contractData = [
                     'client_id' => $client?->id,
                     'branch_id' => $branch?->id,
                     'worker_id' => $worker->id,
                     'visa_no' => $visaNoValue,
                     'visa_type' => $visaType,
-                    'notes' => $note ? trim((string) $note) : null,
-                    'status' => $this->mapStatus($statusCode),
+                    'visa_date' => $visaDate ? $this->parseDate($visaDate) : null,
+                    'status' => $status,
                     'arrival_country_id' => $arrivalCountryId,
                     'departure_country_id' => $departureCountryId,
                     'receiving_station_id' => $receivingStationId,
-                    'gregorian_request_date' => $arrivalDate ? ($this->parseDate($arrivalDate) ?? now()) : now(),
-                    'visa_date' => $issueDate ? $this->parseDate($issueDate) : null,
+                    'profession_id' => $profession?->id,
+                    'nationality_id' => $nationality?->id,
+                    'gender' => $this->normalizeGender($gender),
+                    'experience' => $experience ? trim((string) $experience) : null,
+                    'religion' => $religion ? trim((string) $religion) : null,
+                    'workplace_ar' => $workplaceAr ? trim((string) $workplaceAr) : null,
+                    'workplace_en' => $workplaceEn ? trim((string) $workplaceEn) : null,
+                    'monthly_salary' => $this->parseDecimal($monthlySalary),
+                    'gregorian_request_date' => $gregorianRequestDate ? ($this->parseDate($gregorianRequestDate) ?? now()) : now(),
+                    'hijri_request_date' => $hijriRequestDate ? trim((string) $hijriRequestDate) : null,
+                    'musaned_contract_no' => $musanedContractNo ? trim((string) $musanedContractNo) : null,
+                    'musaned_documentation_contract_no' => $musanedDocumentationContractNo ? trim((string) $musanedDocumentationContractNo) : null,
+                    'musaned_auth_no' => $musanedAuthNo ? trim((string) $musanedAuthNo) : null,
+                    'musaned_contract_date' => $musanedContractDate ? $this->parseDate($musanedContractDate) : null,
                     'created_by' => $this->defaultUserId,
                 ];
 
-                $contractData = $this->applyPaymentStatus($contractData, $paymentStatus);
+                // ===== Apply payment status (if paid, set as paid without checking) =====
+                $contractData = $this->applyPaymentStatus($contractData, $paymentStatus, true);
 
                 // ===== Persist (IMPORTANT: use forceFill to bypass fillable issues) =====
                 $contract = RecruitmentContract::firstOrNew(['visa_no' => $visaNoValue]);
@@ -247,19 +278,24 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
         }
     }
 
-    protected function mapReceivingStationIdByName(?string $name): ?int
+    protected function mapReceivingStationIdByName(?string $name): ?string
     {
         if (empty($name)) return null;
 
         try {
-            $stationClass = 'App\Models\Recruitment\ReceivingStation';
-            if (class_exists($stationClass)) {
-                $station = $stationClass::where('name', $name)
-                    ->orWhere('name_ar', $name)
-                    ->orWhere('name_en', $name)
-                    ->first();
-
-                return $station?->id;
+            $name = trim($name);
+            $governorates = SaudiGovernorates::all();
+            
+            // Check if the name exists in the governorates list
+            if (isset($governorates[$name])) {
+                return $name;
+            }
+            
+            // Try case-insensitive match
+            foreach ($governorates as $key => $value) {
+                if (mb_strtolower($key, 'UTF-8') === mb_strtolower($name, 'UTF-8')) {
+                    return $key;
+                }
             }
         } catch (\Throwable $e) {
             // ignore
@@ -435,8 +471,9 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
         if (is_string($code)) {
             $code = trim($code);
             $allowed = [
-                'new', 'foreign_embassy_approval', 'visa_issued', 'arrived_in_saudi_arabia',
-                'rejected', 'cancelled', 'visa_cancelled', 'outside_kingdom', 'processing',
+                'new', 'processing', 'contract_signed', 'ticket_booked', 'worker_received', 'closed', 'returned',
+                'foreign_embassy_approval', 'visa_issued', 'arrived_in_saudi_arabia',
+                'rejected', 'cancelled', 'visa_cancelled', 'outside_kingdom',
                 'external_sending_office_approval', 'accepted_by_external_sending_office',
                 'foreign_labor_ministry_approval', 'accepted_by_foreign_labor_ministry',
                 'sent_to_saudi_embassy',
@@ -462,6 +499,52 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
         ];
 
         return $statusMap[(int) $code] ?? 'new';
+    }
+
+    protected function findProfession(?string $name)
+    {
+        if (empty($name)) return null;
+
+        return Profession::where('name_ar', $name)
+            ->orWhere('name_en', $name)
+            ->where('is_active', true)
+            ->first() ?? $this->defaultProfession;
+    }
+
+    protected function findNationality(?string $name)
+    {
+        if (empty($name)) return null;
+
+        return Nationality::where('name_ar', $name)
+            ->orWhere('name_en', $name)
+            ->where('is_active', true)
+            ->first() ?? $this->defaultNationality;
+    }
+
+    protected function normalizeGender(?string $gender): ?string
+    {
+        if (empty($gender)) return null;
+
+        $normalized = mb_strtolower(trim($gender), 'UTF-8');
+        
+        if (in_array($normalized, ['male', 'ذكر', 'm', 'رجل'])) return 'male';
+        if (in_array($normalized, ['female', 'أنثى', 'f', 'امرأة'])) return 'female';
+
+        return null;
+    }
+
+    protected function parseDecimal($value): ?float
+    {
+        if (empty($value)) return null;
+
+        $value = trim((string) $value);
+        $value = str_replace([',', ' '], '', $value);
+
+        if (is_numeric($value)) {
+            return (float) $value;
+        }
+
+        return null;
     }
 
     protected function mapPaymentStatus($raw): ?string
@@ -518,30 +601,55 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
         return 'paid';
     }
 
-    protected function applyPaymentStatus(array $contractData, ?string $paymentStatus): array
+    protected function applyPaymentStatus(array $contractData, ?string $paymentStatus, bool $forcePaid = false): array
     {
         if (!$paymentStatus) {
             $paymentStatus = 'unpaid';
         }
 
-        if ($this->hasPaymentStatus) {
-            $contractData['payment_status'] = $paymentStatus;
-        }
+        // If payment_status is "paid" in Excel, set as paid without checking
+        if ($paymentStatus === 'paid' || $forcePaid) {
+            if ($this->hasPaymentStatus) {
+                $contractData['payment_status'] = 'paid';
+            }
 
-        if ($this->hasPaymentStatusCode) {
-            $contractData['payment_status_code'] = match ($paymentStatus) {
-                'paid' => 3,
-                'partial' => 2,
-                default => 1,
-            };
-        }
+            if ($this->hasPaymentStatusCode) {
+                $contractData['payment_status_code'] = 3;
+            }
 
-        if ($this->hasIsPaid) {
-            $contractData['is_paid'] = $paymentStatus === 'paid';
-        }
+            if ($this->hasIsPaid) {
+                $contractData['is_paid'] = true;
+            }
 
-        if ($this->hasPaidAt) {
-            $contractData['paid_at'] = $paymentStatus === 'paid' ? now() : null;
+            if ($this->hasPaidAt) {
+                $contractData['paid_at'] = now();
+            }
+
+            // Set paid_total = total_cost if paid
+            if (isset($contractData['total_cost']) && $contractData['total_cost'] > 0) {
+                $contractData['paid_total'] = $contractData['total_cost'];
+                $contractData['remaining_total'] = 0;
+            }
+        } else {
+            if ($this->hasPaymentStatus) {
+                $contractData['payment_status'] = $paymentStatus;
+            }
+
+            if ($this->hasPaymentStatusCode) {
+                $contractData['payment_status_code'] = match ($paymentStatus) {
+                    'paid' => 3,
+                    'partial' => 2,
+                    default => 1,
+                };
+            }
+
+            if ($this->hasIsPaid) {
+                $contractData['is_paid'] = $paymentStatus === 'paid';
+            }
+
+            if ($this->hasPaidAt) {
+                $contractData['paid_at'] = $paymentStatus === 'paid' ? now() : null;
+            }
         }
 
         return $contractData;
