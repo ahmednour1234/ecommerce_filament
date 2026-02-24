@@ -552,10 +552,14 @@ class RecruitmentContractResource extends Resource
                             ->rows(3)
                             ->columnSpanFull(),
 
-                        Forms\Components\Textarea::make('client_rating')
+                        Forms\Components\Radio::make('client_rating')
                             ->label(tr('recruitment_contract.fields.client_rating', [], null, 'dashboard') ?: 'تقييم العميل')
-                            ->rows(3)
-                            ->columnSpanFull(),
+                            ->options([
+                                'yes' => 'نعم',
+                                'no' => 'لا',
+                            ])
+                            ->nullable()
+                            ->columnSpan(1),
 
                         FileUpload::document('client_rating_proof_image', 'recruitment_contracts/client_rating')
                             ->label(tr('recruitment_contract.fields.client_rating_proof_image', [], null, 'dashboard') ?: 'صورة إثبات التقييم')
@@ -680,6 +684,22 @@ class RecruitmentContractResource extends Resource
                         'unpaid' => tr('recruitment_contract.payment_status.unpaid', [], null, 'dashboard') ?: 'Unpaid',
                         'partial' => tr('recruitment_contract.payment_status.partial', [], null, 'dashboard') ?: 'Partial',
                     ]),
+
+                Tables\Filters\SelectFilter::make('nationality_id')
+                    ->label(tr('recruitment_contract.fields.nationality', [], null, 'dashboard') ?: 'Nationality')
+                    ->options(function () {
+                        return Cache::remember('recruitment_contracts.nationalities_filter', 21600, function () {
+                            return Nationality::where('is_active', true)
+                                ->whereIn('name_ar', ['الفلبين', 'بنغلادش', 'سريلانكا', 'اثيوبيا', 'اوغندا', 'كينيا', 'بورندي'])
+                                ->get()
+                                ->mapWithKeys(function ($nationality) {
+                                    $label = app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en;
+                                    return [$nationality->id => $label];
+                                })
+                                ->toArray();
+                        });
+                    })
+                    ->searchable(),
 
                 Tables\Filters\Filter::make('created_at')
                     ->form([

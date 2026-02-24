@@ -42,6 +42,13 @@ class NationalitySeeder extends Seeder
             ['name_ar' => 'أوغندي', 'name_en' => 'Ugandan', 'code' => 'UG', 'is_active' => true],
             ['name_ar' => 'كينيّ', 'name_en' => 'Kenyan', 'code' => 'KE', 'is_active' => true],
             ['name_ar' => 'تنزاني', 'name_en' => 'Tanzanian', 'code' => 'TZ', 'is_active' => true],
+            ['name_ar' => 'الفلبين', 'name_en' => 'Philippines', 'code' => 'PH2', 'is_active' => true],
+            ['name_ar' => 'بنغلادش', 'name_en' => 'Bangladesh', 'code' => 'BD2', 'is_active' => true],
+            ['name_ar' => 'سريلانكا', 'name_en' => 'Sri Lanka', 'code' => 'LK2', 'is_active' => true],
+            ['name_ar' => 'اثيوبيا', 'name_en' => 'Ethiopia', 'code' => 'ET2', 'is_active' => true],
+            ['name_ar' => 'اوغندا', 'name_en' => 'Uganda', 'code' => 'UG2', 'is_active' => true],
+            ['name_ar' => 'كينيا', 'name_en' => 'Kenya', 'code' => 'KE2', 'is_active' => true],
+            ['name_ar' => 'بورندي', 'name_en' => 'Burundi', 'code' => 'BI', 'is_active' => true],
         ];
 
         $created = 0;
