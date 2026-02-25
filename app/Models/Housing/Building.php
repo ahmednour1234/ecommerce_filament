@@ -6,6 +6,7 @@ use App\Models\MainCore\Branch;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Building extends Model
@@ -36,6 +37,16 @@ class Building extends Model
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);
+    }
+
+    public function units(): HasMany
+    {
+        return $this->hasMany(Unit::class);
+    }
+
+    public function assignments(): HasMany
+    {
+        return $this->hasMany(HousingAssignment::class);
     }
 
     public function creator(): BelongsTo

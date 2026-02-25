@@ -18,9 +18,9 @@ class HousingRequestResource extends Resource
     protected static ?string $model = \App\Models\Housing\HousingRequest::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
-    protected static ?string $navigationGroup = 'الإيواء';
-    protected static ?int $navigationSort = 2;
-    protected static ?string $navigationTranslationKey = 'sidebar.housing.housing_requests';
+    protected static ?string $navigationGroup = 'قسم الإيواء';
+    protected static ?int $navigationSort = 4;
+    protected static ?string $navigationTranslationKey = 'sidebar.housing.requests';
 
     public static function form(Form $form): Form
     {
@@ -50,13 +50,49 @@ class HousingRequestResource extends Resource
                             ->searchable()
                             ->columnSpan(1),
 
-                        Forms\Components\Select::make('type')
-                            ->label(tr('housing.requests.type', [], null, 'dashboard') ?: 'Type')
+                        Forms\Components\Select::make('request_type')
+                            ->label(tr('housing.requests.request_type', [], null, 'dashboard') ?: 'نوع الطلب')
                             ->options([
-                                'delivery' => tr('housing.requests.type.delivery', [], null, 'dashboard') ?: 'تسليم',
-                                'return' => tr('housing.requests.type.return', [], null, 'dashboard') ?: 'استرجاع',
+                                'new_rent' => tr('housing.requests.type.new_rent', [], null, 'dashboard') ?: 'إيجار جديد',
+                                'cancel_rent' => tr('housing.requests.type.cancel_rent', [], null, 'dashboard') ?: 'إلغاء الإيجار',
+                                'transfer_kafala' => tr('housing.requests.type.transfer_kafala', [], null, 'dashboard') ?: 'نقل الكفالة',
+                                'outside_service' => tr('housing.requests.type.outside_service', [], null, 'dashboard') ?: 'خارج الخدمة',
+                                'leave_request' => tr('housing.requests.type.leave_request', [], null, 'dashboard') ?: 'طلب إجازة',
                             ])
                             ->required()
+                            ->columnSpan(1),
+
+                        Forms\Components\Select::make('building_id')
+                            ->label(tr('housing.requests.building', [], null, 'dashboard') ?: 'المبنى')
+                            ->relationship('building', 'name_ar')
+                            ->searchable()
+                            ->reactive()
+                            ->columnSpan(1),
+
+                        Forms\Components\Select::make('unit_id')
+                            ->label(tr('housing.requests.unit', [], null, 'dashboard') ?: 'الوحدة')
+                            ->relationship('unit', 'unit_number', fn ($query, $get) => $query->where('building_id', $get('building_id')))
+                            ->searchable()
+                            ->columnSpan(1),
+
+                        Forms\Components\DatePicker::make('requested_from')
+                            ->label(tr('housing.requests.requested_from', [], null, 'dashboard') ?: 'من تاريخ')
+                            ->columnSpan(1),
+
+                        Forms\Components\DatePicker::make('requested_to')
+                            ->label(tr('housing.requests.requested_to', [], null, 'dashboard') ?: 'إلى تاريخ')
+                            ->columnSpan(1),
+
+                        Forms\Components\Select::make('status')
+                            ->label(tr('housing.requests.status', [], null, 'dashboard') ?: 'الحالة')
+                            ->options([
+                                'pending' => tr('housing.requests.status.pending', [], null, 'dashboard') ?: 'معلق',
+                                'approved' => tr('housing.requests.status.approved', [], null, 'dashboard') ?: 'موافق عليه',
+                                'completed' => tr('housing.requests.status.completed', [], null, 'dashboard') ?: 'مكتمل',
+                                'rejected' => tr('housing.requests.status.rejected', [], null, 'dashboard') ?: 'مرفوض',
+                                'suspended' => tr('housing.requests.status.suspended', [], null, 'dashboard') ?: 'موقوف',
+                            ])
+                            ->default('pending')
                             ->columnSpan(1),
 
                         Forms\Components\DatePicker::make('request_date')
@@ -100,14 +136,30 @@ class HousingRequestResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\BadgeColumn::make('type')
-                    ->label(tr('housing.requests.type', [], null, 'dashboard') ?: 'Type')
+                Tables\Columns\BadgeColumn::make('request_type')
+                    ->label(tr('housing.requests.request_type', [], null, 'dashboard') ?: 'نوع الطلب')
                     ->color(fn (string $state): string => match ($state) {
-                        'delivery' => 'success',
-                        'return' => 'warning',
+                        'new_rent' => 'success',
+                        'cancel_rent' => 'danger',
+                        'transfer_kafala' => 'info',
+                        'outside_service' => 'warning',
+                        'leave_request' => 'primary',
                         default => 'gray',
                     })
                     ->formatStateUsing(fn ($state) => tr("housing.requests.type.{$state}", [], null, 'dashboard') ?: $state)
+                    ->sortable(),
+
+                Tables\Columns\BadgeColumn::make('status')
+                    ->label(tr('housing.requests.status', [], null, 'dashboard') ?: 'الحالة')
+                    ->color(fn (string $state): string => match ($state) {
+                        'completed' => 'success',
+                        'approved' => 'info',
+                        'pending' => 'warning',
+                        'rejected' => 'danger',
+                        'suspended' => 'gray',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn ($state) => tr("housing.requests.status.{$state}", [], null, 'dashboard') ?: $state)
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('request_date')
@@ -154,10 +206,53 @@ class HousingRequestResource extends Resource
             ])
             ->actions([
                 Tables\Actions\Action::make('approve')
+                    ->label(tr('actions.housing.approve', [], null, 'dashboard') ?: 'موافقة')
                     ->icon('heroicon-o-check')
                     ->color('success')
                     ->requiresConfirmation()
-                    ->action(fn ($record) => $record->update(['status' => 'approved'])),
+                    ->visible(fn ($record) => $record->status === 'pending')
+                    ->action(function ($record) {
+                        $record->update([
+                            'status' => 'approved',
+                            'approved_by' => auth()->id(),
+                            'approved_at' => now(),
+                        ]);
+                        if ($record->request_type === 'new_rent' && $record->laborer_id && $record->building_id) {
+                            \App\Models\Housing\HousingAssignment::create([
+                                'laborer_id' => $record->laborer_id,
+                                'building_id' => $record->building_id,
+                                'unit_id' => $record->unit_id,
+                                'start_date' => $record->requested_from ?? $record->request_date,
+                                'end_date' => $record->requested_to,
+                                'rent_amount' => 0,
+                                'status_id' => \App\Models\Housing\HousingStatus::where('key', 'rented')->first()?->id,
+                            ]);
+                        }
+                    }),
+
+                Tables\Actions\Action::make('reject')
+                    ->label(tr('actions.housing.reject', [], null, 'dashboard') ?: 'رفض')
+                    ->icon('heroicon-o-x-mark')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->visible(fn ($record) => $record->status === 'pending')
+                    ->action(fn ($record) => $record->update(['status' => 'rejected'])),
+
+                Tables\Actions\Action::make('complete')
+                    ->label(tr('actions.housing.complete', [], null, 'dashboard') ?: 'إكمال')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->visible(fn ($record) => $record->status === 'approved')
+                    ->action(fn ($record) => $record->update(['status' => 'completed'])),
+
+                Tables\Actions\Action::make('suspend')
+                    ->label(tr('actions.housing.suspend', [], null, 'dashboard') ?: 'تعليق')
+                    ->icon('heroicon-o-pause')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->visible(fn ($record) => in_array($record->status, ['pending', 'approved']))
+                    ->action(fn ($record) => $record->update(['status' => 'suspended'])),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -205,6 +300,6 @@ class HousingRequestResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return false; // Hidden - replaced by RecruitmentHousingRequestResource and RentalHousingRequestResource
+        return static::canViewAny();
     }
 }

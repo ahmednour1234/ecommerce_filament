@@ -2,20 +2,22 @@
 
 namespace App\Models\Housing;
 
-use App\Models\HR\Employee;
-use App\Models\HR\LeaveType;
+use App\Models\Recruitment\Laborer;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class HousingLeave extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'housing_leaves';
 
     protected $fillable = [
-        'employee_id',
+        'laborer_id',
         'type',
-        'leave_type_id',
+        'leave_type',
         'start_date',
         'days',
         'end_date',
@@ -24,6 +26,7 @@ class HousingLeave extends Model
         'notes',
         'approved_by',
         'approved_at',
+        'return_registered_at',
         'created_by',
         'updated_by',
     ];
@@ -34,6 +37,7 @@ class HousingLeave extends Model
         'days' => 'integer',
         'status' => 'string',
         'approved_at' => 'datetime',
+        'return_registered_at' => 'datetime',
     ];
 
     protected static function boot()
@@ -63,14 +67,9 @@ class HousingLeave extends Model
         });
     }
 
-    public function employee(): BelongsTo
+    public function laborer(): BelongsTo
     {
-        return $this->belongsTo(Employee::class);
-    }
-
-    public function leaveType(): BelongsTo
-    {
-        return $this->belongsTo(LeaveType::class);
+        return $this->belongsTo(Laborer::class);
     }
 
     public function approver(): BelongsTo
@@ -98,9 +97,9 @@ class HousingLeave extends Model
         return $query->where('status', 'approved');
     }
 
-    public function scopeForEmployee($query, int $employeeId)
+    public function scopeForLaborer($query, int $laborerId)
     {
-        return $query->where('employee_id', $employeeId);
+        return $query->where('laborer_id', $laborerId);
     }
 
     public function scopeRecruitment($query)

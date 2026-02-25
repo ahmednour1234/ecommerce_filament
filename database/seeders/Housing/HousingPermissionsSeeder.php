@@ -16,13 +16,19 @@ class HousingPermissionsSeeder extends Seeder
 
         $permissionGroups = [
             'dashboard' => ['view'],
-            'requests' => ['view_any', 'view', 'create', 'update', 'delete'],
-            'salaries' => ['view_any', 'create', 'update', 'delete'],
-            'leaves' => ['view_any', 'create', 'update', 'delete'],
+            'workers' => ['view_any', 'view'],
+            'available_workers' => ['view_any'],
+            'requests' => ['view_any', 'view', 'create', 'update', 'delete', 'approve', 'reject', 'complete', 'suspend'],
+            'assignments' => ['view_any', 'view', 'create', 'update', 'delete'],
+            'salary_batches' => ['view_any', 'view', 'create', 'update', 'delete', 'generate'],
+            'salary_deductions' => ['view_any', 'view', 'create', 'update', 'delete'],
+            'leaves' => ['view_any', 'view', 'create', 'update', 'delete', 'approve', 'register_return'],
+            'drivers' => ['view_any', 'view', 'create', 'update', 'delete'],
+            'units' => ['view_any', 'view', 'create', 'update', 'delete'],
             'accommodation_entries' => ['view_any', 'create', 'update', 'delete'],
             'statuses' => ['view_any', 'view', 'create', 'update', 'delete'],
             'buildings' => ['view_any', 'view', 'create', 'update', 'delete'],
-            'reports' => ['view'],
+            'reports' => ['view', 'export'],
         ];
 
         foreach ($permissionGroups as $group => $actions) {

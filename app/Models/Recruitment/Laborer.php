@@ -6,6 +6,7 @@ use App\Models\MainCore\Country;
 use App\Models\MainCore\Currency;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Laborer extends Model
@@ -81,5 +82,32 @@ class Laborer extends Model
     public function salaryCurrency(): BelongsTo
     {
         return $this->belongsTo(Currency::class, 'monthly_salary_currency_id');
+    }
+
+    public function housingAssignments(): HasMany
+    {
+        return $this->hasMany(\App\Models\Housing\HousingAssignment::class);
+    }
+
+    public function housingLeaves(): HasMany
+    {
+        return $this->hasMany(\App\Models\Housing\HousingLeave::class);
+    }
+
+    public function housingSalaryItems(): HasMany
+    {
+        return $this->hasMany(\App\Models\Housing\HousingSalaryItem::class);
+    }
+
+    public function housingDeductions(): HasMany
+    {
+        return $this->hasMany(\App\Models\Housing\HousingSalaryDeduction::class);
+    }
+
+    public function activeHousingAssignment(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(\App\Models\Housing\HousingAssignment::class)
+            ->whereNull('end_date')
+            ->latest('start_date');
     }
 }

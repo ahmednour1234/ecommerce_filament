@@ -27,7 +27,13 @@ class HousingRequest extends Model
         'request_type',
         'housing_type',
         'request_date',
+        'requested_from',
+        'requested_to',
+        'building_id',
+        'unit_id',
         'status',
+        'approved_by',
+        'approved_at',
         'notes',
         'branch_id',
         'created_by',
@@ -36,6 +42,9 @@ class HousingRequest extends Model
 
     protected $casts = [
         'request_date' => 'date',
+        'requested_from' => 'date',
+        'requested_to' => 'date',
+        'approved_at' => 'datetime',
     ];
 
     protected static function boot()
@@ -84,6 +93,27 @@ class HousingRequest extends Model
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);
+    }
+
+    public function building(): BelongsTo
+    {
+        return $this->belongsTo(Building::class);
+    }
+
+    public function unit(): BelongsTo
+    {
+        return $this->belongsTo(Unit::class);
+    }
+
+    public function assignment(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(HousingAssignment::class, 'laborer_id', 'laborer_id')
+            ->whereNull('end_date');
+    }
+
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 
     public function creator(): BelongsTo
