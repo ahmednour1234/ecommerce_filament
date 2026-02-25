@@ -49,38 +49,26 @@
         </div>
 
         {{-- Action Buttons --}}
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <x-filament::button
-                color="primary"
-                size="lg"
-                class="rounded-lg shadow-md"
-            >
+        <div class="flex flex-row flex-wrap gap-4 justify-center items-center">
+            <a href="{{ \App\Filament\Resources\Housing\HousingRequestResource::getUrl() }}?tableFilters[request_type][value]=new_rent" 
+               class="flex-1 min-w-[200px] max-w-[300px] inline-flex items-center justify-center px-6 py-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-all duration-200 text-center">
                 {{ tr('housing.dashboard.delivery_tasks', [], null, 'dashboard') ?: 'مهام التوصيل' }}
-            </x-filament::button>
+            </a>
 
-            <x-filament::button
-                color="primary"
-                size="lg"
-                class="rounded-lg shadow-md"
-            >
+            <a href="{{ \App\Filament\Resources\Housing\HousingDriverResource::getUrl() }}" 
+               class="flex-1 min-w-[200px] max-w-[300px] inline-flex items-center justify-center px-6 py-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-all duration-200 text-center">
                 {{ tr('housing.dashboard.driver_management', [], null, 'dashboard') ?: 'إدارة السائقين' }}
-            </x-filament::button>
+            </a>
 
-            <x-filament::button
-                color="primary"
-                size="lg"
-                class="rounded-lg shadow-md"
-            >
+            <a href="{{ \App\Filament\Pages\Housing\HousingReportsPage::getUrl() }}" 
+               class="flex-1 min-w-[200px] max-w-[300px] inline-flex items-center justify-center px-6 py-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-all duration-200 text-center">
                 {{ tr('housing.dashboard.order_reports', [], null, 'dashboard') ?: 'تقارير الطلبات' }}
-            </x-filament::button>
+            </a>
 
-            <x-filament::button
-                color="primary"
-                size="lg"
-                class="rounded-lg shadow-md"
-            >
+            <a href="{{ \App\Filament\Resources\Housing\HousingDriverResource::getUrl() }}" 
+               class="flex-1 min-w-[200px] max-w-[300px] inline-flex items-center justify-center px-6 py-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-all duration-200 text-center">
                 {{ tr('housing.dashboard.driver_performance', [], null, 'dashboard') ?: 'أداء السائقين' }}
-            </x-filament::button>
+            </a>
         </div>
 
         {{-- Filter Section --}}
