@@ -285,10 +285,22 @@ body:has([href*="recruitment-contracts"]) .fi-ta-header-actions input[type="sear
 .fi-logo {
     height: 3.5rem !important;
     width: auto !important;
-    max-width: 200px !important;
+    min-width: 180px !important;
+    max-width: 280px !important;
     object-fit: contain !important;
     image-rendering: -webkit-optimize-contrast !important;
     image-rendering: crisp-edges !important;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)) !important;
+    transition: all 0.3s ease !important;
+}
+
+.fi-logo:hover {
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15)) !important;
+    transform: scale(1.02) !important;
+}
+
+.fi-sidebar-header .fi-logo {
+    padding: 0.5rem 0 !important;
 }
 </style>
 HTML
