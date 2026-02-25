@@ -3,27 +3,33 @@
 namespace App\Filament\Pages\Housing\Rental;
 
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Models\MainCore\Branch;
+use App\Services\Housing\HousingReportsService;
 use Filament\Pages\Page;
+use Filament\Tables;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Table;
 use Illuminate\Support\Number;
 
-class RentalHousingReportsPage extends Page
+class RentalHousingReportsPage extends Page implements HasTable
 {
+    use InteractsWithTable;
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
-    protected static ?string $navigationGroup = 'rental_housing';
-    protected static ?int $navigationSort = 6;
-    protected static ?string $navigationTranslationKey = 'sidebar.rental_housing.reports';
+    protected static ?string $navigationGroup = 'إيواء التأجير';
+    protected static ?int $navigationSort = 8;
+    protected static ?string $navigationTranslationKey = 'sidebar.housing.rental_housing.reports';
     protected static string $view = 'filament.pages.housing.reports';
 
-    public static function getNavigationLabel(): string
-    {
-        return tr('sidebar.rental_housing.reports', [], null, 'dashboard') ?: 'التقارير';
-    }
+    public $branch_id = null;
+    public $from_date = null;
+    public $to_date = null;
 
     public function getTitle(): string
     {
-        return tr('housing.reports.heading', [], null, 'dashboard') ?: 'تقارير الإيواء';
+        return tr('housing.reports.title', [], null, 'dashboard') ?: 'تقارير الإيواء';
     }
 
     public function getHeading(): string
@@ -31,49 +37,78 @@ class RentalHousingReportsPage extends Page
         return tr('housing.reports.heading', [], null, 'dashboard') ?: 'تقارير الإيواء';
     }
 
-    public static function shouldRegisterNavigation(): bool
+    public static function getNavigationLabel(): string
     {
-        return false;
+        return tr('sidebar.housing.reports', [], null, 'dashboard') ?: 'التقارير';
     }
 
-    public function getReturnsThisMonth(): int
+    public function mount(): void
     {
-        return \App\Models\Housing\AccommodationEntry::rental()
-            ->where('entry_type', 'return')
-            ->whereMonth('entry_date', now()->month)
-            ->whereYear('entry_date', now()->year)
-            ->count();
+        $this->from_date = now()->startOfMonth()->format('Y-m-d');
+        $this->to_date = now()->format('Y-m-d');
     }
 
-    public function getExitsThisMonth(): int
+    public function getStats(): array
     {
-        return \App\Models\Housing\AccommodationEntry::rental()
-            ->whereNotNull('exit_date')
-            ->whereMonth('exit_date', now()->month)
-            ->whereYear('exit_date', now()->year)
-            ->count();
+        $service = new HousingReportsService();
+        $report = $service->getContractReport([
+            'branch_id' => $this->branch_id,
+            'from_date' => $this->from_date,
+            'to_date' => $this->to_date,
+        ]);
+
+        return $report['stats'] ?? [];
     }
 
-    public function getEntriesThisMonth(): int
+    public function table(Table $table): Table
     {
-        return \App\Models\Housing\AccommodationEntry::rental()
-            ->whereMonth('entry_date', now()->month)
-            ->whereYear('entry_date', now()->year)
-            ->count();
+        $service = new HousingReportsService();
+        $report = $service->getContractReport([
+            'branch_id' => $this->branch_id,
+            'from_date' => $this->from_date,
+            'to_date' => $this->to_date,
+        ]);
+
+        $data = $report['data'] ?? [];
+
+        return $table
+            ->query(\Illuminate\Support\Facades\DB::table('laborers')->whereRaw('1 = 0'))
+            ->columns([
+                Tables\Columns\TextColumn::make('laborer_name')
+                    ->label('اسم العامل')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('passport_number')
+                    ->label('رقم الجواز')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('phone')
+                    ->label('الجوال'),
+                Tables\Columns\TextColumn::make('branch')
+                    ->label('الفرع'),
+                Tables\Columns\TextColumn::make('contracts_count')
+                    ->label('عدد العقود'),
+                Tables\Columns\TextColumn::make('active_contracts')
+                    ->label('عقود نشطة'),
+                Tables\Columns\TextColumn::make('completed_contracts')
+                    ->label('عقود مكتملة'),
+                Tables\Columns\TextColumn::make('total_amount')
+                    ->label('إجمالي مبلغ العقود')
+                    ->money('SAR'),
+                Tables\Columns\TextColumn::make('total_days')
+                    ->label('إجمالي أيام العمل'),
+            ])
+            ->defaultSort('laborer_name', 'asc');
     }
 
-    public function getCurrentResidents(): int
+    public function applyFilters(): void
     {
-        return \App\Models\Housing\AccommodationEntry::rental()
-            ->whereNull('exit_date')
-            ->count();
+        $this->resetTable();
     }
 
-    public function viewReport(string $reportKey): void
+    public function resetFilters(): void
     {
-        \Filament\Notifications\Notification::make()
-            ->title(tr('housing.reports.view_report', [], null, 'dashboard') ?: 'عرض التقرير')
-            ->info()
-            ->send();
+        $this->branch_id = null;
+        $this->from_date = now()->startOfMonth()->format('Y-m-d');
+        $this->to_date = now()->format('Y-m-d');
+        $this->resetTable();
     }
 }
