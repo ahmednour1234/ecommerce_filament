@@ -56,6 +56,7 @@ class HousingTranslationSeeder extends Seeder
             'sidebar.housing.rental_housing.reports' => ['ar' => 'التقارير', 'en' => 'Reports'],
             'sidebar.housing.rental_housing.drivers' => ['ar' => 'إدارة نقل السائقين', 'en' => 'Drivers Transfer Management'],
             'sidebar.housing.rental_housing.laborer_salaries' => ['ar' => 'راتب العمالة', 'en' => 'Laborer Salaries'],
+            'sidebar.housing.rental_housing.accommodation_entries' => ['ar' => 'ادخالات الايواء', 'en' => 'Accommodation Entries'],
             'sidebar.rental_housing.housing_requests' => ['ar' => 'طلبات الإيواء', 'en' => 'Housing Requests'],
 
             // Dashboard
