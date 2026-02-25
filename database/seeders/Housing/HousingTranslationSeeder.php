@@ -33,6 +33,29 @@ class HousingTranslationSeeder extends Seeder
             'sidebar.housing.drivers' => ['ar' => 'إدارة السائقين', 'en' => 'Drivers Management'],
             'sidebar.housing.reports' => ['ar' => 'التقارير', 'en' => 'Reports'],
 
+            // Recruitment Housing Navigation
+            'sidebar.housing.recruitment_housing' => ['ar' => 'إيواء الاستقدام', 'en' => 'Recruitment Housing'],
+            'sidebar.housing.recruitment_housing.dashboard' => ['ar' => 'لوحة تحكم قسم الإيواء', 'en' => 'Housing Dashboard'],
+            'sidebar.housing.recruitment_housing.workers' => ['ar' => 'العمالة', 'en' => 'Workers'],
+            'sidebar.housing.recruitment_housing.available_workers' => ['ar' => 'العمالة المتاحة', 'en' => 'Available Workers'],
+            'sidebar.housing.recruitment_housing.requests' => ['ar' => 'طلبات الإيواء', 'en' => 'Housing Requests'],
+            'sidebar.housing.recruitment_housing.salary_batches' => ['ar' => 'رواتب العمالة', 'en' => 'Worker Salaries'],
+            'sidebar.housing.recruitment_housing.salary_deductions' => ['ar' => 'خصومات العمالة', 'en' => 'Salary Deductions'],
+            'sidebar.housing.recruitment_housing.leaves' => ['ar' => 'إجازات العمالة', 'en' => 'Worker Leaves'],
+            'sidebar.housing.recruitment_housing.reports' => ['ar' => 'التقارير', 'en' => 'Reports'],
+
+            // Rental Housing Navigation
+            'sidebar.housing.rental_housing' => ['ar' => 'إيواء التأجير', 'en' => 'Rental Housing'],
+            'sidebar.housing.rental_housing.dashboard' => ['ar' => 'لوحة تحكم قسم الإيواء', 'en' => 'Housing Dashboard'],
+            'sidebar.housing.rental_housing.workers' => ['ar' => 'العمالة', 'en' => 'Workers'],
+            'sidebar.housing.rental_housing.available_workers' => ['ar' => 'العمالة المتاحة', 'en' => 'Available Workers'],
+            'sidebar.housing.rental_housing.requests' => ['ar' => 'طلبات الإيواء', 'en' => 'Housing Requests'],
+            'sidebar.housing.rental_housing.salary_batches' => ['ar' => 'رواتب العمالة', 'en' => 'Worker Salaries'],
+            'sidebar.housing.rental_housing.salary_deductions' => ['ar' => 'خصومات العمالة', 'en' => 'Salary Deductions'],
+            'sidebar.housing.rental_housing.leaves' => ['ar' => 'إجازات العمالة', 'en' => 'Worker Leaves'],
+            'sidebar.housing.rental_housing.reports' => ['ar' => 'التقارير', 'en' => 'Reports'],
+            'sidebar.rental_housing.housing_requests' => ['ar' => 'طلبات الإيواء', 'en' => 'Housing Requests'],
+
             // Dashboard
             'housing.dashboard.heading' => ['ar' => 'لوحة تحكم قسم الإيواء', 'en' => 'Housing Dashboard'],
             'housing.dashboard.title' => ['ar' => 'لوحة تحكم قسم الإيواء', 'en' => 'Housing Dashboard'],
