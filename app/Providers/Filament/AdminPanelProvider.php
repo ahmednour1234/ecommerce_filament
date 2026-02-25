@@ -61,16 +61,12 @@ class AdminPanelProvider extends PanelProvider
             ->brandName($brandName)
             ->brandLogo(function () use ($theme) {
                 // Get logo from settings dynamically
+                $appLogo = \App\Models\MainCore\Setting::where('key', 'app.name')->first()?->logo;
 
-$appLogo = \App\Models\MainCore\Setting::where('key', 'app.name')->first()?->logo;
-
-if ($appLogo) {
-    $path = 'storage/app/public/' . $appLogo;
-
-    $path = Str::replaceFirst('public/', '', $path);
-
-    return asset($path);
-}
+                if ($appLogo) {
+                    $baseUrl = rtrim(config('app.url'), '/');
+                    return $baseUrl . '/storage/app/public/' . ltrim($appLogo, '/');
+                }
 
                 // Fallback to theme logo
                 return $theme?->logo_light_url ?? null;
