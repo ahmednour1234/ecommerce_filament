@@ -103,6 +103,8 @@ class HousingTranslationSeeder extends Seeder
             'housing.requests.requested_to' => ['ar' => 'إلى تاريخ', 'en' => 'To Date'],
             'housing.requests.status' => ['ar' => 'الحالة', 'en' => 'Status'],
             'housing.requests.notes' => ['ar' => 'ملاحظات', 'en' => 'Notes'],
+            'housing.requests.sponsor_name' => ['ar' => 'اسم الكفيل', 'en' => 'Sponsor Name'],
+            'housing.requests.transferred_sponsor_name' => ['ar' => 'اسم الكفيل المنقول له', 'en' => 'Transferred Sponsor Name'],
             'housing.requests.type.new_rent' => ['ar' => 'إيجار جديد', 'en' => 'New Rent'],
             'housing.requests.type.cancel_rent' => ['ar' => 'إلغاء الإيجار', 'en' => 'Cancel Rent'],
             'housing.requests.type.transfer_kafala' => ['ar' => 'نقل الكفالة', 'en' => 'Transfer Kafala'],
