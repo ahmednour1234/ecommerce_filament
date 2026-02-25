@@ -197,6 +197,6 @@ class BuildingResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return static::canViewAny();
+        return false;
     }
 }

@@ -120,4 +120,9 @@ class HousingDriverResource extends Resource
     {
         return auth()->user()?->can('housing.drivers.view_any') ?? false;
     }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 }

@@ -42,6 +42,11 @@ class HousingWorkersPage extends Page implements HasTable
         return tr('sidebar.housing.workers', [], null, 'dashboard') ?: 'العمالة';
     }
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
     public function table(Table $table): Table
     {
         return $table

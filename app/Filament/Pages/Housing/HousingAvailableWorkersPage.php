@@ -37,6 +37,11 @@ class HousingAvailableWorkersPage extends Page implements HasTable
         return tr('sidebar.housing.available_workers', [], null, 'dashboard') ?: 'العمالة المتاحة';
     }
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
     public function table(Table $table): Table
     {
         return $table

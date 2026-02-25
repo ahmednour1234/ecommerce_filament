@@ -184,4 +184,9 @@ class RecruitmentHousingLeaveResource extends Resource
     {
         return auth()->user()?->can('housing.leaves.view_any') ?? false;
     }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 }

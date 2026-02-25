@@ -119,4 +119,9 @@ class RecruitmentHousingSalaryBatchResource extends Resource
     {
         return auth()->user()?->can('housing.salary_batches.view_any') ?? false;
     }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 }

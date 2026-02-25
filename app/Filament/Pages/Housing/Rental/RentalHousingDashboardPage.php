@@ -49,7 +49,7 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->can('housing.dashboard.view') ?? false;
+        return false;
     }
 
     public function mount(): void

@@ -42,6 +42,11 @@ class RentalHousingReportsPage extends Page implements HasTable
         return tr('sidebar.housing.reports', [], null, 'dashboard') ?: 'التقارير';
     }
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
     public function mount(): void
     {
         $this->from_date = now()->startOfMonth()->format('Y-m-d');
