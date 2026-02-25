@@ -30,9 +30,11 @@ class HousingSalaryBatchResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('month')
                     ->label(tr('forms.housing.salary_batch.month', [], null, 'dashboard') ?: 'الشهر')
-                    ->format('YYYY-MM')
+                    ->placeholder('YYYY-MM')
+                    ->helperText(tr('forms.housing.salary_batch.month_helper', [], null, 'dashboard') ?: 'مثال: 2026-02')
                     ->required()
-                    ->unique(ignoreRecord: true),
+                    ->unique(ignoreRecord: true)
+                    ->regex('/^\d{4}-\d{2}$/'),
             ]);
     }
 
@@ -91,8 +93,10 @@ class HousingSalaryBatchResource extends Resource
                     ->form([
                         Forms\Components\TextInput::make('month')
                             ->label(tr('forms.housing.salary_batch.month', [], null, 'dashboard') ?: 'الشهر')
-                            ->format('YYYY-MM')
+                            ->placeholder('YYYY-MM')
+                            ->helperText(tr('forms.housing.salary_batch.month_helper', [], null, 'dashboard') ?: 'مثال: 2026-02')
                             ->required()
+                            ->regex('/^\d{4}-\d{2}$/')
                             ->default(now()->format('Y-m')),
                     ])
                     ->action(function (array $data) {
