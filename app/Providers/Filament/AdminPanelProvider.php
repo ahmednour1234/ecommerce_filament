@@ -65,6 +65,7 @@ class AdminPanelProvider extends PanelProvider
 
                 if ($appLogo) {
                     $baseUrl = rtrim(config('app.url'), '/');
+                    $baseUrl = str_replace('/public', '', $baseUrl);
                     return $baseUrl . '/storage/app/public/' . ltrim($appLogo, '/');
                 }
 
