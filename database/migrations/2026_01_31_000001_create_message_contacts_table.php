@@ -14,8 +14,6 @@ return new class extends Migration {
             $table->string('source')->nullable();
             $table->timestamps();
             $table->softDeletes();
-
-            $table->index('phone');
         });
     }
 
