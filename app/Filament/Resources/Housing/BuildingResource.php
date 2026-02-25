@@ -18,7 +18,7 @@ class BuildingResource extends Resource
     protected static ?string $model = \App\Models\Housing\Building::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
-    protected static ?string $navigationGroup = 'الإيواء';
+    protected static ?string $navigationGroup = 'إيواء الاستقدام';
     protected static ?string $navigationLabel = 'إدارة المباني';
     protected static ?int $navigationSort = 2;
 
@@ -197,6 +197,6 @@ class BuildingResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return false;
+        return static::canViewAny();
     }
 }
