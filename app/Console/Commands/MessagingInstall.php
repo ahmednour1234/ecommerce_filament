@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 
 class MessagingInstall extends Command
 {
-    protected $signature = 'messaging:install';
+    protected $signature = 'messaging:install {--fresh : Drop all tables and re-run migrations}';
 
     protected $description = 'Run migrations and seed the Messaging module data';
 
@@ -16,6 +16,22 @@ class MessagingInstall extends Command
         $this->info('Installing Messaging Module...');
         $this->info('═══════════════════════════════════════════════════════');
         $this->newLine();
+
+        if ($this->option('fresh')) {
+            $this->info('Dropping existing messaging tables...');
+            try {
+                \Illuminate\Support\Facades\Schema::dropIfExists('sms_message_recipients');
+                \Illuminate\Support\Facades\Schema::dropIfExists('sms_messages');
+                \Illuminate\Support\Facades\Schema::dropIfExists('message_contacts');
+                \Illuminate\Support\Facades\Schema::dropIfExists('contact_messages');
+                \Illuminate\Support\Facades\Schema::dropIfExists('sms_templates');
+                \Illuminate\Support\Facades\Schema::dropIfExists('sms_settings');
+                $this->info('✅ Existing tables dropped.');
+                $this->newLine();
+            } catch (\Exception $e) {
+                $this->warn('⚠️  Warning: Could not drop some tables: ' . $e->getMessage());
+            }
+        }
 
         $this->info('Running migrations...');
         try {
@@ -46,6 +62,8 @@ class MessagingInstall extends Command
             $this->info('✅ Migrations completed successfully.');
         } catch (\Exception $e) {
             $this->error('❌ Migrations failed: ' . $e->getMessage());
+            $this->newLine();
+            $this->warn('💡 Tip: If tables already exist, run: php artisan messaging:install --fresh');
             return self::FAILURE;
         }
 
