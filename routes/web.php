@@ -105,6 +105,9 @@ Route::middleware(['web', 'auth'])
 
         Route::get('hr/monthly-attendance-calendar/json', [App\Http\Controllers\HR\MonthlyAttendanceCalendarController::class, 'getAttendanceData'])
             ->name('filament.admin.pages.hr.monthly-attendance-calendar.json');
+
+        Route::get('hr/employee-commission-report/print', [App\Http\Controllers\HR\EmployeeCommissionReportPrintController::class, '__invoke'])
+            ->name('filament.pages.hr.employee-commission-report-print');
     });
 
     Route::middleware(['web', 'auth'])
