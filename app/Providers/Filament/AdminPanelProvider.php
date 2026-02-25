@@ -72,6 +72,7 @@ class AdminPanelProvider extends PanelProvider
                 // Fallback to theme logo
                 return $theme?->logo_light_url ?? null;
             })
+            ->brandLogoHeight('3.5rem')
 
             ->colors([
                 'primary'   => Color::hex($primaryHex),
@@ -278,6 +279,16 @@ body:has([href*="recruitment-contracts"]) .fi-ta-header-actions input[type="sear
 .fi-topbar .fi-topbar-actions button[aria-label*="User"],
 .fi-topbar .fi-topbar-actions [aria-label*="user menu"] {
     order: 99 !important;
+}
+
+/* Logo styling - make it bigger, clearer, and wider */
+.fi-logo {
+    height: 3.5rem !important;
+    width: auto !important;
+    max-width: 200px !important;
+    object-fit: contain !important;
+    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: crisp-edges !important;
 }
 </style>
 HTML
