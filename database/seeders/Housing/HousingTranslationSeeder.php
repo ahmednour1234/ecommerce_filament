@@ -231,6 +231,7 @@ class HousingTranslationSeeder extends Seeder
             'filters.housing.status' => ['ar' => 'الحالة', 'en' => 'Status'],
             'filters.housing.available' => ['ar' => 'متاح', 'en' => 'Available'],
             'filters.housing.request_type' => ['ar' => 'نوع الطلب', 'en' => 'Request Type'],
+            'filters.housing.driver.license_expiring' => ['ar' => 'رخص منتهية/قريبة الانتهاء', 'en' => 'Expiring/Expired Licenses'],
             'filters.branch' => ['ar' => 'الفرع', 'en' => 'Branch'],
 
             // Common
