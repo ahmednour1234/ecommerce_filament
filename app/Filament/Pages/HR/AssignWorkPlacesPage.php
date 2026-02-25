@@ -75,21 +75,18 @@ class AssignWorkPlacesPage extends Page implements HasForms, HasTable
                     ->options(Department::active()->pluck('name', 'id'))
                     ->searchable()
                     ->preload()
-                    ->reactive()
+                    ->live()
                     ->afterStateUpdated(function ($state) {
                         $this->departmentId = $state;
-                        $this->loadEmployees();
                     }),
-            ])
-            ->statePath('data');
+            ]);
     }
 
     public function loadEmployees(): void
     {
-        $departmentId = $this->departmentId ?? $this->data['departmentId'] ?? null;
+        $departmentId = $this->departmentId;
         
         if ($departmentId) {
-            $this->departmentId = $departmentId;
             $service = app(EmployeeWorkPlaceService::class);
             $this->employees = $service->getEmployeesByDepartment($departmentId);
 
