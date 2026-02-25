@@ -18,6 +18,7 @@ class RentalAccommodationEntryPage extends Page implements HasForms
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
     protected static ?string $navigationGroup = 'إيواء التأجير';
     protected static ?int $navigationSort = 4;
+    protected static ?string $navigationLabel = 'ادخالات الايواء';
     protected static ?string $navigationTranslationKey = 'sidebar.housing.rental_housing.accommodation_entries';
     protected static string $view = 'filament.pages.housing.create-accommodation-entry';
 
@@ -27,14 +28,6 @@ class RentalAccommodationEntryPage extends Page implements HasForms
     public ?string $entry_date = null;
     public ?int $status_id = null;
     public ?int $building_id = null;
-
-    public static function getNavigationLabel(): string
-    {
-        if (static::$navigationTranslationKey) {
-            return tr(static::$navigationTranslationKey, [], null, 'dashboard') ?: 'ادخالات الايواء';
-        }
-        return 'ادخالات الايواء';
-    }
 
     public function getTitle(): string
     {
