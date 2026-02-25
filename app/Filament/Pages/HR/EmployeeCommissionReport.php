@@ -3,7 +3,6 @@
 namespace App\Filament\Pages\HR;
 
 use App\Filament\Concerns\TranslatableNavigation;
-use App\Filament\Concerns\HrModuleGate;
 use App\Models\HR\Employee;
 use App\Services\HR\EmployeeCommissionCalculator;
 use Filament\Actions;
@@ -19,7 +18,6 @@ class EmployeeCommissionReport extends Page implements HasForms
 {
     use InteractsWithForms;
     use TranslatableNavigation;
-    use HrModuleGate;
 
     protected static ?string $navigationIcon = 'heroicon-o-calculator';
     protected static ?string $navigationGroup = 'الموارد البشرية';
