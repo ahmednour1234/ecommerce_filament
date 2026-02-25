@@ -254,6 +254,22 @@ class HousingTranslationSeeder extends Seeder
             'forms.housing.driver.car_model' => ['ar' => 'موديل السيارة', 'en' => 'Car Model'],
             'forms.housing.driver.plate' => ['ar' => 'رقم اللوحة', 'en' => 'Plate Number'],
 
+            // Accommodation Entries
+            'housing.accommodation.create' => ['ar' => 'إضافة إدخال إيواء جديد', 'en' => 'Add New Accommodation Entry'],
+            'housing.accommodation.laborer' => ['ar' => 'العامل', 'en' => 'Laborer'],
+            'housing.accommodation.contract_no' => ['ar' => 'رقم العقد', 'en' => 'Contract Number'],
+            'housing.accommodation.entry_type' => ['ar' => 'نوع الدخول', 'en' => 'Entry Type'],
+            'housing.accommodation.entry_date' => ['ar' => 'تاريخ الدخول', 'en' => 'Entry Date'],
+            'housing.accommodation.status' => ['ar' => 'الحالة', 'en' => 'Status'],
+            'housing.accommodation.building' => ['ar' => 'المبنى', 'en' => 'Building'],
+            'housing.accommodation.available_buildings_note' => ['ar' => 'يتم عرض المباني المتاحة فقط (السعة المتاحة > 0)', 'en' => 'Only available buildings are shown (Available capacity > 0)'],
+            'housing.accommodation.entry_type.new_arrival' => ['ar' => 'وافد جديد', 'en' => 'New Arrival'],
+            'housing.accommodation.entry_type.return' => ['ar' => 'استرجاع', 'en' => 'Return'],
+            'housing.accommodation.entry_type.transfer' => ['ar' => 'نقل', 'en' => 'Transfer'],
+
+            // Common
+            'common.available' => ['ar' => 'متاح', 'en' => 'Available'],
+
             // Filters
             'filters.housing.building' => ['ar' => 'المبنى', 'en' => 'Building'],
             'filters.housing.status' => ['ar' => 'الحالة', 'en' => 'Status'],
