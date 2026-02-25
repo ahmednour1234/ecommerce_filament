@@ -86,9 +86,12 @@ class AssignWorkPlacesPage extends Page implements HasForms, HasTable
 
     public function loadEmployees(): void
     {
-        if ($this->departmentId) {
+        $departmentId = $this->departmentId ?? $this->data['departmentId'] ?? null;
+        
+        if ($departmentId) {
+            $this->departmentId = $departmentId;
             $service = app(EmployeeWorkPlaceService::class);
-            $this->employees = $service->getEmployeesByDepartment($this->departmentId);
+            $this->employees = $service->getEmployeesByDepartment($departmentId);
 
             // Load existing assignments
             foreach ($this->employees as $employee) {
