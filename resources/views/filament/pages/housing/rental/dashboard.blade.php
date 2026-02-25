@@ -50,37 +50,25 @@
 
         {{-- Action Buttons --}}
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <x-filament::button
-                color="primary"
-                size="lg"
-                class="rounded-lg shadow-md"
-            >
+            <a href="#" 
+               class="inline-flex items-center justify-center px-6 py-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-all duration-200 text-center">
                 {{ tr('housing.dashboard.delivery_tasks', [], null, 'dashboard') ?: 'مهام التوصيل' }}
-            </x-filament::button>
+            </a>
 
-            <x-filament::button
-                color="primary"
-                size="lg"
-                class="rounded-lg shadow-md"
-            >
+            <a href="{{ \App\Filament\Resources\Housing\Rental\RentalHousingDriverResource::getUrl() }}" 
+               class="inline-flex items-center justify-center px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition-all duration-200 text-center">
                 {{ tr('housing.dashboard.driver_management', [], null, 'dashboard') ?: 'إدارة السائقين' }}
-            </x-filament::button>
+            </a>
 
-            <x-filament::button
-                color="primary"
-                size="lg"
-                class="rounded-lg shadow-md"
-            >
+            <a href="{{ \App\Filament\Pages\Housing\Rental\RentalHousingReportsPage::getUrl() }}" 
+               class="inline-flex items-center justify-center px-6 py-4 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg shadow-md transition-all duration-200 text-center">
                 {{ tr('housing.dashboard.order_reports', [], null, 'dashboard') ?: 'تقارير الطلبات' }}
-            </x-filament::button>
+            </a>
 
-            <x-filament::button
-                color="primary"
-                size="lg"
-                class="rounded-lg shadow-md"
-            >
+            <a href="#" 
+               class="inline-flex items-center justify-center px-6 py-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg shadow-md transition-all duration-200 text-center">
                 {{ tr('housing.dashboard.driver_performance', [], null, 'dashboard') ?: 'أداء السائقين' }}
-            </x-filament::button>
+            </a>
         </div>
 
         {{-- Filter Section --}}
