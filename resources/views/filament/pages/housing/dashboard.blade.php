@@ -98,5 +98,11 @@
                 </x-filament::button>
             </div>
         </div>
+
+        {{-- Requests Table --}}
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-semibold mb-4">{{ tr('housing.dashboard.requests_table', [], null, 'dashboard') ?: 'جدول الطلبات' }}</h3>
+            {{ $this->table }}
+        </div>
     </div>
 </x-filament-panels::page>
