@@ -108,7 +108,9 @@ class RentalContractResource extends Resource
                             ->label(tr('rental.fields.country', [], null, 'dashboard') ?: 'Country')
                             ->options(function () {
                                 return Cache::remember('rental.countries', 21600, function () {
+                                    $rentalCountryCodes = ['BD', 'PH', 'LK', 'UG', 'ET', 'KE', 'BI'];
                                     return Country::where('is_active', true)
+                                        ->whereIn('iso2', $rentalCountryCodes)
                                         ->get()
                                         ->pluck('name_text', 'id')
                                         ->toArray();

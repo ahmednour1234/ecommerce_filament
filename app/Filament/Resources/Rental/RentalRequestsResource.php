@@ -60,7 +60,12 @@ class RentalRequestsResource extends Resource
                     ->label(tr('rental.fields.country', [], null, 'dashboard') ?: 'Country')
                     ->options(function () {
                         return Cache::remember('rental.countries', 21600, function () {
-                            return \App\Models\MainCore\Country::where('is_active', true)->get()->pluck('name_text', 'id')->toArray();
+                            $rentalCountryCodes = ['BD', 'PH', 'LK', 'UG', 'ET', 'KE', 'BI'];
+                            return \App\Models\MainCore\Country::where('is_active', true)
+                                ->whereIn('iso2', $rentalCountryCodes)
+                                ->get()
+                                ->pluck('name_text', 'id')
+                                ->toArray();
                         });
                     })
                     ->searchable(),
