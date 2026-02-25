@@ -63,8 +63,7 @@ class AdminPanelProvider extends PanelProvider
                 $appLogo = \App\Models\MainCore\Setting::where('key', 'app.name')->first()?->logo;
                 
                 if ($appLogo) {
-                    $baseUrl = rtrim(config('app.url'), '/');
-                    return $baseUrl . '/storage/' . ltrim($appLogo, '/');
+                    return \Illuminate\Support\Facades\Storage::disk('public')->url($appLogo);
                 }
                 
                 // Fallback to theme logo
