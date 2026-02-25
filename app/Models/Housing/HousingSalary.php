@@ -3,6 +3,7 @@
 namespace App\Models\Housing;
 
 use App\Models\HR\Employee;
+use App\Models\Recruitment\Laborer;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,6 +14,7 @@ class HousingSalary extends Model
 
     protected $fillable = [
         'employee_id',
+        'laborer_id',
         'type',
         'month',
         'basic_salary',
@@ -71,6 +73,11 @@ class HousingSalary extends Model
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    public function laborer(): BelongsTo
+    {
+        return $this->belongsTo(Laborer::class);
     }
 
     public function creator(): BelongsTo

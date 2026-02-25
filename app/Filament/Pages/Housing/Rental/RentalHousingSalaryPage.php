@@ -3,7 +3,8 @@
 namespace App\Filament\Pages\Housing\Rental;
 
 use App\Filament\Concerns\TranslatableNavigation;
-use App\Models\HR\Employee;
+use App\Models\Recruitment\Laborer;
+use App\Models\Housing\HousingSalaryDeduction;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
@@ -16,12 +17,12 @@ class RentalHousingSalaryPage extends Page implements HasForms
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
-    protected static ?string $navigationGroup = 'rental_housing';
+    protected static ?string $navigationGroup = 'إيواء التأجير';
     protected static ?int $navigationSort = 3;
-    protected static ?string $navigationTranslationKey = 'sidebar.rental_housing.laborer_salaries';
+    protected static ?string $navigationTranslationKey = 'sidebar.housing.rental_housing.laborer_salaries';
     protected static string $view = 'filament.pages.housing.create-salary';
 
-    public ?int $employee_id = null;
+    public ?int $laborer_id = null;
     public ?string $month = null;
     public ?float $basic_salary = null;
     public ?int $overtime_hours = 0;
@@ -33,7 +34,7 @@ class RentalHousingSalaryPage extends Page implements HasForms
 
     public static function getNavigationLabel(): string
     {
-        return tr('sidebar.rental_housing.laborer_salaries', [], null, 'dashboard') ?: 'رواتب العمالة';
+        return tr('sidebar.housing.rental_housing.laborer_salaries', [], null, 'dashboard') ?: 'راتب العمالة';
     }
 
     public function getTitle(): string
@@ -48,7 +49,7 @@ class RentalHousingSalaryPage extends Page implements HasForms
 
     public static function shouldRegisterNavigation(): bool
     {
-        return false;
+        return auth()->user()?->can('housing.salaries.create') ?? false;
     }
 
     public function mount(): void
@@ -67,27 +68,60 @@ class RentalHousingSalaryPage extends Page implements HasForms
             ->schema([
                 \Filament\Forms\Components\Section::make(tr('housing.salary.create', [], null, 'dashboard') ?: 'إضافة راتب للعامل')
                     ->schema([
-                        \Filament\Forms\Components\Select::make('employee_id')
-                            ->label(tr('housing.salary.employee', [], null, 'dashboard') ?: 'اسم العامل')
+                        \Filament\Forms\Components\Select::make('laborer_id')
+                            ->label(tr('housing.salary.laborer', [], null, 'dashboard') ?: 'اسم العامل')
                             ->options(function () {
-                                return Employee::query()
+                                return Laborer::query()
+                                    ->whereHas('housingAssignments', fn ($q) => $q->whereNull('end_date'))
                                     ->get()
-                                    ->mapWithKeys(fn ($employee) => [
-                                        $employee->id => $employee->first_name . ' ' . $employee->last_name
+                                    ->mapWithKeys(fn ($laborer) => [
+                                        $laborer->id => $laborer->name_ar
                                     ])
                                     ->toArray();
                             })
-                            ->required()
                             ->searchable()
+                            ->required()
                             ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set, $get) {
+                                if ($state) {
+                                    $this->laborer_id = $state;
+                                    $laborer = Laborer::find($state);
+                                    if ($laborer && $laborer->monthly_salary_amount) {
+                                        $set('basic_salary', $laborer->monthly_salary_amount);
+                                        $this->basic_salary = $laborer->monthly_salary_amount;
+                                    }
+                                    // Calculate deductions if month is set
+                                    $month = $get('month');
+                                    if ($month) {
+                                        $this->month = $month;
+                                        $this->calculateDeductions($month);
+                                        $set('deductions', $this->deductions);
+                                        $set('net_salary', $this->net_salary);
+                                    } else {
+                                        $this->calculateNetSalary();
+                                        $set('net_salary', $this->net_salary);
+                                    }
+                                }
+                            })
                             ->columnSpan(1),
 
                         \Filament\Forms\Components\DatePicker::make('month')
                             ->label(tr('housing.salary.month', [], null, 'dashboard') ?: 'الشهر')
                             ->required()
-                            ->displayFormat('Y-m')
+                            ->displayFormat('F Y')
                             ->format('Y-m')
                             ->native(false)
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set, $get) {
+                                $laborerId = $get('laborer_id');
+                                if ($state && $laborerId) {
+                                    $this->laborer_id = $laborerId;
+                                    $this->month = $state;
+                                    $this->calculateDeductions($state);
+                                    $set('deductions', $this->deductions);
+                                    $set('net_salary', $this->net_salary);
+                                }
+                            })
                             ->columnSpan(1),
 
                         \Filament\Forms\Components\TextInput::make('basic_salary')
@@ -127,9 +161,11 @@ class RentalHousingSalaryPage extends Page implements HasForms
                             ->label(tr('housing.salary.deductions', [], null, 'dashboard') ?: 'إجمالي الخصومات')
                             ->numeric()
                             ->default(0)
-                            ->helperText(tr('housing.salary.deductions', [], null, 'dashboard') ?: 'إجمالي الخصومات')
+                            ->helperText(tr('housing.salary.deductions_helper', [], null, 'dashboard') ?: 'سيتم حسابها تلقائياً من الخصومات المحددة')
                             ->reactive()
                             ->afterStateUpdated(fn () => $this->calculateNetSalary())
+                            ->disabled(fn ($get) => !empty($get('laborer_id')) && !empty($get('month')))
+                            ->dehydrated()
                             ->columnSpan(1),
 
                         \Filament\Forms\Components\TextInput::make('net_salary')
@@ -149,6 +185,24 @@ class RentalHousingSalaryPage extends Page implements HasForms
             ->statePath('data');
     }
 
+    public function calculateDeductions(?string $month = null): void
+    {
+        if (!$this->laborer_id || !$month) {
+            return;
+        }
+
+        $monthDate = \Carbon\Carbon::createFromFormat('Y-m', $month);
+        
+        $totalDeductions = HousingSalaryDeduction::where('laborer_id', $this->laborer_id)
+            ->where('status', 'applied')
+            ->whereMonth('deduction_date', $monthDate->month)
+            ->whereYear('deduction_date', $monthDate->year)
+            ->sum('amount');
+
+        $this->deductions = (float) $totalDeductions;
+        $this->calculateNetSalary();
+    }
+
     public function calculateNetSalary(): void
     {
         $basic = (float) ($this->basic_salary ?? 0);
@@ -162,10 +216,28 @@ class RentalHousingSalaryPage extends Page implements HasForms
     public function save(): void
     {
         $data = $this->form->getState();
+        
+        // Calculate deductions if not already calculated
+        if (empty($data['deductions']) && !empty($data['laborer_id']) && !empty($data['month'])) {
+            $this->calculateDeductions($data['month']);
+            $data['deductions'] = $this->deductions;
+        }
+        
         $data['net_salary'] = $this->net_salary;
         $data['type'] = 'rental';
 
-        \App\Models\Housing\HousingSalary::create($data);
+        \App\Models\Housing\HousingSalary::create([
+            'laborer_id' => $data['laborer_id'],
+            'type' => $data['type'],
+            'month' => $data['month'],
+            'basic_salary' => $data['basic_salary'],
+            'overtime_hours' => $data['overtime_hours'] ?? 0,
+            'overtime_amount' => $data['overtime_amount'] ?? 0,
+            'bonuses' => $data['bonuses'] ?? 0,
+            'deductions' => $data['deductions'] ?? 0,
+            'net_salary' => $data['net_salary'],
+            'notes' => $data['notes'] ?? null,
+        ]);
 
         Notification::make()
             ->title(tr('messages.saved_successfully', [], null, 'dashboard') ?: 'تم الحفظ بنجاح')
@@ -173,6 +245,6 @@ class RentalHousingSalaryPage extends Page implements HasForms
             ->send();
 
         $this->form->fill();
-        $this->reset(['net_salary']);
+        $this->reset(['net_salary', 'deductions']);
     }
 }
