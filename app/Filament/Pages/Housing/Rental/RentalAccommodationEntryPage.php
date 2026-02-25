@@ -30,7 +30,10 @@ class RentalAccommodationEntryPage extends Page implements HasForms
 
     public static function getNavigationLabel(): string
     {
-        return tr('sidebar.housing.rental_housing.accommodation_entries', [], null, 'dashboard') ?: 'ادخالات الايواء';
+        if (static::$navigationTranslationKey) {
+            return tr(static::$navigationTranslationKey, [], null, 'dashboard') ?: 'ادخالات الايواء';
+        }
+        return 'ادخالات الايواء';
     }
 
     public function getTitle(): string
