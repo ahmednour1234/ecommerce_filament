@@ -43,7 +43,7 @@ class RecruitmentHousingWorkersPage extends Page implements HasTable
 
     public static function shouldRegisterNavigation(): bool
     {
-        return false;
+        return auth()->user()?->can('housing.workers.view_any') ?? false;
     }
 
     public function table(Table $table): Table

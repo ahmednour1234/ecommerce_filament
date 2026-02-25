@@ -44,7 +44,7 @@ class RecruitmentHousingReportsPage extends Page implements HasTable
 
     public static function shouldRegisterNavigation(): bool
     {
-        return false;
+        return auth()->user()?->can('housing.reports.view') ?? false;
     }
 
     public function mount(): void

@@ -122,6 +122,6 @@ class RecruitmentHousingSalaryBatchResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return false;
+        return static::canViewAny();
     }
 }

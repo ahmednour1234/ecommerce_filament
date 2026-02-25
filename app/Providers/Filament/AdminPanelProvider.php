@@ -141,6 +141,14 @@ class AdminPanelProvider extends PanelProvider
                     ->collapsible(true),
 
 
+                \Filament\Navigation\NavigationGroup::make('إيواء الاستقدام')
+                    ->label('إيواء الاستقدام')
+                    ->collapsible(true),
+
+                \Filament\Navigation\NavigationGroup::make('إيواء التأجير')
+                    ->label('إيواء التأجير')
+                    ->collapsible(true),
+
                 \Filament\Navigation\NavigationGroup::make('نقل الخدمات')
                     ->label('نقل الخدمات')
                     ->collapsible(true),
