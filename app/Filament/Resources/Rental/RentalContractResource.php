@@ -214,6 +214,12 @@ class RentalContractResource extends Resource
                             ->visible(fn (callable $get) => $get('discount_type') !== 'none')
                             ->columnSpan(1),
 
+                        Forms\Components\Textarea::make('discount_reason')
+                            ->label(tr('rental.fields.discount_reason', [], null, 'dashboard') ?: 'سبب الخصم')
+                            ->rows(3)
+                            ->visible(fn (callable $get) => $get('discount_type') !== 'none')
+                            ->columnSpanFull(),
+
                         Forms\Components\Placeholder::make('subtotal')
                             ->label(tr('rental.fields.subtotal', [], null, 'dashboard') ?: 'Subtotal')
                             ->content(fn ($record) => $record ? number_format($record->subtotal, 2) : '0.00')

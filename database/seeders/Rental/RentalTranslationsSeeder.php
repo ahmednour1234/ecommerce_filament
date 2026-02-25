@@ -60,6 +60,7 @@ class RentalTranslationsSeeder extends Seeder
             'rental.fields.tax_percent' => ['en' => 'Tax %', 'ar' => 'الضريبة %'],
             'rental.fields.discount_type' => ['en' => 'Discount Type', 'ar' => 'نوع الخصم'],
             'rental.fields.discount_value' => ['en' => 'Discount Value', 'ar' => 'قيمة الخصم'],
+            'rental.fields.discount_reason' => ['en' => 'Discount Reason', 'ar' => 'سبب الخصم'],
             'rental.fields.subtotal' => ['en' => 'Subtotal', 'ar' => 'المجموع الفرعي'],
             'rental.fields.tax_value' => ['en' => 'Tax Value', 'ar' => 'قيمة الضريبة'],
             'rental.fields.total' => ['en' => 'Total', 'ar' => 'الإجمالي'],

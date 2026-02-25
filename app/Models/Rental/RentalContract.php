@@ -37,6 +37,7 @@ class RentalContract extends Model
         'tax_percent',
         'discount_type',
         'discount_value',
+        'discount_reason',
         'subtotal',
         'tax_value',
         'total',
