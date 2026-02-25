@@ -22,6 +22,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Illuminate\Support\Str;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -60,11 +61,16 @@ class AdminPanelProvider extends PanelProvider
             ->brandName($brandName)
             ->brandLogo(function () use ($theme) {
                 // Get logo from settings dynamically
-                $appLogo = \App\Models\MainCore\Setting::where('key', 'app.name')->first()?->logo;
 
-                if ($appLogo) {
-                    return asset('storage/app/public/' . $appLogo);
-                }
+$appLogo = \App\Models\MainCore\Setting::where('key', 'app.name')->first()?->logo;
+
+if ($appLogo) {
+    $path = 'storage/app/public/' . $appLogo;
+
+    $path = Str::replaceFirst('public/', '', $path);
+
+    return asset($path);
+}
 
                 // Fallback to theme logo
                 return $theme?->logo_light_url ?? null;
