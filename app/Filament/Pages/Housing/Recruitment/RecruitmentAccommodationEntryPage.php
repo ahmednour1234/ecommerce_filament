@@ -26,7 +26,7 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
     public ?string $entry_type = null;
     public ?string $entry_date = null;
     public ?string $exit_date = null;
-    public ?string $status = null;
+    public ?int $status_id = null;
     public ?int $building_id = null;
 
     public static function getNavigationLabel(): string
@@ -104,13 +104,16 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                             ->native(false)
                             ->columnSpan(1),
 
-                        \Filament\Forms\Components\Select::make('status')
+                        \Filament\Forms\Components\Select::make('status_id')
                             ->label(tr('housing.accommodation.status', [], null, 'dashboard') ?: 'الحالة')
-                            ->options([
-                                'pending' => tr('housing.leave.status.pending', [], null, 'dashboard') ?: 'معلقة',
-                                'active' => tr('common.active', [], null, 'dashboard') ?: 'نشط',
-                                'completed' => tr('housing.dashboard.completed_requests', [], null, 'dashboard') ?: 'مكتمل',
-                            ])
+                            ->options(function () {
+                                return \App\Models\Housing\HousingStatus::active()
+                                    ->ordered()
+                                    ->get()
+                                    ->pluck('name', 'id')
+                                    ->toArray();
+                            })
+                            ->searchable()
                             ->columnSpan(1),
 
                         \Filament\Forms\Components\Select::make('building_id')
