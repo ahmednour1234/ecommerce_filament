@@ -3,10 +3,9 @@
 namespace App\Filament\Resources\MainCore\CurrencyResource\Pages;
 
 use App\Filament\Resources\MainCore\CurrencyResource;
-use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateCurrency extends CreateRecord
+class CreateCurrency extends BaseCreateRecord
 {
     protected static string $resource = CurrencyResource::class;
 }

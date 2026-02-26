@@ -5,6 +5,8 @@ namespace App\Filament\Resources\MainCore;
 use App\Filament\Resources\MainCore\CurrencyResource\Pages;
 use App\Filament\Resources\MainCore\CurrencyResource\RelationManagers;
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
 use App\Models\MainCore\Currency;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -68,9 +70,9 @@ class CurrencyResource extends Resource
                 Tables\Columns\IconColumn::make('is_active')->boolean()->label('Active'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn () => auth()->user()?->can('currencies.update') ?? false),
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->visible(fn () => auth()->user()?->can('currencies.delete') ?? false),
             ])
             ->bulkActions([

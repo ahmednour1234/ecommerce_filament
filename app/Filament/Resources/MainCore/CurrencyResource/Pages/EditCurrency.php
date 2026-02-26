@@ -3,17 +3,17 @@
 namespace App\Filament\Resources\MainCore\CurrencyResource\Pages;
 
 use App\Filament\Resources\MainCore\CurrencyResource;
-use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Pages\BaseEditRecord;
+use App\Filament\Actions\DeleteAction;
 
-class EditCurrency extends EditRecord
+class EditCurrency extends BaseEditRecord
 {
     protected static string $resource = CurrencyResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }
