@@ -26,6 +26,28 @@ use Illuminate\Support\Str;
 
 class AdminPanelProvider extends PanelProvider
 {
+    protected static function addPublicToUrl(string $url): string
+    {
+        $parsed = parse_url($url);
+        $path = $parsed['path'] ?? '';
+
+        if (str_contains($path, '/admin/') && !str_contains($path, '/public/admin/')) {
+            if (str_starts_with($path, '/public/')) {
+                $path = substr($path, 7);
+            }
+            $newPath = str_replace('/admin/', '/public/admin/', $path);
+
+            $scheme = $parsed['scheme'] ?? 'https';
+            $host = $parsed['host'] ?? '';
+            $query = isset($parsed['query']) ? '?' . $parsed['query'] : '';
+            $fragment = isset($parsed['fragment']) ? '#' . $parsed['fragment'] : '';
+
+            return $scheme . '://' . $host . $newPath . $query . $fragment;
+        }
+
+        return $url;
+    }
+
     private function navLabel(string $key, string $fallback): string
     {
         // Use tr() helper with Arabic locale first
@@ -57,6 +79,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->redirectToUrl(fn () => static::addPublicToUrl(Pages\Dashboard::getUrl()))
 
             ->brandName($brandName)
             ->brandLogo(function () use ($theme) {
