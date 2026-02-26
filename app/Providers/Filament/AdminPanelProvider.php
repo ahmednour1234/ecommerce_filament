@@ -78,8 +78,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login()
-            ->redirectToUrl(fn () => static::addPublicToUrl(Pages\Dashboard::getUrl()))
+            ->login(\App\Filament\Pages\Auth\Login::class)
 
             ->brandName($brandName)
             ->brandLogo(function () use ($theme) {
