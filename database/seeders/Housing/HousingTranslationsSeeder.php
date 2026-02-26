@@ -161,6 +161,20 @@ class HousingTranslationsSeeder extends Seeder
             'housing.reports.accommodation_duration_report' => ['en' => 'Accommodation Duration Report', 'ar' => 'تقرير مدة الإيواء'],
             'housing.reports.return_frequency_report' => ['en' => 'Return Frequency Report', 'ar' => 'تقرير تكرار الاسترجاع'],
             'housing.reports.view_report' => ['en' => 'View Report', 'ar' => 'عرض التقرير'],
+            
+            // Reports Stats
+            'housing.reports.stats.total_workers' => ['en' => 'Total Workers', 'ar' => 'إجمالي العمال'],
+            'housing.reports.stats.total_assignments' => ['en' => 'Total Assignments', 'ar' => 'إجمالي الإدخالات'],
+            'housing.reports.stats.transfer_kafala' => ['en' => 'Need Transfer Kafala', 'ar' => 'محتاجة نقل كفالة'],
+            'housing.reports.stats.total_requests' => ['en' => 'Total Requests', 'ar' => 'إجمالي الطلبات'],
+            'housing.reports.stats.requests_stats' => ['en' => 'Requests Statistics', 'ar' => 'إحصائيات الطلبات'],
+            'housing.reports.stats.pending_requests' => ['en' => 'Pending Requests', 'ar' => 'طلبات معلقة'],
+            'housing.reports.stats.completed_requests' => ['en' => 'Completed Requests', 'ar' => 'طلبات مكتملة'],
+            'housing.reports.stats.delivery_requests' => ['en' => 'Delivery Requests', 'ar' => 'طلبات تسليم'],
+            'housing.reports.stats.return_requests' => ['en' => 'Return Requests', 'ar' => 'طلبات استرجاع'],
+            'housing.reports.stats.by_status' => ['en' => 'Workers by Status (from Entries)', 'ar' => 'حالات العمال من الإدخالات'],
+            'housing.reports.assignments' => ['en' => 'Housing Cases', 'ar' => 'حالات الإيواء'],
+            'housing.reports.requests' => ['en' => 'Housing Requests', 'ar' => 'طلبات الإيواء'],
 
             'housing.actions.save' => ['en' => 'Save', 'ar' => 'حفظ'],
             'housing.actions.cancel' => ['en' => 'Cancel', 'ar' => 'إلغاء'],
