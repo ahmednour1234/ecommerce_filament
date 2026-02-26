@@ -17,6 +17,15 @@ class DeleteAction extends BaseDeleteAction
         return $this->addPublicToUrl($url);
     }
 
+    public function successRedirectUrl(?string $url = null): static
+    {
+        if ($url !== null) {
+            $url = $this->addPublicToUrl($url);
+        }
+        
+        return parent::successRedirectUrl($url);
+    }
+
     protected function addPublicToUrl(string $url): string
     {
         $parsed = parse_url($url);
