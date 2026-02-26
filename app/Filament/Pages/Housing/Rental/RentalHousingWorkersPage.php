@@ -20,7 +20,7 @@ class RentalHousingWorkersPage extends Page implements HasTable
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
-    protected static ?string $navigationGroup = 'إيواء التأجير';
+    protected static ?string $navigationGroup = 'إيواء الاستقدام';
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationTranslationKey = 'sidebar.housing.rental_housing.workers';
     protected static string $view = 'filament.pages.housing.workers';
