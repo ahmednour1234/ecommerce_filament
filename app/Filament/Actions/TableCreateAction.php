@@ -6,7 +6,7 @@ use Filament\Tables\Actions\CreateAction as BaseCreateAction;
 
 class TableCreateAction extends BaseCreateAction
 {
-    protected function getUrl(): ?string
+    public function getUrl(): ?string
     {
         $url = parent::getUrl();
         

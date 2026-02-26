@@ -6,7 +6,7 @@ use Filament\Tables\Actions\EditAction as BaseEditAction;
 
 class EditAction extends BaseEditAction
 {
-    protected function getUrl(): ?string
+    public function getUrl(): ?string
     {
         $url = parent::getUrl();
         

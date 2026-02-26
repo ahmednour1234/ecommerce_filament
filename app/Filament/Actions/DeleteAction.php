@@ -6,7 +6,7 @@ use Filament\Actions\DeleteAction as BaseDeleteAction;
 
 class DeleteAction extends BaseDeleteAction
 {
-    protected function getUrl(): ?string
+    public function getUrl(): ?string
     {
         $url = parent::getUrl();
         

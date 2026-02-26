@@ -6,7 +6,7 @@ use Filament\Tables\Actions\DeleteAction as BaseDeleteAction;
 
 class TableDeleteAction extends BaseDeleteAction
 {
-    protected function getUrl(): ?string
+    public function getUrl(): ?string
     {
         $url = parent::getUrl();
         

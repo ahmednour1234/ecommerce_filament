@@ -6,7 +6,7 @@ use Filament\Actions\CreateAction as BaseCreateAction;
 
 class CreateAction extends BaseCreateAction
 {
-    protected function getUrl(): ?string
+    public function getUrl(): ?string
     {
         $url = parent::getUrl();
         
