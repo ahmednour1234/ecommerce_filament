@@ -56,7 +56,29 @@
             </div>
         </div>
 
-        {{-- Report Table --}}
-        {{ $this->table }}
+        {{-- Tabs for Switching Between Tables --}}
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="border-b border-gray-200 mb-4">
+                <nav class="-mb-px flex space-x-8 rtl:space-x-reverse" aria-label="Tabs">
+                    <button
+                        wire:click="switchTab('assignments')"
+                        type="button"
+                        class="@if($activeTab === 'assignments') border-primary-500 text-primary-600 @else border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 @endif whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors"
+                    >
+                        {{ tr('housing.reports.assignments', [], null, 'dashboard') ?: 'حالات الإيواء' }}
+                    </button>
+                    <button
+                        wire:click="switchTab('requests')"
+                        type="button"
+                        class="@if($activeTab === 'requests') border-primary-500 text-primary-600 @else border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 @endif whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors"
+                    >
+                        {{ tr('housing.reports.requests', [], null, 'dashboard') ?: 'طلبات الإيواء' }}
+                    </button>
+                </nav>
+            </div>
+
+            {{-- Report Table --}}
+            {{ $this->table }}
+        </div>
     </div>
 </x-filament-panels::page>
