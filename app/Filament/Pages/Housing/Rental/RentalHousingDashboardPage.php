@@ -22,7 +22,7 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-home';
-    protected static ?string $navigationGroup = 'إيواء التأجير';
+    protected static ?string $navigationGroup = 'إيواء الاستقدام';
     protected static ?int $navigationSort = 1;
     protected static ?string $navigationTranslationKey = 'sidebar.housing.rental_housing.dashboard';
     protected static string $view = 'filament.pages.housing.dashboard';
