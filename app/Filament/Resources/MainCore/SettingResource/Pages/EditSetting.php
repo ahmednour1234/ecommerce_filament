@@ -4,16 +4,17 @@ namespace App\Filament\Resources\MainCore\SettingResource\Pages;
 
 use App\Filament\Resources\MainCore\SettingResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditSetting extends EditRecord
+class EditSetting extends BaseEditRecord
 {
     protected static string $resource = SettingResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 

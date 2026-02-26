@@ -4,9 +4,10 @@ namespace App\Filament\Resources\Packages\PackageResource\Pages;
 
 use App\Filament\Resources\Packages\PackageResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditPackage extends EditRecord
+class EditPackage extends BaseEditRecord
 {
     protected static string $resource = PackageResource::class;
 
@@ -15,7 +16,7 @@ class EditPackage extends EditRecord
         return [
             Actions\ViewAction::make()
                 ->label(tr('common.view', [], null, 'dashboard')),
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->label(tr('common.delete', [], null, 'dashboard')),
             Actions\RestoreAction::make()
                 ->label(tr('common.restore', [], null, 'dashboard') ?: 'Restore'),

@@ -4,16 +4,17 @@ namespace App\Filament\Resources\Accounting\AccountResource\Pages;
 
 use App\Filament\Resources\Accounting\AccountResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditAccount extends EditRecord
+class EditAccount extends BaseEditRecord
 {
     protected static string $resource = AccountResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

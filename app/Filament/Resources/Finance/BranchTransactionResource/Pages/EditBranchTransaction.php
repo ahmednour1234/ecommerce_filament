@@ -4,16 +4,17 @@ namespace App\Filament\Resources\Finance\BranchTransactionResource\Pages;
 
 use App\Filament\Resources\Finance\BranchTransactionResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditBranchTransaction extends EditRecord
+class EditBranchTransaction extends BaseEditRecord
 {
     protected static string $resource = BranchTransactionResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 

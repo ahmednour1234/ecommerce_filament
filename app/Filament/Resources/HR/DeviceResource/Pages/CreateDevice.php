@@ -4,9 +4,9 @@ namespace App\Filament\Resources\HR\DeviceResource\Pages;
 
 use App\Filament\Resources\HR\DeviceResource;
 use App\Services\HR\DeviceService;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateDevice extends CreateRecord
+class CreateDevice extends BaseCreateRecord
 {
     protected static string $resource = DeviceResource::class;
 

@@ -11,6 +11,9 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class InstallmentResource extends Resource
 {
@@ -198,9 +201,9 @@ class InstallmentResource extends Resource
                         ->where('due_date', '<', now())),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn () => auth()->user()?->can('installments.update') ?? false),
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->visible(fn () => auth()->user()?->can('installments.delete') ?? false),
             ])
             ->bulkActions([

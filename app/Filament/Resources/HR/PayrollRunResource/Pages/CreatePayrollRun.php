@@ -4,10 +4,10 @@ namespace App\Filament\Resources\HR\PayrollRunResource\Pages;
 
 use App\Filament\Resources\HR\PayrollRunResource;
 use App\Services\HR\PayrollGenerationService;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 use Filament\Notifications\Notification;
 
-class CreatePayrollRun extends CreateRecord
+class CreatePayrollRun extends BaseCreateRecord
 {
     protected static string $resource = PayrollRunResource::class;
 

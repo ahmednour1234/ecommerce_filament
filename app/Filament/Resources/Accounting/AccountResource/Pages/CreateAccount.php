@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Accounting\AccountResource\Pages;
 
 use App\Filament\Resources\Accounting\AccountResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateAccount extends CreateRecord
+class CreateAccount extends BaseCreateRecord
 {
     protected static string $resource = AccountResource::class;
 }

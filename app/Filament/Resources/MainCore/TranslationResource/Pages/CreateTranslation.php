@@ -4,9 +4,9 @@ namespace App\Filament\Resources\MainCore\TranslationResource\Pages;
 
 use App\Filament\Resources\MainCore\TranslationResource;
 use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateTranslation extends CreateRecord
+class CreateTranslation extends BaseCreateRecord
 {
     protected static string $resource = TranslationResource::class;
 }

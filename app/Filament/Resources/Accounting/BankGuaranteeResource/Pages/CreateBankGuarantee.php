@@ -3,11 +3,11 @@
 namespace App\Filament\Resources\Accounting\BankGuaranteeResource\Pages;
 
 use App\Filament\Resources\Accounting\BankGuaranteeResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 use Filament\Notifications\Notification;
 use Illuminate\Validation\ValidationException;
 
-class CreateBankGuarantee extends CreateRecord
+class CreateBankGuarantee extends BaseCreateRecord
 {
     protected static string $resource = BankGuaranteeResource::class;
 

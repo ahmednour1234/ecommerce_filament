@@ -4,16 +4,17 @@ namespace App\Filament\Resources\MainCore\PaymentProviderResource\Pages;
 
 use App\Filament\Resources\MainCore\PaymentProviderResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditPaymentProvider extends EditRecord
+class EditPaymentProvider extends BaseEditRecord
 {
     protected static string $resource = PaymentProviderResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

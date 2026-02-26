@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\MainCore\BranchResource\Pages;
 
 use App\Filament\Resources\MainCore\BranchResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateBranch extends CreateRecord
+class CreateBranch extends BaseCreateRecord
 {
     protected static string $resource = BranchResource::class;
 }

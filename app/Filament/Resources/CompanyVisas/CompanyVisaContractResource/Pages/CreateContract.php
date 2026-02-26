@@ -3,10 +3,10 @@
 namespace App\Filament\Resources\CompanyVisas\CompanyVisaContractResource\Pages;
 
 use App\Filament\Resources\CompanyVisas\CompanyVisaContractResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 use Modules\CompanyVisas\Entities\CompanyVisaRequest;
 
-class CreateContract extends CreateRecord
+class CreateContract extends BaseCreateRecord
 {
     protected static string $resource = CompanyVisaContractResource::class;
 

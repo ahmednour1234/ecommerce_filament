@@ -3,10 +3,10 @@
 namespace App\Filament\Resources\Recruitment\AgentLaborPriceResource\Pages;
 
 use App\Filament\Resources\Recruitment\AgentLaborPriceResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 use Illuminate\Validation\Rules\Unique;
 
-class CreateAgentLaborPrice extends CreateRecord
+class CreateAgentLaborPrice extends BaseCreateRecord
 {
     protected static string $resource = AgentLaborPriceResource::class;
 

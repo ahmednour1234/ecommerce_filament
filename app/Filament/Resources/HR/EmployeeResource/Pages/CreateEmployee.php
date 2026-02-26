@@ -3,10 +3,10 @@
 namespace App\Filament\Resources\HR\EmployeeResource\Pages;
 
 use App\Filament\Resources\HR\EmployeeResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 use Filament\Notifications\Notification;
 
-class CreateEmployee extends CreateRecord
+class CreateEmployee extends BaseCreateRecord
 {
     protected static string $resource = EmployeeResource::class;
 

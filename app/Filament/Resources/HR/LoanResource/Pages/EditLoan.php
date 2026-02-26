@@ -4,9 +4,10 @@ namespace App\Filament\Resources\HR\LoanResource\Pages;
 
 use App\Filament\Resources\HR\LoanResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditLoan extends EditRecord
+class EditLoan extends BaseEditRecord
 {
     protected static string $resource = LoanResource::class;
 
@@ -25,7 +26,7 @@ class EditLoan extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 

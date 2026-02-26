@@ -15,6 +15,9 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class OrderResource extends Resource
 {
@@ -307,9 +310,9 @@ class OrderResource extends Resource
                     }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn () => auth()->user()?->can('orders.update') ?? false),
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->visible(fn () => auth()->user()?->can('orders.delete') ?? false),
             ])
             ->bulkActions([

@@ -15,6 +15,8 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Cache;
+use App\Filament\Actions\EditAction;
+
 
 class CompanyVisaContractResource extends Resource
 {
@@ -236,7 +238,7 @@ class CompanyVisaContractResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
             ])
             ->defaultSort('created_at', 'desc');
     }

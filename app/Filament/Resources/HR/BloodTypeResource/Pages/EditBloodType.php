@@ -4,16 +4,17 @@ namespace App\Filament\Resources\HR\BloodTypeResource\Pages;
 
 use App\Filament\Resources\HR\BloodTypeResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditBloodType extends EditRecord
+class EditBloodType extends BaseEditRecord
 {
     protected static string $resource = BloodTypeResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 

@@ -11,6 +11,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use App\Filament\Concerns\AccountingModuleGate;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class JournalResource extends Resource
 {
@@ -137,10 +140,10 @@ class JournalResource extends Resource
                     ->label(trans_dash('common.view', 'View'))
                     ->visible(fn () => auth()->user()?->can('journals.view') ?? true),
 
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn () => auth()->user()?->can('journals.update') ?? false),
 
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->visible(fn () => auth()->user()?->can('journals.delete') ?? false),
             ])
             ->bulkActions([

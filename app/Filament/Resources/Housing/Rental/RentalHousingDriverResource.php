@@ -11,6 +11,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 class RentalHousingDriverResource extends Resource
 {
     use TranslatableNavigation;
@@ -107,8 +110,8 @@ class RentalHousingDriverResource extends Resource
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                EditAction::make(),
+                TableDeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),
             ])
             ->bulkActions([

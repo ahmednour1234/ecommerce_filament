@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Housing\Rental\RentalHousingRequestResource\Pages;
 
 use App\Filament\Resources\Housing\Rental\RentalHousingRequestResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateRentalHousingRequest extends CreateRecord
+class CreateRentalHousingRequest extends BaseCreateRecord
 {
     protected static string $resource = RentalHousingRequestResource::class;
 

@@ -14,6 +14,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class BranchTransactionResource extends Resource
 {
@@ -344,11 +347,11 @@ class BranchTransactionResource extends Resource
                     ->visible(fn (BranchTransaction $record) => $record->status === 'pending'
                         && (auth()->user()?->hasRole('super_admin') || (auth()->user()?->can('finance.reject_transactions') ?? false))),
 
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn (BranchTransaction $record) =>
                         (auth()->user()?->hasRole('super_admin') || (auth()->user()?->can('finance.update_transactions') ?? false))),
 
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->visible(fn (BranchTransaction $record) =>
                         (auth()->user()?->hasRole('super_admin') || (auth()->user()?->can('finance.delete_transactions') ?? false))),
             ])

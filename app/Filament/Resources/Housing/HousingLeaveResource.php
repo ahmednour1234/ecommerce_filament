@@ -11,6 +11,10 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+use App\Filament\Actions\TableCreateAction;
+
 
 class HousingLeaveResource extends Resource
 {
@@ -145,10 +149,10 @@ class HousingLeaveResource extends Resource
                         'return_registered_at' => now(),
                     ])),
 
-                Tables\Actions\DeleteAction::make(),
+                TableDeleteAction::make(),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                TableCreateAction::make()
                     ->label(tr('actions.housing.add_leave', [], null, 'dashboard') ?: 'إضافة إجازة جديدة'),
 
                 Tables\Actions\Action::make('complete_ended')

@@ -4,16 +4,17 @@ namespace App\Filament\Resources\MainCore\BranchResource\Pages;
 
 use App\Filament\Resources\MainCore\BranchResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditBranch extends EditRecord
+class EditBranch extends BaseEditRecord
 {
     protected static string $resource = BranchResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

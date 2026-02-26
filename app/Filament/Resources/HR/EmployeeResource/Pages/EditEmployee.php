@@ -4,17 +4,18 @@ namespace App\Filament\Resources\HR\EmployeeResource\Pages;
 
 use App\Filament\Resources\HR\EmployeeResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 use Filament\Notifications\Notification;
 
-class EditEmployee extends EditRecord
+class EditEmployee extends BaseEditRecord
 {
     protected static string $resource = EmployeeResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->visible(fn () => auth()->user()?->can('hr_employees.delete') ?? false),
         ];
     }

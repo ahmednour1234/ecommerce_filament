@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Recruitment\ProfessionResource\Pages;
 
 use App\Filament\Resources\Recruitment\ProfessionResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateProfession extends CreateRecord
+class CreateProfession extends BaseCreateRecord
 {
     protected static string $resource = ProfessionResource::class;
 }

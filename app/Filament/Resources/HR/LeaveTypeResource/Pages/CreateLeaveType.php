@@ -3,11 +3,11 @@
 namespace App\Filament\Resources\HR\LeaveTypeResource\Pages;
 
 use App\Filament\Resources\HR\LeaveTypeResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 use Illuminate\Support\Facades\Auth;
 use App\Services\HR\LeaveTypeService;
 
-class CreateLeaveType extends CreateRecord
+class CreateLeaveType extends BaseCreateRecord
 {
     protected static string $resource = LeaveTypeResource::class;
 

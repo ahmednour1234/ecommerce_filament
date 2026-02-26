@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Rental\RentalContractResource\Pages;
 
 use App\Filament\Resources\Rental\RentalContractResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateRentalContract extends CreateRecord
+class CreateRentalContract extends BaseCreateRecord
 {
     protected static string $resource = RentalContractResource::class;
 }

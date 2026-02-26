@@ -4,9 +4,10 @@ namespace App\Filament\Resources\Housing\HousingStatusResource\Pages;
 
 use App\Filament\Resources\Housing\HousingStatusResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditHousingStatus extends EditRecord
+class EditHousingStatus extends BaseEditRecord
 {
     protected static string $resource = HousingStatusResource::class;
 
@@ -14,7 +15,7 @@ class EditHousingStatus extends EditRecord
     {
         return [
             Actions\ViewAction::make(),
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

@@ -4,16 +4,17 @@ namespace App\Filament\Resources\Recruitment\NationalityResource\Pages;
 
 use App\Filament\Resources\Recruitment\NationalityResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditNationality extends EditRecord
+class EditNationality extends BaseEditRecord
 {
     protected static string $resource = NationalityResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

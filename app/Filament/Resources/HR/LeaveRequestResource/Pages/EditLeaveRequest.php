@@ -4,18 +4,19 @@ namespace App\Filament\Resources\HR\LeaveRequestResource\Pages;
 
 use App\Filament\Resources\HR\LeaveRequestResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
-class EditLeaveRequest extends EditRecord
+class EditLeaveRequest extends BaseEditRecord
 {
     protected static string $resource = LeaveRequestResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->visible(fn () => $this->record->status === 'pending' && (auth()->user()?->can('hr.leave_requests.delete') ?? false)),
         ];
     }

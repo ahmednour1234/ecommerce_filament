@@ -14,6 +14,9 @@ use Filament\Tables\Table;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 class RoleResource extends Resource
 {
     use TranslatableNavigation;
@@ -207,10 +210,10 @@ class RoleResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn () => auth()->user()?->can('roles.update') ?? false),
 
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->visible(fn () => auth()->user()?->can('roles.delete') ?? false),
             ])
             ->bulkActions([

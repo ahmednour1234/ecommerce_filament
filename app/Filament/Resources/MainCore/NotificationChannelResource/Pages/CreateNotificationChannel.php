@@ -4,9 +4,9 @@ namespace App\Filament\Resources\MainCore\NotificationChannelResource\Pages;
 
 use App\Filament\Resources\MainCore\NotificationChannelResource;
 use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateNotificationChannel extends CreateRecord
+class CreateNotificationChannel extends BaseCreateRecord
 {
     protected static string $resource = NotificationChannelResource::class;
 }

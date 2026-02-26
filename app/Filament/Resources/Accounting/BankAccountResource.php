@@ -12,6 +12,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use App\Filament\Concerns\AccountingModuleGate;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class BankAccountResource extends Resource
 {
@@ -198,9 +201,9 @@ class BankAccountResource extends Resource
                     ->action(function ($record) {
                         // Reconcile logic
                     }),
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn () => auth()->user()?->can('bank_accounts.update') ?? false),
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->visible(fn () => auth()->user()?->can('bank_accounts.delete') ?? false),
             ])
             ->bulkActions([

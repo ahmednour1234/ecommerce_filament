@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\HR\WorkScheduleResource\Pages;
 
 use App\Filament\Resources\HR\WorkScheduleResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateWorkSchedule extends CreateRecord
+class CreateWorkSchedule extends BaseCreateRecord
 {
     protected static string $resource = WorkScheduleResource::class;
 

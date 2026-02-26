@@ -4,9 +4,9 @@ namespace App\Filament\Resources\MainCore\LanguageResource\Pages;
 
 use App\Filament\Resources\MainCore\LanguageResource;
 use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateLanguage extends CreateRecord
+class CreateLanguage extends BaseCreateRecord
 {
     protected static string $resource = LanguageResource::class;
 }

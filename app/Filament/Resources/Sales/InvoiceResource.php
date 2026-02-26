@@ -14,6 +14,9 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class InvoiceResource extends Resource
 {
@@ -267,9 +270,9 @@ class InvoiceResource extends Resource
                         ->whereNotIn('status', ['paid', 'cancelled'])),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn () => auth()->user()?->can('invoices.update') ?? false),
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->visible(fn () => auth()->user()?->can('invoices.delete') ?? false),
             ])
             ->bulkActions([

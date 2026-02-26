@@ -4,16 +4,17 @@ namespace App\Filament\Resources\HR\PositionResource\Pages;
 
 use App\Filament\Resources\HR\PositionResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditPosition extends EditRecord
+class EditPosition extends BaseEditRecord
 {
     protected static string $resource = PositionResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 

@@ -4,9 +4,9 @@ namespace App\Filament\Resources\HR\LoanResource\Pages;
 
 use App\Filament\Resources\HR\LoanResource;
 use App\Services\HR\LoanService;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateLoan extends CreateRecord
+class CreateLoan extends BaseCreateRecord
 {
     protected static string $resource = LoanResource::class;
 

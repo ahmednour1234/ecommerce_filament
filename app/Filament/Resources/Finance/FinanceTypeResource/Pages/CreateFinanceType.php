@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Finance\FinanceTypeResource\Pages;
 
 use App\Filament\Resources\Finance\FinanceTypeResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateFinanceType extends CreateRecord
+class CreateFinanceType extends BaseCreateRecord
 {
     protected static string $resource = FinanceTypeResource::class;
 

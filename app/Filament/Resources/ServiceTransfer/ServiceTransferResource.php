@@ -17,6 +17,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Cache;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class ServiceTransferResource extends Resource
 {
@@ -463,7 +466,7 @@ class ServiceTransferResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
                 Tables\Actions\Action::make('archive')
                     ->label('أرشفة')
                     ->icon('heroicon-o-archive-box')
@@ -487,7 +490,7 @@ class ServiceTransferResource extends Resource
                     })
                     ->visible(fn (ServiceTransfer $record) => $record->request_status === 'active')
                     ->visible(fn () => auth()->user()?->can('service_transfer.refund') ?? false),
-                Tables\Actions\DeleteAction::make(),
+                TableDeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

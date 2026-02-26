@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\HR\PositionResource\Pages;
 
 use App\Filament\Resources\HR\PositionResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreatePosition extends CreateRecord
+class CreatePosition extends BaseCreateRecord
 {
     protected static string $resource = PositionResource::class;
 

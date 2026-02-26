@@ -12,6 +12,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Storage;
 use App\Filament\Concerns\AccountingModuleGate;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class VoucherSignatureResource extends Resource
 {
@@ -210,10 +213,10 @@ class VoucherSignatureResource extends Resource
                     ->falseLabel(trans_dash('common.inactive_only', 'Inactive only')),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn () => auth()->user()?->can('voucher_signatures.update') ?? false),
 
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->visible(fn () => auth()->user()?->can('voucher_signatures.delete') ?? false),
             ])
             ->bulkActions([

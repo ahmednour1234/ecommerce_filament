@@ -4,16 +4,17 @@ namespace App\Filament\Resources\MainCore\ShippingProviderResource\Pages;
 
 use App\Filament\Resources\MainCore\ShippingProviderResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditShippingProvider extends EditRecord
+class EditShippingProvider extends BaseEditRecord
 {
     protected static string $resource = ShippingProviderResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

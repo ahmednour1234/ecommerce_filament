@@ -4,9 +4,9 @@ namespace App\Filament\Resources\HR\ExcuseRequestResource\Pages;
 
 use App\Filament\Resources\HR\ExcuseRequestResource;
 use App\Services\HR\ExcuseRequestService;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateExcuseRequest extends CreateRecord
+class CreateExcuseRequest extends BaseCreateRecord
 {
     protected static string $resource = ExcuseRequestResource::class;
 

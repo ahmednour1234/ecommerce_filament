@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\ServiceTransfer\ServiceTransferResource\Pages;
 
 use App\Filament\Resources\ServiceTransfer\ServiceTransferResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateServiceTransfer extends CreateRecord
+class CreateServiceTransfer extends BaseCreateRecord
 {
     protected static string $resource = ServiceTransferResource::class;
 

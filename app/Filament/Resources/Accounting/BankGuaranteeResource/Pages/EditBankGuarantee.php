@@ -4,18 +4,19 @@ namespace App\Filament\Resources\Accounting\BankGuaranteeResource\Pages;
 
 use App\Filament\Resources\Accounting\BankGuaranteeResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 use Filament\Notifications\Notification;
 use Illuminate\Validation\ValidationException;
 
-class EditBankGuarantee extends EditRecord
+class EditBankGuarantee extends BaseEditRecord
 {
     protected static string $resource = BankGuaranteeResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 

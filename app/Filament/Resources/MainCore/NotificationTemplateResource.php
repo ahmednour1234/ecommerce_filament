@@ -14,6 +14,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Concerns\NotificationModuleGate;
+use App\Filament\Actions\EditAction;
+
 
 class NotificationTemplateResource extends Resource
 {
@@ -113,7 +115,7 @@ class NotificationTemplateResource extends Resource
                     ->falseLabel(tr('tables.notification_templates.filters.inactive_only', [], null, 'dashboard')),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

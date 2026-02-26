@@ -5,9 +5,10 @@ namespace App\Filament\Resources\HR\EmployeeGroupResource\Pages;
 use App\Filament\Resources\HR\EmployeeGroupResource;
 use App\Services\HR\EmployeeGroupService;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditEmployeeGroup extends EditRecord
+class EditEmployeeGroup extends BaseEditRecord
 {
     protected static string $resource = EmployeeGroupResource::class;
 
@@ -37,7 +38,7 @@ class EditEmployeeGroup extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 

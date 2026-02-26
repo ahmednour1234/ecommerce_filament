@@ -4,16 +4,17 @@ namespace App\Filament\Resources\HR\WorkPlaceResource\Pages;
 
 use App\Filament\Resources\HR\WorkPlaceResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditWorkPlace extends EditRecord
+class EditWorkPlace extends BaseEditRecord
 {
     protected static string $resource = WorkPlaceResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 

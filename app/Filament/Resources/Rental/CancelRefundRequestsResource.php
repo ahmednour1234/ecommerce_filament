@@ -11,6 +11,9 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class CancelRefundRequestsResource extends Resource
 {
@@ -155,7 +158,7 @@ class CancelRefundRequestsResource extends Resource
                     ->visible(fn ($record) => $record->status === 'pending')
                     ->requiresConfirmation()
                     ->visible(fn () => auth()->user()?->can('rental.cancel_refund.manage')),
-                Tables\Actions\DeleteAction::make(),
+                TableDeleteAction::make(),
             ])
             ->defaultSort('created_at', 'desc');
     }

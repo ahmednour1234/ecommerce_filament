@@ -18,6 +18,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Validation\Rule;
 use App\Filament\Concerns\AccountingModuleGate;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class BankGuaranteeResource extends Resource
 {
@@ -414,10 +417,10 @@ class BankGuaranteeResource extends Resource
                         }
                     }),
 
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn () => auth()->user()?->can('bank_guarantees.update') ?? false),
 
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->visible(fn () => auth()->user()?->can('bank_guarantees.delete') ?? false),
             ])
             ->bulkActions([

@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Rental\CancelRefundRequestsResource\Pages;
 
 use App\Filament\Resources\Rental\CancelRefundRequestsResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateCancelRefundRequest extends CreateRecord
+class CreateCancelRefundRequest extends BaseCreateRecord
 {
     protected static string $resource = CancelRefundRequestsResource::class;
 }

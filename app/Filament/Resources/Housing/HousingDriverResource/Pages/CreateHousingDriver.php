@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Housing\HousingDriverResource\Pages;
 
 use App\Filament\Resources\Housing\HousingDriverResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateHousingDriver extends CreateRecord
+class CreateHousingDriver extends BaseCreateRecord
 {
     protected static string $resource = HousingDriverResource::class;
 }

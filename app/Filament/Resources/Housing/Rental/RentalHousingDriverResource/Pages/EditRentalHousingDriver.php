@@ -4,16 +4,17 @@ namespace App\Filament\Resources\Housing\Rental\RentalHousingDriverResource\Page
 
 use App\Filament\Resources\Housing\Rental\RentalHousingDriverResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditRentalHousingDriver extends EditRecord
+class EditRentalHousingDriver extends BaseEditRecord
 {
     protected static string $resource = RentalHousingDriverResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

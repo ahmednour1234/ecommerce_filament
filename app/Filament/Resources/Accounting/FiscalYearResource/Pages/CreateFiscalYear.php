@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Accounting\FiscalYearResource\Pages;
 
 use App\Filament\Resources\Accounting\FiscalYearResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateFiscalYear extends CreateRecord
+class CreateFiscalYear extends BaseCreateRecord
 {
     protected static string $resource = FiscalYearResource::class;
 }

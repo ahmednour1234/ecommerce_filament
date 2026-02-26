@@ -4,16 +4,17 @@ namespace App\Filament\Resources\Recruitment\AgentLaborPriceResource\Pages;
 
 use App\Filament\Resources\Recruitment\AgentLaborPriceResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditAgentLaborPrice extends EditRecord
+class EditAgentLaborPrice extends BaseEditRecord
 {
     protected static string $resource = AgentLaborPriceResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

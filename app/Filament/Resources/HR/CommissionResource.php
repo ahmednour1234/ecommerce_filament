@@ -14,6 +14,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class CommissionResource extends Resource
 {
@@ -121,9 +124,9 @@ class CommissionResource extends Resource
                     ->falseLabel('Inactive only'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn () => auth()->user()?->can('hr_commissions.update') ?? false),
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->visible(fn () => auth()->user()?->can('hr_commissions.delete') ?? false),
                 Tables\Actions\RestoreAction::make()
                     ->visible(fn () => auth()->user()?->can('hr_commissions.restore') ?? false),

@@ -14,6 +14,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 
 class CurrencyRateResource extends Resource
@@ -68,9 +71,9 @@ class CurrencyRateResource extends Resource
                 Tables\Columns\TextColumn::make('valid_from')->label(tr('tables.currency_rates.valid_from', [], null, 'dashboard'))->dateTime(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn () => auth()->user()?->can('currency_rates.update') ?? false),
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->visible(fn () => auth()->user()?->can('currency_rates.delete') ?? false),
             ])
             ->bulkActions([

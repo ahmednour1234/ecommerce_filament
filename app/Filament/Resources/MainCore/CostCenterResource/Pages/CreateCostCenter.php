@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\MainCore\CostCenterResource\Pages;
 
 use App\Filament\Resources\MainCore\CostCenterResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateCostCenter extends CreateRecord
+class CreateCostCenter extends BaseCreateRecord
 {
     protected static string $resource = CostCenterResource::class;
 }

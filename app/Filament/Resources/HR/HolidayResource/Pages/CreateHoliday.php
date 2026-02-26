@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\HR\HolidayResource\Pages;
 
 use App\Filament\Resources\HR\HolidayResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateHoliday extends CreateRecord
+class CreateHoliday extends BaseCreateRecord
 {
     protected static string $resource = HolidayResource::class;
 

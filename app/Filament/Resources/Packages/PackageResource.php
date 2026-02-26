@@ -13,6 +13,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Cache;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class PackageResource extends Resource
 {
@@ -260,7 +263,7 @@ class PackageResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make()
                     ->label(tr('common.view', [], null, 'dashboard')),
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->label(tr('common.edit', [], null, 'dashboard'))
                     ->visible(fn (Package $record) => static::canEdit($record)),
                 Tables\Actions\Action::make('export_pdf')
@@ -269,7 +272,7 @@ class PackageResource extends Resource
                     ->url(fn (Package $record) => PackageResource::getUrl('view', ['record' => $record]) . '?export=pdf')
                     ->openUrlInNewTab()
                     ->visible(fn (Package $record) => auth()->user()?->hasRole('super_admin') || auth()->user()?->can('packages.export_pdf') ?? false),
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->label(tr('common.delete', [], null, 'dashboard'))
                     ->visible(fn (Package $record) => static::canDelete($record)),
                 Tables\Actions\RestoreAction::make()

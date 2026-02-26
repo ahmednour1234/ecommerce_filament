@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\HR\EmployeeFinancialProfileResource\Pages;
 
 use App\Filament\Resources\HR\EmployeeFinancialProfileResource;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditEmployeeFinancialProfile extends EditRecord
+class EditEmployeeFinancialProfile extends BaseEditRecord
 {
     protected static string $resource = EmployeeFinancialProfileResource::class;
 }

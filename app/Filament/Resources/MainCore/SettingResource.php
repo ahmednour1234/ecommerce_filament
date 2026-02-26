@@ -14,6 +14,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\FileUpload;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class SettingResource extends Resource
 {
@@ -147,9 +150,9 @@ class SettingResource extends Resource
                 Tables\Columns\IconColumn::make('autoload')->boolean()->label(tr('tables.settings.autoload', [], null, 'dashboard')),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn () => auth()->user()?->can('settings.update') ?? false),
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->visible(fn () => auth()->user()?->can('settings.delete') ?? false),
             ])
             ->bulkActions([

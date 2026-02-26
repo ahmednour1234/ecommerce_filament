@@ -13,6 +13,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class LanguageResource extends Resource
 {
@@ -74,9 +77,9 @@ class LanguageResource extends Resource
                 Tables\Columns\TextColumn::make('direction')->label(tr('tables.languages.direction', [], null, 'dashboard')),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn () => auth()->user()?->can('languages.update') ?? false),
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->visible(fn () => auth()->user()?->can('languages.delete') ?? false),
             ])
             ->bulkActions([

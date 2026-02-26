@@ -10,6 +10,9 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class ContactMessageResource extends Resource
 {
@@ -137,7 +140,7 @@ class ContactMessageResource extends Resource
                     ->visible(fn (ContactMessage $record) => $record->is_read)
                     ->action(fn (ContactMessage $record) => $record->update(['is_read' => false]))
                     ->requiresConfirmation(),
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->visible(fn () => auth()->user()?->can('delete_contact_messages') ?? false),
             ])
             ->bulkActions([

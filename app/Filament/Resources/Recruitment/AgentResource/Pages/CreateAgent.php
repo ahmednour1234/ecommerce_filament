@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Recruitment\AgentResource\Pages;
 
 use App\Filament\Resources\Recruitment\AgentResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateAgent extends CreateRecord
+class CreateAgent extends BaseCreateRecord
 {
     protected static string $resource = AgentResource::class;
 }

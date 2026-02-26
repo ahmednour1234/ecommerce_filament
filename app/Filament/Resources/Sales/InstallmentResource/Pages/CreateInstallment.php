@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Sales\InstallmentResource\Pages;
 
 use App\Filament\Resources\Sales\InstallmentResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateInstallment extends CreateRecord
+class CreateInstallment extends BaseCreateRecord
 {
     protected static string $resource = InstallmentResource::class;
 }

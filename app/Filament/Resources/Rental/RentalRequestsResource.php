@@ -12,6 +12,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Cache;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class RentalRequestsResource extends Resource
 {
@@ -206,7 +209,7 @@ class RentalRequestsResource extends Resource
                     ->visible(fn ($record) => $record->status === 'approved')
                     ->requiresConfirmation()
                     ->visible(fn () => auth()->user()?->can('rental.requests.convert')),
-                Tables\Actions\DeleteAction::make(),
+                TableDeleteAction::make(),
             ])
             ->defaultSort('created_at', 'desc');
     }

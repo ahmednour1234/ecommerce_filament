@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\HR\CommissionResource\Pages;
 
 use App\Filament\Resources\HR\CommissionResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateCommission extends CreateRecord
+class CreateCommission extends BaseCreateRecord
 {
     protected static string $resource = CommissionResource::class;
 }

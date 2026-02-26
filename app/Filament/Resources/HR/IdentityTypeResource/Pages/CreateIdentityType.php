@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\HR\IdentityTypeResource\Pages;
 
 use App\Filament\Resources\HR\IdentityTypeResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateIdentityType extends CreateRecord
+class CreateIdentityType extends BaseCreateRecord
 {
     protected static string $resource = IdentityTypeResource::class;
 

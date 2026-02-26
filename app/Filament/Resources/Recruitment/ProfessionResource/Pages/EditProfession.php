@@ -4,16 +4,17 @@ namespace App\Filament\Resources\Recruitment\ProfessionResource\Pages;
 
 use App\Filament\Resources\Recruitment\ProfessionResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditProfession extends EditRecord
+class EditProfession extends BaseEditRecord
 {
     protected static string $resource = ProfessionResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

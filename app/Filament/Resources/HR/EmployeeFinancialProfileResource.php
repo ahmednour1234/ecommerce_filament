@@ -14,6 +14,8 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Actions\EditAction;
+
 
 class EmployeeFinancialProfileResource extends Resource
 {
@@ -211,7 +213,7 @@ class EmployeeFinancialProfileResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn () => auth()->user()?->can('hr_employee_financial.update') ?? false),
             ])
             ->defaultSort('employee.employee_number');

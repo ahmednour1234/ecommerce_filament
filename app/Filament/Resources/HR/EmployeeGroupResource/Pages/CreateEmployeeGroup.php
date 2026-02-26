@@ -4,9 +4,9 @@ namespace App\Filament\Resources\HR\EmployeeGroupResource\Pages;
 
 use App\Filament\Resources\HR\EmployeeGroupResource;
 use App\Services\HR\EmployeeGroupService;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateEmployeeGroup extends CreateRecord
+class CreateEmployeeGroup extends BaseCreateRecord
 {
     protected static string $resource = EmployeeGroupResource::class;
 

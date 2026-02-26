@@ -4,9 +4,10 @@ namespace App\Filament\Resources\Rental\RentalContractResource\Pages;
 
 use App\Filament\Resources\Rental\RentalContractResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditRentalContract extends EditRecord
+class EditRentalContract extends BaseEditRecord
 {
     protected static string $resource = RentalContractResource::class;
 
@@ -14,7 +15,7 @@ class EditRentalContract extends EditRecord
     {
         return [
             Actions\ViewAction::make(),
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

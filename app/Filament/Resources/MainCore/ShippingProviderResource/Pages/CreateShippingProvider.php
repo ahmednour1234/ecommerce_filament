@@ -4,9 +4,9 @@ namespace App\Filament\Resources\MainCore\ShippingProviderResource\Pages;
 
 use App\Filament\Resources\MainCore\ShippingProviderResource;
 use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateShippingProvider extends CreateRecord
+class CreateShippingProvider extends BaseCreateRecord
 {
     protected static string $resource = ShippingProviderResource::class;
 }

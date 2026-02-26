@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Accounting\VoucherResource\Pages;
 
 use App\Filament\Resources\Accounting\VoucherResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateVoucher extends CreateRecord
+class CreateVoucher extends BaseCreateRecord
 {
     protected static string $resource = VoucherResource::class;
 

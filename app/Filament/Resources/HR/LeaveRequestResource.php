@@ -15,6 +15,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class LeaveRequestResource extends Resource
 {
@@ -263,10 +266,10 @@ class LeaveRequestResource extends Resource
                     })
                     ->visible(fn (LeaveRequest $record) => in_array($record->status, ['pending', 'approved']) && (auth()->user()?->can('hr.leave_requests.cancel') ?? false)),
                 
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn (LeaveRequest $record) => $record->status === 'pending' && (auth()->user()?->can('hr.leave_requests.update') ?? false)),
                 
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->visible(fn (LeaveRequest $record) => $record->status === 'pending' && (auth()->user()?->can('hr.leave_requests.delete') ?? false)),
             ])
             ->defaultSort('start_date', 'desc');

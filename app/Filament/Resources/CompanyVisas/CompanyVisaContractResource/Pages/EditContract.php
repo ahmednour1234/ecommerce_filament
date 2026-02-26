@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\CompanyVisas\CompanyVisaContractResource\Pages;
 
 use App\Filament\Resources\CompanyVisas\CompanyVisaContractResource;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditContract extends EditRecord
+class EditContract extends BaseEditRecord
 {
     protected static string $resource = CompanyVisaContractResource::class;
 }

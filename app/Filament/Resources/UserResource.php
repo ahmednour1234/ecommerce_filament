@@ -12,6 +12,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Spatie\Permission\Models\Role;
 
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 class UserResource extends Resource
 {
     use TranslatableNavigation;
@@ -78,8 +81,8 @@ class UserResource extends Resource
             ])
             ->filters([])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                EditAction::make(),
+                TableDeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),

@@ -4,16 +4,17 @@ namespace App\Filament\Resources\Accounting\VoucherResource\Pages;
 
 use App\Filament\Resources\Accounting\VoucherResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditVoucher extends EditRecord
+class EditVoucher extends BaseEditRecord
 {
     protected static string $resource = VoucherResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

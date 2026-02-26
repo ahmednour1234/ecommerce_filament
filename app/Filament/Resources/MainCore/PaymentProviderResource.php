@@ -14,6 +14,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Actions\EditAction;
+
 
 class PaymentProviderResource extends Resource
 {
@@ -90,7 +92,7 @@ class PaymentProviderResource extends Resource
                     ->falseLabel(tr('tables.payment_providers.filters.inactive_only', [], null, 'dashboard')),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

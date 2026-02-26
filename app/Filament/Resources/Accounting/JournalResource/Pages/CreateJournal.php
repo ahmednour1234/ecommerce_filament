@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Accounting\JournalResource\Pages;
 
 use App\Filament\Resources\Accounting\JournalResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateJournal extends CreateRecord
+class CreateJournal extends BaseCreateRecord
 {
     protected static string $resource = JournalResource::class;
 }

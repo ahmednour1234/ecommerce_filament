@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Accounting\AssetResource\Pages;
 
 use App\Filament\Resources\Accounting\AssetResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateAsset extends CreateRecord
+class CreateAsset extends BaseCreateRecord
 {
     protected static string $resource = AssetResource::class;
 }

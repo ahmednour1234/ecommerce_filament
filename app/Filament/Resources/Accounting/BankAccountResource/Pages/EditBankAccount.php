@@ -4,17 +4,18 @@ namespace App\Filament\Resources\Accounting\BankAccountResource\Pages;
 
 use App\Filament\Resources\Accounting\BankAccountResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class EditBankAccount extends EditRecord
+class EditBankAccount extends BaseEditRecord
 {
     protected static string $resource = BankAccountResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 

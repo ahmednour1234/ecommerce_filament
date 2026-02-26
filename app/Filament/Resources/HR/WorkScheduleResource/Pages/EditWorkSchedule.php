@@ -4,16 +4,17 @@ namespace App\Filament\Resources\HR\WorkScheduleResource\Pages;
 
 use App\Filament\Resources\HR\WorkScheduleResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditWorkSchedule extends EditRecord
+class EditWorkSchedule extends BaseEditRecord
 {
     protected static string $resource = WorkScheduleResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 

@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Finance\BranchTransactionResource\Pages;
 
 use App\Filament\Resources\Finance\BranchTransactionResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateBranchTransaction extends CreateRecord
+class CreateBranchTransaction extends BaseCreateRecord
 {
     protected static string $resource = BranchTransactionResource::class;
 

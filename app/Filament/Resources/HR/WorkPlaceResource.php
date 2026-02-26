@@ -11,6 +11,9 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class WorkPlaceResource extends Resource
 {
@@ -136,9 +139,9 @@ class WorkPlaceResource extends Resource
                         app(\App\Services\HR\WorkPlaceService::class)->toggleStatus($record);
                     })
                     ->visible(fn () => auth()->user()?->can('hr_work_places.update') ?? false),
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn () => auth()->user()?->can('hr_work_places.update') ?? false),
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->visible(fn () => auth()->user()?->can('hr_work_places.delete') ?? false),
             ])
             ->bulkActions([

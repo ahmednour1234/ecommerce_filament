@@ -16,6 +16,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rules\Unique;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class AgentLaborPriceResource extends Resource
 {
@@ -180,10 +183,10 @@ class AgentLaborPriceResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make()
                     ->label(tr('actions.view', [], null, 'dashboard') ?: 'View'),
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->label(tr('actions.edit', [], null, 'dashboard') ?: 'Edit')
                     ->visible(fn () => auth()->user()?->hasRole('super_admin') || auth()->user()?->can('recruitment.agent_prices.update') ?? false),
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->label(tr('actions.delete', [], null, 'dashboard') ?: 'Delete')
                     ->visible(fn () => auth()->user()?->can('recruitment.agent_prices.delete') ?? false),
             ])

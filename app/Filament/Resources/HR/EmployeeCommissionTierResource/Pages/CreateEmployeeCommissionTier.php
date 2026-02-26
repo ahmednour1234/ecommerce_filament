@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\HR\EmployeeCommissionTierResource\Pages;
 
 use App\Filament\Resources\HR\EmployeeCommissionTierResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateEmployeeCommissionTier extends CreateRecord
+class CreateEmployeeCommissionTier extends BaseCreateRecord
 {
     protected static string $resource = EmployeeCommissionTierResource::class;
 }

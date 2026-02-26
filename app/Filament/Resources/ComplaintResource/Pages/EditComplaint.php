@@ -4,9 +4,10 @@ namespace App\Filament\Resources\ComplaintResource\Pages;
 
 use App\Filament\Resources\ComplaintResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditComplaint extends EditRecord
+class EditComplaint extends BaseEditRecord
 {
     protected static string $resource = ComplaintResource::class;
 
@@ -14,7 +15,7 @@ class EditComplaint extends EditRecord
     {
         return [
             Actions\ViewAction::make(),
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

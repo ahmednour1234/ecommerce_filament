@@ -18,6 +18,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Validation\ValidationException;
 use App\Filament\Concerns\AccountingModuleGate;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class VoucherResource extends Resource
 {
@@ -211,8 +214,8 @@ class VoucherResource extends Resource
                     ->action(fn (Voucher $record) => static::createJournalEntryForVoucher($record))
                     ->visible(fn (Voucher $record) => is_null($record->journal_entry_id)),
 
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                EditAction::make(),
+                TableDeleteAction::make(),
             ])
             ->defaultSort('voucher_date', 'desc');
     }

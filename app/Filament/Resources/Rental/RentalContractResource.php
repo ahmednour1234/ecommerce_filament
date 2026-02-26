@@ -18,6 +18,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class RentalContractResource extends Resource
 {
@@ -377,8 +380,8 @@ class RentalContractResource extends Resource
                     ->url(fn ($record) => route('rental.contracts.invoice', $record))
                     ->openUrlInNewTab()
                     ->visible(fn () => auth()->user()?->can('rental.print.invoice')),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                EditAction::make(),
+                TableDeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

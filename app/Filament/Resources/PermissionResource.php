@@ -11,6 +11,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Spatie\Permission\Models\Permission;
 
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 class PermissionResource extends Resource
 {
     use TranslatableNavigation;
@@ -66,10 +69,10 @@ class PermissionResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn () => auth()->user()?->can('permissions.update') ?? false),
 
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->visible(fn () => auth()->user()?->can('permissions.delete') ?? false),
             ])
             ->bulkActions([

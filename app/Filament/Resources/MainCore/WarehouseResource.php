@@ -11,6 +11,9 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class WarehouseResource extends Resource
 {
@@ -117,9 +120,9 @@ class WarehouseResource extends Resource
                     ->falseLabel(tr('tables.warehouses.filters.inactive_only', [], null, 'dashboard')),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn () => auth()->user()?->can('warehouses.update') ?? false),
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->visible(fn () => auth()->user()?->can('warehouses.delete') ?? false),
             ])
             ->bulkActions([

@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Messaging\SmsTemplateResource\Pages;
 
 use App\Filament\Resources\Messaging\SmsTemplateResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateTemplate extends CreateRecord
+class CreateTemplate extends BaseCreateRecord
 {
     protected static string $resource = SmsTemplateResource::class;
 }

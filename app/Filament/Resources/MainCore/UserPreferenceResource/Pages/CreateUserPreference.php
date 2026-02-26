@@ -4,9 +4,9 @@ namespace App\Filament\Resources\MainCore\UserPreferenceResource\Pages;
 
 use App\Filament\Resources\MainCore\UserPreferenceResource;
 use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateUserPreference extends CreateRecord
+class CreateUserPreference extends BaseCreateRecord
 {
     protected static string $resource = UserPreferenceResource::class;
 }

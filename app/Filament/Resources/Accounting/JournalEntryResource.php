@@ -23,6 +23,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use App\Filament\Concerns\AccountingModuleGate;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class JournalEntryResource extends Resource
 {
@@ -629,14 +632,14 @@ class JournalEntryResource extends Resource
 
                 Tables\Actions\ViewAction::make(),
 
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn (JournalEntry $record) =>
                         !$record->is_posted &&
                         JournalEntryStatus::from($record->status ?? JournalEntryStatus::DRAFT->value)->canBeEdited() &&
                         (auth()->user()?->can('journal_entries.update') ?? false)
                     ),
 
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->visible(fn (JournalEntry $record) =>
                         !$record->is_posted &&
                         JournalEntryStatus::from($record->status ?? JournalEntryStatus::DRAFT->value)->canBeDeleted() &&

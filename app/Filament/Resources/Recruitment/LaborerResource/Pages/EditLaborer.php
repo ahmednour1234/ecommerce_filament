@@ -4,9 +4,10 @@ namespace App\Filament\Resources\Recruitment\LaborerResource\Pages;
 
 use App\Filament\Resources\Recruitment\LaborerResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditLaborer extends EditRecord
+class EditLaborer extends BaseEditRecord
 {
     protected static string $resource = LaborerResource::class;
 
@@ -15,7 +16,7 @@ class EditLaborer extends EditRecord
         return [
             Actions\ViewAction::make()
                 ->label(tr('general.actions.details', [], null, 'dashboard') ?: 'Details'),
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->label(tr('general.actions.delete', [], null, 'dashboard') ?: 'Delete'),
         ];
     }

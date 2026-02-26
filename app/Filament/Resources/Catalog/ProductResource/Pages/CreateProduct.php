@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Catalog\ProductResource\Pages;
 
 use App\Filament\Resources\Catalog\ProductResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateProduct extends CreateRecord
+class CreateProduct extends BaseCreateRecord
 {
     protected static string $resource = ProductResource::class;
 }

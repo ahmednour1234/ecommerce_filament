@@ -4,9 +4,10 @@ namespace App\Filament\Resources\ServiceTransfer\ServiceTransferResource\Pages;
 
 use App\Filament\Resources\ServiceTransfer\ServiceTransferResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditServiceTransfer extends EditRecord
+class EditServiceTransfer extends BaseEditRecord
 {
     protected static string $resource = ServiceTransferResource::class;
 
@@ -14,7 +15,7 @@ class EditServiceTransfer extends EditRecord
     {
         return [
             Actions\ViewAction::make(),
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 

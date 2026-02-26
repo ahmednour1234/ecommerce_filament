@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Recruitment\LaborerResource\Pages;
 
 use App\Filament\Resources\Recruitment\LaborerResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateLaborer extends CreateRecord
+class CreateLaborer extends BaseCreateRecord
 {
     protected static string $resource = LaborerResource::class;
 }

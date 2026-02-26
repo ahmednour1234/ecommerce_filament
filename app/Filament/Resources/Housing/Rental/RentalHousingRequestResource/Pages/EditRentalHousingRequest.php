@@ -4,9 +4,10 @@ namespace App\Filament\Resources\Housing\Rental\RentalHousingRequestResource\Pag
 
 use App\Filament\Resources\Housing\Rental\RentalHousingRequestResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditRentalHousingRequest extends EditRecord
+class EditRentalHousingRequest extends BaseEditRecord
 {
     protected static string $resource = RentalHousingRequestResource::class;
 
@@ -14,7 +15,7 @@ class EditRentalHousingRequest extends EditRecord
     {
         return [
             Actions\ViewAction::make(),
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

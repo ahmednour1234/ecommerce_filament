@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Catalog\BatchResource\Pages;
 
 use App\Filament\Resources\Catalog\BatchResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateBatch extends CreateRecord
+class CreateBatch extends BaseCreateRecord
 {
     protected static string $resource = BatchResource::class;
 }

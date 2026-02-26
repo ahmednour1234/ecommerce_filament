@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Sales\InvoiceResource\Pages;
 
 use App\Filament\Resources\Sales\InvoiceResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateInvoice extends CreateRecord
+class CreateInvoice extends BaseCreateRecord
 {
     protected static string $resource = InvoiceResource::class;
 }

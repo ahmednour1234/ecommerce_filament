@@ -13,6 +13,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 class ClientResource extends Resource
 {
     use TranslatableNavigation;
@@ -365,10 +368,10 @@ class ClientResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make()
                     ->label(tr('general.actions.details', [], null, 'dashboard') ?: 'Details'),
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->label(tr('general.actions.edit', [], null, 'dashboard') ?: 'Edit')
                     ->visible(fn () => auth()->user()?->can('clients.update') ?? false),
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->label(tr('general.actions.delete', [], null, 'dashboard') ?: 'Delete')
                     ->visible(fn () => auth()->user()?->can('clients.delete') ?? false),
             ])

@@ -13,6 +13,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Carbon\Carbon;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class ExcuseRequestResource extends Resource
 {
@@ -175,9 +178,9 @@ class ExcuseRequestResource extends Resource
                         app(\App\Services\HR\ExcuseRequestService::class)->reject($record, auth()->user());
                     })
                     ->visible(fn (ExcuseRequest $record) => $record->status === 'pending' && (auth()->user()?->can('hr_excuse_requests.reject') ?? false)),
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn (ExcuseRequest $record) => $record->status === 'pending' && (auth()->user()?->can('hr_excuse_requests.update') ?? false)),
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->visible(fn (ExcuseRequest $record) => $record->status === 'pending' && (auth()->user()?->can('hr_excuse_requests.delete') ?? false)),
             ])
             ->defaultSort('date', 'desc');

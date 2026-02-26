@@ -4,9 +4,10 @@ namespace App\Filament\Resources\ClientResource\Pages;
 
 use App\Filament\Resources\ClientResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditClient extends EditRecord
+class EditClient extends BaseEditRecord
 {
     protected static string $resource = ClientResource::class;
 
@@ -15,7 +16,7 @@ class EditClient extends EditRecord
         return [
             Actions\ViewAction::make()
                 ->label(tr('general.actions.details', [], null, 'dashboard') ?: 'Details'),
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->label(tr('general.actions.delete', [], null, 'dashboard') ?: 'Delete'),
         ];
     }

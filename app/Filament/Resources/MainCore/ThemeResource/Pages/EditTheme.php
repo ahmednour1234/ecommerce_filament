@@ -4,16 +4,17 @@ namespace App\Filament\Resources\MainCore\ThemeResource\Pages;
 
 use App\Filament\Resources\MainCore\ThemeResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditTheme extends EditRecord
+class EditTheme extends BaseEditRecord
 {
     protected static string $resource = ThemeResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

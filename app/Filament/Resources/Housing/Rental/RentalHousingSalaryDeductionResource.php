@@ -11,6 +11,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 class RentalHousingSalaryDeductionResource extends Resource
 {
     use TranslatableNavigation;
@@ -106,8 +109,8 @@ class RentalHousingSalaryDeductionResource extends Resource
             ])
             ->filters([])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                EditAction::make(),
+                TableDeleteAction::make(),
             ])
             ->defaultSort('deduction_date', 'desc');
     }

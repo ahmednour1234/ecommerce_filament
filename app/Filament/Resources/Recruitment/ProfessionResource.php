@@ -10,6 +10,9 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Filament\Actions\EditAction;
+use App\Filament\Actions\TableDeleteAction;
+
 
 class ProfessionResource extends Resource
 {
@@ -95,10 +98,10 @@ class ProfessionResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make()
                     ->label(tr('actions.view', [], null, 'dashboard') ?: 'View'),
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->label(tr('actions.edit', [], null, 'dashboard') ?: 'Edit')
                     ->visible(fn () => auth()->user()?->hasRole('super_admin') || auth()->user()?->can('recruitment.professions.update') ?? false),
-                Tables\Actions\DeleteAction::make()
+                TableDeleteAction::make()
                     ->label(tr('actions.delete', [], null, 'dashboard') ?: 'Delete')
                     ->visible(fn () => auth()->user()?->can('recruitment.professions.delete') ?? false),
             ])

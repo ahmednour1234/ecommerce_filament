@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\HR\WorkPlaceResource\Pages;
 
 use App\Filament\Resources\HR\WorkPlaceResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 
-class CreateWorkPlace extends CreateRecord
+class CreateWorkPlace extends BaseCreateRecord
 {
     protected static string $resource = WorkPlaceResource::class;
 

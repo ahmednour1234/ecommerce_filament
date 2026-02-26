@@ -6,9 +6,10 @@ use App\Filament\Resources\Accounting\JournalEntryResource;
 use App\Enums\Accounting\JournalEntryStatus;
 use App\Services\Accounting\JournalEntryService;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Actions\DeleteAction;
+use App\Filament\Pages\BaseEditRecord;
 
-class EditJournalEntry extends EditRecord
+class EditJournalEntry extends BaseEditRecord
 {
     protected static string $resource = JournalEntryResource::class;
 
@@ -20,7 +21,7 @@ class EditJournalEntry extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->visible(fn () => 
                     !$this->record->is_posted && 
                     JournalEntryStatus::from($this->record->status ?? JournalEntryStatus::DRAFT->value)->canBeDeleted() &&

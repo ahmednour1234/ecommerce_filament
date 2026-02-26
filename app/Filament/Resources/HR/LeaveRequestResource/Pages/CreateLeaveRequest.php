@@ -4,11 +4,11 @@ namespace App\Filament\Resources\HR\LeaveRequestResource\Pages;
 
 use App\Filament\Resources\HR\LeaveRequestResource;
 use App\Services\HR\LeaveRequestService;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\BaseCreateRecord;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
-class CreateLeaveRequest extends CreateRecord
+class CreateLeaveRequest extends BaseCreateRecord
 {
     protected static string $resource = LeaveRequestResource::class;
 
