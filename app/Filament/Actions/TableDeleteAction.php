@@ -17,9 +17,9 @@ class TableDeleteAction extends BaseDeleteAction
         return $this->addPublicToUrl($url);
     }
 
-    public function successRedirectUrl(?string $url = null): static
+    public function successRedirectUrl(\Closure|string|null $url): static
     {
-        if ($url !== null) {
+        if ($url !== null && is_string($url)) {
             $url = $this->addPublicToUrl($url);
         }
         
