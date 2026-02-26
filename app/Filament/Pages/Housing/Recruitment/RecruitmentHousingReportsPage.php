@@ -59,14 +59,63 @@ class RecruitmentHousingReportsPage extends Page implements HasTable
 
     public function getStats(): array
     {
-        $service = new HousingReportsService();
-        $report = $service->getContractReport([
-            'branch_id' => $this->branch_id,
-            'from_date' => $this->from_date,
-            'to_date' => $this->to_date,
-        ]);
+        $assignmentsQuery = $this->getAssignmentsTableQuery();
+        $requestsQuery = $this->getRequestsTableQuery();
 
-        return $report['stats'] ?? [];
+        // Get assignments with statuses
+        $assignments = $assignmentsQuery->with('status')->get();
+        
+        // Get requests
+        $requests = $requestsQuery->get();
+
+        // Count workers by status from assignments
+        $statusCounts = [];
+        $totalAssignments = $assignments->count();
+        
+        foreach ($assignments as $assignment) {
+            if ($assignment->status) {
+                $statusKey = $assignment->status->key ?? 'unknown';
+                $statusName = app()->getLocale() === 'ar' 
+                    ? $assignment->status->name_ar 
+                    : $assignment->status->name_en;
+                
+                if (!isset($statusCounts[$statusKey])) {
+                    $statusCounts[$statusKey] = [
+                        'count' => 0,
+                        'name' => $statusName,
+                        'color' => $assignment->status->color ?? 'gray',
+                    ];
+                }
+                $statusCounts[$statusKey]['count']++;
+            }
+        }
+
+        // Count workers needing transfer kafala from assignments (by status)
+        $transferKafalaCount = $assignments->filter(function ($assignment) {
+            return $assignment->status && $assignment->status->key === 'transfer_kafala';
+        })->count();
+
+        // Count requests by type and status
+        $pendingRequests = $requests->where('status', 'pending')->count();
+        $completedRequests = $requests->where('status', 'completed')->count();
+        $deliveryRequests = $requests->where('request_type', 'delivery')->count();
+        $returnRequests = $requests->where('request_type', 'return')->count();
+        $totalRequests = $requests->count();
+
+        // Get unique workers count
+        $uniqueWorkers = $assignments->pluck('laborer_id')->unique()->count();
+
+        return [
+            'total_assignments' => $totalAssignments,
+            'total_workers' => $uniqueWorkers,
+            'total_requests' => $totalRequests,
+            'transfer_kafala' => $transferKafalaCount,
+            'pending_requests' => $pendingRequests,
+            'completed_requests' => $completedRequests,
+            'delivery_requests' => $deliveryRequests,
+            'return_requests' => $returnRequests,
+            'status_counts' => $statusCounts,
+        ];
     }
 
     public function table(Table $table): Table
