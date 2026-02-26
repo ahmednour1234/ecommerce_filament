@@ -214,10 +214,6 @@ class AdminPanelProvider extends PanelProvider
                     ->label('تأشيرات الشركة')
                     ->collapsible(true),
 
-                \Filament\Navigation\NavigationGroup::make('إدارة التطبيق')
-                    ->label('إدارة التطبيق')
-                    ->collapsible(true),
-
                 \Filament\Navigation\NavigationGroup::make('الملف الشخصي')
                     ->label('الملف الشخصي')
                     ->collapsible(true),
@@ -248,6 +244,10 @@ class AdminPanelProvider extends PanelProvider
 
                 \Filament\Navigation\NavigationGroup::make('إدارة الموقع')
                     ->label('إدارة الموقع')
+                    ->collapsible(true),
+
+                \Filament\Navigation\NavigationGroup::make('إدارة التطبيق')
+                    ->label('إدارة التطبيق')
                     ->collapsible(true),
             ]);
     }
