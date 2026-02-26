@@ -19,7 +19,7 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
     protected static ?string $navigationGroup = 'إيواء الاستقدام';
     protected static ?string $navigationLabel = 'ادخالات الايواء';
     protected static ?int $navigationSort = 3;
-    protected static ?string $navigationTranslationKey = 'sidebar.housing.recruitment_housing.accommodation_entries';
+    protected static ?string $navigationTranslationKey = 'sidebar.recruitment_housing.accommodation_entries';
     protected static string $view = 'filament.pages.housing.create-accommodation-entry';
 
     public ?int $laborer_id = null;
@@ -32,7 +32,7 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
 
     public static function getNavigationLabel(): string
     {
-        return tr('sidebar.housing.recruitment_housing.accommodation_entries', [], null, 'dashboard') ?: 'ادخالات الايواء';
+        return tr('sidebar.recruitment_housing.accommodation_entries', [], null, 'dashboard') ?: 'ادخالات الايواء';
     }
 
     public function getTitle(): string
