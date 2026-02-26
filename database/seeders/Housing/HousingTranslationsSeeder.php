@@ -25,6 +25,7 @@ class HousingTranslationsSeeder extends Seeder
             'sidebar.recruitment_housing.dashboard' => ['en' => 'Dashboard', 'ar' => 'لوحة التحكم'],
             'sidebar.recruitment_housing.laborers_list' => ['en' => 'Laborers List', 'ar' => 'قائمة العمالة'],
             'sidebar.recruitment_housing.housing_requests' => ['en' => 'Housing Requests', 'ar' => 'طلبات الإيواء'],
+            'sidebar.recruitment_housing.requests' => ['en' => 'Housing Requests', 'ar' => 'طلبات الإيواء'],
             'sidebar.recruitment_housing.laborer_salaries' => ['en' => 'Laborer Salaries', 'ar' => 'رواتب العمالة'],
             'sidebar.recruitment_housing.laborer_leaves' => ['en' => 'Laborer Leaves', 'ar' => 'إجازات العمالة'],
             'sidebar.recruitment_housing.accommodation_entries' => ['en' => 'Accommodation Entries', 'ar' => 'إدخالات الإيواء'],
