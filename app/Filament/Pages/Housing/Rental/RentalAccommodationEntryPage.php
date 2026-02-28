@@ -122,7 +122,7 @@ class RentalAccommodationEntryPage extends Page implements HasForms
                         \Filament\Forms\Components\Select::make('building_id')
                             ->label(tr('housing.accommodation.building', [], null, 'dashboard') ?: 'المبنى')
                             ->options(function () {
-                                return \App\Models\Housing\Building::available()
+                                return \App\Models\Housing\Building::availableRental()
                                     ->get()
                                     ->mapWithKeys(fn ($building) => [
                                         $building->id => $building->name . ' (' . $building->available_capacity . ' ' . tr('common.available', [], null, 'dashboard') . ')'

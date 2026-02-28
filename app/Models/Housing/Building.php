@@ -16,6 +16,7 @@ class Building extends Model
     protected $table = 'housing_buildings';
 
     protected $fillable = [
+        'type',
         'code',
         'name_ar',
         'name_en',
@@ -71,8 +72,32 @@ class Building extends Model
             ->where('status', 'active');
     }
 
+    public function scopeAvailableRecruitment($query)
+    {
+        return $query->where('type', 'recruitment')
+            ->where('available_capacity', '>', 0)
+            ->where('status', 'active');
+    }
+
+    public function scopeAvailableRental($query)
+    {
+        return $query->where('type', 'rental')
+            ->where('available_capacity', '>', 0)
+            ->where('status', 'active');
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
+    }
+
+    public function scopeRecruitment($query)
+    {
+        return $query->where('type', 'recruitment');
+    }
+
+    public function scopeRental($query)
+    {
+        return $query->where('type', 'rental');
     }
 }

@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Filament\Resources\Housing;
+namespace App\Filament\Resources\Housing\Rental;
 
-use App\Filament\Resources\Housing\BuildingResource\Pages;
+use App\Filament\Resources\Housing\Rental\RentalBuildingResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
-use App\Models\MainCore\Branch;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,21 +12,20 @@ use Filament\Tables\Table;
 use App\Filament\Actions\EditAction;
 use App\Filament\Actions\TableDeleteAction;
 
-
-class BuildingResource extends Resource
+class RentalBuildingResource extends Resource
 {
     use TranslatableNavigation;
 
     protected static ?string $model = \App\Models\Housing\Building::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
-    protected static ?string $navigationGroup = 'إيواء الاستقدام';
+    protected static ?string $navigationGroup = 'إيواء التأجير';
     protected static ?string $navigationLabel = 'إدارة المباني';
     protected static ?int $navigationSort = 2;
 
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
     {
-        return parent::getEloquentQuery()->recruitment();
+        return parent::getEloquentQuery()->rental();
     }
 
     public static function form(Form $form): Form
@@ -37,7 +35,7 @@ class BuildingResource extends Resource
                 Forms\Components\Section::make(tr('housing_management.buildings_management', [], null, 'dashboard') ?: 'إدارة المباني')
                     ->schema([
                         Forms\Components\Hidden::make('type')
-                            ->default('recruitment'),
+                            ->default('rental'),
 
                         Forms\Components\TextInput::make('code')
                             ->label(tr('common.code', [], null, 'dashboard') ?: 'الكود')
@@ -180,9 +178,9 @@ class BuildingResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListBuildings::route('/'),
-            'create' => Pages\CreateBuilding::route('/create'),
-            'edit' => Pages\EditBuilding::route('/{record}/edit'),
+            'index' => Pages\ListRentalBuildings::route('/'),
+            'create' => Pages\CreateRentalBuilding::route('/create'),
+            'edit' => Pages\EditRentalBuilding::route('/{record}/edit'),
         ];
     }
 
