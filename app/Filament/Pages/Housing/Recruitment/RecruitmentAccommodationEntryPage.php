@@ -4,6 +4,7 @@ namespace App\Filament\Pages\Housing\Recruitment;
 
 use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\Recruitment\Laborer;
+use App\Models\Recruitment\Nationality;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
@@ -31,7 +32,7 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
     public ?int $building_id = null;
     public ?string $new_sponsor_name = null;
     public ?string $old_sponsor_name = null;
-    public ?string $nationality = null;
+    public ?int $nationality_id = null;
     public ?string $worker_passport_number = null;
     public ?string $new_sponsor_phone = null;
     public ?string $old_sponsor_phone = null;
@@ -146,8 +147,20 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                             ->label('اسم الكفيل القديم')
                             ->columnSpan(1),
 
-                        \Filament\Forms\Components\TextInput::make('nationality')
+                        \Filament\Forms\Components\Select::make('nationality_id')
                             ->label('الجنسية')
+                            ->options(function () {
+                                $allowedNames = ['الفلبين', 'بنغلادش', 'سريلانكا', 'اثيوبيا', 'اوغندا', 'كينيا', 'بورندي'];
+                                return Nationality::where('is_active', true)
+                                    ->whereIn('name_ar', $allowedNames)
+                                    ->get()
+                                    ->mapWithKeys(function ($nationality) {
+                                        $label = app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en;
+                                        return [$nationality->id => $label];
+                                    })
+                                    ->toArray();
+                            })
+                            ->searchable()
                             ->columnSpan(1),
 
                         \Filament\Forms\Components\TextInput::make('worker_passport_number')

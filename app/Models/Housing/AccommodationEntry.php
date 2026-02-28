@@ -4,6 +4,7 @@ namespace App\Models\Housing;
 
 use App\Models\MainCore\Branch;
 use App\Models\Recruitment\Laborer;
+use App\Models\Recruitment\Nationality;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -30,7 +31,7 @@ class AccommodationEntry extends Model
         'updated_by',
         'new_sponsor_name',
         'old_sponsor_name',
-        'nationality',
+        'nationality_id',
         'worker_passport_number',
         'new_sponsor_phone',
         'old_sponsor_phone',
@@ -111,6 +112,11 @@ class AccommodationEntry extends Model
     public function status(): BelongsTo
     {
         return $this->belongsTo(HousingStatus::class, 'status_id');
+    }
+
+    public function nationality(): BelongsTo
+    {
+        return $this->belongsTo(Nationality::class);
     }
 
     public function branch(): BelongsTo

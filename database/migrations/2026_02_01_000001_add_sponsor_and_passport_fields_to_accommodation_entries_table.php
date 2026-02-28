@@ -14,8 +14,9 @@ return new class extends Migration {
             if (!Schema::hasColumn('accommodation_entries', 'old_sponsor_name')) {
                 $table->string('old_sponsor_name')->nullable()->after('new_sponsor_name');
             }
-            if (!Schema::hasColumn('accommodation_entries', 'nationality')) {
-                $table->string('nationality')->nullable()->after('old_sponsor_name');
+            if (!Schema::hasColumn('accommodation_entries', 'nationality_id')) {
+                $table->unsignedBigInteger('nationality_id')->nullable()->after('old_sponsor_name');
+                $table->foreign('nationality_id')->references('id')->on('nationalities')->onDelete('set null');
             }
             if (!Schema::hasColumn('accommodation_entries', 'worker_passport_number')) {
                 $table->string('worker_passport_number')->nullable()->after('nationality');
@@ -38,8 +39,9 @@ return new class extends Migration {
             if (Schema::hasColumn('accommodation_entries', 'old_sponsor_name')) {
                 $table->dropColumn('old_sponsor_name');
             }
-            if (Schema::hasColumn('accommodation_entries', 'nationality')) {
-                $table->dropColumn('nationality');
+            if (Schema::hasColumn('accommodation_entries', 'nationality_id')) {
+                $table->dropForeign(['nationality_id']);
+                $table->dropColumn('nationality_id');
             }
             if (Schema::hasColumn('accommodation_entries', 'worker_passport_number')) {
                 $table->dropColumn('worker_passport_number');

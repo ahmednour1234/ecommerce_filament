@@ -4,6 +4,7 @@ namespace App\Filament\Pages\Housing\Rental;
 
 use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\Recruitment\Laborer;
+use App\Models\Recruitment\Nationality;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
@@ -26,8 +27,15 @@ class RentalAccommodationEntryPage extends Page implements HasForms
     public ?string $contract_no = null;
     public ?string $entry_type = null;
     public ?string $entry_date = null;
+    public ?string $exit_date = null;
     public ?int $status_id = null;
     public ?int $building_id = null;
+    public ?string $new_sponsor_name = null;
+    public ?string $old_sponsor_name = null;
+    public ?int $nationality_id = null;
+    public ?string $worker_passport_number = null;
+    public ?string $new_sponsor_phone = null;
+    public ?string $old_sponsor_phone = null;
 
     public function getTitle(): string
     {
@@ -94,6 +102,11 @@ class RentalAccommodationEntryPage extends Page implements HasForms
                             ->native(false)
                             ->columnSpan(1),
 
+                        \Filament\Forms\Components\DateTimePicker::make('exit_date')
+                            ->label(tr('housing.accommodation.exit_date', [], null, 'dashboard') ?: 'تاريخ خروج')
+                            ->native(false)
+                            ->columnSpan(1),
+
                         \Filament\Forms\Components\Select::make('status_id')
                             ->label(tr('housing.accommodation.status', [], null, 'dashboard') ?: 'الحالة')
                             ->options(function () {
@@ -119,7 +132,43 @@ class RentalAccommodationEntryPage extends Page implements HasForms
                             ->required()
                             ->searchable()
                             ->helperText(tr('housing.accommodation.available_buildings_note', [], null, 'dashboard') ?: 'يتم عرض المباني المتاحة فقط (السعة المتاحة > 0)')
-                            ->columnSpanFull(),
+                            ->columnSpan(1),
+
+                        \Filament\Forms\Components\TextInput::make('new_sponsor_name')
+                            ->label('اسم الكفيل الجديد')
+                            ->columnSpan(1),
+
+                        \Filament\Forms\Components\TextInput::make('old_sponsor_name')
+                            ->label('اسم الكفيل القديم')
+                            ->columnSpan(1),
+
+                        \Filament\Forms\Components\Select::make('nationality_id')
+                            ->label('الجنسية')
+                            ->options(function () {
+                                $allowedNames = ['الفلبين', 'بنغلادش', 'سريلانكا', 'اثيوبيا', 'اوغندا', 'كينيا', 'بورندي'];
+                                return Nationality::where('is_active', true)
+                                    ->whereIn('name_ar', $allowedNames)
+                                    ->get()
+                                    ->mapWithKeys(function ($nationality) {
+                                        $label = app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en;
+                                        return [$nationality->id => $label];
+                                    })
+                                    ->toArray();
+                            })
+                            ->searchable()
+                            ->columnSpan(1),
+
+                        \Filament\Forms\Components\TextInput::make('worker_passport_number')
+                            ->label('رقم جواز العامل')
+                            ->columnSpan(1),
+
+                        \Filament\Forms\Components\TextInput::make('new_sponsor_phone')
+                            ->label('رقم جوال الكفيل الجديد')
+                            ->columnSpan(1),
+
+                        \Filament\Forms\Components\TextInput::make('old_sponsor_phone')
+                            ->label('رقم جوال الكفيل القديم')
+                            ->columnSpan(1),
                     ])
                     ->columns(2),
             ])
