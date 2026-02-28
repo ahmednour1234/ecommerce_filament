@@ -249,6 +249,10 @@ class AdminPanelProvider extends PanelProvider
                 \Filament\Navigation\NavigationGroup::make('إدارة الموقع')
                     ->label('إدارة الموقع')
                     ->collapsible(true),
+
+                \Filament\Navigation\NavigationGroup::make('إدارة السائقين')
+                    ->label('إدارة السائقين')
+                    ->collapsible(true),
             ]);
     }
 
