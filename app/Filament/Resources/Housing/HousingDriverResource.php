@@ -21,8 +21,8 @@ class HousingDriverResource extends Resource
     protected static ?string $model = HousingDriver::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-truck';
-    protected static ?string $navigationGroup = 'قسم الإيواء';
-    protected static ?int $navigationSort = 8;
+    protected static ?string $navigationGroup = 'إدارة السائقين';
+    protected static ?int $navigationSort = 2;
     protected static ?string $navigationTranslationKey = 'sidebar.housing.drivers';
 
     public static function form(Form $form): Form
@@ -56,18 +56,6 @@ class HousingDriverResource extends Resource
                 Forms\Components\DatePicker::make('license_expiry')
                     ->label(tr('forms.housing.driver.license_expiry', [], null, 'dashboard') ?: 'انتهاء الرخصة')
                     ->required(),
-
-                Forms\Components\TextInput::make('car_type')
-                    ->label(tr('forms.housing.driver.car_type', [], null, 'dashboard') ?: 'نوع السيارة')
-                    ->maxLength(255),
-
-                Forms\Components\TextInput::make('car_model')
-                    ->label(tr('forms.housing.driver.car_model', [], null, 'dashboard') ?: 'موديل السيارة')
-                    ->maxLength(255),
-
-                Forms\Components\TextInput::make('plate_number')
-                    ->label(tr('forms.housing.driver.plate', [], null, 'dashboard') ?: 'رقم اللوحة')
-                    ->maxLength(255),
             ]);
     }
 
@@ -94,13 +82,10 @@ class HousingDriverResource extends Resource
                     ->sortable()
                     ->color(fn ($record) => $record->license_expiry < now() ? 'danger' : ($record->license_expiry < now()->addDays(30) ? 'warning' : null)),
 
-                Tables\Columns\TextColumn::make('car_type')
-                    ->label(tr('tables.housing.driver.car_type', [], null, 'dashboard') ?: 'نوع السيارة')
-                    ->searchable(),
-
-                Tables\Columns\TextColumn::make('plate_number')
-                    ->label(tr('tables.housing.driver.plate', [], null, 'dashboard') ?: 'رقم اللوحة')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('cars_count')
+                    ->label('عدد السيارات')
+                    ->counts('cars')
+                    ->sortable(),
             ])
             ->filters([])
             ->actions([

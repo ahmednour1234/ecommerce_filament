@@ -3,6 +3,7 @@
 namespace App\Models\Housing;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class HousingDriver extends Model
@@ -17,9 +18,6 @@ class HousingDriver extends Model
         'identity_number',
         'license_number',
         'license_expiry',
-        'car_type',
-        'car_model',
-        'plate_number',
     ];
 
     protected $casts = [
@@ -35,5 +33,10 @@ class HousingDriver extends Model
     public function scopeLicenseExpired($query)
     {
         return $query->where('license_expiry', '<', now());
+    }
+
+    public function cars(): HasMany
+    {
+        return $this->hasMany(HousingCar::class);
     }
 }
