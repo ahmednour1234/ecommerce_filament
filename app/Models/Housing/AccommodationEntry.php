@@ -28,6 +28,12 @@ class AccommodationEntry extends Model
         'branch_id',
         'created_by',
         'updated_by',
+        'new_sponsor_name',
+        'old_sponsor_name',
+        'nationality',
+        'worker_passport_number',
+        'new_sponsor_phone',
+        'old_sponsor_phone',
     ];
 
     protected $casts = [
