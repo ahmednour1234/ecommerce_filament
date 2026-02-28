@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\HR\HrLookupsSeeder::class, // HR default lookups
             \Database\Seeders\MainCore\MainCoreSeeder::class,
             \Database\Seeders\Housing\HousingStatusSeeder::class,
+            \Database\Seeders\Housing\HousingPermissionsSeeder::class, // Housing module permissions
             AllTranslationsSeeder::class, // All translations in one unified seeder
             \Database\Seeders\Catalog\CatalogSeeder::class, // Must be after MainCore (needs Currency)
             \Database\Seeders\Accounting\AccountingSeeder::class, // Must be after MainCore (needs Branch, CostCenter)

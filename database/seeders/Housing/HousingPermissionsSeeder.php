@@ -25,6 +25,7 @@ class HousingPermissionsSeeder extends Seeder
             'salaries' => ['view_any', 'view', 'create', 'update', 'delete'],
             'leaves' => ['view_any', 'view', 'create', 'update', 'delete', 'approve', 'register_return'],
             'drivers' => ['view_any', 'view', 'create', 'update', 'delete'],
+            'cars' => ['view_any', 'view', 'create', 'update', 'delete'],
             'units' => ['view_any', 'view', 'create', 'update', 'delete'],
             'accommodation_entries' => ['view_any', 'create', 'update', 'delete'],
             'statuses' => ['view_any', 'view', 'create', 'update', 'delete'],
