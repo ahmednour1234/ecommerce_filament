@@ -17,7 +17,7 @@ class ReceivedWorkersPage extends Page
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->can('recruitment_contracts.view_any') ?? false;
+        return false; // مخفي من القائمة الجانبية
     }
     protected static string $view = 'filament.pages.recruitment.received-workers';
 
