@@ -69,7 +69,7 @@ class SidebarNavigationTranslationsSeeder extends Seeder
 
             // Recruitment Contracts
             'sidebar.recruitment_contracts.recruitmentcontract' => ['en' => 'Recruitment Contracts', 'ar' => 'عقود الاستقدام'],
-            'sidebar.recruitment_contracts.receivingrecruitmentreport' => ['en' => 'Receiving Labor', 'ar' => 'استلام العمالة'],
+            'sidebar.recruitment_contracts.receivingrecruitmentreport' => ['en' => 'Receiving Labor', 'ar' => 'تفاصيل العمالة المستلمة'],
             'sidebar.recruitment_contracts.received_workers' => ['en' => 'Received Workers', 'ar' => 'العمالة المستلمة'],
             'sidebar.recruitment_contracts.expired_contracts' => ['en' => 'Expired Contracts', 'ar' => 'العقود المنتهية'],
             'sidebar.recruitment_contracts.contracts_reports' => ['en' => 'Recruitment Contracts Reports', 'ar' => 'تقارير عقود الاستقدام'],

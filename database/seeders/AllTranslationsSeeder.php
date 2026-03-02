@@ -623,13 +623,13 @@ class AllTranslationsSeeder extends Seeder
         // ============================================
         $this->command->info('Step 23: Receiving Recruitment translations...');
         $translations = array_merge($translations, [
-            'recruitment.receiving_labor.title' => ['en' => 'Receiving Labor', 'ar' => 'استلام العمالة'],
+            'recruitment.receiving_labor.title' => ['en' => 'Receiving Labor', 'ar' => 'تفاصيل العمالة المستلمة'],
             'recruitment.receiving_labor.table.client' => ['en' => 'Client', 'ar' => 'العميل'],
             'recruitment.receiving_labor.table.worker' => ['en' => 'Worker Name', 'ar' => 'اسم العامل'],
             'recruitment.receiving_labor.table.arrival_date' => ['en' => 'Arrival Date', 'ar' => 'تاريخ الوصول'],
             'recruitment.receiving_labor.status.received' => ['en' => 'Received', 'ar' => 'تم الاستلام'],
             'recruitment.receiving_labor.status.pending' => ['en' => 'Pending', 'ar' => 'قيد الانتظار'],
-            'sidebar.recruitment.receiving_labor' => ['en' => 'Receiving Labor', 'ar' => 'استلام العمالة'],
+            'sidebar.recruitment.receiving_labor' => ['en' => 'Receiving Labor', 'ar' => 'تفاصيل العمالة المستلمة'],
         ]);
 
         // ============================================

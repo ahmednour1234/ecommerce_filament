@@ -21,7 +21,7 @@ class ReceivingRecruitmentTranslationsSeeder extends Seeder
         $translations = [
             'recruitment.receiving_labor.title' => [
                 'en' => 'Receiving Labor',
-                'ar' => 'استلام العمالة',
+                'ar' => 'تفاصيل العمالة المستلمة',
             ],
             'recruitment.receiving_labor.breadcrumb_home' => [
                 'en' => 'Home',
@@ -93,7 +93,7 @@ class ReceivingRecruitmentTranslationsSeeder extends Seeder
             ],
             'sidebar.recruitment.receiving_labor' => [
                 'en' => 'Receiving Labor',
-                'ar' => 'استلام العمالة',
+                'ar' => 'تفاصيل العمالة المستلمة',
             ],
             'sidebar.recruitment_contracts' => [
                 'en' => 'Recruitment Contracts',

@@ -26,7 +26,7 @@ class ReceivingRecruitmentReportPage extends Page implements HasTable
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
     protected static ?string $navigationGroup = 'عقود الاستقدام';
-    protected static ?string $navigationLabel = 'استلام العمالة';
+    protected static ?string $navigationLabel = 'تفاصيل العمالة المستلمة';
     protected static ?int $navigationSort = 2;
     protected static string $view = 'filament.pages.recruitment.receiving-recruitment-report';
 
@@ -37,12 +37,12 @@ class ReceivingRecruitmentReportPage extends Page implements HasTable
 
     public function getTitle(): string
     {
-        return tr('recruitment.receiving_labor.title', [], null, 'dashboard') ?: 'استلام العمالة';
+        return tr('recruitment.receiving_labor.title', [], null, 'dashboard') ?: 'تفاصيل العمالة المستلمة';
     }
 
     public function getHeading(): string
     {
-        return tr('recruitment.receiving_labor.title', [], null, 'dashboard') ?: 'استلام العمالة';
+        return tr('recruitment.receiving_labor.title', [], null, 'dashboard') ?: 'تفاصيل العمالة المستلمة';
     }
 
     public function mount(): void
