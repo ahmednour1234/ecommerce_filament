@@ -156,7 +156,6 @@ class RecruitmentContractResource extends Resource
                         Forms\Components\Select::make('visa_type')
                             ->label(tr('recruitment_contract.fields.visa_type', [], null, 'dashboard') ?: 'Visa Type')
                             ->options([
-                                'paid' => tr('recruitment_contract.visa_type.paid', [], null, 'dashboard') ?: 'مدفوع',
                                 'domestic_labor' => tr('recruitment_contract.visa_type.domestic_labor', [], null, 'dashboard') ?: 'تأشيرة عمالة منزلية',
                                 'comprehensive_qualification' => tr('recruitment_contract.visa_type.comprehensive_qualification', [], null, 'dashboard') ?: 'تأشيرة التأهيل الشامل',
                             ])
@@ -172,8 +171,6 @@ class RecruitmentContractResource extends Resource
 
                         Forms\Components\DatePicker::make('visa_date')
                             ->label(tr('recruitment_contract.fields.visa_date', [], null, 'dashboard') ?: 'Visa Date')
-                            ->visible(fn (callable $get) => $get('visa_type') === 'paid')
-                            ->required(fn (callable $get) => $get('visa_type') === 'paid')
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('arrival_country_id')

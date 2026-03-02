@@ -103,7 +103,7 @@ class ListRecruitmentContracts extends ListRecords
             'sponsor_name' => 'SPONSOR NAME / اسم الكفيل',
             'branch_name' => 'BRANCH NAME / اسم الفرع',
             'visa_no' => 'VISA NO / رقم التأشيرة',
-            'visa_type' => 'VISA TYPE (paid/domestic_labor/comprehensive_qualification) / نوع التأشيرة',
+            'visa_type' => 'VISA TYPE (domestic_labor/comprehensive_qualification) / نوع التأشيرة',
             'visa_date' => 'VISA DATE (YYYY-MM-DD) / تاريخ التأشيرة',
             'arrival_country' => 'ARRIVAL COUNTRY / محطة الوصول',
             'departure_country' => 'DEPARTURE COUNTRY / محطة القدوم',
