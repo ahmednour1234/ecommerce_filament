@@ -3,8 +3,8 @@
 namespace Database\Seeders\Messaging;
 
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class MessagingRoleSeeder extends Seeder
 {
@@ -12,12 +12,9 @@ class MessagingRoleSeeder extends Seeder
     {
         $this->command->info('Creating Messaging Manager role...');
 
-        $role = Role::firstOrCreate([
-            'name' => 'مدير قسم الرسائل',
-            'guard_name' => 'web',
-        ]);
+        $role = Role::firstOrCreate(['name' => 'مدير قسم الرسائل', 'guard_name' => 'web']);
 
-        $messagingPermissions = Permission::whereIn('name', [
+        $permissions = [
             'view_any_message_contacts',
             'create_message_contacts',
             'update_message_contacts',
@@ -39,10 +36,17 @@ class MessagingRoleSeeder extends Seeder
             'manage_sms_templates',
             'manage_sms_settings',
             'send_sms',
-        ])->get();
+        ];
 
-        $role->syncPermissions($messagingPermissions);
+        $permissionModels = Permission::whereIn('name', $permissions)->get();
+        $role->syncPermissions($permissionModels);
 
-        $this->command->info('✓ Messaging Manager role created with all messaging permissions');
+        $this->command->info('✓ Messaging Manager role created with ' . $permissionModels->count() . ' permissions');
+
+        $superAdmin = Role::where('name', 'super_admin')->orWhere('name', 'Super Admin')->first();
+        if ($superAdmin) {
+            $superAdmin->givePermissionTo($permissionModels);
+            $this->command->info('✓ All messaging permissions assigned to Super Admin role');
+        }
     }
 }
