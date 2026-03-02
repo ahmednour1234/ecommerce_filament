@@ -44,20 +44,20 @@ class GenerateModuleRoleSeeders extends Command
 
         foreach ($permissionSeeders as $seederPath => $seederClass) {
             $moduleName = $this->extractModuleName($seederPath);
-            
+
             if (!$moduleName) {
                 continue;
             }
 
             $permissions = $this->extractPermissions($seederPath);
-            
+
             if (empty($permissions)) {
                 $this->warn("⚠ Could not extract permissions from: {$seederPath}");
                 continue;
             }
 
             $roleSeederPath = $this->generateRoleSeeder($moduleName, $permissions, $seederPath);
-            
+
             if ($roleSeederPath) {
                 $created++;
                 $this->info("✓ Created: {$roleSeederPath}");
@@ -78,7 +78,7 @@ class GenerateModuleRoleSeeders extends Command
     protected function findPermissionSeeders(): array
     {
         $seeders = [];
-        
+
         $paths = [
             database_path('seeders'),
             base_path('Modules'),
@@ -90,17 +90,17 @@ class GenerateModuleRoleSeeders extends Command
             }
 
             $files = File::allFiles($basePath);
-            
+
             foreach ($files as $file) {
                 $path = $file->getPathname();
                 $filename = $file->getFilename();
-                
-                if (str_contains($filename, 'PermissionsSeeder.php') && 
+
+                if (str_contains($filename, 'PermissionsSeeder.php') &&
                     !str_contains($filename, 'RoleSeeder')) {
-                    
+
                     $relativePath = str_replace(base_path() . DIRECTORY_SEPARATOR, '', $path);
                     $className = $this->getClassNameFromPath($path);
-                    
+
                     if ($className) {
                         $seeders[$path] = $className;
                     }
@@ -114,7 +114,7 @@ class GenerateModuleRoleSeeders extends Command
     protected function getClassNameFromPath(string $path): ?string
     {
         $content = File::get($path);
-        
+
         if (preg_match('/namespace\s+([^;]+);/', $content, $namespaceMatch) &&
             preg_match('/class\s+(\w+)/', $content, $classMatch)) {
             return $namespaceMatch[1] . '\\' . $classMatch[1];
@@ -127,13 +127,18 @@ class GenerateModuleRoleSeeders extends Command
     {
         $pathParts = explode(DIRECTORY_SEPARATOR, $path);
         $filename = basename($path, '.php');
-        
+
         $moduleName = str_replace('PermissionsSeeder', '', $filename);
-        
+        $moduleName = str_replace('PermissionSeeder', '', $moduleName);
+
+        if (empty($moduleName) || $moduleName === $filename) {
+            return null;
+        }
+
         if (str_contains($path, 'Modules')) {
-            foreach ($pathParts as $part) {
-                if ($part === 'Modules' && isset($pathParts[array_search($part, $pathParts) + 1])) {
-                    $moduleName = $pathParts[array_search($part, $pathParts) + 1];
+            foreach ($pathParts as $index => $part) {
+                if ($part === 'Modules' && isset($pathParts[$index + 1])) {
+                    $moduleName = $pathParts[$index + 1];
                     break;
                 }
             }
@@ -146,6 +151,81 @@ class GenerateModuleRoleSeeders extends Command
     {
         $content = File::get($path);
         $permissions = [];
+
+        $modulePrefix = $this->extractModuleName($path);
+        if ($modulePrefix) {
+            $modulePrefix = strtolower($modulePrefix);
+        }
+
+        $loopPatterns = [
+            '/foreach\s*\(\[(.*?)\]\s+as\s+\$action\)/s',
+            '/foreach\s*\(\[(.*?)\]\s+as\s+\$.*\)/s',
+            '/foreach\s*\(\[(.*?)\]\s+as\s+\$item\)/s',
+        ];
+
+        foreach ($loopPatterns as $pattern) {
+            if (preg_match_all($pattern, $content, $matches, PREG_SET_ORDER)) {
+                foreach ($matches as $match) {
+                    $arrayContent = $match[1] ?? '';
+                    if (preg_match_all('/["\']([^"\']+)["\']/', $arrayContent, $items)) {
+                        $actions = $items[1];
+
+                        $permNamePattern = '/\$permName\s*=\s*["\']([^"\']+)["\']/';
+                        if (preg_match($permNamePattern, $content, $permNameMatch)) {
+                            $permTemplate = $permNameMatch[1];
+
+                            foreach ($actions as $action) {
+                                $permission = str_replace('{$action}', $action, $permTemplate);
+                                $permission = str_replace('{$resource}', $modulePrefix ?? '', $permission);
+                                if (str_contains($permission, '.')) {
+                                    $permissions[] = $permission;
+                                }
+                            }
+                        } else {
+                            $resourcePattern = '/\$resources\s*=\s*\[(.*?)\];/s';
+                            if (preg_match($resourcePattern, $content, $resourceMatch)) {
+                                $resourcesContent = $resourceMatch[1];
+                                if (preg_match_all('/["\']([^"\']+)["\']/', $resourcesContent, $resourceItems)) {
+                                    $resources = $resourceItems[1];
+                                    $actionArray = ['view_any', 'view', 'create', 'update', 'delete'];
+
+                                    foreach ($resources as $resource) {
+                                        foreach ($actionArray as $action) {
+                                            if ($modulePrefix) {
+                                                $permission = "{$modulePrefix}.{$resource}.{$action}";
+                                            } else {
+                                                $permission = "{$resource}.{$action}";
+                                            }
+                                            if (str_contains($permission, '.')) {
+                                                $permissions[] = $permission;
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                $resourcePattern = '/\$resource\s*=\s*["\']([^"\']+)["\']/';
+                                if (preg_match($resourcePattern, $content, $resourceMatch)) {
+                                    $resource = $resourceMatch[1];
+                                    foreach ($actions as $action) {
+                                        $permission = "{$resource}.{$action}";
+                                        if (str_contains($permission, '.')) {
+                                            $permissions[] = $permission;
+                                        }
+                                    }
+                                } elseif ($modulePrefix) {
+                                    foreach ($actions as $action) {
+                                        $permission = "{$modulePrefix}.{$action}";
+                                        if (str_contains($permission, '.')) {
+                                            $permissions[] = $permission;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         $arrayPatterns = [
             '/\$permissions\s*=\s*\[(.*?)\];/s',
@@ -181,10 +261,12 @@ class GenerateModuleRoleSeeders extends Command
 
         $permissions = array_unique($permissions);
         $permissions = array_filter($permissions, function($perm) {
-            return str_contains($perm, '.') && 
-                   strlen($perm) > 3 && 
+            return str_contains($perm, '.') &&
+                   strlen($perm) > 3 &&
+                   strlen($perm) < 100 &&
                    !str_contains($perm, 'guard_name') &&
-                   !str_contains($perm, 'name');
+                   !str_contains($perm, 'name') &&
+                   !in_array($perm, ['web', 'view', 'create', 'update', 'delete', 'restore', 'force_delete']);
         });
 
         return array_values($permissions);
@@ -193,10 +275,10 @@ class GenerateModuleRoleSeeders extends Command
     protected function generateRoleSeeder(string $moduleName, array $permissions, string $permissionSeederPath): ?string
     {
         $roleName = $this->moduleRoleNames[$moduleName] ?? "مدير {$moduleName}";
-        
+
         $pathParts = explode(DIRECTORY_SEPARATOR, $permissionSeederPath);
         $isModule = str_contains($permissionSeederPath, 'Modules');
-        
+
         if ($isModule) {
             $moduleIndex = array_search('Modules', $pathParts);
             $moduleDir = $pathParts[$moduleIndex + 1] ?? $moduleName;
@@ -205,20 +287,29 @@ class GenerateModuleRoleSeeders extends Command
             $className = "{$moduleName}RoleSeeder";
         } else {
             $seederIndex = array_search('seeders', $pathParts);
-            $subDir = $pathParts[$seederIndex + 1] ?? '';
-            
-            if ($subDir && $subDir !== 'seeders') {
+            $subDir = null;
+
+            if ($seederIndex !== false && isset($pathParts[$seederIndex + 1])) {
+                $potentialSubDir = $pathParts[$seederIndex + 1];
+                if ($potentialSubDir !== 'seeders' &&
+                    !str_ends_with($potentialSubDir, 'PermissionsSeeder') &&
+                    !str_ends_with($potentialSubDir, 'PermissionSeeder')) {
+                    $subDir = $potentialSubDir;
+                }
+            }
+
+            if ($subDir) {
                 $seederDir = database_path("seeders/{$subDir}");
                 $namespace = "Database\\Seeders\\{$subDir}";
             } else {
                 $seederDir = database_path('seeders');
                 $namespace = "Database\\Seeders";
             }
-            
+
             $className = "{$moduleName}RoleSeeder";
         }
 
-        if (!File::exists($seederDir)) {
+        if (!File::isDirectory($seederDir)) {
             File::makeDirectory($seederDir, 0755, true);
         }
 
