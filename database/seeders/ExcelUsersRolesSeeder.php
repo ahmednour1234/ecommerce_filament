@@ -89,12 +89,14 @@ class ExcelUsersRolesSeeder extends Seeder
         ];
 
         // 4) Arabic module keywords -> module_key used by PermissionGrouper
+        // ترتيب مهم: الأكثر تحديداً أولاً (مثل "عقود الاستقدام" قبل "الاستقدام")
         $arabicModuleToKey = [
             'لوحة التحكم' => 'dashboard',
             'الموارد البشرية' => 'hr',
             'المحاسبة' => 'accounting',
             'الحسابات' => 'accounting',
-            'عقود الاستقدام' => 'recruitment',
+            'عقود الاستقدام' => 'recruitment_contracts', // مهم: يجب أن يكون recruitment_contracts وليس recruitment
+            'الاستقدام عقود' => 'recruitment_contracts', // للبحث المرن (ترتيب مختلف)
             'الاستقدام' => 'recruitment',
             'الإيواء' => 'housing',
             'التأجير' => 'rental',
@@ -269,17 +271,54 @@ class ExcelUsersRolesSeeder extends Seeder
 
         $found = [];
 
-        // direct contains search on full text too
+        // ترتيب البحث: الأكثر تحديداً أولاً
+        // نبحث في النص الكامل أولاً للأمور المحددة مثل "عقود الاستقدام"
+        $specificPatterns = [
+            'عقود الاستقدام' => 'recruitment_contracts',
+            'الاستقدام عقود' => 'recruitment_contracts',
+        ];
+
+        foreach ($specificPatterns as $pattern => $key) {
+            if (Str::contains($text, $pattern)) {
+                $found[] = $key;
+            }
+        }
+
+        // ثم نبحث في الأجزاء المنفصلة
+        foreach ($parts as $p) {
+            if ($p === '') continue;
+
+            // البحث عن الأنماط المحددة في الجزء
+            foreach ($specificPatterns as $pattern => $key) {
+                if (Str::contains($p, $pattern)) {
+                    $found[] = $key;
+                }
+            }
+        }
+
+        // ثم البحث العام في النص الكامل
         foreach ($arabicModuleToKey as $ar => $key) {
+            // نتخطى الأنماط المحددة لأننا بحثنا عنها بالفعل
+            if (isset($specificPatterns[$ar])) {
+                continue;
+            }
+
             if (Str::contains($text, $ar)) {
                 $found[] = $key;
             }
         }
 
-        // also scan parts
+        // وأيضاً في الأجزاء المنفصلة
         foreach ($parts as $p) {
+            if ($p === '') continue;
+
             foreach ($arabicModuleToKey as $ar => $key) {
-                if ($p !== '' && Str::contains($p, $ar)) {
+                // نتخطى الأنماط المحددة
+                if (isset($specificPatterns[$ar])) {
+                    continue;
+                }
+
+                if (Str::contains($p, $ar)) {
                     $found[] = $key;
                 }
             }
