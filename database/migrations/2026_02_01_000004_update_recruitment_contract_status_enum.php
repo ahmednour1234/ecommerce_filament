@@ -7,7 +7,10 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        // First, update existing data to map old statuses to new ones
+        // Step 1: Change column to VARCHAR temporarily to allow any values
+        DB::statement("ALTER TABLE recruitment_contracts MODIFY COLUMN status VARCHAR(255) DEFAULT 'new'");
+
+        // Step 2: Update existing data to map old statuses to new ones
         $statusMapping = [
             'foreign_embassy_approval' => 'external_office_approval',
             'external_sending_office_approval' => 'external_office_approval',
@@ -36,7 +39,27 @@ return new class extends Migration {
                 ->update(['status' => $newStatus]);
         }
 
-        // Now update the enum
+        // Step 3: Set any remaining invalid statuses to 'new'
+        $validStatuses = [
+            'new',
+            'external_office_approval',
+            'contract_accepted_external_office',
+            'waiting_approval',
+            'contract_accepted_labor_ministry',
+            'sent_to_saudi_embassy',
+            'visa_issued',
+            'waiting_flight_booking',
+            'arrival_scheduled',
+            'received',
+            'return_during_warranty',
+            'runaway'
+        ];
+
+        DB::table('recruitment_contracts')
+            ->whereNotIn('status', $validStatuses)
+            ->update(['status' => 'new']);
+
+        // Step 4: Now update the enum with new values
         DB::statement("ALTER TABLE recruitment_contracts MODIFY COLUMN status ENUM(
             'new',
             'external_office_approval',
@@ -55,7 +78,10 @@ return new class extends Migration {
 
     public function down(): void
     {
-        // Map new statuses back to old ones (approximate mapping)
+        // Step 1: Change to VARCHAR
+        DB::statement("ALTER TABLE recruitment_contracts MODIFY COLUMN status VARCHAR(255) DEFAULT 'new'");
+
+        // Step 2: Map new statuses back to old ones (approximate mapping)
         $reverseMapping = [
             'external_office_approval' => 'external_sending_office_approval',
             'contract_accepted_external_office' => 'accepted_by_external_sending_office',
@@ -72,6 +98,7 @@ return new class extends Migration {
                 ->update(['status' => $oldStatus]);
         }
 
+        // Step 3: Update enum to old values
         DB::statement("ALTER TABLE recruitment_contracts MODIFY COLUMN status ENUM(
             'new',
             'foreign_embassy_approval',
