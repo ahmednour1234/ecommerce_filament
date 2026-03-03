@@ -157,10 +157,6 @@ class RecruitmentContractResource extends Resource
                             ->maxLength(255)
                             ->columnSpan(1),
 
-                        Forms\Components\DatePicker::make('visa_date')
-                            ->label(tr('recruitment_contract.fields.visa_date', [], null, 'dashboard') ?: 'Visa Date')
-                            ->columnSpan(1),
-
                         Forms\Components\Select::make('arrival_country_id')
                             ->label(tr('recruitment_contract.fields.arrival_country', [], null, 'dashboard') ?: 'محطة الوصول')
                             ->options([
@@ -225,7 +221,6 @@ class RecruitmentContractResource extends Resource
                         Forms\Components\Radio::make('status')
                             ->label(tr('recruitment_contract.fields.status', [], null, 'dashboard') ?: 'Status')
                             ->options(function ($record) {
-                                $options = [];
                                 $statusLabels = [
                                     'new' => tr('recruitment_contract.status.new', [], null, 'dashboard') ?: 'جديد',
                                     'external_office_approval' => tr('recruitment_contract.status.external_office_approval', [], null, 'dashboard') ?: 'موافقة المكتب الخارجي',
@@ -247,26 +242,22 @@ class RecruitmentContractResource extends Resource
                                     
                                     foreach ($statusLogs as $log) {
                                         if (!isset($statusDates[$log->new_status])) {
-                                            $statusDates[$log->new_status] = $log->created_at;
+                                            $statusDates[$log->new_status] = $log->created_at->format('Y-m-d');
                                         }
                                     }
                                     
                                     foreach ($statusLabels as $status => $label) {
                                         if (isset($statusDates[$status])) {
-                                            $date = $statusDates[$status]->format('Y-m-d');
-                                            $options[$status] = "{$label} ({$date})";
-                                        } else {
-                                            $options[$status] = $label;
+                                            $statusLabels[$status] = "{$label} ({$statusDates[$status]})";
                                         }
                                     }
-                                } else {
-                                    $options = $statusLabels;
                                 }
 
-                                return $options;
+                                return $statusLabels;
                             })
                             ->required()
                             ->default('new')
+                            ->reactive()
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('worker_id')
