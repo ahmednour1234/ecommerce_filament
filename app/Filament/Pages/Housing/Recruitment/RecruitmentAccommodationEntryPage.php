@@ -30,12 +30,8 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
     public ?string $exit_date = null;
     public ?int $status_id = null;
     public ?int $building_id = null;
-    public ?string $new_sponsor_name = null;
-    public ?string $old_sponsor_name = null;
     public ?int $nationality_id = null;
     public ?string $worker_passport_number = null;
-    public ?string $new_sponsor_phone = null;
-    public ?string $old_sponsor_phone = null;
 
     public static function getNavigationLabel(): string
     {
@@ -139,14 +135,6 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                             ->helperText(tr('housing.accommodation.available_buildings_note', [], null, 'dashboard') ?: 'يتم عرض المباني المتاحة فقط (السعة المتاحة > 0)')
                             ->columnSpan(1),
 
-                        \Filament\Forms\Components\TextInput::make('new_sponsor_name')
-                            ->label('اسم الكفيل الجديد')
-                            ->columnSpan(1),
-
-                        \Filament\Forms\Components\TextInput::make('old_sponsor_name')
-                            ->label('اسم الكفيل القديم')
-                            ->columnSpan(1),
-
                         \Filament\Forms\Components\Select::make('nationality_id')
                             ->label('الجنسية')
                             ->options(function () {
@@ -165,14 +153,6 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
 
                         \Filament\Forms\Components\TextInput::make('worker_passport_number')
                             ->label('رقم جواز العامل')
-                            ->columnSpan(1),
-
-                        \Filament\Forms\Components\TextInput::make('new_sponsor_phone')
-                            ->label('رقم جوال الكفيل الجديد')
-                            ->columnSpan(1),
-
-                        \Filament\Forms\Components\TextInput::make('old_sponsor_phone')
-                            ->label('رقم جوال الكفيل القديم')
                             ->columnSpan(1),
                     ])
                     ->columns(2),
