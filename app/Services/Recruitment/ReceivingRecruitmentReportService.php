@@ -13,9 +13,48 @@ class ReceivingRecruitmentReportService
      */
     public function getBaseQuery(): Builder
     {
-        return RecruitmentContract::query()
+        $query = RecruitmentContract::query()
             ->received()
             ->with(['client', 'worker', 'creator']);
+
+        $contractsWithoutDates = RecruitmentContract::query()
+            ->received()
+            ->whereNull('arrival_date')
+            ->where(function ($q) {
+                $q->whereNotNull('visa_date')
+                  ->orWhere('status', 'received');
+            })
+            ->with('statusLogs')
+            ->get();
+
+        foreach ($contractsWithoutDates as $contract) {
+            $arrivalDate = null;
+
+            if ($contract->visa_date) {
+                $arrivalDate = \Carbon\Carbon::parse($contract->visa_date);
+            } else {
+                $receivedLog = $contract->statusLogs()
+                    ->where('new_status', 'received')
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+                
+                if ($receivedLog) {
+                    $arrivalDate = $receivedLog->status_date 
+                        ? \Carbon\Carbon::parse($receivedLog->status_date)
+                        : \Carbon\Carbon::parse($receivedLog->created_at);
+                }
+            }
+
+            if ($arrivalDate) {
+                $contract->updateQuietly([
+                    'arrival_date' => $arrivalDate->toDateString(),
+                    'trial_end_date' => $arrivalDate->copy()->addDays(90)->toDateString(),
+                    'contract_end_date' => $arrivalDate->copy()->addYears(2)->toDateString(),
+                ]);
+            }
+        }
+
+        return $query;
     }
 
     /**
