@@ -22,7 +22,7 @@ class ReceivingRecruitmentReportPage extends Page implements HasTable
     use InteractsWithTable;
     use TranslatableNavigation;
 
-    protected ReceivingRecruitmentReportService $reportService;
+    protected ?ReceivingRecruitmentReportService $reportService = null;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
     protected static ?string $navigationGroup = 'عقود الاستقدام';
@@ -45,15 +45,23 @@ class ReceivingRecruitmentReportPage extends Page implements HasTable
         return tr('recruitment.receiving_labor.title', [], null, 'dashboard') ?: 'تفاصيل العمالة المستلمة';
     }
 
+    protected function getReportService(): ReceivingRecruitmentReportService
+    {
+        if ($this->reportService === null) {
+            $this->reportService = app(ReceivingRecruitmentReportService::class);
+        }
+        return $this->reportService;
+    }
+
     public function mount(): void
     {
-        $this->reportService = app(ReceivingRecruitmentReportService::class);
+        $this->getReportService();
     }
 
     public function table(Table $table): Table
     {
         return $table
-            ->query($this->reportService->getBaseQuery())
+            ->query($this->getReportService()->getBaseQuery())
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->label(tr('recruitment.receiving_labor.table.id', [], null, 'dashboard') ?: 'رقم')
@@ -262,9 +270,9 @@ class ReceivingRecruitmentReportPage extends Page implements HasTable
         $tableQuery = $table->getQuery();
         $contracts = $tableQuery->get();
 
-        $headers = $this->reportService->getExportHeaders();
+        $headers = $this->getReportService()->getExportHeaders();
         $rows = $contracts->map(function ($contract) {
-            $formatted = $this->reportService->formatContractForExport($contract);
+            $formatted = $this->getReportService()->formatContractForExport($contract);
             return [
                 $formatted['id'],
                 $formatted['contract_no'],
