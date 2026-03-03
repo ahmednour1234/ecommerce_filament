@@ -239,14 +239,14 @@ class RecruitmentContractResource extends Resource
                                 if ($record && $record->exists) {
                                     $statusLogs = $record->statusLogs()->orderBy('created_at', 'desc')->get();
                                     $statusDates = [];
-                                    
+
                                     foreach ($statusLogs as $log) {
                                         if (!isset($statusDates[$log->new_status])) {
                                             $statusDate = $log->status_date ?: $log->created_at->format('Y-m-d');
                                             $statusDates[$log->new_status] = $statusDate;
                                         }
                                     }
-                                    
+
                                     foreach ($statusLabels as $status => $label) {
                                         if (isset($statusDates[$status])) {
                                             $statusLabels[$status] = "{$label} ({$statusDates[$status]})";
@@ -278,33 +278,6 @@ class RecruitmentContractResource extends Resource
                             ->default(now())
                             ->required()
                             ->visible(fn (callable $get) => $get('status') !== null)
-                            ->columnSpan(1),
-
-                        Forms\Components\DatePicker::make('arrival_date')
-                            ->label('تاريخ الوصول')
-                            ->nullable()
-                            ->reactive()
-                            ->afterStateUpdated(function (callable $set, $state) {
-                                if ($state) {
-                                    $arrivalDate = \Carbon\Carbon::parse($state);
-                                    $set('trial_end_date', $arrivalDate->copy()->addDays(90)->format('Y-m-d'));
-                                    $set('contract_end_date', $arrivalDate->copy()->addYears(2)->format('Y-m-d'));
-                                }
-                            })
-                            ->columnSpan(1),
-
-                        Forms\Components\DatePicker::make('trial_end_date')
-                            ->label('تاريخ نهاية فترة التجربة')
-                            ->disabled()
-                            ->dehydrated()
-                            ->visible(fn (callable $get) => $get('arrival_date') !== null)
-                            ->columnSpan(1),
-
-                        Forms\Components\DatePicker::make('contract_end_date')
-                            ->label('تاريخ انتهاء العقد')
-                            ->disabled()
-                            ->dehydrated()
-                            ->visible(fn (callable $get) => $get('arrival_date') !== null)
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('payment_status')
