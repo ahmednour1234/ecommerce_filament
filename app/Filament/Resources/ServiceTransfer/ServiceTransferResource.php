@@ -11,6 +11,7 @@ use App\Models\Sales\Customer;
 use App\Models\Recruitment\Laborer;
 use App\Models\Recruitment\Nationality;
 use App\Models\Package;
+use App\Data\SaudiGovernorates;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -71,6 +72,16 @@ class ServiceTransferResource extends Resource
                             })
                             ->required()
                             ->searchable()
+                            ->reactive()
+                            ->afterStateUpdated(function (callable $set, $state) {
+                                if ($state) {
+                                    $customer = Customer::find($state);
+                                    if ($customer) {
+                                        $set('customer_phone', $customer->phone);
+                                        $set('customer_city', $customer->city);
+                                    }
+                                }
+                            })
                             ->createOptionForm([
                                 Forms\Components\TextInput::make('name')
                                     ->label('الاسم')
@@ -93,6 +104,23 @@ class ServiceTransferResource extends Resource
                             })
                             ->columnSpan(1),
 
+                        Forms\Components\TextInput::make('customer_id_number')
+                            ->label('رقم هوية العميل')
+                            ->maxLength(255)
+                            ->columnSpan(1),
+
+                        Forms\Components\TextInput::make('customer_phone')
+                            ->label('رقم جوال العميل')
+                            ->tel()
+                            ->maxLength(50)
+                            ->columnSpan(1),
+
+                        Forms\Components\Select::make('customer_city')
+                            ->label('بلد العميل')
+                            ->options(SaudiGovernorates::all())
+                            ->searchable()
+                            ->columnSpan(1),
+
                         Forms\Components\Select::make('worker_id')
                             ->label('العاملة')
                             ->relationship('worker', 'name_ar')
@@ -108,6 +136,15 @@ class ServiceTransferResource extends Resource
                             })
                             ->required()
                             ->searchable()
+                            ->reactive()
+                            ->afterStateUpdated(function (callable $set, $state) {
+                                if ($state) {
+                                    $worker = Laborer::find($state);
+                                    if ($worker) {
+                                        $set('worker_passport_number', $worker->passport_number);
+                                    }
+                                }
+                            })
                             ->createOptionForm([
                                 Forms\Components\TextInput::make('name_ar')
                                     ->label('الاسم بالعربية')
@@ -150,6 +187,21 @@ class ServiceTransferResource extends Resource
                             })
                             ->columnSpan(1),
 
+                        Forms\Components\TextInput::make('worker_passport_number')
+                            ->label('رقم جواز العاملة')
+                            ->maxLength(255)
+                            ->disabled()
+                            ->dehydrated()
+                            ->columnSpan(1),
+
+                        Forms\Components\FileUpload::make('sponsorship_transfer_contract_image')
+                            ->label('صورة عقد نقل الكفالة')
+                            ->image()
+                            ->directory('service-transfers/contracts')
+                            ->maxSize(5120)
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'])
+                            ->columnSpan(1),
+
                         Forms\Components\Select::make('nationality_id')
                             ->label('الدولة')
                             ->options(function () {
@@ -182,13 +234,12 @@ class ServiceTransferResource extends Resource
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('status')
-                            ->label(tr('service_transfer.status', [], null, 'dashboard') ?: 'الحالة')
+                            ->label('الحالة')
                             ->options([
-                                'transferred' => tr('service_transfer.status.transferred', [], null, 'dashboard') ?: 'تم النقل',
-                                'cancelled' => tr('service_transfer.status.cancelled', [], null, 'dashboard') ?: 'تم الإلغاء',
-                                'in_trial' => tr('service_transfer.status.in_trial', [], null, 'dashboard') ?: 'في مرحلة تجربة',
-                                'multiple_trial' => tr('service_transfer.status.multiple_trial', [], null, 'dashboard') ?: 'عدة مرحلة تجربة',
-                                'no_action_taken' => tr('service_transfer.status.no_action_taken', [], null, 'dashboard') ?: 'ولم يتخذ إجراء',
+                                'in_trial' => 'خلال فترة التجربة',
+                                'pending_transfer' => 'قيد النقل',
+                                'transferred' => 'تم النقل',
+                                'returned' => 'مسترجعة',
                             ])
                             ->nullable()
                             ->columnSpan(1),
@@ -372,20 +423,18 @@ class ServiceTransferResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\BadgeColumn::make('status')
-                    ->label(tr('service_transfer.status', [], null, 'dashboard') ?: 'الحالة')
+                    ->label('الحالة')
                     ->colors([
-                        'success' => 'transferred',
-                        'danger' => 'cancelled',
                         'warning' => 'in_trial',
-                        'info' => 'multiple_trial',
-                        'gray' => 'no_action_taken',
+                        'info' => 'pending_transfer',
+                        'success' => 'transferred',
+                        'danger' => 'returned',
                     ])
                     ->formatStateUsing(fn ($state) => match($state) {
-                        'transferred' => tr('service_transfer.status.transferred', [], null, 'dashboard') ?: 'تم النقل',
-                        'cancelled' => tr('service_transfer.status.cancelled', [], null, 'dashboard') ?: 'تم الإلغاء',
-                        'in_trial' => tr('service_transfer.status.in_trial', [], null, 'dashboard') ?: 'في مرحلة تجربة',
-                        'multiple_trial' => tr('service_transfer.status.multiple_trial', [], null, 'dashboard') ?: 'عدة مرحلة تجربة',
-                        'no_action_taken' => tr('service_transfer.status.no_action_taken', [], null, 'dashboard') ?: 'ولم يتخذ إجراء',
+                        'in_trial' => 'خلال فترة التجربة',
+                        'pending_transfer' => 'قيد النقل',
+                        'transferred' => 'تم النقل',
+                        'returned' => 'مسترجعة',
                         default => $state,
                     })
                     ->sortable()

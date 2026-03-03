@@ -9,11 +9,10 @@ return new class extends Migration {
     {
         Schema::table('service_transfers', function (Blueprint $table) {
             $table->enum('status', [
-                'transferred',
-                'cancelled',
                 'in_trial',
-                'multiple_trial',
-                'no_action_taken'
+                'pending_transfer',
+                'transferred',
+                'returned'
             ])->nullable()->after('request_status');
             
             $table->date('trial_end_date')->nullable()->after('status');
