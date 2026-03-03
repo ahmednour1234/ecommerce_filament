@@ -283,11 +283,10 @@ class RecruitmentContractResource extends Resource
                         Forms\Components\Select::make('payment_status')
                             ->label(tr('recruitment_contract.fields.payment_status', [], null, 'dashboard') ?: 'حالة الدفع')
                             ->options([
-                                'unpaid' => tr('recruitment_contract.payment_status.unpaid', [], null, 'dashboard') ?: 'غير مدفوع',
-                                'partial' => tr('recruitment_contract.payment_status.partial', [], null, 'dashboard') ?: 'جزئي',
-                                'paid' => tr('recruitment_contract.payment_status.paid', [], null, 'dashboard') ?: 'مدفوع',
+                                'partial' => 'جزئي',
+                                'paid' => 'كلي',
                             ])
-                            ->default('unpaid')
+                            ->default('partial')
                             ->required()
                             ->columnSpan(1),
 
