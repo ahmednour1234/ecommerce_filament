@@ -122,7 +122,7 @@ class ServiceTransferResource extends Resource
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('worker_id')
-                            ->label('العاملة')
+                            ->label('اسم العاملة')
                             ->relationship('worker', 'name_ar')
                             ->options(function () {
                                 return Cache::remember('service_transfer.workers', 21600, function () {
@@ -392,7 +392,7 @@ class ServiceTransferResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('worker.name_ar')
-                    ->label('العاملة')
+                    ->label('اسم العاملة')
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
