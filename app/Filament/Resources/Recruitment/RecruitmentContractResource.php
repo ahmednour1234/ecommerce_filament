@@ -67,9 +67,6 @@ class RecruitmentContractResource extends Resource
                                     ->label(tr('general.clients.name_ar', [], null, 'dashboard') ?: 'Name (Arabic)')
                                     ->required()
                                     ->maxLength(255),
-                                Forms\Components\TextInput::make('name_en')
-                                    ->label(tr('general.clients.name_en', [], null, 'dashboard') ?: 'Name (English)')
-                                    ->maxLength(255),
                                 Forms\Components\TextInput::make('national_id')
                                     ->label(tr('general.clients.national_id', [], null, 'dashboard') ?: 'National ID')
                                     ->required()
@@ -80,15 +77,6 @@ class RecruitmentContractResource extends Resource
                                     ->required()
                                     ->tel()
                                     ->maxLength(50),
-                                Forms\Components\TextInput::make('email')
-                                    ->label(tr('general.clients.email', [], null, 'dashboard') ?: 'Email')
-                                    ->email()
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('birth_date')
-                                    ->label(tr('general.clients.birth_date', [], null, 'dashboard') ?: 'تاريخ الميلاد')
-                                    ->required()
-                                    ->placeholder('هـ / / ')
-                                    ->helperText('أدخل التاريخ الهجري بصيغة: يوم/شهر/سنة (مثال: 15/03/1445)'),
                                 Forms\Components\Radio::make('marital_status')
                                     ->label(tr('general.clients.marital_status', [], null, 'dashboard') ?: 'Marital Status')
                                     ->required()
@@ -128,7 +116,7 @@ class RecruitmentContractResource extends Resource
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('marketer_id')
-                            ->label(tr('recruitment_contract.fields.marketer', [], null, 'dashboard') ?: 'اسم المسوق')
+                            ->label(tr('recruitment_contract.fields.marketer', [], null, 'dashboard') ?: 'اسم الموظف')
                             ->options(function () {
                                 return Cache::remember('recruitment_contracts.employees', 21600, function () {
                                     return Employee::active()
@@ -147,10 +135,6 @@ class RecruitmentContractResource extends Resource
                             ->label(tr('recruitment_contract.fields.gregorian_request_date', [], null, 'dashboard') ?: 'Gregorian Request Date')
                             ->required()
                             ->default(now())
-                            ->columnSpan(1),
-
-                        Forms\Components\TextInput::make('hijri_request_date')
-                            ->label(tr('recruitment_contract.fields.hijri_request_date', [], null, 'dashboard') ?: 'Hijri Request Date')
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('visa_type')
@@ -210,100 +194,6 @@ class RecruitmentContractResource extends Resource
                             ->searchable()
                             ->nullable()
                             ->columnSpan(1),
-
-                        Forms\Components\Select::make('profession_id')
-                            ->label(tr('recruitment_contract.fields.profession', [], null, 'dashboard') ?: 'Profession')
-                            ->options(function () {
-                                return Cache::remember('recruitment_contracts.professions', 21600, function () {
-                                    return Profession::where('is_active', true)
-                                        ->get()
-                                        ->pluck('name_ar', 'id')
-                                        ->toArray();
-                                });
-                            })
-                            ->searchable()
-                            ->columnSpan(1),
-
-                        Forms\Components\Select::make('nationality_id')
-                            ->label(tr('recruitment_contract.fields.nationality', [], null, 'dashboard') ?: 'Nationality')
-                            ->options(function () {
-                                $allowedNames = ['الفلبين', 'بنغلادش', 'سريلانكا', 'اثيوبيا', 'اوغندا', 'كينيا', 'بورندي'];
-                                return Cache::remember('recruitment_contracts.nationalities', 21600, function () use ($allowedNames) {
-                                    return Nationality::where('is_active', true)
-                                        ->whereIn('name_ar', $allowedNames)
-                                        ->get()
-                                        ->mapWithKeys(function ($nationality) {
-                                            $label = app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en;
-                                            return [$nationality->id => $label];
-                                        })
-                                        ->toArray();
-                                });
-                            })
-                            ->searchable()
-                            ->getSearchResultsUsing(function (string $search) {
-                                $allowedNames = ['الفلبين', 'بنغلادش', 'سريلانكا', 'اثيوبيا', 'اوغندا', 'كينيا', 'بورندي'];
-                                return Nationality::where('is_active', true)
-                                    ->whereIn('name_ar', $allowedNames)
-                                    ->where(function ($query) use ($search) {
-                                        $query->where('name_ar', 'like', "%{$search}%")
-                                              ->orWhere('name_en', 'like', "%{$search}%");
-                                    })
-                                    ->get()
-                                    ->mapWithKeys(function ($nationality) {
-                                        $label = app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en;
-                                        return [$nationality->id => $label];
-                                    })
-                                    ->toArray();
-                            })
-                            ->columnSpan(1),
-
-                        Forms\Components\Select::make('gender')
-                            ->label(tr('recruitment_contract.fields.gender', [], null, 'dashboard') ?: 'Gender')
-                            ->options([
-                                'male' => tr('recruitment_contract.gender.male', [], null, 'dashboard') ?: 'Male',
-                                'female' => tr('recruitment_contract.gender.female', [], null, 'dashboard') ?: 'Female',
-                            ])
-                            ->columnSpan(1),
-
-                        Forms\Components\Select::make('experience')
-                            ->label(tr('recruitment_contract.fields.experience', [], null, 'dashboard') ?: 'Experience')
-                            ->options([
-                                'unspecified' => tr('recruitment_contract.experience.unspecified', [], null, 'dashboard') ?: 'غير محدد',
-                                'new' => tr('recruitment_contract.experience.new', [], null, 'dashboard') ?: 'جديد',
-                                'ex_worker' => tr('recruitment_contract.experience.ex_worker', [], null, 'dashboard') ?: 'سبق العمل EX',
-                            ])
-                            ->nullable()
-                            ->columnSpan(1),
-
-                        Forms\Components\Select::make('religion')
-                            ->label(tr('recruitment_contract.fields.religion', [], null, 'dashboard') ?: 'Religion')
-                            ->options([
-                                'مسلم' => tr('recruitment_contract.religion.muslim', [], null, 'dashboard') ?: 'مسلم',
-                                'غير مسلم' => tr('recruitment_contract.religion.non_muslim', [], null, 'dashboard') ?: 'غير مسلم',
-                            ])
-                            ->nullable()
-                            ->columnSpan(1),
-                    ])
-                    ->columns(2),
-
-                Forms\Components\Section::make(tr('recruitment_contract.sections.additional_options', [], null, 'dashboard') ?: 'خيارات إضافية')
-                    ->schema([
-                        Forms\Components\TextInput::make('workplace_ar')
-                            ->label(tr('recruitment_contract.fields.workplace_ar', [], null, 'dashboard') ?: 'Workplace (Arabic)')
-                            ->maxLength(255)
-                            ->columnSpan(1),
-
-                        Forms\Components\TextInput::make('workplace_en')
-                            ->label(tr('recruitment_contract.fields.workplace_en', [], null, 'dashboard') ?: 'Workplace (English)')
-                            ->maxLength(255)
-                            ->columnSpan(1),
-
-                        Forms\Components\TextInput::make('monthly_salary')
-                            ->label(tr('recruitment_contract.fields.monthly_salary', [], null, 'dashboard') ?: 'Monthly Salary')
-                            ->numeric()
-                            ->minValue(0)
-                            ->step(0.01)
-                            ->columnSpan(1),
                     ])
                     ->columns(2),
 
@@ -322,103 +212,6 @@ class RecruitmentContractResource extends Resource
 
                         Forms\Components\DatePicker::make('musaned_contract_date')
                             ->label(tr('recruitment_contract.fields.musaned_contract_date', [], null, 'dashboard') ?: 'Musaned Contract Date')
-                            ->columnSpan(1),
-                    ])
-                    ->columns(2),
-
-                Forms\Components\Section::make(tr('recruitment_contract.sections.financial_data', [], null, 'dashboard') ?: 'البيانات المالية')
-                    ->schema([
-                        Forms\Components\TextInput::make('direct_cost')
-                            ->label(tr('recruitment_contract.fields.direct_cost', [], null, 'dashboard') ?: 'Direct Cost')
-                            ->numeric()
-                            ->default(0)
-                            ->minValue(0)
-                            ->step(0.01)
-                            ->reactive()
-                            ->columnSpan(1),
-
-                        Forms\Components\TextInput::make('internal_ticket_cost')
-                            ->label(tr('recruitment_contract.fields.internal_ticket_cost', [], null, 'dashboard') ?: 'Internal Ticket Cost')
-                            ->numeric()
-                            ->default(0)
-                            ->minValue(0)
-                            ->step(0.01)
-                            ->reactive()
-                            ->columnSpan(1),
-
-                        Forms\Components\TextInput::make('external_cost')
-                            ->label(tr('recruitment_contract.fields.external_cost', [], null, 'dashboard') ?: 'External Cost')
-                            ->numeric()
-                            ->default(0)
-                            ->minValue(0)
-                            ->step(0.01)
-                            ->reactive()
-                            ->columnSpan(1),
-
-                        Forms\Components\TextInput::make('vat_cost')
-                            ->label(tr('recruitment_contract.fields.vat_cost', [], null, 'dashboard') ?: 'VAT Cost')
-                            ->numeric()
-                            ->default(0)
-                            ->minValue(0)
-                            ->step(0.01)
-                            ->reactive()
-                            ->columnSpan(1),
-
-                        Forms\Components\TextInput::make('gov_cost')
-                            ->label(tr('recruitment_contract.fields.gov_cost', [], null, 'dashboard') ?: 'Government Cost')
-                            ->numeric()
-                            ->default(0)
-                            ->minValue(0)
-                            ->step(0.01)
-                            ->reactive()
-                            ->columnSpan(1),
-
-                        Forms\Components\Placeholder::make('total_cost')
-                            ->label(tr('recruitment_contract.fields.total_cost', [], null, 'dashboard') ?: 'Total Cost')
-                            ->content(fn ($record) => $record ? number_format($record->total_cost, 2) : '0.00')
-                            ->columnSpan(1),
-
-                        Forms\Components\Placeholder::make('paid_total')
-                            ->label(tr('recruitment_contract.fields.paid_total', [], null, 'dashboard') ?: 'Paid Total')
-                            ->content(fn ($record) => $record ? number_format($record->paid_total, 2) : '0.00')
-                            ->columnSpan(1),
-
-                        Forms\Components\Placeholder::make('remaining_total')
-                            ->label(tr('recruitment_contract.fields.remaining_total', [], null, 'dashboard') ?: 'Remaining Total')
-                            ->content(fn ($record) => $record ? number_format($record->remaining_total, 2) : '0.00')
-                            ->columnSpan(1),
-
-                        Forms\Components\Select::make('payment_status')
-                            ->label(tr('recruitment_contract.fields.payment_status', [], null, 'dashboard') ?: 'Payment Status')
-                            ->options([
-                                'unpaid' => tr('recruitment_contract.payment_status.unpaid', [], null, 'dashboard') ?: 'Unpaid',
-                                'partial' => tr('recruitment_contract.payment_status.partial', [], null, 'dashboard') ?: 'Partial',
-                                'paid' => tr('recruitment_contract.payment_status.paid', [], null, 'dashboard') ?: 'Paid',
-                            ])
-                            ->default(function ($get, $record) {
-                                if ($record) {
-                                    return $record->payment_status;
-                                }
-
-                                $directCost = (float) ($get('direct_cost') ?? 0);
-                                $internalTicketCost = (float) ($get('internal_ticket_cost') ?? 0);
-                                $externalCost = (float) ($get('external_cost') ?? 0);
-                                $vatCost = (float) ($get('vat_cost') ?? 0);
-                                $govCost = (float) ($get('gov_cost') ?? 0);
-
-                                $totalCost = $directCost + $internalTicketCost + $externalCost + $vatCost + $govCost;
-                                $paidTotal = (float) ($get('paid_total') ?? 0);
-                                $remainingTotal = max(0, $totalCost - $paidTotal);
-
-                                if ($remainingTotal <= 0 && $totalCost > 0) {
-                                    return 'paid';
-                                } elseif ($paidTotal > 0) {
-                                    return 'partial';
-                                }
-                                return 'unpaid';
-                            })
-                            ->disabled()
-                            ->dehydrated()
                             ->columnSpan(1),
                     ])
                     ->columns(2),
@@ -465,10 +258,6 @@ class RecruitmentContractResource extends Resource
                                     ->label(tr('recruitment.fields.name_ar', [], null, 'dashboard') ?: 'Name (Arabic)')
                                     ->required()
                                     ->maxLength(255),
-                                Forms\Components\TextInput::make('name_en')
-                                    ->label(tr('recruitment.fields.name_en', [], null, 'dashboard') ?: 'Name (English)')
-                                    ->required()
-                                    ->maxLength(255),
                                 Forms\Components\TextInput::make('passport_number')
                                     ->label(tr('recruitment.fields.passport_number', [], null, 'dashboard') ?: 'Passport Number')
                                     ->required()
@@ -506,6 +295,14 @@ class RecruitmentContractResource extends Resource
                                         'female' => tr('recruitment_contract.gender.female', [], null, 'dashboard') ?: 'Female',
                                     ])
                                     ->nullable(),
+                                Forms\Components\Select::make('experience')
+                                    ->label(tr('recruitment.fields.experience', [], null, 'dashboard') ?: 'Experience')
+                                    ->options([
+                                        'unspecified' => tr('recruitment_contract.experience.unspecified', [], null, 'dashboard') ?: 'غير محدد',
+                                        'new' => tr('recruitment_contract.experience.new', [], null, 'dashboard') ?: 'جديد',
+                                        'ex_worker' => tr('recruitment_contract.experience.ex_worker', [], null, 'dashboard') ?: 'سبق العمل EX',
+                                    ])
+                                    ->nullable(),
                                 Forms\Components\TextInput::make('phone_1')
                                     ->label(tr('recruitment.fields.phone_1', [], null, 'dashboard') ?: 'Phone 1')
                                     ->tel()
@@ -515,11 +312,11 @@ class RecruitmentContractResource extends Resource
                             ->createOptionUsing(function (array $data): int {
                                 $laborer = Laborer::create([
                                     'name_ar' => $data['name_ar'],
-                                    'name_en' => $data['name_en'],
                                     'passport_number' => $data['passport_number'],
                                     'nationality_id' => $data['nationality_id'],
                                     'profession_id' => $data['profession_id'],
                                     'gender' => $data['gender'] ?? null,
+                                    'experience_level' => $data['experience'] ?? null,
                                     'phone_1' => $data['phone_1'] ?? null,
                                     'is_available' => true,
                                 ]);
