@@ -107,7 +107,11 @@ class RecruitmentContractResource extends Resource
                             ->label(tr('recruitment_contract.fields.branch', [], null, 'dashboard') ?: 'Branch')
                             ->options(function () {
                                 return Cache::remember('recruitment_contracts.branches', 21600, function () {
-                                    return Branch::active()->get()->pluck('name', 'id')->toArray();
+                                    return Branch::active()
+                                        ->whereIn('name', ['حفر الباطن', 'الرياض', 'عرعر'])
+                                        ->get()
+                                        ->pluck('name', 'id')
+                                        ->toArray();
                                 });
                             })
                             ->required()
