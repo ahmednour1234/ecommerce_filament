@@ -111,22 +111,30 @@ class RecruitmentContract extends Model
             if ($contract->visa_date) {
                 $arrivalDate = \Carbon\Carbon::parse($contract->visa_date);
             } elseif ($contract->status === 'received') {
-                $receivedLog = $contract->statusLogs()
-                    ->where('new_status', 'received')
-                    ->orderBy('created_at', 'desc')
-                    ->first();
-                
-                if ($receivedLog) {
-                    $arrivalDate = $receivedLog->status_date 
-                        ? \Carbon\Carbon::parse($receivedLog->status_date)
-                        : \Carbon\Carbon::parse($receivedLog->created_at);
+                if ($contract->exists) {
+                    $receivedLog = $contract->statusLogs()
+                        ->where('new_status', 'received')
+                        ->orderBy('created_at', 'desc')
+                        ->first();
+                    
+                    if ($receivedLog) {
+                        $arrivalDate = $receivedLog->status_date 
+                            ? \Carbon\Carbon::parse($receivedLog->status_date)
+                            : \Carbon\Carbon::parse($receivedLog->created_at);
+                    }
                 }
             }
 
-            if ($arrivalDate && (!$contract->arrival_date || $contract->isDirty('visa_date') || $contract->isDirty('status'))) {
-                $contract->arrival_date = $arrivalDate->toDateString();
-                $contract->trial_end_date = $arrivalDate->copy()->addDays(90)->toDateString();
-                $contract->contract_end_date = $arrivalDate->copy()->addYears(2)->toDateString();
+            if ($arrivalDate) {
+                $shouldUpdate = !$contract->arrival_date 
+                    || $contract->isDirty('visa_date') 
+                    || ($contract->isDirty('status') && $contract->status === 'received');
+                
+                if ($shouldUpdate) {
+                    $contract->arrival_date = $arrivalDate->toDateString();
+                    $contract->trial_end_date = $arrivalDate->copy()->addDays(90)->toDateString();
+                    $contract->contract_end_date = $arrivalDate->copy()->addYears(2)->toDateString();
+                }
             }
         });
 
@@ -150,6 +158,33 @@ class RecruitmentContract extends Model
 
         static::updated(function ($contract) {
             static::clearCache();
+            
+            if ($contract->wasChanged('status') && $contract->status === 'received') {
+                $arrivalDate = null;
+                
+                if ($contract->visa_date) {
+                    $arrivalDate = \Carbon\Carbon::parse($contract->visa_date);
+                } else {
+                    $receivedLog = $contract->statusLogs()
+                        ->where('new_status', 'received')
+                        ->orderBy('created_at', 'desc')
+                        ->first();
+                    
+                    if ($receivedLog) {
+                        $arrivalDate = $receivedLog->status_date 
+                            ? \Carbon\Carbon::parse($receivedLog->status_date)
+                            : \Carbon\Carbon::parse($receivedLog->created_at);
+                    }
+                }
+                
+                if ($arrivalDate && (!$contract->arrival_date || $contract->arrival_date !== $arrivalDate->toDateString())) {
+                    $contract->updateQuietly([
+                        'arrival_date' => $arrivalDate->toDateString(),
+                        'trial_end_date' => $arrivalDate->copy()->addDays(90)->toDateString(),
+                        'contract_end_date' => $arrivalDate->copy()->addYears(2)->toDateString(),
+                    ]);
+                }
+            }
         });
 
         static::deleted(function ($contract) {
