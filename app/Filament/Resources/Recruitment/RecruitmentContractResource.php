@@ -260,6 +260,17 @@ class RecruitmentContractResource extends Resource
                             ->reactive()
                             ->columnSpan(1),
 
+                        Forms\Components\Select::make('payment_status')
+                            ->label(tr('recruitment_contract.fields.payment_status', [], null, 'dashboard') ?: 'حالة الدفع')
+                            ->options([
+                                'unpaid' => tr('recruitment_contract.payment_status.unpaid', [], null, 'dashboard') ?: 'غير مدفوع',
+                                'partial' => tr('recruitment_contract.payment_status.partial', [], null, 'dashboard') ?: 'جزئي',
+                                'paid' => tr('recruitment_contract.payment_status.paid', [], null, 'dashboard') ?: 'مدفوع',
+                            ])
+                            ->default('unpaid')
+                            ->required()
+                            ->columnSpan(1),
+
                         Forms\Components\Select::make('worker_id')
                             ->label(tr('recruitment_contract.fields.worker', [], null, 'dashboard') ?: 'Worker')
                             ->options(function () {
