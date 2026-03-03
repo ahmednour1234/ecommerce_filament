@@ -124,7 +124,7 @@ class ReceivingRecruitmentReportPage extends Page implements HasTable
                     ])
                     ->formatStateUsing(function ($state) {
                         if ($state === 'worker_received') {
-                            return tr('recruitment.receiving_labor.status.received', [], null, 'dashboard') ?: 'تم الاستلام';
+                            return 'مستلمة';
                         }
                         if ($state === 'pending') {
                             return tr('recruitment.receiving_labor.status.pending', [], null, 'dashboard') ?: 'قيد الانتظار';
@@ -146,7 +146,7 @@ class ReceivingRecruitmentReportPage extends Page implements HasTable
                 Tables\Filters\SelectFilter::make('status')
                     ->label(tr('recruitment.receiving_labor.table.status', [], null, 'dashboard') ?: 'حالة الطلب')
                     ->options([
-                        'worker_received' => tr('recruitment.receiving_labor.status.received', [], null, 'dashboard') ?: 'تم الاستلام',
+                        'worker_received' => 'مستلمة',
                         'pending' => tr('recruitment.receiving_labor.status.pending', [], null, 'dashboard') ?: 'قيد الانتظار',
                         'canceled' => tr('recruitment.receiving_labor.status.canceled', [], null, 'dashboard') ?: 'ملغي',
                     ]),
