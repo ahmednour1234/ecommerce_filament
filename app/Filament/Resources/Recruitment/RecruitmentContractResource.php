@@ -224,20 +224,47 @@ class RecruitmentContractResource extends Resource
                     ->schema([
                         Forms\Components\Radio::make('status')
                             ->label(tr('recruitment_contract.fields.status', [], null, 'dashboard') ?: 'Status')
-                            ->options([
-                                'new' => tr('recruitment_contract.status.new', [], null, 'dashboard') ?: 'جديد',
-                                'external_office_approval' => tr('recruitment_contract.status.external_office_approval', [], null, 'dashboard') ?: 'موافقة المكتب الخارجي',
-                                'contract_accepted_external_office' => tr('recruitment_contract.status.contract_accepted_external_office', [], null, 'dashboard') ?: 'قبول العقد من مكتب الخارجي',
-                                'waiting_approval' => tr('recruitment_contract.status.waiting_approval', [], null, 'dashboard') ?: 'انتظار الابروف',
-                                'contract_accepted_labor_ministry' => tr('recruitment_contract.status.contract_accepted_labor_ministry', [], null, 'dashboard') ?: 'قبول العقد من مكتب العمل الخارجي',
-                                'sent_to_saudi_embassy' => tr('recruitment_contract.status.sent_to_saudi_embassy', [], null, 'dashboard') ?: 'إرسال التأشيرة إلى السفارة السعودية',
-                                'visa_issued' => tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم التفييز',
-                                'waiting_flight_booking' => tr('recruitment_contract.status.waiting_flight_booking', [], null, 'dashboard') ?: 'انتظار حجز تذكرة الطيران',
-                                'arrival_scheduled' => tr('recruitment_contract.status.arrival_scheduled', [], null, 'dashboard') ?: 'معاد الوصول',
-                                'received' => tr('recruitment_contract.status.received', [], null, 'dashboard') ?: 'تم الاستلام',
-                                'return_during_warranty' => tr('recruitment_contract.status.return_during_warranty', [], null, 'dashboard') ?: 'رجيع خلال فترة الضمان',
-                                'runaway' => tr('recruitment_contract.status.runaway', [], null, 'dashboard') ?: 'هروب',
-                            ])
+                            ->options(function ($record) {
+                                $options = [];
+                                $statusLabels = [
+                                    'new' => tr('recruitment_contract.status.new', [], null, 'dashboard') ?: 'جديد',
+                                    'external_office_approval' => tr('recruitment_contract.status.external_office_approval', [], null, 'dashboard') ?: 'موافقة المكتب الخارجي',
+                                    'contract_accepted_external_office' => tr('recruitment_contract.status.contract_accepted_external_office', [], null, 'dashboard') ?: 'قبول العقد من مكتب الخارجي',
+                                    'waiting_approval' => tr('recruitment_contract.status.waiting_approval', [], null, 'dashboard') ?: 'انتظار الابروف',
+                                    'contract_accepted_labor_ministry' => tr('recruitment_contract.status.contract_accepted_labor_ministry', [], null, 'dashboard') ?: 'قبول العقد من مكتب العمل الخارجي',
+                                    'sent_to_saudi_embassy' => tr('recruitment_contract.status.sent_to_saudi_embassy', [], null, 'dashboard') ?: 'إرسال التأشيرة إلى السفارة السعودية',
+                                    'visa_issued' => tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم التفييز',
+                                    'waiting_flight_booking' => tr('recruitment_contract.status.waiting_flight_booking', [], null, 'dashboard') ?: 'انتظار حجز تذكرة الطيران',
+                                    'arrival_scheduled' => tr('recruitment_contract.status.arrival_scheduled', [], null, 'dashboard') ?: 'معاد الوصول',
+                                    'received' => tr('recruitment_contract.status.received', [], null, 'dashboard') ?: 'تم الاستلام',
+                                    'return_during_warranty' => tr('recruitment_contract.status.return_during_warranty', [], null, 'dashboard') ?: 'رجيع خلال فترة الضمان',
+                                    'runaway' => tr('recruitment_contract.status.runaway', [], null, 'dashboard') ?: 'هروب',
+                                ];
+
+                                if ($record && $record->exists) {
+                                    $statusLogs = $record->statusLogs()->orderBy('created_at', 'desc')->get();
+                                    $statusDates = [];
+                                    
+                                    foreach ($statusLogs as $log) {
+                                        if (!isset($statusDates[$log->new_status])) {
+                                            $statusDates[$log->new_status] = $log->created_at;
+                                        }
+                                    }
+                                    
+                                    foreach ($statusLabels as $status => $label) {
+                                        if (isset($statusDates[$status])) {
+                                            $date = $statusDates[$status]->format('Y-m-d');
+                                            $options[$status] = "{$label} ({$date})";
+                                        } else {
+                                            $options[$status] = $label;
+                                        }
+                                    }
+                                } else {
+                                    $options = $statusLabels;
+                                }
+
+                                return $options;
+                            })
                             ->required()
                             ->default('new')
                             ->columnSpan(1),
