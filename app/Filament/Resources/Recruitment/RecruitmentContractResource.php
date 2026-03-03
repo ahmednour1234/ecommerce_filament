@@ -242,7 +242,8 @@ class RecruitmentContractResource extends Resource
                                     
                                     foreach ($statusLogs as $log) {
                                         if (!isset($statusDates[$log->new_status])) {
-                                            $statusDates[$log->new_status] = $log->created_at->format('Y-m-d');
+                                            $statusDate = $log->status_date ?: $log->created_at->format('Y-m-d');
+                                            $statusDates[$log->new_status] = $statusDate;
                                         }
                                     }
                                     
@@ -258,6 +259,25 @@ class RecruitmentContractResource extends Resource
                             ->required()
                             ->default('new')
                             ->reactive()
+                            ->afterStateUpdated(function (callable $set, $state, $record) {
+                                if ($record && $record->exists) {
+                                    $lastLog = $record->statusLogs()->where('new_status', $state)->latest('created_at')->first();
+                                    if ($lastLog && $lastLog->status_date) {
+                                        $set('status_date', $lastLog->status_date);
+                                    } else {
+                                        $set('status_date', now()->toDateString());
+                                    }
+                                } else {
+                                    $set('status_date', now()->toDateString());
+                                }
+                            })
+                            ->columnSpan(1),
+
+                        Forms\Components\DatePicker::make('status_date')
+                            ->label('تاريخ الحالة')
+                            ->default(now())
+                            ->required()
+                            ->visible(fn (callable $get) => $get('status') !== null)
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('payment_status')

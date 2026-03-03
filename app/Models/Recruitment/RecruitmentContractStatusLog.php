@@ -12,12 +12,14 @@ class RecruitmentContractStatusLog extends Model
         'recruitment_contract_id',
         'old_status',
         'new_status',
+        'status_date',
         'notes',
         'created_by',
     ];
 
     protected $casts = [
         'created_at' => 'datetime',
+        'status_date' => 'date',
     ];
 
     public function contract(): BelongsTo

@@ -96,25 +96,26 @@ class RecruitmentContractService
         return $expectedDays[$key] ?? null;
     }
 
-    public function logStatusChange(RecruitmentContract $contract, ?string $oldStatus, string $newStatus, ?string $notes = null): void
+    public function logStatusChange(RecruitmentContract $contract, ?string $oldStatus, string $newStatus, ?string $notes = null, ?string $statusDate = null): void
     {
         $expectedDays = $this->getExpectedDaysBetweenStatuses($oldStatus, $newStatus);
         
         $contract->statusLogs()->create([
             'old_status' => $oldStatus,
             'new_status' => $newStatus,
+            'status_date' => $statusDate ?: now()->toDateString(),
             'notes' => $notes,
             'created_by' => auth()->id(),
             'created_at' => now(),
         ]);
     }
 
-    public function updateStatus(RecruitmentContract $contract, string $newStatus, ?string $notes = null): void
+    public function updateStatus(RecruitmentContract $contract, string $newStatus, ?string $notes = null, ?string $statusDate = null): void
     {
-        DB::transaction(function () use ($contract, $newStatus, $notes) {
+        DB::transaction(function () use ($contract, $newStatus, $notes, $statusDate) {
             $oldStatus = $contract->status;
             $contract->update(['status' => $newStatus]);
-            $this->logStatusChange($contract, $oldStatus, $newStatus, $notes);
+            $this->logStatusChange($contract, $oldStatus, $newStatus, $notes, $statusDate);
         });
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Recruitment\RecruitmentContractResource\Pages;
 
 use App\Filament\Resources\Recruitment\RecruitmentContractResource;
+use App\Services\Recruitment\RecruitmentContractService;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
@@ -36,6 +37,22 @@ class EditRecruitmentContract extends EditRecord
         }
         
         return $url;
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $oldStatus = $this->record->status;
+        $newStatus = $data['status'] ?? null;
+        $statusDate = $data['status_date'] ?? null;
+
+        if ($newStatus && $oldStatus !== $newStatus) {
+            $service = app(RecruitmentContractService::class);
+            $service->updateStatus($this->record, $newStatus, null, $statusDate);
+        }
+
+        unset($data['status_date']);
+        
+        return $data;
     }
 
     protected function getHeaderActions(): array
