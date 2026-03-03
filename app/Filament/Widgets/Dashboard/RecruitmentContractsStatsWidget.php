@@ -71,11 +71,10 @@ class RecruitmentContractsStatsWidget extends BaseWidget
 
             $totalContracts = $query->count();
             $newContracts = (clone $query)->where('status', 'new')->count();
-            $processingContracts = (clone $query)->where('status', 'processing')->count();
+            $receivedContracts = (clone $query)->where('status', 'received')->count();
             $visaIssued = (clone $query)->where('status', 'visa_issued')->count();
-            $arrived = (clone $query)->where('status', 'arrived_in_saudi_arabia')->count();
-            $closed = (clone $query)->where('status', 'closed')->count();
-            $rejected = (clone $query)->where('status', 'rejected')->count();
+            $returnedContracts = (clone $query)->where('status', 'return_during_warranty')->count();
+            $runawayContracts = (clone $query)->where('status', 'runaway')->count();
 
             $totalCost = (clone $query)->sum('total_cost');
             $paidTotal = (clone $query)->sum('paid_total');
@@ -119,26 +118,12 @@ class RecruitmentContractsStatsWidget extends BaseWidget
                     ])));
             }
 
-            if ($processingContracts > 0) {
-                $stats[] = Stat::make(
-                    'عقود قيد المعالجة',
-                    Number::format($processingContracts)
-                )
-                    ->description('قيد المعالجة')
-                    ->descriptionIcon('heroicon-o-clock')
-                    ->color('warning')
-                    ->icon('heroicon-o-clock')
-                    ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
-                        'status' => ['value' => 'processing'],
-                    ])));
-            }
-
             if ($visaIssued > 0) {
                 $stats[] = Stat::make(
-                    'تم إصدار التأشيرة',
+                    'تم التفييز',
                     Number::format($visaIssued)
                 )
-                    ->description('تم إصدار التأشيرة')
+                    ->description('تم التفييز')
                     ->descriptionIcon('heroicon-o-check-circle')
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
@@ -147,45 +132,45 @@ class RecruitmentContractsStatsWidget extends BaseWidget
                     ])));
             }
 
-            if ($arrived > 0) {
+            if ($receivedContracts > 0) {
                 $stats[] = Stat::make(
-                    'وصل للمملكة',
-                    Number::format($arrived)
+                    'تم الاستلام',
+                    Number::format($receivedContracts)
                 )
-                    ->description('وصل للمملكة العربية السعودية')
-                    ->descriptionIcon('heroicon-o-map-pin')
-                    ->color('success')
-                    ->icon('heroicon-o-map-pin')
-                    ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
-                        'status' => ['value' => 'arrived_in_saudi_arabia'],
-                    ])));
-            }
-
-            if ($closed > 0) {
-                $stats[] = Stat::make(
-                    'عقود مغلقة',
-                    Number::format($closed)
-                )
-                    ->description('مغلق')
+                    ->description('تم الاستلام')
                     ->descriptionIcon('heroicon-o-check-badge')
-                    ->color('gray')
+                    ->color('success')
                     ->icon('heroicon-o-check-badge')
                     ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
-                        'status' => ['value' => 'closed'],
+                        'status' => ['value' => 'received'],
                     ])));
             }
 
-            if ($rejected > 0) {
+            if ($returnedContracts > 0) {
                 $stats[] = Stat::make(
-                    'عقود مرفوضة',
-                    Number::format($rejected)
+                    'رجيع خلال فترة الضمان',
+                    Number::format($returnedContracts)
                 )
-                    ->description('مرفوض')
-                    ->descriptionIcon('heroicon-o-x-circle')
-                    ->color('danger')
-                    ->icon('heroicon-o-x-circle')
+                    ->description('رجيع خلال فترة الضمان')
+                    ->descriptionIcon('heroicon-o-arrow-path')
+                    ->color('warning')
+                    ->icon('heroicon-o-arrow-path')
                     ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
-                        'status' => ['value' => 'rejected'],
+                        'status' => ['value' => 'return_during_warranty'],
+                    ])));
+            }
+
+            if ($runawayContracts > 0) {
+                $stats[] = Stat::make(
+                    'هروب',
+                    Number::format($runawayContracts)
+                )
+                    ->description('هروب')
+                    ->descriptionIcon('heroicon-o-exclamation-triangle')
+                    ->color('danger')
+                    ->icon('heroicon-o-exclamation-triangle')
+                    ->url($this->buildUrl($publicUrl, array_merge($baseFilters, [
+                        'status' => ['value' => 'runaway'],
                     ])));
             }
 

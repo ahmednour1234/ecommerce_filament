@@ -229,17 +229,12 @@ class RecruitmentContract extends Model
 
     public function scopeReceived($query)
     {
-        return $query->where('status', 'worker_received');
-    }
-
-    public function scopeExpired($query)
-    {
-        return $query->where('status', 'closed');
+        return $query->where('status', 'received');
     }
 
     public function scopeReturned($query)
     {
-        return $query->whereIn('status', ['returned', 'cancelled']);
+        return $query->where('status', 'return_during_warranty');
     }
 
     public function scopeInWarranty($query)
@@ -249,23 +244,13 @@ class RecruitmentContract extends Model
             ->where('created_at', '<=', now());
     }
 
-    public function scopeRejected($query)
-    {
-        return $query->where('status', 'rejected');
-    }
-
-    public function scopeSigned($query)
-    {
-        return $query->where('status', 'contract_signed');
-    }
-
     public function scopeVisaIssued($query)
     {
         return $query->where('status', 'visa_issued');
     }
 
-    public function scopeArrivalTicketIssued($query)
+    public function scopeWaitingFlightBooking($query)
     {
-        return $query->where('status', 'ticket_booked');
+        return $query->where('status', 'waiting_flight_booking');
     }
 }

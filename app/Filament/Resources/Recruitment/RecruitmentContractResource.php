@@ -222,23 +222,21 @@ class RecruitmentContractResource extends Resource
 
                 Forms\Components\Section::make(tr('recruitment_contract.sections.other_data', [], null, 'dashboard') ?: 'البيانات الأخرى')
                     ->schema([
-                        Forms\Components\Select::make('status')
+                        Forms\Components\Radio::make('status')
                             ->label(tr('recruitment_contract.fields.status', [], null, 'dashboard') ?: 'Status')
                             ->options([
                                 'new' => tr('recruitment_contract.status.new', [], null, 'dashboard') ?: 'جديد',
-                                'foreign_embassy_approval' => tr('recruitment_contract.status.foreign_embassy_approval', [], null, 'dashboard') ?: 'موافقة السفارة الأجنبية',
-                                'external_sending_office_approval' => tr('recruitment_contract.status.external_sending_office_approval', [], null, 'dashboard') ?: 'موافقة مكتب الإرسال الخارجيه',
-                                'accepted_by_external_sending_office' => tr('recruitment_contract.status.accepted_by_external_sending_office', [], null, 'dashboard') ?: 'تم القبول من مكتب الإرسال الخارجيه',
-                                'foreign_labor_ministry_approval' => tr('recruitment_contract.status.foreign_labor_ministry_approval', [], null, 'dashboard') ?: 'موافقة وزارة العمل الأجنبية',
-                                'accepted_by_foreign_labor_ministry' => tr('recruitment_contract.status.accepted_by_foreign_labor_ministry', [], null, 'dashboard') ?: 'تم القبول من وزارة العمل الأجنبية',
-                                'sent_to_saudi_embassy' => tr('recruitment_contract.status.sent_to_saudi_embassy', [], null, 'dashboard') ?: 'تم الإرسال للسفارة السعودية',
-                                'visa_issued' => tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم إصدار التأشيرة',
-                                'arrived_in_saudi_arabia' => tr('recruitment_contract.status.arrived_in_saudi_arabia', [], null, 'dashboard') ?: 'وصل للمملكة العربية السعودية',
-                                'return_during_warranty' => tr('recruitment_contract.status.return_during_warranty', [], null, 'dashboard') ?: 'رجيع خلال فتره الضمان',
-                                'outside_kingdom_during_warranty' => tr('recruitment_contract.status.outside_kingdom_during_warranty', [], null, 'dashboard') ?: 'خارج المملكه خلال فتره الضمان',
-                                'labor_services_transfer' => tr('recruitment_contract.status.labor_services_transfer', [], null, 'dashboard') ?: 'نقل خدمات العماله المنزليه',
+                                'external_office_approval' => tr('recruitment_contract.status.external_office_approval', [], null, 'dashboard') ?: 'موافقة المكتب الخارجي',
+                                'contract_accepted_external_office' => tr('recruitment_contract.status.contract_accepted_external_office', [], null, 'dashboard') ?: 'قبول العقد من مكتب الخارجي',
+                                'waiting_approval' => tr('recruitment_contract.status.waiting_approval', [], null, 'dashboard') ?: 'انتظار الابروف',
+                                'contract_accepted_labor_ministry' => tr('recruitment_contract.status.contract_accepted_labor_ministry', [], null, 'dashboard') ?: 'قبول العقد من مكتب العمل الخارجي',
+                                'sent_to_saudi_embassy' => tr('recruitment_contract.status.sent_to_saudi_embassy', [], null, 'dashboard') ?: 'إرسال التأشيرة إلى السفارة السعودية',
+                                'visa_issued' => tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم التفييز',
+                                'waiting_flight_booking' => tr('recruitment_contract.status.waiting_flight_booking', [], null, 'dashboard') ?: 'انتظار حجز تذكرة الطيران',
+                                'arrival_scheduled' => tr('recruitment_contract.status.arrival_scheduled', [], null, 'dashboard') ?: 'معاد الوصول',
+                                'received' => tr('recruitment_contract.status.received', [], null, 'dashboard') ?: 'تم الاستلام',
+                                'return_during_warranty' => tr('recruitment_contract.status.return_during_warranty', [], null, 'dashboard') ?: 'رجيع خلال فترة الضمان',
                                 'runaway' => tr('recruitment_contract.status.runaway', [], null, 'dashboard') ?: 'هروب',
-                                'temporary' => tr('recruitment_contract.status.temporary', [], null, 'dashboard') ?: 'مؤقته',
                             ])
                             ->required()
                             ->default('new')
@@ -399,9 +397,9 @@ class RecruitmentContractResource extends Resource
                     ->label(tr('recruitment_contract.fields.status', [], null, 'dashboard') ?: 'Status')
                     ->color(fn (string $state): string => match ($state) {
                         'new' => 'primary',
-                        'foreign_embassy_approval', 'external_sending_office_approval', 'foreign_labor_ministry_approval' => 'info',
-                        'accepted_by_external_sending_office', 'accepted_by_foreign_labor_ministry', 'visa_issued', 'arrived_in_saudi_arabia', 'labor_services_transfer' => 'success',
-                        'sent_to_saudi_embassy', 'return_during_warranty', 'outside_kingdom_during_warranty', 'temporary' => 'warning',
+                        'external_office_approval', 'contract_accepted_external_office', 'waiting_approval', 'contract_accepted_labor_ministry' => 'info',
+                        'sent_to_saudi_embassy', 'visa_issued', 'waiting_flight_booking', 'arrival_scheduled', 'received' => 'success',
+                        'return_during_warranty' => 'warning',
                         'runaway' => 'danger',
                         default => 'gray',
                     })
@@ -453,19 +451,17 @@ class RecruitmentContractResource extends Resource
                     ->label(tr('recruitment_contract.fields.status', [], null, 'dashboard') ?: 'Status')
                     ->options([
                         'new' => tr('recruitment_contract.status.new', [], null, 'dashboard') ?: 'جديد',
-                        'foreign_embassy_approval' => tr('recruitment_contract.status.foreign_embassy_approval', [], null, 'dashboard') ?: 'موافقة السفارة الأجنبية',
-                        'external_sending_office_approval' => tr('recruitment_contract.status.external_sending_office_approval', [], null, 'dashboard') ?: 'موافقة مكتب الإرسال الخارجيه',
-                        'accepted_by_external_sending_office' => tr('recruitment_contract.status.accepted_by_external_sending_office', [], null, 'dashboard') ?: 'تم القبول من مكتب الإرسال الخارجيه',
-                        'foreign_labor_ministry_approval' => tr('recruitment_contract.status.foreign_labor_ministry_approval', [], null, 'dashboard') ?: 'موافقة وزارة العمل الأجنبية',
-                        'accepted_by_foreign_labor_ministry' => tr('recruitment_contract.status.accepted_by_foreign_labor_ministry', [], null, 'dashboard') ?: 'تم القبول من وزارة العمل الأجنبية',
-                        'sent_to_saudi_embassy' => tr('recruitment_contract.status.sent_to_saudi_embassy', [], null, 'dashboard') ?: 'تم الإرسال للسفارة السعودية',
-                        'visa_issued' => tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم إصدار التأشيرة',
-                        'arrived_in_saudi_arabia' => tr('recruitment_contract.status.arrived_in_saudi_arabia', [], null, 'dashboard') ?: 'وصل للمملكة العربية السعودية',
-                        'return_during_warranty' => tr('recruitment_contract.status.return_during_warranty', [], null, 'dashboard') ?: 'رجيع خلال فتره الضمان',
-                        'outside_kingdom_during_warranty' => tr('recruitment_contract.status.outside_kingdom_during_warranty', [], null, 'dashboard') ?: 'خارج المملكه خلال فتره الضمان',
-                        'labor_services_transfer' => tr('recruitment_contract.status.labor_services_transfer', [], null, 'dashboard') ?: 'نقل خدمات العماله المنزليه',
+                        'external_office_approval' => tr('recruitment_contract.status.external_office_approval', [], null, 'dashboard') ?: 'موافقة المكتب الخارجي',
+                        'contract_accepted_external_office' => tr('recruitment_contract.status.contract_accepted_external_office', [], null, 'dashboard') ?: 'قبول العقد من مكتب الخارجي',
+                        'waiting_approval' => tr('recruitment_contract.status.waiting_approval', [], null, 'dashboard') ?: 'انتظار الابروف',
+                        'contract_accepted_labor_ministry' => tr('recruitment_contract.status.contract_accepted_labor_ministry', [], null, 'dashboard') ?: 'قبول العقد من مكتب العمل الخارجي',
+                        'sent_to_saudi_embassy' => tr('recruitment_contract.status.sent_to_saudi_embassy', [], null, 'dashboard') ?: 'إرسال التأشيرة إلى السفارة السعودية',
+                        'visa_issued' => tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم التفييز',
+                        'waiting_flight_booking' => tr('recruitment_contract.status.waiting_flight_booking', [], null, 'dashboard') ?: 'انتظار حجز تذكرة الطيران',
+                        'arrival_scheduled' => tr('recruitment_contract.status.arrival_scheduled', [], null, 'dashboard') ?: 'معاد الوصول',
+                        'received' => tr('recruitment_contract.status.received', [], null, 'dashboard') ?: 'تم الاستلام',
+                        'return_during_warranty' => tr('recruitment_contract.status.return_during_warranty', [], null, 'dashboard') ?: 'رجيع خلال فترة الضمان',
                         'runaway' => tr('recruitment_contract.status.runaway', [], null, 'dashboard') ?: 'هروب',
-                        'temporary' => tr('recruitment_contract.status.temporary', [], null, 'dashboard') ?: 'مؤقته',
                     ]),
 
                 Tables\Filters\SelectFilter::make('payment_status')

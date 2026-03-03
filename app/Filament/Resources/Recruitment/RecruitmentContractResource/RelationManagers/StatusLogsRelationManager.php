@@ -8,6 +8,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use App\Services\Recruitment\RecruitmentContractService;
 
 class StatusLogsRelationManager extends RelationManager
 {
@@ -40,6 +41,17 @@ class StatusLogsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('new_status')
                     ->label(tr('recruitment_contract.fields.new_status', [], null, 'dashboard') ?: 'New Status')
                     ->formatStateUsing(fn ($state) => tr("recruitment_contract.status.{$state}", [], null, 'dashboard')),
+
+                Tables\Columns\TextColumn::make('duration')
+                    ->label('المدة المتوقعة')
+                    ->getStateUsing(function ($record) {
+                        $service = app(RecruitmentContractService::class);
+                        $expectedDays = $service->getExpectedDaysBetweenStatuses($record->old_status, $record->new_status);
+                        if ($expectedDays) {
+                            return "{$expectedDays} يوم";
+                        }
+                        return '-';
+                    }),
 
                 Tables\Columns\TextColumn::make('notes')
                     ->label(tr('recruitment_contract.fields.notes', [], null, 'dashboard') ?: 'Notes')

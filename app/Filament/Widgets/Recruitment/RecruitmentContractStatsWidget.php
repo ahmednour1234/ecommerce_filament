@@ -21,14 +21,19 @@ class RecruitmentContractStatsWidget extends BaseWidget
 
         $stats = [];
 
-        $newCount = (clone $baseQuery)->new()->count();
-        $expiredCount = (clone $baseQuery)->expired()->count();
-        $returnedCount = (clone $baseQuery)->returned()->count();
+        $newCount = (clone $baseQuery)->where('status', 'new')->count();
+        $returnedCount = (clone $baseQuery)->where('status', 'return_during_warranty')->count();
         $warrantyCount = (clone $baseQuery)->inWarranty()->count();
-        $delegatedCount = (clone $baseQuery)->where('status', 'foreign_labor_ministry_approval')->count();
-        $signedCount = (clone $baseQuery)->signed()->count();
-        $visaIssuedCount = (clone $baseQuery)->visaIssued()->count();
-        $arrivalTicketCount = (clone $baseQuery)->arrivalTicketIssued()->count();
+        $externalOfficeApprovalCount = (clone $baseQuery)->where('status', 'external_office_approval')->count();
+        $contractAcceptedExternalCount = (clone $baseQuery)->where('status', 'contract_accepted_external_office')->count();
+        $waitingApprovalCount = (clone $baseQuery)->where('status', 'waiting_approval')->count();
+        $contractAcceptedLaborCount = (clone $baseQuery)->where('status', 'contract_accepted_labor_ministry')->count();
+        $sentToEmbassyCount = (clone $baseQuery)->where('status', 'sent_to_saudi_embassy')->count();
+        $visaIssuedCount = (clone $baseQuery)->where('status', 'visa_issued')->count();
+        $waitingFlightCount = (clone $baseQuery)->where('status', 'waiting_flight_booking')->count();
+        $arrivalScheduledCount = (clone $baseQuery)->where('status', 'arrival_scheduled')->count();
+        $receivedCount = (clone $baseQuery)->where('status', 'received')->count();
+        $runawayCount = (clone $baseQuery)->where('status', 'runaway')->count();
 
         $stats[] = Stat::make(
             '📄 ' . (tr('recruitment_contract.stats.new', [], null, 'dashboard') ?: 'عقود جديدة'),
@@ -40,21 +45,12 @@ class RecruitmentContractStatsWidget extends BaseWidget
             ->extraAttributes(['class' => 'recruitment-stats-card']);
 
         $stats[] = Stat::make(
-            '⏰ ' . (tr('recruitment_contract.stats.expired', [], null, 'dashboard') ?: 'العقود المنتهية'),
-            Number::format($expiredCount)
-        )
-            ->description(tr('recruitment_contract.status.closed', [], null, 'dashboard') ?: 'مغلق')
-            ->color('gray')
-            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'closed']])))
-            ->extraAttributes(['class' => 'recruitment-stats-card']);
-
-        $stats[] = Stat::make(
             '🔄 ' . (tr('recruitment_contract.stats.returned', [], null, 'dashboard') ?: 'عقود مسترجعة'),
             Number::format($returnedCount)
         )
-            ->description(tr('recruitment_contract.status.returned', [], null, 'dashboard') ?: 'مرتجع')
+            ->description(tr('recruitment_contract.status.return_during_warranty', [], null, 'dashboard') ?: 'رجيع خلال فترة الضمان')
             ->color('warning')
-            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'returned']])))
+            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'return_during_warranty']])))
             ->extraAttributes(['class' => 'recruitment-stats-card']);
 
         $stats[] = Stat::make(
@@ -67,39 +63,93 @@ class RecruitmentContractStatsWidget extends BaseWidget
             ->extraAttributes(['class' => 'recruitment-stats-card']);
 
         $stats[] = Stat::make(
-            '📝 ' . (tr('recruitment_contract.stats.delegated', [], null, 'dashboard') ?: 'مفوضة'),
-            Number::format($delegatedCount)
+            '📝 ' . (tr('recruitment_contract.status.external_office_approval', [], null, 'dashboard') ?: 'موافقة المكتب الخارجي'),
+            Number::format($externalOfficeApprovalCount)
         )
-            ->description(tr('recruitment_contract.stats.delegated', [], null, 'dashboard') ?: 'مفوضة')
+            ->description(tr('recruitment_contract.status.external_office_approval', [], null, 'dashboard') ?: 'موافقة المكتب الخارجي')
             ->color('info')
-            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'foreign_labor_ministry_approval']])))
+            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'external_office_approval']])))
             ->extraAttributes(['class' => 'recruitment-stats-card']);
 
         $stats[] = Stat::make(
-            '✅ ' . (tr('recruitment_contract.stats.signed', [], null, 'dashboard') ?: 'عقود تم توقيع العقد'),
-            Number::format($signedCount)
+            '✅ ' . (tr('recruitment_contract.status.contract_accepted_external_office', [], null, 'dashboard') ?: 'قبول العقد من مكتب الخارجي'),
+            Number::format($contractAcceptedExternalCount)
         )
-            ->description(tr('recruitment_contract.status.contract_signed', [], null, 'dashboard') ?: 'تم توقيع العقد')
+            ->description(tr('recruitment_contract.status.contract_accepted_external_office', [], null, 'dashboard') ?: 'قبول العقد من مكتب الخارجي')
             ->color('success')
-            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'contract_signed']])))
+            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'contract_accepted_external_office']])))
             ->extraAttributes(['class' => 'recruitment-stats-card']);
 
         $stats[] = Stat::make(
-            '📋 ' . (tr('recruitment_contract.stats.visa_issued', [], null, 'dashboard') ?: 'عقود تم إصدار تأشيراتها'),
+            '⏳ ' . (tr('recruitment_contract.status.waiting_approval', [], null, 'dashboard') ?: 'انتظار الابروف'),
+            Number::format($waitingApprovalCount)
+        )
+            ->description(tr('recruitment_contract.status.waiting_approval', [], null, 'dashboard') ?: 'انتظار الابروف')
+            ->color('warning')
+            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'waiting_approval']])))
+            ->extraAttributes(['class' => 'recruitment-stats-card']);
+
+        $stats[] = Stat::make(
+            '📋 ' . (tr('recruitment_contract.status.contract_accepted_labor_ministry', [], null, 'dashboard') ?: 'قبول العقد من مكتب العمل الخارجي'),
+            Number::format($contractAcceptedLaborCount)
+        )
+            ->description(tr('recruitment_contract.status.contract_accepted_labor_ministry', [], null, 'dashboard') ?: 'قبول العقد من مكتب العمل الخارجي')
+            ->color('success')
+            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'contract_accepted_labor_ministry']])))
+            ->extraAttributes(['class' => 'recruitment-stats-card']);
+
+        $stats[] = Stat::make(
+            '📤 ' . (tr('recruitment_contract.status.sent_to_saudi_embassy', [], null, 'dashboard') ?: 'إرسال التأشيرة إلى السفارة السعودية'),
+            Number::format($sentToEmbassyCount)
+        )
+            ->description(tr('recruitment_contract.status.sent_to_saudi_embassy', [], null, 'dashboard') ?: 'إرسال التأشيرة إلى السفارة السعودية')
+            ->color('info')
+            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'sent_to_saudi_embassy']])))
+            ->extraAttributes(['class' => 'recruitment-stats-card']);
+
+        $stats[] = Stat::make(
+            '✅ ' . (tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم التفييز'),
             Number::format($visaIssuedCount)
         )
-            ->description(tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم إصدار التأشيرة')
+            ->description(tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم التفييز')
             ->color('success')
             ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'visa_issued']])))
             ->extraAttributes(['class' => 'recruitment-stats-card']);
 
         $stats[] = Stat::make(
-            '🎫 ' . (tr('recruitment_contract.stats.arrival_ticket_issued', [], null, 'dashboard') ?: 'عقود تم إصدار تذاكر الوصول'),
-            Number::format($arrivalTicketCount)
+            '🎫 ' . (tr('recruitment_contract.status.waiting_flight_booking', [], null, 'dashboard') ?: 'انتظار حجز تذكرة الطيران'),
+            Number::format($waitingFlightCount)
         )
-            ->description(tr('recruitment_contract.status.ticket_booked', [], null, 'dashboard') ?: 'تم حجز التذكرة')
+            ->description(tr('recruitment_contract.status.waiting_flight_booking', [], null, 'dashboard') ?: 'انتظار حجز تذكرة الطيران')
+            ->color('warning')
+            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'waiting_flight_booking']])))
+            ->extraAttributes(['class' => 'recruitment-stats-card']);
+
+        $stats[] = Stat::make(
+            '📅 ' . (tr('recruitment_contract.status.arrival_scheduled', [], null, 'dashboard') ?: 'معاد الوصول'),
+            Number::format($arrivalScheduledCount)
+        )
+            ->description(tr('recruitment_contract.status.arrival_scheduled', [], null, 'dashboard') ?: 'معاد الوصول')
+            ->color('info')
+            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'arrival_scheduled']])))
+            ->extraAttributes(['class' => 'recruitment-stats-card']);
+
+        $stats[] = Stat::make(
+            '📦 ' . (tr('recruitment_contract.status.received', [], null, 'dashboard') ?: 'تم الاستلام'),
+            Number::format($receivedCount)
+        )
+            ->description(tr('recruitment_contract.status.received', [], null, 'dashboard') ?: 'تم الاستلام')
             ->color('success')
-            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'ticket_booked']])))
+            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'received']])))
+            ->extraAttributes(['class' => 'recruitment-stats-card']);
+
+        $stats[] = Stat::make(
+            '🚨 ' . (tr('recruitment_contract.status.runaway', [], null, 'dashboard') ?: 'هروب'),
+            Number::format($runawayCount)
+        )
+            ->description(tr('recruitment_contract.status.runaway', [], null, 'dashboard') ?: 'هروب')
+            ->color('danger')
+            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'runaway']])))
             ->extraAttributes(['class' => 'recruitment-stats-card']);
 
         return $stats;

@@ -58,8 +58,48 @@ class RecruitmentContractService
         ];
     }
 
+    public function getExpectedDaysBetweenStatuses(?string $fromStatus, string $toStatus): ?int
+    {
+        $statusOrder = [
+            'new' => 1,
+            'external_office_approval' => 2,
+            'contract_accepted_external_office' => 3,
+            'waiting_approval' => 4,
+            'contract_accepted_labor_ministry' => 5,
+            'sent_to_saudi_embassy' => 6,
+            'visa_issued' => 7,
+            'waiting_flight_booking' => 8,
+        ];
+
+        $expectedDays = [
+            '1-2' => 5, // new -> external_office_approval
+            '2-3' => 5, // external_office_approval -> contract_accepted_external_office
+            '3-4' => 5, // contract_accepted_external_office -> waiting_approval
+            '4-5' => 4, // waiting_approval -> contract_accepted_labor_ministry
+            '5-6' => 7, // contract_accepted_labor_ministry -> sent_to_saudi_embassy
+            '6-7' => 10, // sent_to_saudi_embassy -> visa_issued
+            '7-8' => 6, // visa_issued -> waiting_flight_booking
+        ];
+
+        if (!$fromStatus || !isset($statusOrder[$fromStatus]) || !isset($statusOrder[$toStatus])) {
+            return null;
+        }
+
+        $fromOrder = $statusOrder[$fromStatus];
+        $toOrder = $statusOrder[$toStatus];
+
+        if ($toOrder <= $fromOrder) {
+            return null;
+        }
+
+        $key = "{$fromOrder}-{$toOrder}";
+        return $expectedDays[$key] ?? null;
+    }
+
     public function logStatusChange(RecruitmentContract $contract, ?string $oldStatus, string $newStatus, ?string $notes = null): void
     {
+        $expectedDays = $this->getExpectedDaysBetweenStatuses($oldStatus, $newStatus);
+        
         $contract->statusLogs()->create([
             'old_status' => $oldStatus,
             'new_status' => $newStatus,
