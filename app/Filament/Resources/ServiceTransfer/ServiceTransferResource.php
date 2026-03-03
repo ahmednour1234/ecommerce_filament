@@ -249,6 +249,15 @@ class ServiceTransferResource extends Resource
                             ->nullable()
                             ->native(false)
                             ->columnSpan(1),
+
+                        Forms\Components\Select::make('payment_status')
+                            ->label('حالة الدفع')
+                            ->options([
+                                'paid' => 'كلي',
+                                'partial' => 'جزئي',
+                            ])
+                            ->nullable()
+                            ->columnSpan(1),
                     ])
                     ->columns(2),
 
@@ -455,13 +464,14 @@ class ServiceTransferResource extends Resource
                         'gray' => 'refunded',
                     ])
                     ->formatStateUsing(fn ($state) => match($state) {
-                        'paid' => 'مدفوع',
-                        'unpaid' => 'غير مدفوع',
+                        'paid' => 'كلي',
+                        'unpaid' => null,
                         'pending' => 'قيد الانتظار',
                         'partial' => 'جزئي',
                         'refunded' => 'مسترد',
                         default => $state,
                     })
+                    ->placeholder('—')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('branch.name')
@@ -486,10 +496,8 @@ class ServiceTransferResource extends Resource
                 Tables\Filters\SelectFilter::make('payment_status')
                     ->label('حالة الدفع')
                     ->options([
-                        'pending' => 'قيد الانتظار',
-                        'unpaid' => 'غير مدفوع',
                         'partial' => 'جزئي',
-                        'paid' => 'مدفوع',
+                        'paid' => 'كلي',
                         'refunded' => 'مسترد',
                     ]),
 
