@@ -202,6 +202,7 @@ class ServiceTransferResource extends Resource
                     ->columns(2),
 
                 Forms\Components\Section::make('التسعير')
+                    ->visible(fn ($livewire) => !($livewire instanceof \App\Filament\Resources\ServiceTransfer\ServiceTransferResource\Pages\CreateServiceTransfer))
                     ->schema([
                         Forms\Components\TextInput::make('base_price')
                             ->label('السعر الأساسي')
