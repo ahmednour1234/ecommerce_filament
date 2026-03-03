@@ -280,6 +280,33 @@ class RecruitmentContractResource extends Resource
                             ->visible(fn (callable $get) => $get('status') !== null)
                             ->columnSpan(1),
 
+                        Forms\Components\DatePicker::make('arrival_date')
+                            ->label('تاريخ الوصول')
+                            ->nullable()
+                            ->reactive()
+                            ->afterStateUpdated(function (callable $set, $state) {
+                                if ($state) {
+                                    $arrivalDate = \Carbon\Carbon::parse($state);
+                                    $set('trial_end_date', $arrivalDate->copy()->addDays(90)->format('Y-m-d'));
+                                    $set('contract_end_date', $arrivalDate->copy()->addYears(2)->format('Y-m-d'));
+                                }
+                            })
+                            ->columnSpan(1),
+
+                        Forms\Components\DatePicker::make('trial_end_date')
+                            ->label('تاريخ نهاية فترة التجربة')
+                            ->disabled()
+                            ->dehydrated()
+                            ->visible(fn (callable $get) => $get('arrival_date') !== null)
+                            ->columnSpan(1),
+
+                        Forms\Components\DatePicker::make('contract_end_date')
+                            ->label('تاريخ انتهاء العقد')
+                            ->disabled()
+                            ->dehydrated()
+                            ->visible(fn (callable $get) => $get('arrival_date') !== null)
+                            ->columnSpan(1),
+
                         Forms\Components\Select::make('payment_status')
                             ->label(tr('recruitment_contract.fields.payment_status', [], null, 'dashboard') ?: 'حالة الدفع')
                             ->options([

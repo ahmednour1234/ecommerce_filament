@@ -54,6 +54,9 @@ class RecruitmentContract extends Model
         'is_paid',
         'paid_at',
         'status',
+        'arrival_date',
+        'trial_end_date',
+        'contract_end_date',
         'notes',
         'client_text_message',
         'client_rating',
@@ -69,6 +72,9 @@ class RecruitmentContract extends Model
         'gregorian_request_date' => 'date',
         'visa_date' => 'date',
         'musaned_contract_date' => 'date',
+        'arrival_date' => 'date',
+        'trial_end_date' => 'date',
+        'contract_end_date' => 'date',
         'direct_cost' => 'decimal:2',
         'internal_ticket_cost' => 'decimal:2',
         'external_cost' => 'decimal:2',
@@ -99,6 +105,12 @@ class RecruitmentContract extends Model
             $service = app(RecruitmentContractService::class);
             $totals = $service->computeTotals($contract);
             $contract->fill($totals);
+
+            if ($contract->isDirty('arrival_date') && $contract->arrival_date) {
+                $arrivalDate = \Carbon\Carbon::parse($contract->arrival_date);
+                $contract->trial_end_date = $arrivalDate->copy()->addDays(90);
+                $contract->contract_end_date = $arrivalDate->copy()->addYears(2);
+            }
         });
 
         static::updating(function ($contract) {
