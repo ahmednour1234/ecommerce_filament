@@ -19,7 +19,7 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
     protected static ?string $navigationGroup = 'إيواء الاستقدام';
     protected static ?string $navigationLabel = 'ادخالات الايواء';
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 2;
     protected static ?string $navigationTranslationKey = 'sidebar.recruitment_housing.accommodation_entries';
     protected static string $view = 'filament.pages.housing.create-accommodation-entry';
 

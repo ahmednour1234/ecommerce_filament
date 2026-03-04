@@ -23,7 +23,7 @@ class HousingStatusResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-tag';
     protected static ?string $navigationGroup = 'إيواء الاستقدام';
     protected static ?string $navigationLabel = 'إدارة الحالات';
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
