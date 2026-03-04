@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Pages\Housing;
+namespace App\Filament\Pages\Housing\Rental;
 
 use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\Housing\AccommodationEntry;
@@ -11,17 +11,16 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
 
-class HousingAlertsPage extends Page implements HasTable
+class RentalHousingAlertsPage extends Page implements HasTable
 {
     use InteractsWithTable;
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-bell-alert';
-    protected static ?string $navigationGroup = 'إيواء الاستقدام';
+    protected static ?string $navigationGroup = 'إيواء التأجير';
     protected static ?string $navigationLabel = 'تنبيهات الايواء';
-    protected static ?string $navigationTranslationKey = 'sidebar.recruitment_housing.alerts';
+    protected static ?string $navigationTranslationKey = 'sidebar.rental_housing.alerts';
     protected static ?int $navigationSort = 5;
     protected static string $view = 'filament.pages.housing.alerts';
 
@@ -173,9 +172,9 @@ class HousingAlertsPage extends Page implements HasTable
     {
         $oneWeekAgo = Carbon::now()->subWeek();
 
-        // Get all recruitment entries with status that haven't exited
+        // Get all rental entries with status that haven't exited
         $entries = AccommodationEntry::query()
-            ->where('type', 'recruitment')
+            ->where('type', 'rental')
             ->whereNotNull('status_id')
             ->whereNull('exit_date')
             ->with(['laborer', 'status', 'building', 'statusLogs'])
@@ -214,7 +213,7 @@ class HousingAlertsPage extends Page implements HasTable
 
         return AccommodationEntry::query()
             ->whereIn('id', $alertEntryIds)
-            ->where('type', 'recruitment')
+            ->where('type', 'rental')
             ->with(['laborer', 'status', 'building', 'statusLogs']);
     }
 }

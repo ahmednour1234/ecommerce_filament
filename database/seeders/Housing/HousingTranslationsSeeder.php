@@ -30,6 +30,7 @@ class HousingTranslationsSeeder extends Seeder
             'sidebar.recruitment_housing.laborer_leaves' => ['en' => 'Laborer Leaves', 'ar' => 'إجازات العمالة'],
             'sidebar.recruitment_housing.accommodation_entries' => ['en' => 'Accommodation Entries', 'ar' => 'إدخالات الإيواء'],
             'sidebar.recruitment_housing.reports' => ['en' => 'Reports', 'ar' => 'التقارير'],
+            'sidebar.recruitment_housing.alerts' => ['en' => 'Housing Alerts', 'ar' => 'تنبيهات الايواء'],
 
             'sidebar.rental_housing' => ['en' => 'Rental Housing', 'ar' => 'إيواء التأجير'],
             'sidebar.rental_housing.dashboard' => ['en' => 'Dashboard', 'ar' => 'لوحة التحكم'],
@@ -39,6 +40,7 @@ class HousingTranslationsSeeder extends Seeder
             'sidebar.rental_housing.laborer_leaves' => ['en' => 'Laborer Leaves', 'ar' => 'إجازات العمالة'],
             'sidebar.rental_housing.accommodation_entries' => ['en' => 'Accommodation Entries', 'ar' => 'إدخالات الإيواء'],
             'sidebar.rental_housing.reports' => ['en' => 'Reports', 'ar' => 'التقارير'],
+            'sidebar.rental_housing.alerts' => ['en' => 'Housing Alerts', 'ar' => 'تنبيهات الايواء'],
 
             'sidebar.housing_management' => ['en' => 'Housing Management', 'ar' => 'إدارة الإيواء'],
             'sidebar.housing_management.status_management' => ['en' => 'Status Management', 'ar' => 'إدارة الحالات'],
@@ -188,6 +190,8 @@ class HousingTranslationsSeeder extends Seeder
             'housing.buildings.capacity' => ['en' => 'Capacity', 'ar' => 'السعة'],
             'housing.buildings.available_capacity' => ['en' => 'Available Capacity', 'ar' => 'السعة المتاحة'],
             'housing.buildings.maintenance' => ['en' => 'Maintenance', 'ar' => 'صيانة'],
+
+            'housing.alerts.title' => ['en' => 'Housing Alerts', 'ar' => 'تنبيهات الايواء'],
         ];
 
         $created = 0;
