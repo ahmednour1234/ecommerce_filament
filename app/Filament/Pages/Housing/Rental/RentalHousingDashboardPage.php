@@ -89,7 +89,8 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
                 \Filament\Forms\Components\Select::make('branch_id')
                     ->label('الفرع')
                     ->options(function () {
-                        return Branch::all()
+                        return Branch::whereIn('name', ['الرياض', 'حفر الباطن', 'عرعر'])
+                            ->get()
                             ->mapWithKeys(function ($branch) {
                                 return [$branch->id => $branch->name];
                             })
@@ -268,7 +269,14 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
 
                 Tables\Filters\SelectFilter::make('branch_id')
                     ->label('الفرع')
-                    ->relationship('branch', 'name')
+                    ->options(function () {
+                        return Branch::whereIn('name', ['الرياض', 'حفر الباطن', 'عرعر'])
+                            ->get()
+                            ->mapWithKeys(function ($branch) {
+                                return [$branch->id => $branch->name];
+                            })
+                            ->toArray();
+                    })
                     ->searchable(),
 
                 Tables\Filters\SelectFilter::make('nationality_id')
