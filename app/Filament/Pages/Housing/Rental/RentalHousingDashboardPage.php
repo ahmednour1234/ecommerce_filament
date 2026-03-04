@@ -2,9 +2,11 @@
 
 namespace App\Filament\Pages\Housing\Rental;
 
+use App\Data\SaudiGovernorates;
 use App\Filament\Concerns\TranslatableNavigation;
-use App\Models\Housing\HousingRequest;
-use App\Services\Housing\HousingDashboardStatsService;
+use App\Models\Housing\AccommodationEntry;
+use App\Models\Housing\HousingStatus;
+use App\Models\Recruitment\Nationality;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
@@ -22,13 +24,15 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-home';
-    protected static ?string $navigationGroup = 'إيواء الاستقدام';
+    protected static ?string $navigationGroup = 'إيواء التأجير';
     protected static ?int $navigationSort = 1;
     protected static ?string $navigationTranslationKey = 'sidebar.housing.rental_housing.dashboard';
     protected static string $view = 'filament.pages.housing.dashboard';
 
-    public ?string $request_type = null;
-    public ?string $status = null;
+    public ?int $status_id = null;
+    public ?int $branch_id = null;
+    public ?int $nationality_id = null;
+    public ?string $city = null;
     public ?string $from_date = null;
     public ?string $to_date = null;
 
@@ -66,24 +70,42 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
     {
         return $form
             ->schema([
-                \Filament\Forms\Components\Select::make('request_type')
-                    ->label(tr('housing.dashboard.request_type', [], null, 'dashboard') ?: 'نوع الطلب')
-                    ->options([
-                        'new_rent' => tr('housing.requests.type.new_rent', [], null, 'dashboard') ?: 'إيجار جديد',
-                        'cancel_rent' => tr('housing.requests.type.cancel_rent', [], null, 'dashboard') ?: 'إلغاء الإيجار',
-                        'transfer_kafala' => tr('housing.requests.type.transfer_kafala', [], null, 'dashboard') ?: 'نقل الكفالة',
-                        'outside_service' => tr('housing.requests.type.outside_service', [], null, 'dashboard') ?: 'خارج الخدمة',
-                        'leave_request' => tr('housing.requests.type.leave_request', [], null, 'dashboard') ?: 'طلب إجازة',
-                    ])
+                \Filament\Forms\Components\Select::make('status_id')
+                    ->label(tr('housing.dashboard.status', [], null, 'dashboard') ?: 'الحالة')
+                    ->options(function () {
+                        return HousingStatus::active()
+                            ->ordered()
+                            ->get()
+                            ->pluck('name', 'id')
+                            ->toArray();
+                    })
+                    ->searchable()
                     ->columnSpan(1),
 
-                \Filament\Forms\Components\Select::make('status')
-                    ->label(tr('housing.dashboard.status', [], null, 'dashboard') ?: 'الحالة')
-                    ->options([
-                        'pending' => tr('housing.requests.status.pending', [], null, 'dashboard') ?: 'معلق',
-                        'approved' => tr('housing.requests.status.approved', [], null, 'dashboard') ?: 'موافق عليه',
-                        'completed' => tr('housing.requests.status.completed', [], null, 'dashboard') ?: 'مكتمل',
-                    ])
+                \Filament\Forms\Components\Select::make('branch_id')
+                    ->label('الفرع')
+                    ->relationship('branch', 'name', fn ($query) => $query->where('is_active', true))
+                    ->searchable()
+                    ->columnSpan(1),
+
+                \Filament\Forms\Components\Select::make('nationality_id')
+                    ->label('الجنسية')
+                    ->options(function () {
+                        return Nationality::where('is_active', true)
+                            ->get()
+                            ->mapWithKeys(function ($nationality) {
+                                $label = app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en;
+                                return [$nationality->id => $label];
+                            })
+                            ->toArray();
+                    })
+                    ->searchable()
+                    ->columnSpan(1),
+
+                \Filament\Forms\Components\Select::make('city')
+                    ->label('المدينة')
+                    ->options(SaudiGovernorates::all())
+                    ->searchable()
                     ->columnSpan(1),
 
                 \Filament\Forms\Components\DatePicker::make('from_date')
@@ -94,41 +116,59 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
                     ->label(tr('housing.dashboard.to_date', [], null, 'dashboard') ?: 'إلى تاريخ')
                     ->columnSpan(1),
             ])
-            ->columns(4)
+            ->columns(3)
             ->statePath('data');
     }
 
     public function getStats(): array
     {
-        $query = HousingRequest::rental();
-        if ($this->request_type) $query->where('request_type', $this->request_type);
-        if ($this->status) $query->where('status', $this->status);
-        if ($this->from_date) $query->whereDate('request_date', '>=', $this->from_date);
-        if ($this->to_date) $query->whereDate('request_date', '<=', $this->to_date);
-        $results = $query->select('status', \DB::raw('COUNT(*) as count'))->groupBy('status')->get();
-        $stats = ['completed' => 0, 'approved' => 0, 'pending' => 0, 'total' => 0];
+        $query = AccommodationEntry::rental()
+            ->whereNull('exit_date');
+        
+        if ($this->status_id) $query->where('status_id', $this->status_id);
+        if ($this->branch_id) $query->where('branch_id', $this->branch_id);
+        if ($this->nationality_id) $query->where('nationality_id', $this->nationality_id);
+        if ($this->from_date) $query->whereDate('entry_date', '>=', $this->from_date);
+        if ($this->to_date) $query->whereDate('entry_date', '<=', $this->to_date);
+        
+        $results = $query->select('status_id', \DB::raw('COUNT(*) as count'))
+            ->groupBy('status_id')
+            ->get();
+        
+        $stats = [];
+        $total = 0;
         foreach ($results as $result) {
-            $status = $result->status;
+            $statusId = $result->status_id;
             $count = (int) $result->count;
-            if (isset($stats[$status])) $stats[$status] = $count;
-            $stats['total'] += $count;
+            $stats[$statusId] = $count;
+            $total += $count;
         }
-        return $stats;
+        
+        return ['by_status' => $stats, 'total' => $total];
     }
 
     public function getCompletedCount(): int
     {
-        return $this->getStats()['completed'] ?? 0;
+        $query = AccommodationEntry::rental()
+            ->whereNull('exit_date');
+        
+        if ($this->status_id) $query->where('status_id', $this->status_id);
+        if ($this->branch_id) $query->where('branch_id', $this->branch_id);
+        if ($this->nationality_id) $query->where('nationality_id', $this->nationality_id);
+        if ($this->from_date) $query->whereDate('entry_date', '>=', $this->from_date);
+        if ($this->to_date) $query->whereDate('entry_date', '<=', $this->to_date);
+        
+        return $query->count();
     }
 
     public function getApprovedCount(): int
     {
-        return $this->getStats()['approved'] ?? 0;
+        return $this->getCompletedCount();
     }
 
     public function getPendingCount(): int
     {
-        return $this->getStats()['pending'] ?? 0;
+        return $this->getCompletedCount();
     }
 
     public function table(Table $table): Table
@@ -136,87 +176,106 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
         return $table
             ->query($this->getTableQuery())
             ->columns([
-                Tables\Columns\TextColumn::make('order_no')
-                    ->label(tr('tables.housing.requests.order_no', [], null, 'dashboard') ?: 'رقم الطلب')
+                Tables\Columns\TextColumn::make('id')
+                    ->label('رقم')
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('laborer.name_ar')
-                    ->label(tr('tables.housing.requests.laborer', [], null, 'dashboard') ?: 'اسم العامل')
+                    ->label('اسم العامل')
+                    ->formatStateUsing(fn ($state, $record) => $record->laborer 
+                        ? (app()->getLocale() === 'ar' ? $record->laborer->name_ar : $record->laborer->name_en)
+                        : '')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\BadgeColumn::make('request_type')
-                    ->label(tr('tables.housing.requests.request_type', [], null, 'dashboard') ?: 'نوع الطلب')
-                    ->color(fn (string $state): string => match ($state) {
-                        'new_rent' => 'success',
-                        'cancel_rent' => 'danger',
-                        'transfer_kafala' => 'info',
-                        'outside_service' => 'warning',
-                        'leave_request' => 'primary',
-                        default => 'gray',
-                    })
-                    ->formatStateUsing(fn ($state) => tr("housing.requests.type.{$state}", [], null, 'dashboard') ?: $state),
+                Tables\Columns\TextColumn::make('contract_no')
+                    ->label('رقم العقد')
+                    ->searchable()
+                    ->sortable(),
 
-                Tables\Columns\BadgeColumn::make('status')
-                    ->label(tr('tables.housing.requests.status', [], null, 'dashboard') ?: 'الحالة')
-                    ->color(fn (string $state): string => match ($state) {
-                        'completed' => 'success',
-                        'approved' => 'info',
-                        'pending' => 'warning',
-                        'rejected' => 'danger',
-                        'suspended' => 'gray',
-                        default => 'gray',
-                    })
-                    ->formatStateUsing(fn ($state) => tr("housing.requests.status.{$state}", [], null, 'dashboard') ?: $state),
+                Tables\Columns\TextColumn::make('status.name')
+                    ->label('الحالة')
+                    ->formatStateUsing(fn ($state, $record) => $record->status 
+                        ? (app()->getLocale() === 'ar' ? $record->status->name_ar : $record->status->name_en)
+                        : '')
+                    ->badge()
+                    ->color(fn ($record) => $record->status?->color ?? 'gray')
+                    ->sortable(),
 
-                Tables\Columns\TextColumn::make('request_date')
-                    ->label(tr('tables.housing.requests.request_date', [], null, 'dashboard') ?: 'تاريخ الطلب')
+                Tables\Columns\TextColumn::make('branch.name')
+                    ->label('الفرع')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('nationality.name_ar')
+                    ->label('الجنسية')
+                    ->formatStateUsing(fn ($state, $record) => $record->nationality 
+                        ? (app()->getLocale() === 'ar' ? $record->nationality->name_ar : $record->nationality->name_en)
+                        : '')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('building.branch.name')
+                    ->label('المدينة')
+                    ->formatStateUsing(fn ($state) => $state ?? '-')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('entry_date')
+                    ->label('تاريخ الدخول')
                     ->date()
                     ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('request_type')
-                    ->label(tr('filters.housing.request_type', [], null, 'dashboard') ?: 'نوع الطلب')
-                    ->options([
-                        'new_rent' => tr('housing.requests.type.new_rent', [], null, 'dashboard') ?: 'إيجار جديد',
-                        'cancel_rent' => tr('housing.requests.type.cancel_rent', [], null, 'dashboard') ?: 'إلغاء الإيجار',
-                        'transfer_kafala' => tr('housing.requests.type.transfer_kafala', [], null, 'dashboard') ?: 'نقل الكفالة',
-                        'outside_service' => tr('housing.requests.type.outside_service', [], null, 'dashboard') ?: 'خارج الخدمة',
-                        'leave_request' => tr('housing.requests.type.leave_request', [], null, 'dashboard') ?: 'طلب إجازة',
-                    ]),
+                Tables\Filters\SelectFilter::make('status_id')
+                    ->label('الحالة')
+                    ->relationship('status', 'name_ar')
+                    ->searchable(),
 
-                Tables\Filters\SelectFilter::make('status')
-                    ->label(tr('filters.housing.status', [], null, 'dashboard') ?: 'الحالة')
-                    ->options([
-                        'pending' => tr('housing.requests.status.pending', [], null, 'dashboard') ?: 'معلق',
-                        'approved' => tr('housing.requests.status.approved', [], null, 'dashboard') ?: 'موافق عليه',
-                        'completed' => tr('housing.requests.status.completed', [], null, 'dashboard') ?: 'مكتمل',
-                        'rejected' => tr('housing.requests.status.rejected', [], null, 'dashboard') ?: 'مرفوض',
-                        'suspended' => tr('housing.requests.status.suspended', [], null, 'dashboard') ?: 'موقوف',
-                    ]),
+                Tables\Filters\SelectFilter::make('branch_id')
+                    ->label('الفرع')
+                    ->relationship('branch', 'name')
+                    ->searchable(),
+
+                Tables\Filters\SelectFilter::make('nationality_id')
+                    ->label('الجنسية')
+                    ->relationship('nationality', 'name_ar')
+                    ->searchable(),
             ])
-            ->defaultSort('request_date', 'desc');
+            ->defaultSort('entry_date', 'desc');
     }
 
     protected function getTableQuery(): Builder
     {
-        $query = HousingRequest::rental()->with(['laborer']);
+        $query = AccommodationEntry::rental()
+            ->whereNull('exit_date')
+            ->with(['laborer', 'status', 'branch', 'nationality']);
 
-        if ($this->request_type) {
-            $query->where('request_type', $this->request_type);
+        if ($this->status_id) {
+            $query->where('status_id', $this->status_id);
         }
 
-        if ($this->status) {
-            $query->where('status', $this->status);
+        if ($this->branch_id) {
+            $query->where('branch_id', $this->branch_id);
+        }
+
+        if ($this->nationality_id) {
+            $query->where('nationality_id', $this->nationality_id);
+        }
+
+        if ($this->city) {
+            $query->whereHas('building.branch', function ($q) {
+                $q->where('name', 'like', '%' . $this->city . '%');
+            });
         }
 
         if ($this->from_date) {
-            $query->whereDate('request_date', '>=', $this->from_date);
+            $query->whereDate('entry_date', '>=', $this->from_date);
         }
 
         if ($this->to_date) {
-            $query->whereDate('request_date', '<=', $this->to_date);
+            $query->whereDate('entry_date', '<=', $this->to_date);
         }
 
         return $query;
@@ -229,8 +288,10 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
 
     public function resetFilters(): void
     {
-        $this->request_type = null;
-        $this->status = null;
+        $this->status_id = null;
+        $this->branch_id = null;
+        $this->nationality_id = null;
+        $this->city = null;
         $this->from_date = null;
         $this->to_date = null;
         $this->form->fill();
