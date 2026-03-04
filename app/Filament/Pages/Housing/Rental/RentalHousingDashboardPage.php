@@ -33,7 +33,6 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
     public ?int $status_id = null;
     public ?int $branch_id = null;
     public ?int $nationality_id = null;
-    public ?string $branch_city = null;
     public ?string $from_date = null;
     public ?string $to_date = null;
 
@@ -113,11 +112,6 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
                     ->searchable()
                     ->columnSpan(1),
 
-                \Filament\Forms\Components\TextInput::make('branch_city')
-                    ->label('مدينة الفرع')
-                    ->placeholder('ابحث عن مدينة الفرع')
-                    ->columnSpan(1),
-
                 \Filament\Forms\Components\DatePicker::make('from_date')
                     ->label(tr('housing.dashboard.from_date', [], null, 'dashboard') ?: 'من تاريخ')
                     ->columnSpan(1),
@@ -144,11 +138,6 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
         }
         if ($this->nationality_id) {
             $query->where('nationality_id', $this->nationality_id);
-        }
-        if ($this->branch_city) {
-            $query->whereHas('branch', function ($q) {
-                $q->where('name', 'like', '%' . $this->branch_city . '%');
-            });
         }
         if ($this->from_date) {
             $query->whereDate('entry_date', '>=', $this->from_date);
@@ -305,12 +294,6 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
             $query->where('nationality_id', $this->nationality_id);
         }
 
-        if ($this->branch_city) {
-            $query->whereHas('branch', function ($q) {
-                $q->where('name', 'like', '%' . $this->branch_city . '%');
-            });
-        }
-
         if ($this->from_date) {
             $query->whereDate('entry_date', '>=', $this->from_date);
         }
@@ -332,7 +315,6 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
         $this->status_id = null;
         $this->branch_id = null;
         $this->nationality_id = null;
-        $this->branch_city = null;
         $this->from_date = null;
         $this->to_date = null;
         $this->form->fill();
