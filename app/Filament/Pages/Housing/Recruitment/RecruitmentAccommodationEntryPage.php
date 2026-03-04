@@ -32,6 +32,9 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
     public ?int $building_id = null;
     public ?int $nationality_id = null;
     public ?string $worker_passport_number = null;
+    public ?string $customer_name = null;
+    public ?string $customer_phone = null;
+    public ?string $customer_id_number = null;
 
     public static function getNavigationLabel(): string
     {
@@ -67,10 +70,10 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
     {
         return $form
             ->schema([
-                \Filament\Forms\Components\Section::make(tr('housing.accommodation.create', [], null, 'dashboard') ?: 'إضافة إدخال إيواء جديد')
+                \Filament\Forms\Components\Section::make('بيانات العاملة')
                     ->schema([
                         \Filament\Forms\Components\Select::make('laborer_id')
-                            ->label(tr('housing.accommodation.laborer', [], null, 'dashboard') ?: 'العامل')
+                            ->label(tr('housing.accommodation.laborer', [], null, 'dashboard') ?: 'العاملة')
                             ->options(function () {
                                 return Laborer::query()
                                     ->get()
@@ -81,8 +84,61 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                             })
                             ->required()
                             ->searchable()
+                            ->columnSpan(1)
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                if ($state) {
+                                    $laborer = Laborer::find($state);
+                                    if ($laborer) {
+                                        $set('worker_passport_number', $laborer->passport_number);
+                                        $set('nationality_id', $laborer->nationality_id);
+                                    }
+                                }
+                            }),
+
+                        \Filament\Forms\Components\Select::make('nationality_id')
+                            ->label('الجنسية')
+                            ->options(function () {
+                                $allowedNames = ['الفلبين', 'بنغلادش', 'سريلانكا', 'اثيوبيا', 'اوغندا', 'كينيا', 'بورندي'];
+                                return Nationality::where('is_active', true)
+                                    ->whereIn('name_ar', $allowedNames)
+                                    ->get()
+                                    ->mapWithKeys(function ($nationality) {
+                                        $label = app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en;
+                                        return [$nationality->id => $label];
+                                    })
+                                    ->toArray();
+                            })
+                            ->searchable()
                             ->columnSpan(1),
 
+                        \Filament\Forms\Components\TextInput::make('worker_passport_number')
+                            ->label('رقم جواز العاملة')
+                            ->columnSpan(1),
+                    ])
+                    ->columns(2),
+
+                \Filament\Forms\Components\Section::make('بيانات العميل')
+                    ->schema([
+                        \Filament\Forms\Components\TextInput::make('customer_name')
+                            ->label('اسم العميل')
+                            ->maxLength(255)
+                            ->columnSpan(1),
+
+                        \Filament\Forms\Components\TextInput::make('customer_phone')
+                            ->label('رقم جوال العميل')
+                            ->tel()
+                            ->maxLength(50)
+                            ->columnSpan(1),
+
+                        \Filament\Forms\Components\TextInput::make('customer_id_number')
+                            ->label('رقم هوية العميل')
+                            ->maxLength(255)
+                            ->columnSpan(1),
+                    ])
+                    ->columns(2),
+
+                \Filament\Forms\Components\Section::make('بيانات الإدخال')
+                    ->schema([
                         \Filament\Forms\Components\TextInput::make('contract_no')
                             ->label(tr('housing.accommodation.contract_no', [], null, 'dashboard') ?: 'رقم العقد')
                             ->columnSpan(1),
@@ -133,26 +189,6 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                             ->required()
                             ->searchable()
                             ->helperText(tr('housing.accommodation.available_buildings_note', [], null, 'dashboard') ?: 'يتم عرض المباني المتاحة فقط (السعة المتاحة > 0)')
-                            ->columnSpan(1),
-
-                        \Filament\Forms\Components\Select::make('nationality_id')
-                            ->label('الجنسية')
-                            ->options(function () {
-                                $allowedNames = ['الفلبين', 'بنغلادش', 'سريلانكا', 'اثيوبيا', 'اوغندا', 'كينيا', 'بورندي'];
-                                return Nationality::where('is_active', true)
-                                    ->whereIn('name_ar', $allowedNames)
-                                    ->get()
-                                    ->mapWithKeys(function ($nationality) {
-                                        $label = app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en;
-                                        return [$nationality->id => $label];
-                                    })
-                                    ->toArray();
-                            })
-                            ->searchable()
-                            ->columnSpan(1),
-
-                        \Filament\Forms\Components\TextInput::make('worker_passport_number')
-                            ->label('رقم جواز العامل')
                             ->columnSpan(1),
                     ])
                     ->columns(2),

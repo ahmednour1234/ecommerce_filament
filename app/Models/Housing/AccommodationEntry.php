@@ -36,6 +36,9 @@ class AccommodationEntry extends Model
         'worker_passport_number',
         'new_sponsor_phone',
         'old_sponsor_phone',
+        'customer_name',
+        'customer_phone',
+        'customer_id_number',
     ];
 
     protected $casts = [
