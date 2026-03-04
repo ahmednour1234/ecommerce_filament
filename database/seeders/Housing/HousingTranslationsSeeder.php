@@ -192,6 +192,12 @@ class HousingTranslationsSeeder extends Seeder
             'housing.buildings.maintenance' => ['en' => 'Maintenance', 'ar' => 'صيانة'],
 
             'housing.alerts.title' => ['en' => 'Housing Alerts', 'ar' => 'تنبيهات الايواء'],
+
+            'housing.dashboard.total_entries' => ['en' => 'Total Entries', 'ar' => 'إجمالي الإدخالات'],
+            'housing.dashboard.entries_status_1' => ['en' => 'Entries by Status 1', 'ar' => 'إدخالات بالحالة الأولى'],
+            'housing.dashboard.entries_status_2' => ['en' => 'Entries by Status 2', 'ar' => 'إدخالات بالحالة الثانية'],
+            'housing.dashboard.filter_entries' => ['en' => 'Filter Entries', 'ar' => 'فلترة الإدخالات'],
+            'housing.dashboard.entries_table' => ['en' => 'Entries Table', 'ar' => 'جدول الإدخالات'],
         ];
 
         $created = 0;
