@@ -2,10 +2,10 @@
 
 namespace App\Filament\Pages\Housing\Rental;
 
-use App\Data\SaudiGovernorates;
 use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\Housing\AccommodationEntry;
 use App\Models\Housing\HousingStatus;
+use App\Models\MainCore\Branch;
 use App\Models\Recruitment\Nationality;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -16,6 +16,7 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Number;
+use Illuminate\Support\Facades\DB;
 
 class RentalHousingDashboardPage extends Page implements HasForms, HasTable
 {
@@ -24,7 +25,7 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-home';
-    protected static ?string $navigationGroup = 'إيواء التأجير';
+    protected static ?string $navigationGroup = 'إيواء الاستقدام';
     protected static ?int $navigationSort = 1;
     protected static ?string $navigationTranslationKey = 'sidebar.housing.rental_housing.dashboard';
     protected static string $view = 'filament.pages.housing.dashboard';
@@ -32,7 +33,7 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
     public ?int $status_id = null;
     public ?int $branch_id = null;
     public ?int $nationality_id = null;
-    public ?string $city = null;
+    public ?string $branch_city = null;
     public ?string $from_date = null;
     public ?string $to_date = null;
 
@@ -76,7 +77,10 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
                         return HousingStatus::active()
                             ->ordered()
                             ->get()
-                            ->pluck('name', 'id')
+                            ->mapWithKeys(function ($status) {
+                                $label = app()->getLocale() === 'ar' ? $status->name_ar : $status->name_en;
+                                return [$status->id => $label];
+                            })
                             ->toArray();
                     })
                     ->searchable()
@@ -84,7 +88,13 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
 
                 \Filament\Forms\Components\Select::make('branch_id')
                     ->label('الفرع')
-                    ->relationship('branch', 'name', fn ($query) => $query->where('is_active', true))
+                    ->options(function () {
+                        return Branch::all()
+                            ->mapWithKeys(function ($branch) {
+                                return [$branch->id => $branch->name];
+                            })
+                            ->toArray();
+                    })
                     ->searchable()
                     ->columnSpan(1),
 
@@ -102,10 +112,9 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
                     ->searchable()
                     ->columnSpan(1),
 
-                \Filament\Forms\Components\Select::make('city')
-                    ->label('المدينة')
-                    ->options(SaudiGovernorates::all())
-                    ->searchable()
+                \Filament\Forms\Components\TextInput::make('branch_city')
+                    ->label('مدينة الفرع')
+                    ->placeholder('ابحث عن مدينة الفرع')
                     ->columnSpan(1),
 
                 \Filament\Forms\Components\DatePicker::make('from_date')
@@ -123,52 +132,82 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
     public function getStats(): array
     {
         $query = AccommodationEntry::rental()
-            ->whereNull('exit_date');
-        
-        if ($this->status_id) $query->where('status_id', $this->status_id);
-        if ($this->branch_id) $query->where('branch_id', $this->branch_id);
-        if ($this->nationality_id) $query->where('nationality_id', $this->nationality_id);
-        if ($this->from_date) $query->whereDate('entry_date', '>=', $this->from_date);
-        if ($this->to_date) $query->whereDate('entry_date', '<=', $this->to_date);
-        
-        $results = $query->select('status_id', \DB::raw('COUNT(*) as count'))
+            ->whereNull('exit_date')
+            ->whereNotNull('status_id');
+
+        if ($this->status_id) {
+            $query->where('status_id', $this->status_id);
+        }
+        if ($this->branch_id) {
+            $query->where('branch_id', $this->branch_id);
+        }
+        if ($this->nationality_id) {
+            $query->where('nationality_id', $this->nationality_id);
+        }
+        if ($this->branch_city) {
+            $query->whereHas('branch', function ($q) {
+                $q->where('name', 'like', '%' . $this->branch_city . '%');
+            });
+        }
+        if ($this->from_date) {
+            $query->whereDate('entry_date', '>=', $this->from_date);
+        }
+        if ($this->to_date) {
+            $query->whereDate('entry_date', '<=', $this->to_date);
+        }
+
+        $results = $query->select('status_id', DB::raw('COUNT(*) as count'))
             ->groupBy('status_id')
             ->get();
-        
-        $stats = [];
-        $total = 0;
+
+        $stats = ['total' => 0];
+        $statusCounts = [];
+
         foreach ($results as $result) {
             $statusId = $result->status_id;
             $count = (int) $result->count;
-            $stats[$statusId] = $count;
-            $total += $count;
+            $statusCounts[$statusId] = $count;
+            $stats['total'] += $count;
         }
-        
-        return ['by_status' => $stats, 'total' => $total];
+
+        // Get top 3 statuses for display
+        $topStatuses = HousingStatus::whereIn('id', array_keys($statusCounts))
+            ->get()
+            ->sortByDesc(function ($status) use ($statusCounts) {
+                return $statusCounts[$status->id] ?? 0;
+            })
+            ->take(3);
+
+        $stats['statuses'] = [];
+        foreach ($topStatuses as $status) {
+            $stats['statuses'][$status->id] = [
+                'count' => $statusCounts[$status->id] ?? 0,
+                'name' => app()->getLocale() === 'ar' ? $status->name_ar : $status->name_en,
+            ];
+        }
+
+        return $stats;
     }
 
     public function getCompletedCount(): int
     {
-        $query = AccommodationEntry::rental()
-            ->whereNull('exit_date');
-        
-        if ($this->status_id) $query->where('status_id', $this->status_id);
-        if ($this->branch_id) $query->where('branch_id', $this->branch_id);
-        if ($this->nationality_id) $query->where('nationality_id', $this->nationality_id);
-        if ($this->from_date) $query->whereDate('entry_date', '>=', $this->from_date);
-        if ($this->to_date) $query->whereDate('entry_date', '<=', $this->to_date);
-        
-        return $query->count();
+        $stats = $this->getStats();
+        $statuses = $stats['statuses'] ?? [];
+        return array_sum(array_column($statuses, 'count'));
     }
 
     public function getApprovedCount(): int
     {
-        return $this->getCompletedCount();
+        $stats = $this->getStats();
+        $statuses = $stats['statuses'] ?? [];
+        return count($statuses) > 1 ? ($statuses[array_keys($statuses)[1]]['count'] ?? 0) : 0;
     }
 
     public function getPendingCount(): int
     {
-        return $this->getCompletedCount();
+        $stats = $this->getStats();
+        $statuses = $stats['statuses'] ?? [];
+        return count($statuses) > 0 ? ($statuses[array_keys($statuses)[0]]['count'] ?? 0) : 0;
     }
 
     public function table(Table $table): Table
@@ -216,12 +255,6 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('building.branch.name')
-                    ->label('المدينة')
-                    ->formatStateUsing(fn ($state) => $state ?? '-')
-                    ->searchable()
-                    ->sortable(),
-
                 Tables\Columns\TextColumn::make('entry_date')
                     ->label('تاريخ الدخول')
                     ->date()
@@ -264,9 +297,9 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
             $query->where('nationality_id', $this->nationality_id);
         }
 
-        if ($this->city) {
-            $query->whereHas('building.branch', function ($q) {
-                $q->where('name', 'like', '%' . $this->city . '%');
+        if ($this->branch_city) {
+            $query->whereHas('branch', function ($q) {
+                $q->where('name', 'like', '%' . $this->branch_city . '%');
             });
         }
 
@@ -291,7 +324,7 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
         $this->status_id = null;
         $this->branch_id = null;
         $this->nationality_id = null;
-        $this->city = null;
+        $this->branch_city = null;
         $this->from_date = null;
         $this->to_date = null;
         $this->form->fill();

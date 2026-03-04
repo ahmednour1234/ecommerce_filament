@@ -2,11 +2,11 @@
     <div class="space-y-6">
         {{-- KPI Cards --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {{-- Completed Requests --}}
+            {{-- Total Entries --}}
             <div class="bg-white rounded-lg shadow-md p-6 border-r-4 border-green-500">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-600 mb-1">{{ tr('housing.dashboard.completed_requests', [], null, 'dashboard') ?: 'طلبات مكتملة' }}</p>
+                        <p class="text-sm text-gray-600 mb-1">{{ tr('housing.dashboard.total_entries', [], null, 'dashboard') ?: 'إجمالي الإدخالات' }}</p>
                         <p class="text-3xl font-bold text-gray-800">{{ Number::format($this->getCompletedCount()) }}</p>
                     </div>
                     <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
@@ -17,11 +17,11 @@
                 </div>
             </div>
 
-            {{-- Approved Requests --}}
+            {{-- Entries by Status 2 --}}
             <div class="bg-white rounded-lg shadow-md p-6 border-r-4 border-teal-500">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-600 mb-1">{{ tr('housing.dashboard.approved_requests', [], null, 'dashboard') ?: 'طلبات موافق عليها' }}</p>
+                        <p class="text-sm text-gray-600 mb-1">{{ tr('housing.dashboard.entries_status_2', [], null, 'dashboard') ?: 'إدخالات بالحالة الثانية' }}</p>
                         <p class="text-3xl font-bold text-gray-800">{{ Number::format($this->getApprovedCount()) }}</p>
                     </div>
                     <div class="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center">
@@ -32,11 +32,11 @@
                 </div>
             </div>
 
-            {{-- Pending Requests --}}
+            {{-- Entries by Status 1 --}}
             <div class="bg-white rounded-lg shadow-md p-6 border-r-4 border-yellow-500">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-600 mb-1">{{ tr('housing.dashboard.pending_requests', [], null, 'dashboard') ?: 'طلبات معلقة' }}</p>
+                        <p class="text-sm text-gray-600 mb-1">{{ tr('housing.dashboard.entries_status_1', [], null, 'dashboard') ?: 'إدخالات بالحالة الأولى' }}</p>
                         <p class="text-3xl font-bold text-gray-800">{{ Number::format($this->getPendingCount()) }}</p>
                     </div>
                     <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center">
@@ -48,32 +48,9 @@
             </div>
         </div>
 
-        {{-- Action Buttons --}}
-        <div class="flex flex-row flex-wrap gap-4 justify-center items-center">
-            <a href="{{ \App\Filament\Resources\Housing\HousingRequestResource::getUrl() }}?tableFilters[request_type][value]=new_rent" 
-               class="flex-1 min-w-[200px] max-w-[300px] inline-flex items-center justify-center px-6 py-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-all duration-200 text-center">
-                {{ tr('housing.dashboard.delivery_tasks', [], null, 'dashboard') ?: 'مهام التوصيل' }}
-            </a>
-
-            <a href="{{ \App\Filament\Resources\Housing\HousingDriverResource::getUrl() }}" 
-               class="flex-1 min-w-[200px] max-w-[300px] inline-flex items-center justify-center px-6 py-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-all duration-200 text-center">
-                {{ tr('housing.dashboard.driver_management', [], null, 'dashboard') ?: 'إدارة السائقين' }}
-            </a>
-
-            <a href="{{ \App\Filament\Pages\Housing\HousingReportsPage::getUrl() }}" 
-               class="flex-1 min-w-[200px] max-w-[300px] inline-flex items-center justify-center px-6 py-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-all duration-200 text-center">
-                {{ tr('housing.dashboard.order_reports', [], null, 'dashboard') ?: 'تقارير الطلبات' }}
-            </a>
-
-            <a href="{{ \App\Filament\Resources\Housing\HousingDriverResource::getUrl() }}" 
-               class="flex-1 min-w-[200px] max-w-[300px] inline-flex items-center justify-center px-6 py-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-all duration-200 text-center">
-                {{ tr('housing.dashboard.driver_performance', [], null, 'dashboard') ?: 'أداء السائقين' }}
-            </a>
-        </div>
-
         {{-- Filter Section --}}
         <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-semibold mb-4">{{ tr('housing.dashboard.filter_requests', [], null, 'dashboard') ?: 'فلترة الطلبات' }}</h3>
+            <h3 class="text-lg font-semibold mb-4">{{ tr('housing.dashboard.filter_entries', [], null, 'dashboard') ?: 'فلترة الإدخالات' }}</h3>
             
             {{ $this->form }}
             
@@ -87,9 +64,9 @@
             </div>
         </div>
 
-        {{-- Requests Table --}}
+        {{-- Entries Table --}}
         <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-semibold mb-4">{{ tr('housing.dashboard.requests_table', [], null, 'dashboard') ?: 'جدول الطلبات' }}</h3>
+            <h3 class="text-lg font-semibold mb-4">{{ tr('housing.dashboard.entries_table', [], null, 'dashboard') ?: 'جدول الإدخالات' }}</h3>
             {{ $this->table }}
         </div>
     </div>
