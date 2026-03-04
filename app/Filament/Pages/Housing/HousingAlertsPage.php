@@ -122,7 +122,7 @@ class HousingAlertsPage extends Page implements HasTable
                         return '-';
                     })
                     ->badge()
-                    ->color(fn ($record) => {
+                    ->color(function ($record) {
                         $lastLog = $record->statusLogs()
                             ->where('new_status_id', $record->status_id)
                             ->orderBy('status_date', 'desc')
