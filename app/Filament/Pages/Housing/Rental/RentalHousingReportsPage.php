@@ -19,7 +19,7 @@ class RentalHousingReportsPage extends Page implements HasTable
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
     protected static ?string $navigationGroup = 'إيواء التأجير';
-    protected static ?int $navigationSort = 8;
+    protected static ?int $navigationSort = 4;
     protected static ?string $navigationTranslationKey = 'sidebar.housing.rental_housing.reports';
     protected static string $view = 'filament.pages.housing.reports';
 

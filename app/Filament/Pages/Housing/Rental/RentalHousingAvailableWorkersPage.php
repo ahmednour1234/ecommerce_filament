@@ -18,7 +18,7 @@ class RentalHousingAvailableWorkersPage extends Page implements HasTable
 
     protected static ?string $navigationIcon = 'heroicon-o-user-plus';
     protected static ?string $navigationGroup = 'إيواء التأجير';
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 2;
     protected static ?string $navigationTranslationKey = 'sidebar.housing.rental_housing.available_workers';
     protected static string $view = 'filament.pages.housing.available-workers';
 

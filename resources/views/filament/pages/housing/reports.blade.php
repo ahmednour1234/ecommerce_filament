@@ -8,7 +8,7 @@
                 <x-filament::input.wrapper>
                     <x-filament::input.select wire:model="branch_id">
                         <option value="">{{ tr('filters.branch', [], null, 'dashboard') ?: 'الفرع' }}</option>
-                        @foreach(\App\Models\MainCore\Branch::all() as $branch)
+                        @foreach(\App\Models\MainCore\Branch::whereIn('name', ['حفر الباطن', 'الرياض', 'عرعر'])->get() as $branch)
                             <option value="{{ $branch->id }}">{{ $branch->name }}</option>
                         @endforeach
                     </x-filament::input.select>

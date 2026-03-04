@@ -21,7 +21,7 @@ class RentalBuildingResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
     protected static ?string $navigationGroup = 'إيواء التأجير';
     protected static ?string $navigationLabel = 'إدارة المباني';
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 3;
 
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
     {

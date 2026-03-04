@@ -18,7 +18,7 @@ class RentalAccommodationEntryPage extends Page implements HasForms
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
     protected static ?string $navigationGroup = 'إيواء التأجير';
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 1;
     protected static ?string $navigationLabel = 'ادخالات الايواء';
     protected static ?string $navigationTranslationKey = 'sidebar.housing.rental_housing.accommodation_entries';
     protected static string $view = 'filament.pages.housing.create-accommodation-entry';
