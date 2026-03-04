@@ -8,6 +8,7 @@ use App\Models\Recruitment\Nationality;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AccommodationEntry extends Model
@@ -60,9 +61,36 @@ class AccommodationEntry extends Model
             }
         });
 
+        static::created(function ($entry) {
+            // Log initial status if status_id is set
+            if ($entry->status_id) {
+                AccommodationEntryStatusLog::create([
+                    'accommodation_entry_id' => $entry->id,
+                    'old_status_id' => null,
+                    'new_status_id' => $entry->status_id,
+                    'status_date' => $entry->entry_date ? $entry->entry_date->toDateString() : now()->toDateString(),
+                    'created_by' => $entry->created_by,
+                ]);
+            }
+        });
+
         static::updating(function ($entry) {
             if (empty($entry->updated_by) && auth()->check()) {
                 $entry->updated_by = auth()->id();
+            }
+            
+            // Log status change
+            if ($entry->isDirty('status_id')) {
+                $oldStatusId = $entry->getOriginal('status_id');
+                $newStatusId = $entry->status_id;
+                
+                AccommodationEntryStatusLog::create([
+                    'accommodation_entry_id' => $entry->id,
+                    'old_status_id' => $oldStatusId,
+                    'new_status_id' => $newStatusId,
+                    'status_date' => now()->toDateString(),
+                    'created_by' => auth()->id(),
+                ]);
             }
             
             // Handle building capacity changes
@@ -162,5 +190,10 @@ class AccommodationEntry extends Model
     public function scopeRental($query)
     {
         return $query->where('type', 'rental');
+    }
+
+    public function statusLogs(): HasMany
+    {
+        return $this->hasMany(AccommodationEntryStatusLog::class);
     }
 }
