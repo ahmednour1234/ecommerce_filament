@@ -287,9 +287,6 @@ class CompanyVisaContractResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        $user = auth()->user();
-        if (!$user) return false;
-        
-        return $user->hasRole('super_admin') || $user->can('company_visas.view_contracts');
+        return false;
     }
 }
