@@ -4,6 +4,7 @@ namespace App\Filament\Pages\Housing\Rental;
 
 use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\MainCore\Branch;
+use App\Models\Recruitment\Laborer;
 use App\Services\Housing\HousingReportsService;
 use Filament\Pages\Page;
 use Filament\Tables;
@@ -77,7 +78,7 @@ class RentalHousingReportsPage extends Page implements HasTable
         $data = $report['data'] ?? [];
 
         return $table
-            ->query(\Illuminate\Support\Facades\DB::table('laborers')->whereRaw('1 = 0'))
+            ->query(Laborer::query()->whereRaw('1 = 0'))
             ->columns([
                 Tables\Columns\TextColumn::make('laborer_name')
                     ->label('اسم العامل')
