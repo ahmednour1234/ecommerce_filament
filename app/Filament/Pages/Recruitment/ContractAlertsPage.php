@@ -41,6 +41,13 @@ class ContractAlertsPage extends Page implements HasTable
         return 'تنبيهات العقود';
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        $alertsService = app(ContractAlertsService::class);
+        $count = $alertsService->getAlertsCount();
+        return $count > 0 ? (string) $count : null;
+    }
+
     public function table(Table $table): Table
     {
         $alertsService = app(ContractAlertsService::class);

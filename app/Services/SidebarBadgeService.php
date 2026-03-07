@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Recruitment\Laborer;
 use App\Models\Rental\RentalContractRequest;
+use App\Services\Recruitment\ContractAlertsService;
 use Illuminate\Support\Facades\Cache;
 
 class SidebarBadgeService
@@ -24,11 +25,20 @@ class SidebarBadgeService
         });
     }
 
+    public function getContractAlertsCount(): int
+    {
+        return Cache::remember('sidebar.badge.contract_alerts', $this->cacheTtl, function () {
+            $alertsService = app(ContractAlertsService::class);
+            return $alertsService->getAlertsCount();
+        });
+    }
+
     public function getCount(string $badgeKey): ?int
     {
         return match ($badgeKey) {
             'available_workers_count' => $this->getAvailableWorkersCount(),
             'housing_requests_count' => $this->getHousingRequestsCount(),
+            'contract_alerts_count' => $this->getContractAlertsCount(),
             default => null,
         };
     }
@@ -37,5 +47,6 @@ class SidebarBadgeService
     {
         Cache::forget('sidebar.badge.available_workers');
         Cache::forget('sidebar.badge.housing_requests');
+        Cache::forget('sidebar.badge.contract_alerts');
     }
 }
