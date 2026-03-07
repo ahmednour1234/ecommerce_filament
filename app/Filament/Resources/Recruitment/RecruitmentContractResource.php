@@ -280,6 +280,11 @@ class RecruitmentContractResource extends Resource
                             ->visible(fn (callable $get) => $get('status') !== null)
                             ->columnSpan(1),
 
+                        FileUpload::document('travel_permit', 'recruitment_contracts/travel_permit')
+                            ->label('تصريح السفر')
+                            ->visible(fn (callable $get) => $get('status') === 'visa_issued')
+                            ->columnSpan(1),
+
                         Forms\Components\Select::make('payment_status')
                             ->label(tr('recruitment_contract.fields.payment_status', [], null, 'dashboard') ?: 'حالة الدفع')
                             ->options([
@@ -404,11 +409,6 @@ class RecruitmentContractResource extends Resource
 
                         FileUpload::document('visa_image', 'recruitment_contracts/visa')
                             ->label(tr('recruitment_contract.fields.visa_image', [], null, 'dashboard') ?: 'Visa Image')
-                            ->columnSpan(1),
-
-                        FileUpload::document('travel_permit', 'recruitment_contracts/travel_permit')
-                            ->label(tr('recruitment_contract.fields.travel_permit', [], null, 'dashboard') ?: 'تصريح السفر')
-                            ->visible(fn (callable $get) => $get('status') === 'visa_issued')
                             ->columnSpan(1),
 
                         FileUpload::document('musaned_contract_file', 'recruitment_contracts/musaned')
