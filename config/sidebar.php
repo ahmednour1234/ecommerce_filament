@@ -206,12 +206,6 @@ return [
             'badge' => null,
             'children' => [
                 [
-                    'title' => 'sidebar.housing_management.status_management',
-                    'icon' => 'heroicon-o-tag',
-                    'url' => fn() => \App\Filament\Resources\Housing\HousingStatusResource::getUrl(),
-                    'permission' => 'housing.statuses.view_any',
-                ],
-                [
                     'title' => 'sidebar.housing_management.buildings_management',
                     'icon' => 'heroicon-o-building-office-2',
                     'url' => fn() => \App\Filament\Resources\Housing\BuildingResource::getUrl(),
