@@ -219,7 +219,7 @@ class RecruitmentContractResource extends Resource
                 Forms\Components\Section::make(tr('recruitment_contract.sections.other_data', [], null, 'dashboard') ?: 'البيانات الأخرى')
                     ->schema([
                         Forms\Components\View::make('filament.forms.components.status-table')
-                            ->viewData(function ($record) {
+                            ->viewData(function ($record, $get) {
                                 $statusLabels = [
                                     'new' => tr('recruitment_contract.status.new', [], null, 'dashboard') ?: 'جديد',
                                     'external_office_approval' => tr('recruitment_contract.status.external_office_approval', [], null, 'dashboard') ?: 'موافقة المكتب الخارجي',
@@ -237,10 +237,9 @@ class RecruitmentContractResource extends Resource
                                 ];
 
                                 $statusDates = [];
-                                $currentStatus = 'new';
+                                $currentStatus = $get('status') ?? ($record->status ?? 'new');
 
                                 if ($record && $record->exists) {
-                                    $currentStatus = $record->status ?? 'new';
                                     $statusLogs = $record->statusLogs()->orderBy('created_at', 'desc')->get();
 
                                     foreach ($statusLogs as $log) {

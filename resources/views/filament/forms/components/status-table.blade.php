@@ -1,9 +1,9 @@
 @php
-    $statuses = $get('statuses') ?? [];
-    $statusDates = $get('statusDates') ?? [];
-    $currentStatus = $get('currentStatus') ?? 'new';
-    $statusStatePath = $get('statusStatePath', 'data.status');
-    $statusDateStatePath = $get('statusDateStatePath', 'data.status_date');
+    $statuses = $statuses ?? [];
+    $statusDates = $statusDates ?? [];
+    $currentStatus = $currentStatus ?? 'new';
+    $statusStatePath = $statusStatePath ?? 'data.status';
+    $statusDateStatePath = $statusDateStatePath ?? 'data.status_date';
 @endphp
 
 <div 
