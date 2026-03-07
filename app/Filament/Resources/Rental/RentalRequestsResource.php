@@ -24,7 +24,7 @@ class RentalRequestsResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     protected static ?string $navigationGroup = 'قسم التأجير';
-    protected static ?string $navigationLabel = 'طلبات التأجير';
+    protected static ?string $navigationLabel = 'العملاء المحتملة';
     protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
