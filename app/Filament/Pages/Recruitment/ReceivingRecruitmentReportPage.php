@@ -26,7 +26,7 @@ class ReceivingRecruitmentReportPage extends Page implements HasTable
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
     protected static ?string $navigationGroup = 'عقود الاستقدام';
-    protected static ?string $navigationLabel = 'تفاصيل العمالة المستلمة';
+    protected static ?string $navigationLabel = 'تقرير العمالة المستلمة';
     protected static ?int $navigationSort = 2;
     protected static string $view = 'filament.pages.recruitment.receiving-recruitment-report';
 
@@ -72,8 +72,8 @@ class ReceivingRecruitmentReportPage extends Page implements HasTable
 
                 Tables\Columns\TextColumn::make('client.name_ar')
                     ->label(tr('recruitment.receiving_labor.table.client', [], null, 'dashboard') ?: 'العميل')
-                    ->formatStateUsing(fn ($state, $record) => app()->getLocale() === 'ar' 
-                        ? ($record->client->name_ar ?? '') 
+                    ->formatStateUsing(fn ($state, $record) => app()->getLocale() === 'ar'
+                        ? ($record->client->name_ar ?? '')
                         : ($record->client->name_en ?? ''))
                     ->searchable(query: function (Builder $query, string $search): Builder {
                         return $query->whereHas('client', function ($q) use ($search) {
@@ -85,7 +85,7 @@ class ReceivingRecruitmentReportPage extends Page implements HasTable
 
                 Tables\Columns\TextColumn::make('worker.name_ar')
                     ->label(tr('recruitment.receiving_labor.table.worker', [], null, 'dashboard') ?: 'اسم العامل')
-                    ->formatStateUsing(fn ($state, $record) => $record->worker 
+                    ->formatStateUsing(fn ($state, $record) => $record->worker
                         ? (app()->getLocale() === 'ar' ? $record->worker->name_ar : $record->worker->name_en)
                         : '')
                     ->searchable(query: function (Builder $query, string $search): Builder {
