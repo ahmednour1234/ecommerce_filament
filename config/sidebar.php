@@ -160,24 +160,6 @@ return [
                             'badge' => 'housing_requests_count',
                         ],
                         [
-                            'title' => 'sidebar.rental.cancel_refund_requests',
-                            'icon' => 'heroicon-o-x-circle',
-                            'url' => fn() => CancelRefundRequestsResource::getUrl(),
-                            'permission' => 'cancel_refund_requests.view_any',
-                        ],
-                        [
-                            'title' => 'sidebar.rental.returned_contracts',
-                            'icon' => 'heroicon-o-arrow-path',
-                            'url' => fn() => ReturnedContractsResource::getUrl(),
-                            'permission' => 'returned_contracts.view_any',
-                        ],
-                        [
-                            'title' => 'sidebar.rental.archived_contracts',
-                            'icon' => 'heroicon-o-archive-box',
-                            'url' => fn() => ArchivedContractsResource::getUrl(),
-                            'permission' => 'archived_contracts.view_any',
-                        ],
-                        [
                             'title' => 'sidebar.rental.reports',
                             'icon' => 'heroicon-o-chart-bar',
                             'url' => fn() => \App\Filament\Pages\Rental\RentalReportsPage::getUrl(),
