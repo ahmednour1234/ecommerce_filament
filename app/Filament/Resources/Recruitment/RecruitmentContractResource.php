@@ -280,11 +280,6 @@ class RecruitmentContractResource extends Resource
                             ->visible(fn (callable $get) => $get('status') !== null)
                             ->columnSpan(1),
 
-                        FileUpload::document('travel_permit', 'recruitment_contracts/travel_permit')
-                            ->label('تصريح السفر')
-                            ->visible(fn (callable $get) => $get('status') === 'visa_issued')
-                            ->columnSpan(1),
-
                         Forms\Components\Select::make('payment_status')
                             ->label(tr('recruitment_contract.fields.payment_status', [], null, 'dashboard') ?: 'حالة الدفع')
                             ->options([
@@ -510,6 +505,7 @@ class RecruitmentContractResource extends Resource
                         'contract_accepted_labor_ministry' => tr('recruitment_contract.status.contract_accepted_labor_ministry', [], null, 'dashboard') ?: 'قبول العقد من مكتب العمل الخارجي',
                         'sent_to_saudi_embassy' => tr('recruitment_contract.status.sent_to_saudi_embassy', [], null, 'dashboard') ?: 'إرسال التأشيرة إلى السفارة السعودية',
                         'visa_issued' => tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم التفييز',
+                        'travel_permit_after_visa_issued' => tr('recruitment_contract.status.travel_permit_after_visa_issued', [], null, 'dashboard') ?: 'تصريح سفر بعد تم التفييز',
                         'waiting_flight_booking' => tr('recruitment_contract.status.waiting_flight_booking', [], null, 'dashboard') ?: 'انتظار حجز تذكرة الطيران',
                         'arrival_scheduled' => tr('recruitment_contract.status.arrival_scheduled', [], null, 'dashboard') ?: 'معاد الوصول',
                         'received' => tr('recruitment_contract.status.received', [], null, 'dashboard') ?: 'تم الاستلام',
