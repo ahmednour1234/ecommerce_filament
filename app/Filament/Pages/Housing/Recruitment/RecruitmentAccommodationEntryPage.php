@@ -5,11 +5,13 @@ namespace App\Filament\Pages\Housing\Recruitment;
 use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\Recruitment\Laborer;
 use App\Models\Recruitment\Nationality;
+use App\Models\Recruitment\Profession;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Pages\Page;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Cache;
 
 class RecruitmentAccommodationEntryPage extends Page implements HasForms
 {
@@ -75,15 +77,87 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                         \Filament\Forms\Components\Select::make('laborer_id')
                             ->label(tr('housing.accommodation.laborer', [], null, 'dashboard') ?: 'العاملة')
                             ->options(function () {
-                                return Laborer::query()
-                                    ->get()
-                                    ->mapWithKeys(fn ($laborer) => [
-                                        $laborer->id => app()->getLocale() === 'ar' ? $laborer->name_ar : $laborer->name_en
-                                    ])
-                                    ->toArray();
+                                return Cache::remember('recruitment_accommodation.workers', 21600, function () {
+                                    return Laborer::where('is_available', true)
+                                        ->get()
+                                        ->mapWithKeys(function ($worker) {
+                                            return [$worker->id => "{$worker->name_ar} ({$worker->passport_number})"];
+                                        })
+                                        ->toArray();
+                                });
                             })
                             ->required()
                             ->searchable()
+                            ->createOptionForm([
+                                \Filament\Forms\Components\TextInput::make('name_ar')
+                                    ->label(tr('recruitment.fields.name_ar', [], null, 'dashboard') ?: 'الاسم (عربي)')
+                                    ->required()
+                                    ->maxLength(255),
+                                \Filament\Forms\Components\TextInput::make('passport_number')
+                                    ->label(tr('recruitment.fields.passport_number', [], null, 'dashboard') ?: 'رقم الجواز')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->unique(Laborer::class, 'passport_number'),
+                                \Filament\Forms\Components\Select::make('nationality_id')
+                                    ->label(tr('recruitment.fields.nationality', [], null, 'dashboard') ?: 'الجنسية')
+                                    ->options(function () {
+                                        return Nationality::where('is_active', true)
+                                            ->whereIn('name_ar', ['الفلبين', 'بنغلادش', 'سريلانكا', 'اثيوبيا', 'اوغندا', 'كينيا', 'بورندي'])
+                                            ->get()
+                                            ->mapWithKeys(function ($nationality) {
+                                                $label = app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en;
+                                                return [$nationality->id => $label];
+                                            });
+                                    })
+                                    ->searchable()
+                                    ->required(),
+                                \Filament\Forms\Components\Select::make('profession_id')
+                                    ->label(tr('recruitment.fields.profession', [], null, 'dashboard') ?: 'المهنة')
+                                    ->options(function () {
+                                        return Profession::where('is_active', true)
+                                            ->get()
+                                            ->mapWithKeys(function ($profession) {
+                                                $label = app()->getLocale() === 'ar' ? $profession->name_ar : $profession->name_en;
+                                                return [$profession->id => $label];
+                                            });
+                                    })
+                                    ->searchable()
+                                    ->required(),
+                                \Filament\Forms\Components\Select::make('gender')
+                                    ->label(tr('recruitment.fields.gender', [], null, 'dashboard') ?: 'الجنس')
+                                    ->options([
+                                        'male' => tr('recruitment_contract.gender.male', [], null, 'dashboard') ?: 'ذكر',
+                                        'female' => tr('recruitment_contract.gender.female', [], null, 'dashboard') ?: 'أنثى',
+                                    ])
+                                    ->nullable(),
+                                \Filament\Forms\Components\Select::make('experience')
+                                    ->label(tr('recruitment.fields.experience', [], null, 'dashboard') ?: 'الخبرة')
+                                    ->options([
+                                        'unspecified' => tr('recruitment_contract.experience.unspecified', [], null, 'dashboard') ?: 'غير محدد',
+                                        'new' => tr('recruitment_contract.experience.new', [], null, 'dashboard') ?: 'جديد',
+                                        'ex_worker' => tr('recruitment_contract.experience.ex_worker', [], null, 'dashboard') ?: 'سبق العمل EX',
+                                    ])
+                                    ->nullable(),
+                                \Filament\Forms\Components\TextInput::make('phone_1')
+                                    ->label(tr('recruitment.fields.phone_1', [], null, 'dashboard') ?: 'الجوال')
+                                    ->tel()
+                                    ->maxLength(50)
+                                    ->nullable(),
+                            ])
+                            ->createOptionUsing(function (array $data): int {
+                                $laborer = Laborer::create([
+                                    'name_ar' => $data['name_ar'],
+                                    'passport_number' => $data['passport_number'],
+                                    'nationality_id' => $data['nationality_id'],
+                                    'profession_id' => $data['profession_id'],
+                                    'gender' => $data['gender'] ?? null,
+                                    'experience_level' => $data['experience'] ?? null,
+                                    'phone_1' => $data['phone_1'] ?? null,
+                                    'is_available' => true,
+                                ]);
+                                Cache::forget('recruitment_accommodation.workers');
+                                return $laborer->id;
+                            })
                             ->columnSpan(1)
                             ->afterStateUpdated(function ($state, callable $set) {
                                 if ($state) {

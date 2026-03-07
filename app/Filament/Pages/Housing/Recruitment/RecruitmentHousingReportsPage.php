@@ -4,6 +4,9 @@ namespace App\Filament\Pages\Housing\Recruitment;
 
 use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\Housing\HousingAssignment;
+use App\Models\Housing\AccommodationEntry;
+use App\Models\Housing\HousingStatus;
+use App\Models\Complaint;
 use App\Models\MainCore\Branch;
 use Filament\Pages\Page;
 use Filament\Tables;
@@ -91,9 +94,57 @@ class RecruitmentHousingReportsPage extends Page implements HasTable
         // Get unique workers count
         $uniqueWorkers = $assignments->pluck('laborer_id')->unique()->count();
 
+        // Get accommodation entries query
+        $accommodationQuery = AccommodationEntry::query()
+            ->where('type', 'recruitment')
+            ->whereNull('exit_date');
+
+        if ($this->branch_id) {
+            $accommodationQuery->where('branch_id', $this->branch_id);
+        }
+
+        if ($this->from_date) {
+            $accommodationQuery->whereDate('entry_date', '>=', $this->from_date);
+        }
+
+        if ($this->to_date) {
+            $accommodationQuery->whereDate('entry_date', '<=', $this->to_date);
+        }
+
+        // Total workers in accommodation
+        $totalWorkersInAccommodation = $accommodationQuery->distinct('laborer_id')->count('laborer_id');
+
+        // Ready for travel count
+        $readyForTravelStatus = HousingStatus::where('key', 'ready_for_travel')->first();
+        $readyForTravelCount = $accommodationQuery->clone()
+            ->where('status_id', $readyForTravelStatus?->id)
+            ->count();
+
+        // New arrivals count
+        $newArrivalsCount = $accommodationQuery->clone()
+            ->where('entry_type', 'new_arrival')
+            ->count();
+
+        // Total complaints
+        $complaintsQuery = Complaint::query();
+        if ($this->branch_id) {
+            $complaintsQuery->where('branch_id', $this->branch_id);
+        }
+        if ($this->from_date) {
+            $complaintsQuery->whereDate('created_at', '>=', $this->from_date);
+        }
+        if ($this->to_date) {
+            $complaintsQuery->whereDate('created_at', '<=', $this->to_date);
+        }
+        $totalComplaints = $complaintsQuery->count();
+
         return [
             'total_assignments' => $totalAssignments,
             'total_workers' => $uniqueWorkers,
+            'total_workers_in_accommodation' => $totalWorkersInAccommodation,
+            'total_complaints' => $totalComplaints,
+            'ready_for_travel' => $readyForTravelCount,
+            'new_arrivals' => $newArrivalsCount,
             'transfer_kafala' => $transferKafalaCount,
             'status_counts' => $statusCounts,
         ];

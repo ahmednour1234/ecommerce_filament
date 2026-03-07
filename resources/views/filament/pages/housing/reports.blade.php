@@ -49,32 +49,44 @@
                         </svg>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-600 mb-1">{{ tr('housing.reports.stats.total_workers', [], null, 'dashboard') ?: 'إجمالي العمال' }}</p>
-                        <p class="text-2xl font-bold text-gray-800">{{ number_format($stats['total_workers'] ?? 0) }}</p>
+                        <p class="text-sm text-gray-600 mb-1">{{ tr('housing.reports.stats.total_workers_in_accommodation', [], null, 'dashboard') ?: 'إجمالي العاملة في الإيواء' }}</p>
+                        <p class="text-2xl font-bold text-gray-800">{{ number_format($stats['total_workers_in_accommodation'] ?? 0) }}</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3 min-w-[200px] flex-1">
+                    <div class="w-12 h-12 rounded-lg bg-red-100 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600 mb-1">{{ tr('housing.reports.stats.total_complaints', [], null, 'dashboard') ?: 'إجمالي الشكاوي' }}</p>
+                        <p class="text-2xl font-bold text-gray-800">{{ number_format($stats['total_complaints'] ?? 0) }}</p>
                     </div>
                 </div>
                 
                 <div class="flex items-center gap-3 min-w-[200px] flex-1">
                     <div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center">
                         <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                         </svg>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-600 mb-1">{{ tr('housing.reports.stats.total_assignments', [], null, 'dashboard') ?: 'إجمالي الإدخالات' }}</p>
-                        <p class="text-2xl font-bold text-gray-800">{{ number_format($stats['total_assignments'] ?? 0) }}</p>
+                        <p class="text-sm text-gray-600 mb-1">{{ tr('housing.reports.stats.ready_for_travel', [], null, 'dashboard') ?: 'جاهزة للتسفير' }}</p>
+                        <p class="text-2xl font-bold text-gray-800">{{ number_format($stats['ready_for_travel'] ?? 0) }}</p>
                     </div>
                 </div>
                 
                 <div class="flex items-center gap-3 min-w-[200px] flex-1">
-                    <div class="w-12 h-12 rounded-lg bg-orange-100 flex items-center justify-center">
-                        <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                    <div class="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                         </svg>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-600 mb-1">{{ tr('housing.reports.stats.transfer_kafala', [], null, 'dashboard') ?: 'محتاجة نقل كفالة' }}</p>
-                        <p class="text-2xl font-bold text-gray-800">{{ number_format($stats['transfer_kafala'] ?? 0) }}</p>
+                        <p class="text-sm text-gray-600 mb-1">{{ tr('housing.reports.stats.new_arrivals', [], null, 'dashboard') ?: 'جديد' }}</p>
+                        <p class="text-2xl font-bold text-gray-800">{{ number_format($stats['new_arrivals'] ?? 0) }}</p>
                     </div>
                 </div>
                 

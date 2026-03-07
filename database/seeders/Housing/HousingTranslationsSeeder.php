@@ -167,6 +167,10 @@ class HousingTranslationsSeeder extends Seeder
             
             // Reports Stats
             'housing.reports.stats.total_workers' => ['en' => 'Total Workers', 'ar' => 'إجمالي العمال'],
+            'housing.reports.stats.total_workers_in_accommodation' => ['en' => 'Total Workers in Accommodation', 'ar' => 'إجمالي العاملة في الإيواء'],
+            'housing.reports.stats.total_complaints' => ['en' => 'Total Complaints', 'ar' => 'إجمالي الشكاوي'],
+            'housing.reports.stats.ready_for_travel' => ['en' => 'Ready for Travel', 'ar' => 'جاهزة للتسفير'],
+            'housing.reports.stats.new_arrivals' => ['en' => 'New', 'ar' => 'جديد'],
             'housing.reports.stats.total_assignments' => ['en' => 'Total Assignments', 'ar' => 'إجمالي الإدخالات'],
             'housing.reports.stats.transfer_kafala' => ['en' => 'Need Transfer Kafala', 'ar' => 'محتاجة نقل كفالة'],
             'housing.reports.stats.total_requests' => ['en' => 'Total Requests', 'ar' => 'إجمالي الطلبات'],
