@@ -30,6 +30,7 @@ class RecruitmentContractStatsWidget extends BaseWidget
         $contractAcceptedLaborCount = (clone $baseQuery)->where('status', 'contract_accepted_labor_ministry')->count();
         $sentToEmbassyCount = (clone $baseQuery)->where('status', 'sent_to_saudi_embassy')->count();
         $visaIssuedCount = (clone $baseQuery)->where('status', 'visa_issued')->count();
+        $travelPermitAfterVisaIssuedCount = (clone $baseQuery)->where('status', 'travel_permit_after_visa_issued')->count();
         $waitingFlightCount = (clone $baseQuery)->where('status', 'waiting_flight_booking')->count();
         $arrivalScheduledCount = (clone $baseQuery)->where('status', 'arrival_scheduled')->count();
         $receivedCount = (clone $baseQuery)->where('status', 'received')->count();
@@ -114,6 +115,15 @@ class RecruitmentContractStatsWidget extends BaseWidget
             ->description(tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم التفييز')
             ->color('success')
             ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'visa_issued']])))
+            ->extraAttributes(['class' => 'recruitment-stats-card']);
+
+        $stats[] = Stat::make(
+            '✈️ ' . (tr('recruitment_contract.status.travel_permit_after_visa_issued', [], null, 'dashboard') ?: 'تصريح سفر بعد تم التفييز'),
+            Number::format($travelPermitAfterVisaIssuedCount)
+        )
+            ->description(tr('recruitment_contract.status.travel_permit_after_visa_issued', [], null, 'dashboard') ?: 'تصريح سفر بعد تم التفييز')
+            ->color('success')
+            ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'travel_permit_after_visa_issued']])))
             ->extraAttributes(['class' => 'recruitment-stats-card']);
 
         $stats[] = Stat::make(
