@@ -229,6 +229,7 @@ class RecruitmentContractResource extends Resource
                                     'contract_accepted_labor_ministry' => tr('recruitment_contract.status.contract_accepted_labor_ministry', [], null, 'dashboard') ?: 'قبول العقد من مكتب العمل الخارجي',
                                     'sent_to_saudi_embassy' => tr('recruitment_contract.status.sent_to_saudi_embassy', [], null, 'dashboard') ?: 'إرسال التأشيرة إلى السفارة السعودية',
                                     'visa_issued' => tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم التفييز',
+                                    'travel_permit_after_visa_issued' => tr('recruitment_contract.status.travel_permit_after_visa_issued', [], null, 'dashboard') ?: 'تصريح سفر بعد تم التفييز',
                                     'waiting_flight_booking' => tr('recruitment_contract.status.waiting_flight_booking', [], null, 'dashboard') ?: 'انتظار حجز تذكرة الطيران',
                                     'arrival_scheduled' => tr('recruitment_contract.status.arrival_scheduled', [], null, 'dashboard') ?: 'معاد الوصول',
                                     'received' => tr('recruitment_contract.status.received', [], null, 'dashboard') ?: 'تم الاستلام',
@@ -446,7 +447,7 @@ class RecruitmentContractResource extends Resource
                     ->color(fn (string $state): string => match ($state) {
                         'new' => 'primary',
                         'external_office_approval', 'contract_accepted_external_office', 'waiting_approval', 'contract_accepted_labor_ministry' => 'info',
-                        'sent_to_saudi_embassy', 'visa_issued', 'waiting_flight_booking', 'arrival_scheduled', 'received' => 'success',
+                        'sent_to_saudi_embassy', 'visa_issued', 'travel_permit_after_visa_issued', 'waiting_flight_booking', 'arrival_scheduled', 'received' => 'success',
                         'return_during_warranty' => 'warning',
                         'runaway' => 'danger',
                         default => 'gray',
