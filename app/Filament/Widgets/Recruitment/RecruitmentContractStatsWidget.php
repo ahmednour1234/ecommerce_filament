@@ -64,7 +64,7 @@ class RecruitmentContractStatsWidget extends BaseWidget
             ->extraAttributes(['class' => 'recruitment-stats-card']);
 
         $stats[] = Stat::make(
-            '📝 ' . (tr('recruitment_contract.status.external_office_approval', [], null, 'dashboard') ?: 'موافقة المكتب الخارجي'),
+            '📝 ' . 'عقود بانتظار موافقة المكتب الخارجي',
             Number::format($externalOfficeApprovalCount)
         )
             ->description(tr('recruitment_contract.status.external_office_approval', [], null, 'dashboard') ?: 'موافقة المكتب الخارجي')
@@ -73,7 +73,7 @@ class RecruitmentContractStatsWidget extends BaseWidget
             ->extraAttributes(['class' => 'recruitment-stats-card']);
 
         $stats[] = Stat::make(
-            '✅ ' . (tr('recruitment_contract.status.contract_accepted_external_office', [], null, 'dashboard') ?: 'قبول العقد من مكتب الخارجي'),
+            '✅ ' . 'تم قبول العقد من المكتب الخارجي',
             Number::format($contractAcceptedExternalCount)
         )
             ->description(tr('recruitment_contract.status.contract_accepted_external_office', [], null, 'dashboard') ?: 'قبول العقد من مكتب الخارجي')
