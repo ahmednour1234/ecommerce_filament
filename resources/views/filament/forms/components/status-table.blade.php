@@ -10,6 +10,14 @@
     x-data="{
         currentStatus: @js($currentStatus),
         statusDates: @js($statusDates),
+        init() {
+            // Initialize statusDates for all statuses if not set
+            @foreach($statuses as $status => $label)
+                if (!this.statusDates['{{ $status }}']) {
+                    this.statusDates['{{ $status }}'] = '';
+                }
+            @endforeach
+        },
         updateStatus(status) {
             this.currentStatus = status;
             $wire.set('{{ $statusStatePath }}', status);
@@ -19,7 +27,14 @@
                 $wire.set('{{ $statusDateStatePath }}', this.statusDates[status]);
             } else {
                 const today = new Date().toISOString().split('T')[0];
+                this.statusDates[status] = today;
                 $wire.set('{{ $statusDateStatePath }}', today);
+            }
+        },
+        updateDate(status, date) {
+            this.statusDates[status] = date;
+            if (this.currentStatus === status) {
+                $wire.set('{{ $statusDateStatePath }}', date);
             }
         }
     }"
@@ -66,12 +81,13 @@
                                 <span class="mr-2 text-sm text-gray-900 dark:text-gray-100">{{ $label }}</span>
                             </label>
                         </td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            @if($date)
-                                {{ \Carbon\Carbon::parse($date)->format('Y-m-d') }}
-                            @else
-                                <span class="text-gray-400 dark:text-gray-500">-</span>
-                            @endif
+                        <td class="px-4 py-3 whitespace-nowrap">
+                            <input 
+                                type="date"
+                                x-model="statusDates['{{ $status }}']"
+                                x-on:change="updateDate('{{ $status }}', $event.target.value)"
+                                class="fi-input block w-full rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-base text-gray-950 outline-none transition duration-75 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 disabled:text-gray-500 disabled:[-webkit-text-fill-color:theme(colors.gray.500)] disabled:placeholder:[-webkit-text-fill-color:theme(colors.gray.400)] dark:border-gray-600 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-500 dark:focus:ring-primary-500 sm:text-sm sm:leading-6"
+                            />
                         </td>
                     </tr>
                 @endforeach
