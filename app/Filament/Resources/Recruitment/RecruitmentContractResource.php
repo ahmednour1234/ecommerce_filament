@@ -268,6 +268,9 @@ class RecruitmentContractResource extends Resource
                             ->default(now()->toDateString())
                             ->required(),
 
+                        Forms\Components\Hidden::make('all_status_dates')
+                            ->default('{}'),
+
                         Forms\Components\Select::make('payment_status')
                             ->label(tr('recruitment_contract.fields.payment_status', [], null, 'dashboard') ?: 'حالة الدفع')
                             ->options([

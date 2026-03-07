@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Recruitment\RecruitmentContractResource\Pages;
 
 use App\Filament\Resources\Recruitment\RecruitmentContractResource;
+use App\Services\Recruitment\RecruitmentContractService;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateRecruitmentContract extends CreateRecord
@@ -35,5 +36,45 @@ class CreateRecruitmentContract extends CreateRecord
         }
         
         return $url;
+    }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $allStatusDates = json_decode($data['all_status_dates'] ?? '{}', true) ?? [];
+        $status = $data['status'] ?? 'new';
+        $statusDate = $data['status_date'] ?? null;
+
+        unset($data['status_date'], $data['all_status_dates']);
+
+        return $data;
+    }
+
+    protected function afterCreate(): void
+    {
+        $allStatusDates = json_decode($this->form->getState()['all_status_dates'] ?? '{}', true) ?? [];
+        $status = $this->record->status;
+        $statusDate = $this->form->getState()['status_date'] ?? null;
+
+        $service = app(RecruitmentContractService::class);
+
+        // Create statusLog for current status
+        if ($statusDate) {
+            $service->logStatusChange($this->record, null, $status, null, $statusDate);
+        }
+
+        // Create statusLogs for all statuses with dates
+        foreach ($allStatusDates as $statusKey => $date) {
+            if (empty($date) || $statusKey === $status) {
+                continue;
+            }
+
+            $previousStatus = $this->record->statusLogs()
+                ->where('new_status', '!=', $statusKey)
+                ->orderBy('created_at', 'desc')
+                ->first();
+            
+            $oldStatusForLog = $previousStatus ? $previousStatus->new_status : null;
+            $service->logStatusChange($this->record, $oldStatusForLog, $statusKey, null, $date);
+        }
     }
 }

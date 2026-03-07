@@ -44,13 +44,45 @@ class EditRecruitmentContract extends EditRecord
         $oldStatus = $this->record->status;
         $newStatus = $data['status'] ?? null;
         $statusDate = $data['status_date'] ?? null;
+        $allStatusDates = json_decode($data['all_status_dates'] ?? '{}', true) ?? [];
 
+        $service = app(RecruitmentContractService::class);
+
+        // Update status if changed
         if ($newStatus && $oldStatus !== $newStatus) {
-            $service = app(RecruitmentContractService::class);
             $service->updateStatus($this->record, $newStatus, null, $statusDate);
         }
 
-        unset($data['status_date']);
+        // Update/create statusLogs for all statuses with dates
+        foreach ($allStatusDates as $status => $date) {
+            if (empty($date)) {
+                continue;
+            }
+
+            // Check if statusLog exists for this status
+            $existingLog = $this->record->statusLogs()
+                ->where('new_status', $status)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            if ($existingLog) {
+                // Update existing log if date changed
+                if ($existingLog->status_date !== $date) {
+                    $existingLog->update(['status_date' => $date]);
+                }
+            } else {
+                // Create new log if doesn't exist
+                $previousStatus = $this->record->statusLogs()
+                    ->where('new_status', '!=', $status)
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+                
+                $oldStatusForLog = $previousStatus ? $previousStatus->new_status : null;
+                $service->logStatusChange($this->record, $oldStatusForLog, $status, null, $date);
+            }
+        }
+
+        unset($data['status_date'], $data['all_status_dates']);
         
         return $data;
     }

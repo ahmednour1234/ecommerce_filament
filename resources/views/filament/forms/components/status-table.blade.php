@@ -17,6 +17,8 @@
                     this.statusDates['{{ $status }}'] = '';
                 }
             @endforeach
+            // Sync initial dates
+            this.syncAllDates();
         },
         updateStatus(status) {
             this.currentStatus = status;
@@ -30,12 +32,19 @@
                 this.statusDates[status] = today;
                 $wire.set('{{ $statusDateStatePath }}', today);
             }
+            this.syncAllDates();
         },
         updateDate(status, date) {
             this.statusDates[status] = date;
             if (this.currentStatus === status) {
                 $wire.set('{{ $statusDateStatePath }}', date);
             }
+            // Update all_status_dates hidden field
+            $wire.set('data.all_status_dates', JSON.stringify(this.statusDates));
+        },
+        syncAllDates() {
+            // Sync all dates to hidden field
+            $wire.set('data.all_status_dates', JSON.stringify(this.statusDates));
         }
     }"
     class="fi-input-wrp"
