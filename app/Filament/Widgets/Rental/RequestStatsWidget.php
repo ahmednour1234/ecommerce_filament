@@ -24,32 +24,32 @@ class RequestStatsWidget extends BaseWidget
                         'status' => ['value' => 'pending'],
                     ],
                 ])),
-            Stat::make(tr('rental.requests.status.under_review', [], null, 'dashboard') ?: 'Under Review', RentalContractRequest::where('status', 'under_review')->count())
-                ->description(tr('rental.requests.stats.being_reviewed', [], null, 'dashboard') ?: 'Being reviewed')
+            Stat::make(tr('rental.requests.stats.awaiting_approval', [], null, 'dashboard') ?: 'عقود قيد الموافقة', RentalContractRequest::where('status', 'under_review')->count())
+                ->description(tr('rental.requests.stats.awaiting_approval_desc', [], null, 'dashboard') ?: 'عقود قيد الموافقة')
                 ->color('info')
                 ->url(RentalRequestsResource::getUrl('index', [
                     'tableFilters' => [
                         'status' => ['value' => 'under_review'],
                     ],
                 ])),
-            Stat::make(tr('rental.requests.status.approved', [], null, 'dashboard') ?: 'Approved', RentalContractRequest::where('status', 'approved')->count())
-                ->description(tr('rental.requests.stats.ready_to_convert', [], null, 'dashboard') ?: 'Ready to convert')
+            Stat::make(tr('rental.requests.stats.approved', [], null, 'dashboard') ?: 'موافق عليه', RentalContractRequest::where('status', 'approved')->count())
+                ->description(tr('rental.requests.stats.approved_desc', [], null, 'dashboard') ?: 'موافق عليه')
                 ->color('success')
                 ->url(RentalRequestsResource::getUrl('index', [
                     'tableFilters' => [
                         'status' => ['value' => 'approved'],
                     ],
                 ])),
-            Stat::make(tr('rental.requests.status.rejected', [], null, 'dashboard') ?: 'Rejected', RentalContractRequest::where('status', 'rejected')->count())
-                ->description(tr('rental.requests.stats.rejected_requests', [], null, 'dashboard') ?: 'Rejected requests')
+            Stat::make(tr('rental.requests.stats.rejected', [], null, 'dashboard') ?: 'مرفوض', RentalContractRequest::where('status', 'rejected')->count())
+                ->description(tr('rental.requests.stats.rejected_desc', [], null, 'dashboard') ?: 'مرفوض')
                 ->color('danger')
                 ->url(RentalRequestsResource::getUrl('index', [
                     'tableFilters' => [
                         'status' => ['value' => 'rejected'],
                     ],
                 ])),
-            Stat::make(tr('rental.requests.status.converted', [], null, 'dashboard') ?: 'Converted', RentalContractRequest::where('status', 'converted')->count())
-                ->description(tr('rental.requests.stats.converted_to_contracts', [], null, 'dashboard') ?: 'Converted to contracts')
+            Stat::make(tr('rental.requests.stats.active_contracts', [], null, 'dashboard') ?: 'عقود التأجير النشطة', RentalContractRequest::where('status', 'converted')->count())
+                ->description(tr('rental.requests.stats.active_contracts_desc', [], null, 'dashboard') ?: 'عقود التأجير النشطة')
                 ->color('gray')
                 ->url(RentalRequestsResource::getUrl('index', [
                     'tableFilters' => [
