@@ -48,6 +48,7 @@
         }
     }"
     class="fi-input-wrp"
+    x-on:submit.window="syncAllDates()"
 >
     <div class="fi-input-wrp-label">
         <label class="fi-input-label text-sm font-medium leading-6 text-gray-950 dark:text-white">

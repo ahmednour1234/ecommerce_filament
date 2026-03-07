@@ -44,18 +44,37 @@ class EditRecruitmentContract extends EditRecord
         $oldStatus = $this->record->status;
         $newStatus = $data['status'] ?? null;
         $statusDate = $data['status_date'] ?? null;
-        $allStatusDates = json_decode($data['all_status_dates'] ?? '{}', true) ?? [];
 
-        $service = app(RecruitmentContractService::class);
+        // Store all_status_dates for use in afterSave
+        $this->allStatusDates = json_decode($data['all_status_dates'] ?? '{}', true) ?? [];
 
         // Update status if changed
         if ($newStatus && $oldStatus !== $newStatus) {
+            $service = app(RecruitmentContractService::class);
             $service->updateStatus($this->record, $newStatus, null, $statusDate);
         }
 
+        unset($data['status_date'], $data['all_status_dates']);
+        
+        return $data;
+    }
+
+    protected $allStatusDates = [];
+
+    protected function afterSave(): void
+    {
+        if (empty($this->allStatusDates)) {
+            return;
+        }
+
+        // Refresh record to get latest data
+        $this->record->refresh();
+        
+        $service = app(RecruitmentContractService::class);
+
         // Update/create statusLogs for all statuses with dates
-        foreach ($allStatusDates as $status => $date) {
-            if (empty($date)) {
+        foreach ($this->allStatusDates as $status => $date) {
+            if (empty($date) || trim($date) === '') {
                 continue;
             }
 
@@ -81,10 +100,6 @@ class EditRecruitmentContract extends EditRecord
                 $service->logStatusChange($this->record, $oldStatusForLog, $status, null, $date);
             }
         }
-
-        unset($data['status_date'], $data['all_status_dates']);
-        
-        return $data;
     }
 
     protected function getHeaderActions(): array
