@@ -406,6 +406,11 @@ class RecruitmentContractResource extends Resource
                             ->label(tr('recruitment_contract.fields.visa_image', [], null, 'dashboard') ?: 'Visa Image')
                             ->columnSpan(1),
 
+                        FileUpload::document('travel_permit', 'recruitment_contracts/travel_permit')
+                            ->label(tr('recruitment_contract.fields.travel_permit', [], null, 'dashboard') ?: 'تصريح السفر')
+                            ->visible(fn (callable $get) => $get('status') === 'visa_issued')
+                            ->columnSpan(1),
+
                         FileUpload::document('musaned_contract_file', 'recruitment_contracts/musaned')
                             ->label(tr('recruitment_contract.fields.musaned_contract_file', [], null, 'dashboard') ?: 'Musaned Contract File')
                             ->columnSpan(1),

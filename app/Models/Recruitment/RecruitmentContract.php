@@ -62,6 +62,7 @@ class RecruitmentContract extends Model
         'client_rating',
         'client_rating_proof_image',
         'visa_image',
+        'travel_permit',
         'musaned_contract_file',
         'worker_id',
         'created_by',
