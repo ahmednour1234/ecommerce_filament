@@ -218,9 +218,8 @@ class RecruitmentContractResource extends Resource
 
                 Forms\Components\Section::make(tr('recruitment_contract.sections.other_data', [], null, 'dashboard') ?: 'البيانات الأخرى')
                     ->schema([
-                        Forms\Components\Radio::make('status')
-                            ->label(tr('recruitment_contract.fields.status', [], null, 'dashboard') ?: 'Status')
-                            ->options(function ($record) {
+                        Forms\Components\View::make('filament.forms.components.status-table')
+                            ->viewData(function ($record) {
                                 $statusLabels = [
                                     'new' => tr('recruitment_contract.status.new', [], null, 'dashboard') ?: 'جديد',
                                     'external_office_approval' => tr('recruitment_contract.status.external_office_approval', [], null, 'dashboard') ?: 'موافقة المكتب الخارجي',
@@ -237,9 +236,12 @@ class RecruitmentContractResource extends Resource
                                     'runaway' => tr('recruitment_contract.status.runaway', [], null, 'dashboard') ?: 'هروب',
                                 ];
 
+                                $statusDates = [];
+                                $currentStatus = 'new';
+
                                 if ($record && $record->exists) {
+                                    $currentStatus = $record->status ?? 'new';
                                     $statusLogs = $record->statusLogs()->orderBy('created_at', 'desc')->get();
-                                    $statusDates = [];
 
                                     foreach ($statusLogs as $log) {
                                         if (!isset($statusDates[$log->new_status])) {
@@ -247,39 +249,25 @@ class RecruitmentContractResource extends Resource
                                             $statusDates[$log->new_status] = $statusDate;
                                         }
                                     }
-
-                                    foreach ($statusLabels as $status => $label) {
-                                        if (isset($statusDates[$status])) {
-                                            $statusLabels[$status] = "{$label} ({$statusDates[$status]})";
-                                        }
-                                    }
                                 }
 
-                                return $statusLabels;
+                                return [
+                                    'statuses' => $statusLabels,
+                                    'statusDates' => $statusDates,
+                                    'currentStatus' => $currentStatus,
+                                    'statusStatePath' => 'data.status',
+                                    'statusDateStatePath' => 'data.status_date',
+                                ];
                             })
-                            ->required()
+                            ->columnSpan(2),
+
+                        Forms\Components\Hidden::make('status')
                             ->default('new')
-                            ->reactive()
-                            ->afterStateUpdated(function (callable $set, $state, $record) {
-                                if ($record && $record->exists) {
-                                    $lastLog = $record->statusLogs()->where('new_status', $state)->latest('created_at')->first();
-                                    if ($lastLog && $lastLog->status_date) {
-                                        $set('status_date', $lastLog->status_date);
-                                    } else {
-                                        $set('status_date', now()->toDateString());
-                                    }
-                                } else {
-                                    $set('status_date', now()->toDateString());
-                                }
-                            })
-                            ->columnSpan(1),
+                            ->required(),
 
-                        Forms\Components\DatePicker::make('status_date')
-                            ->label('تاريخ الحالة')
-                            ->default(now())
-                            ->required()
-                            ->visible(fn (callable $get) => $get('status') !== null)
-                            ->columnSpan(1),
+                        Forms\Components\Hidden::make('status_date')
+                            ->default(now()->toDateString())
+                            ->required(),
 
                         Forms\Components\Select::make('payment_status')
                             ->label(tr('recruitment_contract.fields.payment_status', [], null, 'dashboard') ?: 'حالة الدفع')
