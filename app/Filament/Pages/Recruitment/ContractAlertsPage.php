@@ -45,7 +45,7 @@ class ContractAlertsPage extends Page implements HasTable
     {
         $alertsService = app(ContractAlertsService::class);
         $count = $alertsService->getAlertsCount();
-        return $count > 0 ? (string) $count : null;
+        return (string) $count;
     }
 
     public function table(Table $table): Table
