@@ -41,7 +41,12 @@ class RecruitmentContractResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make(tr('recruitment_contract.sections.basic_data', [], null, 'dashboard') ?: 'البيانات الأساسية')
+                Forms\Components\Tabs::make('recruitment_contract_tabs')
+                    ->tabs([
+                        Forms\Components\Tabs\Tab::make(tr('recruitment_contract.sections.basic_data', [], null, 'dashboard') ?: 'البيانات الأساسية')
+                            ->icon('heroicon-o-document-text')
+                            ->schema([
+                                Forms\Components\Section::make(tr('recruitment_contract.sections.basic_data', [], null, 'dashboard') ?: 'البيانات الأساسية')
                     ->schema([
                         Forms\Components\TextInput::make('contract_no')
                             ->label(tr('recruitment_contract.fields.contract_no', [], null, 'dashboard') ?: 'Contract No')
@@ -195,9 +200,13 @@ class RecruitmentContractResource extends Resource
                             ->nullable()
                             ->columnSpan(1),
                     ])
-                    ->columns(2),
-
-                Forms\Components\Section::make(tr('recruitment_contract.sections.musaned_data', [], null, 'dashboard') ?: 'بيانات مساند')
+                    ->columns(2)
+                    ->columnSpanFull(),
+                            ]),
+                        Forms\Components\Tabs\Tab::make(tr('recruitment_contract.sections.musaned_data', [], null, 'dashboard') ?: 'بيانات مساند')
+                            ->icon('heroicon-o-archive-box')
+                            ->schema([
+                                Forms\Components\Section::make(tr('recruitment_contract.sections.musaned_data', [], null, 'dashboard') ?: 'بيانات مساند')
                     ->schema([
                         Forms\Components\TextInput::make('musaned_contract_no')
                             ->label(tr('recruitment_contract.fields.musaned_contract_no', [], null, 'dashboard') ?: 'Musaned Contract No')
@@ -214,11 +223,15 @@ class RecruitmentContractResource extends Resource
                             ->label(tr('recruitment_contract.fields.musaned_contract_date', [], null, 'dashboard') ?: 'Musaned Contract Date')
                             ->columnSpan(1),
                     ])
-                    ->columns(2),
-
-                Forms\Components\Section::make(tr('recruitment_contract.sections.coordination', [], null, 'dashboard') ?: 'قسم التنسيق')
-                    ->visible(fn () => auth()->user()?->hasRole(['Admin', 'super_admin']) || auth()->user()?->can('recruitment_contracts.coordination') ?? false)
-                    ->schema([
+                    ->columns(2)
+                    ->columnSpanFull(),
+                            ]),
+                        Forms\Components\Tabs\Tab::make(tr('recruitment_contract.sections.coordination', [], null, 'dashboard') ?: 'قسم التنسيق')
+                            ->icon('heroicon-o-map')
+                            ->visible(fn () => auth()->user()?->hasRole(['Admin', 'super_admin']) || auth()->user()?->can('recruitment_contracts.coordination') ?? false)
+                            ->schema([
+                                Forms\Components\Section::make(tr('recruitment_contract.sections.coordination', [], null, 'dashboard') ?: 'قسم التنسيق')
+                                    ->schema([
                         Forms\Components\View::make('filament.forms.components.status-table')
                             ->viewData(function ($record, $get) {
                                 $statusLabels = [
@@ -401,8 +414,12 @@ class RecruitmentContractResource extends Resource
                         FileUpload::document('musaned_contract_file', 'recruitment_contracts/musaned')
                             ->label(tr('recruitment_contract.fields.musaned_contract_file', [], null, 'dashboard') ?: 'Musaned Contract File')
                             ->columnSpan(1),
+                                    ])
+                                    ->columns(2)
+                                    ->columnSpanFull(),
+                            ]),
                     ])
-                    ->columns(2),
+                    ->columnSpanFull(),
             ]);
     }
 
