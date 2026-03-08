@@ -25,13 +25,6 @@ return [
             'badge' => null,
         ],
         [
-            'title' => 'sidebar.clients',
-            'icon' => 'heroicon-o-users',
-            'url' => fn() => ClientResource::getUrl(),
-            'permission' => 'clients.view_any',
-            'badge' => null,
-        ],
-        [
             'title' => 'sidebar.finance',
             'icon' => 'heroicon-o-banknotes',
             'url' => null,
@@ -100,30 +93,6 @@ return [
                             'icon' => 'heroicon-o-currency-dollar',
                             'url' => fn() => AgentLaborPriceResource::getUrl(),
                             'permission' => 'agent_labor_prices.view_any',
-                        ],
-                        [
-                            'title' => 'sidebar.employment.nationalities',
-                            'icon' => 'heroicon-o-flag',
-                            'url' => fn() => NationalityResource::getUrl(),
-                            'permission' => 'nationalities.view_any',
-                        ],
-                        [
-                            'title' => 'sidebar.employment.professions',
-                            'icon' => 'heroicon-o-briefcase',
-                            'url' => fn() => ProfessionResource::getUrl(),
-                            'permission' => 'professions.view_any',
-                        ],
-                        [
-                            'title' => 'sidebar.employment.laborers',
-                            'icon' => 'heroicon-o-user-group',
-                            'url' => fn() => LaborerResource::getUrl(),
-                            'permission' => 'laborers.view_any',
-                        ],
-                        [
-                            'title' => 'sidebar.employment.packages',
-                            'icon' => 'heroicon-o-gift',
-                            'url' => fn() => PackageResource::getUrl(),
-                            'permission' => 'packages.view_any',
                         ],
                         [
                             'title' => 'sidebar.recruitment_contracts',
