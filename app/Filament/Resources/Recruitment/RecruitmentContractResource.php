@@ -217,7 +217,7 @@ class RecruitmentContractResource extends Resource
                     ->columns(2),
 
                 Forms\Components\Section::make(tr('recruitment_contract.sections.coordination', [], null, 'dashboard') ?: 'قسم التنسيق')
-                    ->visible(fn () => auth()->user()?->can('recruitment_contracts.coordination') ?? false)
+                    ->visible(fn () => auth()->user()?->hasRole(['Admin', 'super_admin']) || auth()->user()?->can('recruitment_contracts.coordination') ?? false)
                     ->schema([
                         Forms\Components\View::make('filament.forms.components.status-table')
                             ->viewData(function ($record, $get) {
