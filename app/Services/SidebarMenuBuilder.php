@@ -38,7 +38,11 @@ class SidebarMenuBuilder
     {
         if (isset($item['permission']) && $item['permission'] !== null) {
             $user = Auth::user();
-            if (!Auth::check() || (!$user->hasRole('super_admin') && !$user->can($item['permission']))) {
+            if (!Auth::check()) {
+                return null;
+            }
+            
+            if (!$user->hasRole('super_admin') && !$user->can($item['permission'])) {
                 return null;
             }
         }
@@ -70,8 +74,13 @@ class SidebarMenuBuilder
 
         if (is_callable($url)) {
             try {
-                return $url();
+                $resolvedUrl = $url();
+                if ($resolvedUrl === null || $resolvedUrl === '') {
+                    return null;
+                }
+                return $resolvedUrl;
             } catch (\Exception $e) {
+                \Log::warning('Sidebar URL resolution failed', ['error' => $e->getMessage()]);
                 return null;
             }
         }
