@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\HR;
 
-use App\Filament\Resources\HR/HrNotificationResource\Pages;
+use App\Filament\Resources\HR\HrNotificationResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
 use App\Filament\Concerns\HrModuleGate;
 use App\Models\HR\HrNotification;
