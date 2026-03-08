@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\User;
+use App\Models\MainCore\Branch;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -56,6 +57,18 @@ class UserResource extends Resource
                     ->options(Role::pluck('name', 'id'))
                     ->preload(),
 
+                Forms\Components\Select::make('branch_id')
+                    ->label(tr('forms.users.branch_id', [], null, 'dashboard') ?: 'الفرع')
+                    ->options(function () {
+                        return Branch::active()
+                            ->whereIn('name', ['عرعر', 'حفر الباطن', 'الرياض'])
+                            ->get()
+                            ->pluck('name', 'id')
+                            ->toArray();
+                    })
+                    ->searchable()
+                    ->nullable(),
+
             ]);
     }
 
@@ -72,6 +85,10 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('email')
                     ->label(tr('tables.users.email', [], null, 'dashboard') ?: 'Email')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('branch.name')
+                    ->label(tr('tables.users.branch', [], null, 'dashboard') ?: 'الفرع')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TagsColumn::make('roles.name')
                     ->label(tr('tables.users.roles', [], null, 'dashboard') ?: 'Roles'),
                 Tables\Columns\TextColumn::make('created_at')
