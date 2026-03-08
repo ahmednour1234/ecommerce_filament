@@ -425,13 +425,13 @@ class ComplaintResource extends Resource
     public static function canViewAny(): bool
     {
         $user = auth()->user();
-        return $user?->hasRole('super_admin') || $user?->can('complaints.view_any') ?? false;
+        return $user?->hasRole('super_admin') || $user?->can('complaints.view_any') ?? true;
     }
 
     public static function canCreate(): bool
     {
         $user = auth()->user();
-        return $user?->hasRole('super_admin') || $user?->can('complaints.create') ?? false;
+        return $user?->hasRole('super_admin') || $user?->can('complaints.create') ?? true;
     }
 
     public static function canView(mixed $record): bool
