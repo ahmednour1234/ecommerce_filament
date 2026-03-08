@@ -17,6 +17,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 use App\Filament\Actions\EditAction;
 use App\Filament\Actions\TableDeleteAction;
@@ -396,8 +397,16 @@ class ComplaintResource extends Resource
 
     public static function getUrl(string $name = 'index', array $parameters = [], bool $isAbsolute = true, ?string $panel = null, ?\Illuminate\Database\Eloquent\Model $tenant = null): string
     {
-        $url = parent::getUrl($name, $parameters, $isAbsolute, $panel, $tenant);
-        return static::addPublicToUrl($url);
+        try {
+            $url = parent::getUrl($name, $parameters, $isAbsolute, $panel, $tenant);
+            return static::addPublicToUrl($url);
+        } catch (\Exception $e) {
+            Log::error('ComplaintResource::getUrl() failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
+        }
     }
 
     protected static function addPublicToUrl(string $url): string
@@ -425,30 +434,30 @@ class ComplaintResource extends Resource
     public static function canViewAny(): bool
     {
         $user = auth()->user();
-        return $user?->hasRole('super_admin') || $user?->can('complaints.view_any') ?? true;
+        return $user?->hasRole('super_admin') || $user?->can('complaints.view_any') ?? false;
     }
 
     public static function canCreate(): bool
     {
         $user = auth()->user();
-        return $user?->hasRole('super_admin') || $user?->can('complaints.create') ?? true;
+        return $user?->hasRole('super_admin') || $user?->can('complaints.create') ?? false;
     }
 
     public static function canView(mixed $record): bool
     {
         $user = auth()->user();
-        return $user?->hasRole('super_admin') || $user?->can('complaints.view') ?? true;
+        return $user?->hasRole('super_admin') || $user?->can('complaints.view') ?? false;
     }
 
     public static function canEdit(mixed $record): bool
     {
         $user = auth()->user();
-        return $user?->hasRole('super_admin') || $user?->can('complaints.update') ?? true;
+        return $user?->hasRole('super_admin') || $user?->can('complaints.update') ?? false;
     }
 
     public static function canDelete(mixed $record): bool
     {
-        return auth()->user()?->can('complaints.delete') ?? true;
+        return auth()->user()?->can('complaints.delete') ?? false;
     }
 
     public static function shouldRegisterNavigation(): bool

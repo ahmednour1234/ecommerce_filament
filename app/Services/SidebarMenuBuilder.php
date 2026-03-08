@@ -43,14 +43,23 @@ class SidebarMenuBuilder
             }
             
             if (!$user->hasRole('super_admin') && !$user->can($item['permission'])) {
+                \Log::debug('Sidebar item filtered by permission', [
+                    'title' => $item['title'] ?? 'unknown',
+                    'permission' => $item['permission'],
+                    'user_id' => $user->id,
+                    'has_permission' => $user->can($item['permission']),
+                    'is_super_admin' => $user->hasRole('super_admin')
+                ]);
                 return null;
             }
         }
 
+        $resolvedUrl = $this->resolveUrl($item['url'] ?? null);
+        
         $processed = [
             'title' => $item['title'],
             'icon' => $item['icon'] ?? null,
-            'url' => $this->resolveUrl($item['url'] ?? null),
+            'url' => $resolvedUrl,
             'badge' => $this->resolveBadge($item['badge'] ?? null),
             'children' => [],
         ];
@@ -61,6 +70,13 @@ class SidebarMenuBuilder
             if (empty($processed['children']) && $processed['url'] === null) {
                 return null;
             }
+        }
+
+        if ($processed['url'] === null && empty($processed['children'])) {
+            \Log::debug('Sidebar item filtered: no URL and no children', [
+                'title' => $item['title'] ?? 'unknown'
+            ]);
+            return null;
         }
 
         return $processed;
@@ -76,11 +92,15 @@ class SidebarMenuBuilder
             try {
                 $resolvedUrl = $url();
                 if ($resolvedUrl === null || $resolvedUrl === '') {
+                    \Log::debug('Sidebar URL resolved to empty', ['url' => $url]);
                     return null;
                 }
                 return $resolvedUrl;
             } catch (\Exception $e) {
-                \Log::warning('Sidebar URL resolution failed', ['error' => $e->getMessage()]);
+                \Log::warning('Sidebar URL resolution failed', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
                 return null;
             }
         }
