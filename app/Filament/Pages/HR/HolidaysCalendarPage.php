@@ -33,7 +33,7 @@ class HolidaysCalendarPage extends Page
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->can('hr_holidays.calendar') ?? false;
+        return false;
     }
 
     protected function getHeaderActions(): array
