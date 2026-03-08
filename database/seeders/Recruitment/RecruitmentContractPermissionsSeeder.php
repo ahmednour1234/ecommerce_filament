@@ -28,6 +28,7 @@ class RecruitmentContractPermissionsSeeder extends Seeder
         $specialPermissions = [
             'recruitment_contracts.finance.manage',
             'recruitment_contracts.status.update',
+            'recruitment_contracts.coordination',
             'view_receiving_recruitment_report',
         ];
 

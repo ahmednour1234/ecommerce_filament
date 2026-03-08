@@ -29,6 +29,7 @@ class RecruitmentContractTranslationsSeeder extends Seeder
             'recruitment_contract.sections.musaned_data' => ['en' => 'Musaned Data', 'ar' => 'بيانات مساند'],
             'recruitment_contract.sections.financial_data' => ['en' => 'Financial Data', 'ar' => 'البيانات المالية'],
             'recruitment_contract.sections.other_data' => ['en' => 'Other Data', 'ar' => 'البيانات الأخرى'],
+            'recruitment_contract.sections.coordination' => ['en' => 'Coordination Department', 'ar' => 'قسم التنسيق'],
 
             'recruitment_contract.fields.contract_no' => ['en' => 'Contract No', 'ar' => 'رقم العقد'],
             'recruitment_contract.fields.client' => ['en' => 'Client', 'ar' => 'العميل'],
