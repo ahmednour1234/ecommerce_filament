@@ -9,18 +9,25 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('complaints', function (Blueprint $table) {
-            if (Schema::hasColumn('complaints', 'subject') && Schema::hasColumn('complaints', 'description')) {
-                DB::statement("UPDATE complaints SET description = CONCAT(COALESCE(subject, ''), '\n\n', COALESCE(description, '')) WHERE subject IS NOT NULL OR description IS NOT NULL");
-                
-                $table->dropColumn('subject');
-            }
-            
             if (!Schema::hasColumn('complaints', 'complaint_description')) {
                 $table->text('complaint_description')->nullable()->after('nationality_id');
             }
+        });
+
+        if (Schema::hasColumn('complaints', 'subject') && Schema::hasColumn('complaints', 'description')) {
+            DB::statement("UPDATE complaints SET complaint_description = CONCAT(COALESCE(subject, ''), IF(COALESCE(description, '') != '', CONCAT('\n\n', description), '')) WHERE complaint_description IS NULL");
+        } elseif (Schema::hasColumn('complaints', 'description')) {
+            DB::statement("UPDATE complaints SET complaint_description = description WHERE complaint_description IS NULL");
+        } elseif (Schema::hasColumn('complaints', 'subject')) {
+            DB::statement("UPDATE complaints SET complaint_description = subject WHERE complaint_description IS NULL");
+        }
+
+        Schema::table('complaints', function (Blueprint $table) {
+            if (Schema::hasColumn('complaints', 'subject')) {
+                $table->dropColumn('subject');
+            }
             
             if (Schema::hasColumn('complaints', 'description')) {
-                DB::statement("UPDATE complaints SET complaint_description = description WHERE complaint_description IS NULL");
                 $table->dropColumn('description');
             }
         });
