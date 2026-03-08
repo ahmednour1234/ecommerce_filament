@@ -54,7 +54,7 @@ class MonthlyAttendanceReportPage extends Page implements HasForms, HasTable
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->can('hr_attendance_report_monthly.view') ?? false;
+        return false;
     }
 
     public function mount(): void
