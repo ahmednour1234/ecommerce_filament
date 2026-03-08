@@ -10,6 +10,7 @@ use App\Models\HR\Employee;
 use App\Models\HR\Department;
 use App\Models\HR\Position;
 use App\Models\MainCore\Branch;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -48,6 +49,16 @@ class EmployeeResource extends Resource
                                             ->required()
                                             ->unique(ignoreRecord: true)
                                             ->maxLength(255)
+                                            ->columnSpan(1),
+
+                                        Forms\Components\Select::make('user_id')
+                                            ->label(tr('fields.user', [], null, 'dashboard') ?: 'حساب المستخدم')
+                                            ->relationship('user', 'name')
+                                            ->searchable()
+                                            ->preload()
+                                            ->nullable()
+                                            ->native(false)
+                                            ->helperText(tr('fields.user.helper', [], null, 'dashboard') ?: 'اختر حساب المستخدم المرتبط بهذا الموظف')
                                             ->columnSpan(1),
 
                                         Forms\Components\TextInput::make('first_name')
@@ -317,6 +328,12 @@ class EmployeeResource extends Resource
                     ->formatStateUsing(fn (Employee $record) => $record->full_name)
                     ->searchable(['first_name', 'last_name'])
                     ->sortable(),
+
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label(tr('tables.hr_employees.user', [], null, 'dashboard') ?: 'حساب المستخدم')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('branch.name')
                     ->label(tr('tables.hr_employees.branch', [], null, 'dashboard') ?: 'Branch')

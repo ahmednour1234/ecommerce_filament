@@ -12,6 +12,7 @@ class Employee extends Model
 
     protected $fillable = [
         'employee_number',
+        'user_id',
         'first_name',
         'last_name',
         'email',
@@ -112,6 +113,14 @@ class Employee extends Model
     public function bank(): BelongsTo
     {
         return $this->belongsTo(Bank::class, 'bank_id');
+    }
+
+    /**
+     * Get the user account associated with this employee
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\User::class, 'user_id');
     }
 
     /**
