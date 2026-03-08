@@ -13,7 +13,7 @@ class ComplaintReportPage extends Page
     use TranslatableNavigation;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
-    protected static ?string $navigationGroup = null;
+    protected static ?string $navigationGroup = 'قسم الشكاوي';
     protected static ?string $navigationLabel = 'تقرير الشكاوي';
     protected static ?int $navigationSort = 2;
     protected static string $view = 'filament.pages.complaints.complaint-report';
@@ -39,7 +39,7 @@ class ComplaintReportPage extends Page
 
     public static function shouldRegisterNavigation(): bool
     {
-        return false;
+        return (bool) auth()->user();
     }
 
     public function mount(): void

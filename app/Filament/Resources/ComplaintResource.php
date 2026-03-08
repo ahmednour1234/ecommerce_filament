@@ -189,7 +189,6 @@ class ComplaintResource extends Resource
                     ->schema([
                         Forms\Components\Textarea::make('branch_action_taken')
                             ->label(tr('complaint.fields.branch_action_taken', [], null, 'dashboard') ?: 'الإجراء المتخذ من الفرع المختص')
-                            ->icon('heroicon-o-check-circle')
                             ->rows(4)
                             ->columnSpanFull(),
 
