@@ -174,6 +174,10 @@ class AdminPanelProvider extends PanelProvider
                     ->label('إيواء التأجير')
                     ->collapsible(true),
 
+                \Filament\Navigation\NavigationGroup::make('قسم الشكاوي')
+                    ->label('قسم الشكاوي')
+                    ->collapsible(true),
+
                 \Filament\Navigation\NavigationGroup::make('قسم التأجير')
                     ->label('قسم التأجير')
                     ->collapsible(true),
@@ -252,10 +256,6 @@ class AdminPanelProvider extends PanelProvider
 
                 \Filament\Navigation\NavigationGroup::make('إدارة السائقين')
                     ->label('إدارة السائقين')
-                    ->collapsible(true),
-
-                \Filament\Navigation\NavigationGroup::make('قسم الشكاوي')
-                    ->label('قسم الشكاوي')
                     ->collapsible(true),
             ]);
     }
