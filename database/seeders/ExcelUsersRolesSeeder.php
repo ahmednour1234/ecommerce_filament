@@ -86,6 +86,8 @@ class ExcelUsersRolesSeeder extends Seeder
             'التنبيهات' => 'مدير التنبيهات',
             'العملاء' => 'مدير العملاء',
             'تأشيرات الشركة' => 'مدير تأشيرات الشركة',
+            'التنسيق' => 'مدير التنسيق',
+            'قسم التنسيق' => 'مدير التنسيق',
         ];
 
         // 4) Arabic module keywords -> module_key used by PermissionGrouper
@@ -208,6 +210,10 @@ class ExcelUsersRolesSeeder extends Seeder
                 }
 
                 $rolePermissionNames = array_values(array_unique($rolePermissionNames));
+                if ($this->hasCoordination($permText, $cleanJobTitle)) {
+                    $rolePermissionNames[] = 'recruitment_contracts.coordination';
+                    $rolePermissionNames = array_values(array_unique($rolePermissionNames));
+                }
                 $permissionModels = Permission::whereIn('name', $rolePermissionNames)->get();
                 $role->syncPermissions($permissionModels);
             }
@@ -344,5 +350,13 @@ class ExcelUsersRolesSeeder extends Seeder
         }
 
         return 'موظف';
+    }
+
+    private function hasCoordination(string $permText, string $jobTitle): bool
+    {
+        $t1 = $this->norm($permText);
+        $t2 = $this->norm($jobTitle);
+        return Str::contains($t1, 'التنسيق') || Str::contains($t1, 'قسم التنسيق')
+            || Str::contains($t2, 'التنسيق') || Str::contains($t2, 'قسم التنسيق');
     }
 }
