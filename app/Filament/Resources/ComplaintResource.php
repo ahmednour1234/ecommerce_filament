@@ -308,7 +308,6 @@ class ComplaintResource extends Resource
 
                 Tables\Columns\TextColumn::make('branch_action_taken')
                     ->label(tr('complaint.fields.branch_action_taken', [], null, 'dashboard') ?: 'الإجراء المتخذ')
-                    ->icon('heroicon-o-check-circle')
                     ->limit(50)
                     ->toggleable(),
 
