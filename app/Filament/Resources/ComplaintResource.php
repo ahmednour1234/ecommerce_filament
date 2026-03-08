@@ -437,18 +437,18 @@ class ComplaintResource extends Resource
     public static function canView(mixed $record): bool
     {
         $user = auth()->user();
-        return $user?->hasRole('super_admin') || $user?->can('complaints.view') ?? false;
+        return $user?->hasRole('super_admin') || $user?->can('complaints.view') ?? true;
     }
 
     public static function canEdit(mixed $record): bool
     {
         $user = auth()->user();
-        return $user?->hasRole('super_admin') || $user?->can('complaints.update') ?? false;
+        return $user?->hasRole('super_admin') || $user?->can('complaints.update') ?? true;
     }
 
     public static function canDelete(mixed $record): bool
     {
-        return auth()->user()?->can('complaints.delete') ?? false;
+        return auth()->user()?->can('complaints.delete') ?? true;
     }
 
     public static function shouldRegisterNavigation(): bool
