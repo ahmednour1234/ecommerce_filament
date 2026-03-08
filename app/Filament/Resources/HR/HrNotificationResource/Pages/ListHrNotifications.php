@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\HR/HrNotificationResource\Pages;
 
-use App\Filament\Resources\HR/HrNotificationResource;
-use App\Services\HR/HrNotificationService;
+use App\Filament\Resources\HR\HrNotificationResource;
+use App\Services\HR\HrNotificationService;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Components\Tab;
 use Illuminate\Database\Eloquent\Builder;

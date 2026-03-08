@@ -6,7 +6,7 @@ use App\Filament\Resources\HR\HrNotificationResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
 use App\Filament\Concerns\HrModuleGate;
 use App\Models\HR\HrNotification;
-use App\Services\HR/HrNotificationService;
+use App\Services\HR\HrNotificationService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
