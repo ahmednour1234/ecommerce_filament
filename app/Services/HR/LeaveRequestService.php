@@ -6,7 +6,7 @@ use App\Models\HR\LeaveRequest;
 use App\Models\HR\LeaveBalance;
 use App\Repositories\HR\LeaveRequestRepository;
 use App\Repositories\HR\LeaveBalanceRepository;
-use App\Services\HR/HrNotificationService;
+use App\Services\HR\HrNotificationService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
