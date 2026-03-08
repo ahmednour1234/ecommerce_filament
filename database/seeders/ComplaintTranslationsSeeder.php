@@ -69,6 +69,14 @@ class ComplaintTranslationsSeeder extends Seeder
             'complaint.report.navigation' => ['en' => 'Complaints Report', 'ar' => 'تقرير الشكاوي'],
             'complaint.report.filters' => ['en' => 'Report Filters', 'ar' => 'فلترة التقرير'],
 
+            'complaint.alerts.title' => ['en' => 'Complaint Alerts', 'ar' => 'تنبيهات الشكاوي'],
+            'complaint.alerts.description' => ['en' => 'Complaints requiring follow-up', 'ar' => 'شكاوي تحتاج إلى متابعة'],
+            'complaint.alerts.description_text' => ['en' => 'Pending or in progress complaints', 'ar' => 'الشكاوي قيد الانتظار أو قيد المعالجة'],
+            'complaint.alerts.navigation' => ['en' => 'Complaint Alerts', 'ar' => 'تنبيهات الشكاوي'],
+            'complaint.alerts.empty' => ['en' => 'No alerts', 'ar' => 'لا توجد تنبيهات'],
+
+            'common.search' => ['en' => 'Search', 'ar' => 'بحث'],
+
             'tables.complaints.complaint_no' => ['en' => 'Complaint No', 'ar' => 'رقم الشكوى'],
             'tables.complaints.subject' => ['en' => 'Subject', 'ar' => 'الموضوع'],
             'tables.complaints.contract' => ['en' => 'Contract', 'ar' => 'العقد'],
