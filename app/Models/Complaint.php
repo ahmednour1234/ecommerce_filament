@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\ComplaintService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -22,19 +23,21 @@ class Complaint extends Model
         'problem_type',
         'phone_number',
         'nationality_id',
-        'subject',
-        'description',
+        'complaint_description',
         'status',
         'priority',
         'branch_id',
         'assigned_to',
         'resolution_notes',
+        'branch_action_taken',
         'resolved_at',
+        'in_progress_at',
         'created_by',
     ];
 
     protected $casts = [
         'resolved_at' => 'datetime',
+        'in_progress_at' => 'datetime',
     ];
 
     protected static function boot()
@@ -53,8 +56,26 @@ class Complaint extends Model
         });
 
         static::updating(function ($complaint) {
-            if ($complaint->isDirty('status') && $complaint->status === 'resolved' && !$complaint->resolved_at) {
-                $complaint->resolved_at = now();
+            if ($complaint->isDirty('status')) {
+                $oldStatus = $complaint->getOriginal('status');
+                $newStatus = $complaint->status;
+                
+                if ($newStatus === 'in_progress' && !$complaint->in_progress_at) {
+                    $complaint->in_progress_at = now();
+                }
+                if ($newStatus === 'resolved' && !$complaint->resolved_at) {
+                    $complaint->resolved_at = now();
+                }
+                
+                if ($oldStatus !== $newStatus) {
+                    \App\Models\ComplaintStatusLog::create([
+                        'complaint_id' => $complaint->id,
+                        'old_status' => $oldStatus,
+                        'new_status' => $newStatus,
+                        'status_date' => now(),
+                        'created_by' => auth()->id(),
+                    ]);
+                }
             }
         });
     }
@@ -84,9 +105,14 @@ class Complaint extends Model
         return $this->belongsTo(Nationality::class);
     }
 
-    public function scopePending($query)
+    public function statusLogs(): HasMany
     {
-        return $query->where('status', 'pending');
+        return $this->hasMany(\App\Models\ComplaintStatusLog::class);
+    }
+
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(\App\Models\ComplaintNotification::class);
     }
 
     public function scopeInProgress($query)
@@ -97,30 +123,5 @@ class Complaint extends Model
     public function scopeResolved($query)
     {
         return $query->where('status', 'resolved');
-    }
-
-    public function scopeClosed($query)
-    {
-        return $query->where('status', 'closed');
-    }
-
-    public function scopeLow($query)
-    {
-        return $query->where('priority', 'low');
-    }
-
-    public function scopeMedium($query)
-    {
-        return $query->where('priority', 'medium');
-    }
-
-    public function scopeHigh($query)
-    {
-        return $query->where('priority', 'high');
-    }
-
-    public function scopeUrgent($query)
-    {
-        return $query->where('priority', 'urgent');
     }
 }

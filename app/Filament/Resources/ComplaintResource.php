@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ComplaintResource\Pages;
+use App\Filament\Resources\ComplaintResource\RelationManagers;
 use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\Complaint;
 use App\Models\MainCore\Branch;
@@ -27,7 +28,7 @@ class ComplaintResource extends Resource
     protected static ?string $model = Complaint::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-exclamation-triangle';
-    protected static ?string $navigationGroup = 'المتابعة';
+    protected static ?string $navigationGroup = null;
     protected static ?string $navigationLabel = 'قسم الشكاوي';
     protected static ?int $navigationSort = 1;
     protected static ?string $navigationTranslationKey = 'sidebar.complaints.complaints';
@@ -128,14 +129,8 @@ class ComplaintResource extends Resource
                             ->searchable()
                             ->columnSpan(1),
 
-                        Forms\Components\TextInput::make('subject')
-                            ->label(tr('complaint.fields.subject', [], null, 'dashboard') ?: 'Subject')
-                            ->required()
-                            ->maxLength(255)
-                            ->columnSpanFull(),
-
-                        Forms\Components\Textarea::make('description')
-                            ->label(tr('complaint.fields.description', [], null, 'dashboard') ?: 'Description')
+                        Forms\Components\Textarea::make('complaint_description')
+                            ->label(tr('complaint.fields.complaint_description', [], null, 'dashboard') ?: 'وصف الشكوي')
                             ->required()
                             ->rows(4)
                             ->columnSpanFull(),
@@ -169,25 +164,21 @@ class ComplaintResource extends Resource
                         Forms\Components\Select::make('priority')
                             ->label(tr('complaint.fields.priority', [], null, 'dashboard') ?: 'Priority')
                             ->options([
-                                'low' => tr('complaint.priority.low', [], null, 'dashboard') ?: 'Low',
-                                'medium' => tr('complaint.priority.medium', [], null, 'dashboard') ?: 'Medium',
-                                'high' => tr('complaint.priority.high', [], null, 'dashboard') ?: 'High',
-                                'urgent' => tr('complaint.priority.urgent', [], null, 'dashboard') ?: 'Urgent',
+                                'very_high' => tr('complaint.priority.very_high', [], null, 'dashboard') ?: 'عالي جدا',
                             ])
                             ->required()
-                            ->default('medium')
+                            ->default('very_high')
+                            ->disabled()
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('status')
                             ->label(tr('complaint.fields.status', [], null, 'dashboard') ?: 'Status')
                             ->options([
-                                'pending' => tr('complaint.status.pending', [], null, 'dashboard') ?: 'Pending',
-                                'in_progress' => tr('complaint.status.in_progress', [], null, 'dashboard') ?: 'In Progress',
-                                'resolved' => tr('complaint.status.resolved', [], null, 'dashboard') ?: 'Resolved',
-                                'closed' => tr('complaint.status.closed', [], null, 'dashboard') ?: 'Closed',
+                                'in_progress' => tr('complaint.status.in_progress', [], null, 'dashboard') ?: 'قيد المعالجة',
+                                'resolved' => tr('complaint.status.resolved', [], null, 'dashboard') ?: 'تم الحل',
                             ])
                             ->required()
-                            ->default('pending')
+                            ->default('in_progress')
                             ->reactive()
                             ->columnSpan(1),
                     ])
@@ -195,20 +186,32 @@ class ComplaintResource extends Resource
 
                 Forms\Components\Section::make(tr('complaint.sections.resolution', [], null, 'dashboard') ?: 'Resolution')
                     ->schema([
+                        Forms\Components\Textarea::make('branch_action_taken')
+                            ->label(tr('complaint.fields.branch_action_taken', [], null, 'dashboard') ?: 'الإجراء المتخذ من الفرع المختص')
+                            ->icon('heroicon-o-check-circle')
+                            ->rows(4)
+                            ->columnSpanFull(),
+
                         Forms\Components\Textarea::make('resolution_notes')
                             ->label(tr('complaint.fields.resolution_notes', [], null, 'dashboard') ?: 'Resolution Notes')
                             ->rows(4)
-                            ->visible(fn (callable $get) => in_array($get('status'), ['resolved', 'closed']))
+                            ->visible(fn (callable $get) => $get('status') === 'resolved')
                             ->columnSpanFull(),
+
+                        Forms\Components\DateTimePicker::make('in_progress_at')
+                            ->label(tr('complaint.fields.in_progress_at', [], null, 'dashboard') ?: 'In Progress At')
+                            ->visible(fn (callable $get) => $get('status') === 'in_progress')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->columnSpan(1),
 
                         Forms\Components\DateTimePicker::make('resolved_at')
                             ->label(tr('complaint.fields.resolved_at', [], null, 'dashboard') ?: 'Resolved At')
-                            ->visible(fn (callable $get) => in_array($get('status'), ['resolved', 'closed']))
+                            ->visible(fn (callable $get) => $get('status') === 'resolved')
                             ->disabled()
                             ->dehydrated(false)
                             ->columnSpan(1),
                     ])
-                    ->visible(fn (callable $get) => in_array($get('status'), ['resolved', 'closed']))
                     ->columns(2),
             ]);
     }
@@ -222,8 +225,8 @@ class ComplaintResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('subject')
-                    ->label(tr('complaint.fields.subject', [], null, 'dashboard') ?: 'Subject')
+                Tables\Columns\TextColumn::make('complaint_description')
+                    ->label(tr('complaint.fields.complaint_description', [], null, 'dashboard') ?: 'وصف الشكوي')
                     ->searchable()
                     ->limit(50)
                     ->sortable(),
@@ -284,26 +287,30 @@ class ComplaintResource extends Resource
                 Tables\Columns\BadgeColumn::make('status')
                     ->label(tr('complaint.fields.status', [], null, 'dashboard') ?: 'Status')
                     ->color(fn (string $state): string => match ($state) {
-                        'pending' => 'warning',
                         'in_progress' => 'info',
                         'resolved' => 'success',
-                        'closed' => 'gray',
                         default => 'gray',
                     })
                     ->formatStateUsing(fn ($state) => tr("complaint.status.{$state}", [], null, 'dashboard') ?: $state)
                     ->sortable(),
 
-                Tables\Columns\BadgeColumn::make('priority')
-                    ->label(tr('complaint.fields.priority', [], null, 'dashboard') ?: 'Priority')
-                    ->color(fn (string $state): string => match ($state) {
-                        'urgent' => 'danger',
-                        'high' => 'warning',
-                        'medium' => 'info',
-                        'low' => 'gray',
-                        default => 'gray',
-                    })
-                    ->formatStateUsing(fn ($state) => tr("complaint.priority.{$state}", [], null, 'dashboard') ?: $state)
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('in_progress_at')
+                    ->label(tr('complaint.fields.in_progress_at', [], null, 'dashboard') ?: 'In Progress At')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('resolved_at')
+                    ->label(tr('complaint.fields.resolved_at', [], null, 'dashboard') ?: 'Resolved At')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('branch_action_taken')
+                    ->label(tr('complaint.fields.branch_action_taken', [], null, 'dashboard') ?: 'الإجراء المتخذ')
+                    ->icon('heroicon-o-check-circle')
+                    ->limit(50)
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('assignedUser.name')
                     ->label(tr('complaint.fields.assigned_to', [], null, 'dashboard') ?: 'Assigned To')
@@ -327,19 +334,8 @@ class ComplaintResource extends Resource
                 Tables\Filters\SelectFilter::make('status')
                     ->label(tr('complaint.fields.status', [], null, 'dashboard') ?: 'Status')
                     ->options([
-                        'pending' => tr('complaint.status.pending', [], null, 'dashboard') ?: 'Pending',
-                        'in_progress' => tr('complaint.status.in_progress', [], null, 'dashboard') ?: 'In Progress',
-                        'resolved' => tr('complaint.status.resolved', [], null, 'dashboard') ?: 'Resolved',
-                        'closed' => tr('complaint.status.closed', [], null, 'dashboard') ?: 'Closed',
-                    ]),
-
-                Tables\Filters\SelectFilter::make('priority')
-                    ->label(tr('complaint.fields.priority', [], null, 'dashboard') ?: 'Priority')
-                    ->options([
-                        'low' => tr('complaint.priority.low', [], null, 'dashboard') ?: 'Low',
-                        'medium' => tr('complaint.priority.medium', [], null, 'dashboard') ?: 'Medium',
-                        'high' => tr('complaint.priority.high', [], null, 'dashboard') ?: 'High',
-                        'urgent' => tr('complaint.priority.urgent', [], null, 'dashboard') ?: 'Urgent',
+                        'in_progress' => tr('complaint.status.in_progress', [], null, 'dashboard') ?: 'قيد المعالجة',
+                        'resolved' => tr('complaint.status.resolved', [], null, 'dashboard') ?: 'تم الحل',
                     ]),
 
                 Tables\Filters\SelectFilter::make('branch_id')
@@ -384,7 +380,7 @@ class ComplaintResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\StatusLogsRelationManager::class,
         ];
     }
 
@@ -429,6 +425,6 @@ class ComplaintResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return static::canViewAny();
+        return false;
     }
 }

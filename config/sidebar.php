@@ -171,6 +171,20 @@ return [
             ],
         ],
         [
+            'title' => 'sidebar.complaints.complaints',
+            'icon' => 'heroicon-o-exclamation-triangle',
+            'url' => fn() => \App\Filament\Resources\ComplaintResource::getUrl(),
+            'permission' => 'complaints.view_any',
+            'badge' => null,
+        ],
+        [
+            'title' => 'sidebar.complaints.report',
+            'icon' => 'heroicon-o-chart-bar',
+            'url' => fn() => \App\Filament\Pages\Complaints\ComplaintReportPage::getUrl(),
+            'permission' => 'complaints.view_any',
+            'badge' => null,
+        ],
+        [
             'title' => 'sidebar.system',
             'icon' => 'heroicon-o-cog-6-tooth',
             'url' => null,
