@@ -70,6 +70,14 @@ class User extends Authenticatable implements FilamentUser, HasName
         return $this->belongsTo(\App\Models\MainCore\Branch::class);
     }
 
+    /**
+     * Get the employee associated with this user
+     */
+    public function employee()
+    {
+        return $this->hasOne(\App\Models\HR\Employee::class, 'user_id');
+    }
+
     // دخول لوحة Filament
     public function canAccessPanel(Panel $panel): bool
     {

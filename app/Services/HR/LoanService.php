@@ -7,6 +7,7 @@ use App\Repositories\HR\LoanRepository;
 use App\Repositories\HR\LoanInstallmentRepository;
 use App\Services\Accounting\CurrencyConversionService;
 use App\Services\MainCore\CurrencyService;
+use App\Services\HR/HrNotificationService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 
@@ -14,11 +15,16 @@ class LoanService
 {
     protected LoanRepository $repository;
     protected LoanInstallmentRepository $installmentRepository;
+    protected HrNotificationService $notificationService;
 
-    public function __construct(LoanRepository $repository, LoanInstallmentRepository $installmentRepository)
-    {
+    public function __construct(
+        LoanRepository $repository,
+        LoanInstallmentRepository $installmentRepository,
+        HrNotificationService $notificationService
+    ) {
         $this->repository = $repository;
         $this->installmentRepository = $installmentRepository;
+        $this->notificationService = $notificationService;
     }
 
     public function getAll(array $filters = [])
@@ -60,6 +66,10 @@ class LoanService
 
         $loan = $this->repository->create($validated);
         $this->generateInstallments($loan);
+
+        // Send notification to branch managers
+        $employee = \App\Models\HR\Employee::findOrFail($validated['employee_id']);
+        $this->notificationService->notifyLoanCreated($employee, $loan->id);
 
         return $loan->fresh();
     }

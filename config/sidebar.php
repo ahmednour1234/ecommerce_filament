@@ -236,6 +236,21 @@ return [
             'badge' => null,
             'children' => [
                 [
+                    'title' => 'sidebar.hr.notifications',
+                    'icon' => 'heroicon-o-bell',
+                    'url' => fn() => \App\Filament\Resources\HR/HrNotificationResource::getUrl(),
+                    'permission' => 'hr_notifications.view_any',
+                    'badge' => function() {
+                        try {
+                            $service = app(\App\Services\HR/HrNotificationService::class);
+                            $count = $service->getUnreadCount();
+                            return $count > 0 ? $count : null;
+                        } catch (\Exception $e) {
+                            return null;
+                        }
+                    },
+                ],
+                [
                     'title' => 'sidebar.hr.basic_settings',
                     'icon' => 'heroicon-o-cog-6-tooth',
                     'url' => null,

@@ -6,6 +6,7 @@ use App\Models\HR\LeaveRequest;
 use App\Models\HR\LeaveBalance;
 use App\Repositories\HR\LeaveRequestRepository;
 use App\Repositories\HR\LeaveBalanceRepository;
+use App\Services\HR/HrNotificationService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,13 +16,16 @@ class LeaveRequestService
 {
     protected LeaveRequestRepository $repository;
     protected LeaveBalanceRepository $balanceRepository;
+    protected HrNotificationService $notificationService;
 
     public function __construct(
         LeaveRequestRepository $repository,
-        LeaveBalanceRepository $balanceRepository
+        LeaveBalanceRepository $balanceRepository,
+        HrNotificationService $notificationService
     ) {
         $this->repository = $repository;
         $this->balanceRepository = $balanceRepository;
+        $this->notificationService = $notificationService;
     }
 
     /**
@@ -94,7 +98,13 @@ class LeaveRequestService
         $validated['created_by'] = Auth::id();
         $validated['status'] = 'pending';
         
-        return $this->repository->create($validated);
+        $leaveRequest = $this->repository->create($validated);
+        
+        // Send notification to branch managers
+        $employee = \App\Models\HR\Employee::findOrFail($validated['employee_id']);
+        $this->notificationService->notifyLeaveRequestCreated($employee, $leaveRequest->id);
+        
+        return $leaveRequest;
     }
 
     /**
@@ -163,17 +173,51 @@ class LeaveRequestService
     }
 
     /**
-     * Approve leave request
+     * Approve leave request by branch manager
      */
-    public function approve(LeaveRequest $leaveRequest, ?string $managerNote = null): LeaveRequest
+    public function approveByBranchManager(LeaveRequest $leaveRequest, ?string $managerNote = null): LeaveRequest
     {
         if ($leaveRequest->status !== 'pending') {
-            throw new \Exception('Only pending requests can be approved.');
+            throw new \Exception('Only pending requests can be approved by branch manager.');
+        }
+        
+        $leaveRequest->update([
+            'status' => 'branch_manager_approved',
+            'branch_manager_approved_by' => Auth::id(),
+            'branch_manager_approved_at' => now(),
+            'manager_note' => $managerNote,
+            'updated_by' => Auth::id(),
+        ]);
+        
+        // Notify general manager
+        $employee = $leaveRequest->employee;
+        $this->notificationService->notifyGeneralManager(
+            'leave_request',
+            'طلب إجازة يحتاج موافقة المدير العام',
+            "تمت موافقة مدير الفرع على طلب إجازة من الموظف {$employee->full_name} ويحتاج موافقة المدير العام",
+            $employee->id,
+            LeaveRequest::class,
+            $leaveRequest->id,
+            \App\Filament\Resources\HR\LeaveRequestResource::getUrl('edit', ['record' => $leaveRequest->id])
+        );
+        
+        return $leaveRequest->fresh();
+    }
+
+    /**
+     * Approve leave request by general manager
+     */
+    public function approveByGeneralManager(LeaveRequest $leaveRequest, ?string $managerNote = null): LeaveRequest
+    {
+        if ($leaveRequest->status !== 'branch_manager_approved') {
+            throw new \Exception('Only branch manager approved requests can be approved by general manager.');
         }
         
         DB::transaction(function () use ($leaveRequest, $managerNote) {
             $leaveRequest->update([
                 'status' => 'approved',
+                'general_manager_approved_by' => Auth::id(),
+                'general_manager_approved_at' => now(),
                 'approved_by' => Auth::id(),
                 'approved_at' => now(),
                 'manager_note' => $managerNote,
@@ -195,6 +239,20 @@ class LeaveRequestService
         });
         
         return $leaveRequest->fresh();
+    }
+
+    /**
+     * Approve leave request (backward compatibility - for direct approval)
+     */
+    public function approve(LeaveRequest $leaveRequest, ?string $managerNote = null): LeaveRequest
+    {
+        // If user has permission to approve directly, use general manager approval
+        if (Auth::user()?->can('hr.leave_requests.approve_direct')) {
+            return $this->approveByGeneralManager($leaveRequest, $managerNote);
+        }
+        
+        // Otherwise, use branch manager approval
+        return $this->approveByBranchManager($leaveRequest, $managerNote);
     }
 
     /**

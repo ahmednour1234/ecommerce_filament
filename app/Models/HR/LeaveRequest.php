@@ -22,6 +22,10 @@ class LeaveRequest extends Model
         'manager_note',
         'approved_by',
         'approved_at',
+        'branch_manager_approved_by',
+        'branch_manager_approved_at',
+        'general_manager_approved_by',
+        'general_manager_approved_at',
         'rejected_by',
         'rejected_at',
         'cancelled_by',
@@ -36,6 +40,8 @@ class LeaveRequest extends Model
         'total_days' => 'integer',
         'status' => 'string',
         'approved_at' => 'datetime',
+        'branch_manager_approved_at' => 'datetime',
+        'general_manager_approved_at' => 'datetime',
         'rejected_at' => 'datetime',
         'cancelled_at' => 'datetime',
     ];
@@ -62,6 +68,22 @@ class LeaveRequest extends Model
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    /**
+     * Get the branch manager approver
+     */
+    public function branchManagerApprover(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'branch_manager_approved_by');
+    }
+
+    /**
+     * Get the general manager approver
+     */
+    public function generalManagerApprover(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'general_manager_approved_by');
     }
 
     /**
@@ -110,6 +132,14 @@ class LeaveRequest extends Model
     public function scopeApproved($query)
     {
         return $query->where('status', 'approved');
+    }
+
+    /**
+     * Scope to get branch manager approved requests
+     */
+    public function scopeBranchManagerApproved($query)
+    {
+        return $query->where('status', 'branch_manager_approved');
     }
 
     /**

@@ -4,11 +4,19 @@ namespace App\Services\HR;
 
 use App\Models\HR\ExcuseRequest;
 use App\Models\User;
+use App\Services\HR/HrNotificationService;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 
 class ExcuseRequestService
 {
+    protected HrNotificationService $notificationService;
+
+    public function __construct(HrNotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
+
     public function getAll(array $filters = [])
     {
         $query = ExcuseRequest::with(['employee', 'approver']);
@@ -41,7 +49,13 @@ class ExcuseRequestService
         $endTime = $startTime->copy()->addHours($validated['hours']);
         $validated['end_time'] = $endTime->format('H:i:s');
         
-        return ExcuseRequest::create($validated);
+        $excuseRequest = ExcuseRequest::create($validated);
+        
+        // Send notification to branch managers
+        $employee = \App\Models\HR\Employee::findOrFail($validated['employee_id']);
+        $this->notificationService->notifyExcuseRequestCreated($employee, $excuseRequest->id);
+        
+        return $excuseRequest;
     }
 
     public function approve(ExcuseRequest $request, User $approver): ExcuseRequest
