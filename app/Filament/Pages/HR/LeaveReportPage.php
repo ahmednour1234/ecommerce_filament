@@ -47,7 +47,7 @@ class LeaveReportPage extends Page implements HasTable
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->can('hr.leave_reports.view') ?? false;
+        return false;
     }
 
     public function mount(): void
