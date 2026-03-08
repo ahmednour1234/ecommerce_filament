@@ -84,7 +84,6 @@ class HrNotificationResource extends Resource
 
                 $notificationService = app(HrNotificationService::class);
                 
-                // Apply permission-based filtering
                 if ($user->can('hr_notifications.view_all') || $user->hasRole('super_admin')) {
                     return $query;
                 }

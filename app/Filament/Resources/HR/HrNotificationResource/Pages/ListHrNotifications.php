@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\HR/HrNotificationResource\Pages;
+namespace App\Filament\Resources\HR\HrNotificationResource\Pages;
 
 use App\Filament\Resources\HR\HrNotificationResource;
 use App\Services\HR\HrNotificationService;
