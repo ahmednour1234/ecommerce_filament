@@ -14,8 +14,8 @@ return new class extends Migration {
         }
 
         $translations = [
-            'recruitment_contract.status.external_office_approval' => ['en' => 'External Office Approval', 'ar' => 'موافقة المكتب الخارجي'],
-            'recruitment_contract.status.contract_accepted_external_office' => ['en' => 'Contract Accepted by External Office', 'ar' => 'قبول العقد من مكتب الخارجي'],
+            'recruitment_contract.status.external_office_approval' => ['en' => 'External Office Approval', 'ar' => 'بانتظار موافقه المكتب الخارجي'],
+            'recruitment_contract.status.contract_accepted_external_office' => ['en' => 'Contract Accepted by External Office', 'ar' => 'تم قبول مكتب المكتب الخارجي'],
             'recruitment_contract.status.waiting_approval' => ['en' => 'Waiting Approval', 'ar' => 'انتظار الابروف'],
             'recruitment_contract.status.contract_accepted_labor_ministry' => ['en' => 'Contract Accepted by Labor Ministry', 'ar' => 'قبول العقد من مكتب العمل الخارجي'],
             'recruitment_contract.status.sent_to_saudi_embassy' => ['en' => 'Sent to Saudi Embassy', 'ar' => 'إرسال التأشيرة إلى السفارة السعودية'],
