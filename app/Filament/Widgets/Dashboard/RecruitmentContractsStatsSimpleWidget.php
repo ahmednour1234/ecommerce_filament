@@ -13,7 +13,7 @@ class RecruitmentContractsStatsSimpleWidget extends BaseWidget
 {
     protected static ?int $sort = 1;
     protected int|string|array $columnSpan = 'full';
-    protected static ?string $heading = 'عقود الاستقدام';
+    protected ?string $heading = 'عقود الاستقدام';
 
     protected $listeners = ['filters-updated' => '$refresh'];
 
