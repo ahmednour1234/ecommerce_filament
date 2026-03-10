@@ -732,6 +732,10 @@ class RecruitmentContractResource extends Resource
             return $query;
         }
         if ($section === RecruitmentContract::SECTION_COORDINATION) {
+            $query->where(function ($q) {
+                $q->where('current_section', RecruitmentContract::SECTION_COORDINATION)
+                    ->orWhere('status', 'received');
+            });
             return $query;
         }
         return $query;
