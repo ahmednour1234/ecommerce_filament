@@ -143,6 +143,45 @@ class RecruitmentContractResource extends Resource
                                                 Cache::forget('recruitment_contracts.clients');
                                                 return $client->id;
                                             })
+                                            ->suffixAction(
+                                                Forms\Components\Actions\Action::make('showClient')
+                                                    ->label(tr('general.show', [], null, 'dashboard') ?: 'عرض')
+                                                    ->icon('heroicon-o-eye')
+                                                    ->visible(fn ($get) => (bool) $get('client_id'))
+                                                    ->mountUsing(fn (Forms\Components\Select $component) => ['client_id' => $component->getState()])
+                                                    ->form([
+                                                        Forms\Components\Hidden::make('client_id'),
+                                                        Forms\Components\Placeholder::make('client_details')
+                                                            ->content(function ($get): \Illuminate\Support\HtmlString {
+                                                                $id = $get('client_id');
+                                                                if (! $id) {
+                                                                    return new \Illuminate\Support\HtmlString('<p class="text-gray-500">—</p>');
+                                                                }
+                                                                $client = Client::find($id);
+                                                                if (! $client) {
+                                                                    return new \Illuminate\Support\HtmlString('<p class="text-gray-500">—</p>');
+                                                                }
+                                                                $rows = [
+                                                                    tr('general.clients.name_ar', [], null, 'dashboard') ?: 'الاسم (عربي)' => $client->name_ar,
+                                                                    tr('general.clients.name_en', [], null, 'dashboard') ?: 'الاسم (إنجليزي)' => $client->name_en ?? '—',
+                                                                    tr('general.clients.national_id', [], null, 'dashboard') ?: 'رقم الهوية' => $client->national_id ?? '—',
+                                                                    tr('general.clients.mobile', [], null, 'dashboard') ?: 'الجوال' => $client->mobile ?? '—',
+                                                                    tr('general.clients.marital_status', [], null, 'dashboard') ?: 'الحالة الاجتماعية' => $client->marital_status ?? '—',
+                                                                    tr('general.clients.classification', [], null, 'dashboard') ?: 'التصنيف' => $client->classification ?? '—',
+                                                                ];
+                                                                $html = '<div class="space-y-1 text-sm">';
+                                                                foreach ($rows as $label => $value) {
+                                                                    $html .= '<p><span class="font-medium text-gray-500">' . e($label) . ':</span> ' . e($value) . '</p>';
+                                                                }
+                                                                $html .= '</div>';
+                                                                return new \Illuminate\Support\HtmlString($html);
+                                                            }),
+                                                    ])
+                                                    ->modalHeading(tr('recruitment_contract.fields.client', [], null, 'dashboard') ?: 'بيانات العميل')
+                                                    ->modalSubmitAction(false)
+                                                    ->closeModalByEscaping(true)
+                                                    ->closeModalByClickingAway(true)
+                                            )
                                             ->disabled(fn () => static::isCustomerServiceTabDisabled())
                                             ->columnSpan(1),
                                         Forms\Components\Select::make('branch_id')
@@ -273,6 +312,47 @@ class RecruitmentContractResource extends Resource
                                                 Cache::forget('recruitment_contracts.workers');
                                                 return $laborer->id;
                                             })
+                                            ->suffixAction(
+                                                Forms\Components\Actions\Action::make('showWorker')
+                                                    ->label(tr('general.show', [], null, 'dashboard') ?: 'عرض')
+                                                    ->icon('heroicon-o-eye')
+                                                    ->visible(fn ($get) => (bool) $get('worker_id'))
+                                                    ->mountUsing(fn (Forms\Components\Select $component) => ['worker_id' => $component->getState()])
+                                                    ->form([
+                                                        Forms\Components\Hidden::make('worker_id'),
+                                                        Forms\Components\Placeholder::make('worker_details')
+                                                            ->content(function ($get): \Illuminate\Support\HtmlString {
+                                                                $id = $get('worker_id');
+                                                                if (! $id) {
+                                                                    return new \Illuminate\Support\HtmlString('<p class="text-gray-500">—</p>');
+                                                                }
+                                                                $worker = Laborer::with(['nationality', 'profession'])->find($id);
+                                                                if (! $worker) {
+                                                                    return new \Illuminate\Support\HtmlString('<p class="text-gray-500">—</p>');
+                                                                }
+                                                                $nationality = $worker->nationality?->name_ar ?? '—';
+                                                                $profession = $worker->profession?->name_ar ?? '—';
+                                                                $rows = [
+                                                                    tr('recruitment.fields.name_ar', [], null, 'dashboard') ?: 'الاسم (عربي)' => $worker->name_ar,
+                                                                    tr('recruitment.fields.name_en', [], null, 'dashboard') ?: 'الاسم (إنجليزي)' => $worker->name_en ?? '—',
+                                                                    tr('recruitment.fields.passport_number', [], null, 'dashboard') ?: 'رقم الجواز' => $worker->passport_number ?? '—',
+                                                                    tr('recruitment.fields.nationality', [], null, 'dashboard') ?: 'الجنسية' => $nationality,
+                                                                    tr('recruitment.fields.profession', [], null, 'dashboard') ?: 'المهنة' => $profession,
+                                                                    tr('recruitment.fields.phone_1', [], null, 'dashboard') ?: 'الهاتف' => $worker->phone_1 ?? '—',
+                                                                ];
+                                                                $html = '<div class="space-y-1 text-sm">';
+                                                                foreach ($rows as $label => $value) {
+                                                                    $html .= '<p><span class="font-medium text-gray-500">' . e($label) . ':</span> ' . e($value) . '</p>';
+                                                                }
+                                                                $html .= '</div>';
+                                                                return new \Illuminate\Support\HtmlString($html);
+                                                            }),
+                                                    ])
+                                                    ->modalHeading(tr('recruitment_contract.fields.worker', [], null, 'dashboard') ?: 'بيانات العاملة')
+                                                    ->modalSubmitAction(false)
+                                                    ->closeModalByEscaping(true)
+                                                    ->closeModalByClickingAway(true)
+                                            )
                                             ->disabled(fn () => static::isCustomerServiceTabDisabled())
                                             ->nullable()
                                             ->columnSpan(1),
@@ -782,7 +862,19 @@ class RecruitmentContractResource extends Resource
     public static function canViewAny(): bool
     {
         $user = auth()->user();
-        return $user?->hasRole('super_admin') || $user?->can('recruitment_contracts.view_any') ?? false;
+        if (! $user) {
+            return false;
+        }
+        $recruitmentTypes = [
+            \App\Models\User::TYPE_CUSTOMER_SERVICE,
+            \App\Models\User::TYPE_COORDINATOR,
+            \App\Models\User::TYPE_ACCOUNTANT,
+            \App\Models\User::TYPE_GENERAL_ACCOUNTANT,
+        ];
+        if (in_array($user->type, $recruitmentTypes, true)) {
+            return true;
+        }
+        return $user->hasRole('super_admin') || $user->can('recruitment_contracts.view_any');
     }
 
     public static function canCreate(): bool

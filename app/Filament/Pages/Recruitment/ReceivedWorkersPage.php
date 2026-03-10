@@ -17,7 +17,17 @@ class ReceivedWorkersPage extends Page
 
     public static function shouldRegisterNavigation(): bool
     {
-        return false; // مخفي من القائمة الجانبية
+        $user = auth()->user();
+        if (! $user) {
+            return false;
+        }
+        $recruitmentTypes = [
+            \App\Models\User::TYPE_CUSTOMER_SERVICE,
+            \App\Models\User::TYPE_COORDINATOR,
+            \App\Models\User::TYPE_ACCOUNTANT,
+            \App\Models\User::TYPE_GENERAL_ACCOUNTANT,
+        ];
+        return in_array($user->type, $recruitmentTypes, true) || $user->can('recruitment_contracts.view_any');
     }
     protected static string $view = 'filament.pages.recruitment.received-workers';
 

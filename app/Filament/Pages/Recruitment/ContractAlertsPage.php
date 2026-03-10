@@ -33,7 +33,20 @@ class ContractAlertsPage extends Page implements HasTable
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->can('recruitment_contracts.view_any') ?? false;
+        $user = auth()->user();
+        if (! $user) {
+            return false;
+        }
+        $recruitmentTypes = [
+            \App\Models\User::TYPE_CUSTOMER_SERVICE,
+            \App\Models\User::TYPE_COORDINATOR,
+            \App\Models\User::TYPE_ACCOUNTANT,
+            \App\Models\User::TYPE_GENERAL_ACCOUNTANT,
+        ];
+        if (in_array($user->type, $recruitmentTypes, true)) {
+            return true;
+        }
+        return $user->can('recruitment_contracts.view_any');
     }
 
     public static function getNavigationLabel(): string
