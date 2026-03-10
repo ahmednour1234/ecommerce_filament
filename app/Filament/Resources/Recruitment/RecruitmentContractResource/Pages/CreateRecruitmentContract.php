@@ -40,6 +40,10 @@ class CreateRecruitmentContract extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
+        if (! auth()->user()?->can('recruitment_contracts.assign_employee_branch')) {
+            $data['branch_id'] = auth()->user()?->branch_id;
+            $data['marketer_id'] = auth()->user()?->employee?->id;
+        }
         $allStatusDates = json_decode($data['all_status_dates'] ?? '{}', true) ?? [];
         $status = $data['status'] ?? 'new';
         $statusDate = $data['status_date'] ?? null;

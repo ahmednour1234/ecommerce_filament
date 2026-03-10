@@ -22,6 +22,7 @@ class RecruitmentContractRoleSeeder extends Seeder
             'recruitment_contracts.delete',
             'recruitment_contracts.finance.manage',
             'recruitment_contracts.status.update',
+            'recruitment_contracts.assign_employee_branch',
             'view_receiving_recruitment_report',
         ];
 

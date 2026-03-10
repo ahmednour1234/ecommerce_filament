@@ -29,6 +29,7 @@ class RecruitmentContractPermissionsSeeder extends Seeder
             'recruitment_contracts.finance.manage',
             'recruitment_contracts.status.update',
             'recruitment_contracts.coordination',
+            'recruitment_contracts.assign_employee_branch',
             'view_receiving_recruitment_report',
         ];
 

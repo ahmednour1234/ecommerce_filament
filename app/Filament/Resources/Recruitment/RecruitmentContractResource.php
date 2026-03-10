@@ -119,9 +119,12 @@ class RecruitmentContractResource extends Resource
                                         ->toArray();
                                 });
                             })
+                            ->default(fn () => auth()->user()?->branch_id)
                             ->required()
                             ->searchable()
                             ->reactive()
+                            ->disabled(fn () => ! (auth()->user()?->can('recruitment_contracts.assign_employee_branch') ?? false))
+                            ->dehydrated(true)
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('marketer_id')
@@ -136,8 +139,11 @@ class RecruitmentContractResource extends Resource
                                         ->toArray();
                                 });
                             })
+                            ->default(fn () => auth()->user()?->employee?->id)
                             ->searchable()
                             ->nullable()
+                            ->disabled(fn () => ! (auth()->user()?->can('recruitment_contracts.assign_employee_branch') ?? false))
+                            ->dehydrated(true)
                             ->columnSpan(1),
 
                         Forms\Components\DatePicker::make('gregorian_request_date')
