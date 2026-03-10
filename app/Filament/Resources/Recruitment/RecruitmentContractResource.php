@@ -149,7 +149,7 @@ class RecruitmentContractResource extends Resource
                                                     ->icon('heroicon-o-eye')
                                                     ->visible(fn ($get) => (bool) $get('client_id'))
                                                     ->fillForm(function (): array {
-                                                                $form = \Livewire\Livewire::current()?->getForm();
+                                                                $form = \Livewire\Livewire::current()?->getForm('form');
                                                                 $state = $form?->getState();
                                                                 return ['client_id' => $state['client_id'] ?? null];
                                                             })
