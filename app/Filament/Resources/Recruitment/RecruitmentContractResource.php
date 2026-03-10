@@ -260,6 +260,22 @@ class RecruitmentContractResource extends Resource
                                     'runaway' => tr('recruitment_contract.status.runaway', [], null, 'dashboard') ?: 'هروب',
                                 ];
 
+                                $statusDurations = [
+                                    'new' => null,
+                                    'external_office_approval' => 5,
+                                    'contract_accepted_external_office' => 5,
+                                    'waiting_approval' => 5,
+                                    'contract_accepted_labor_ministry' => 4,
+                                    'sent_to_saudi_embassy' => 7,
+                                    'visa_issued' => 10,
+                                    'travel_permit_after_visa_issued' => 6,
+                                    'waiting_flight_booking' => null,
+                                    'arrival_scheduled' => null,
+                                    'received' => null,
+                                    'return_during_warranty' => null,
+                                    'runaway' => null,
+                                ];
+
                                 $statusDates = [];
                                 $currentStatus = $get('status') ?? ($record->status ?? 'new');
 
@@ -277,6 +293,7 @@ class RecruitmentContractResource extends Resource
                                 return [
                                     'statuses' => $statusLabels,
                                     'statusDates' => $statusDates,
+                                    'statusDurations' => $statusDurations,
                                     'currentStatus' => $currentStatus,
                                     'statusStatePath' => 'data.status',
                                     'statusDateStatePath' => 'data.status_date',

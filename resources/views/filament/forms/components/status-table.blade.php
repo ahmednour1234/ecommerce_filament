@@ -1,6 +1,7 @@
 @php
     $statuses = $statuses ?? [];
     $statusDates = $statusDates ?? [];
+    $statusDurations = $statusDurations ?? [];
     $currentStatus = $currentStatus ?? 'new';
     $statusStatePath = $statusStatePath ?? 'data.status';
     $statusDateStatePath = $statusDateStatePath ?? 'data.status_date';
@@ -58,8 +59,18 @@
     </div>
     
     <div class="mt-1.5 overflow-hidden rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm">
+        <div class="flex items-center gap-2 px-2 py-1.5 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-xs font-medium text-gray-600 dark:text-gray-400">
+            <div class="w-5 shrink-0"></div>
+            <span class="flex-1">{{ tr('recruitment_contract.fields.status', [], null, 'dashboard') ?: 'الحالة' }}</span>
+            <span class="w-24 shrink-0 text-center">{{ tr('recruitment_contract.fields.status_duration', [], null, 'dashboard') ?: 'المدة من السابقة' }}</span>
+            <span class="w-36 shrink-0">{{ tr('recruitment_contract.fields.status_date', [], null, 'dashboard') ?: 'التاريخ' }}</span>
+        </div>
         @foreach($statuses as $status => $label)
-            @php $stepNum = $loop->iteration; @endphp
+            @php
+                $stepNum = $loop->iteration;
+                $duration = $statusDurations[$status] ?? null;
+                $durationText = $duration !== null ? $duration . ' ' . (tr('recruitment_contract.days', [], null, 'dashboard') ?: 'أيام') : '—';
+            @endphp
             <div
                 class="flex items-center gap-2 px-2 py-1.5 border-b border-gray-200 last:border-b-0 dark:border-gray-700 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
                 x-bind:class="{ 'bg-primary-50 dark:bg-primary-900/20': currentStatus === '{{ $status }}' }"
@@ -78,6 +89,7 @@
                     />
                     <span class="truncate text-gray-900 dark:text-gray-100">{{ $label }}</span>
                 </label>
+                <span class="w-24 shrink-0 text-center text-xs text-gray-600 dark:text-gray-400">{{ $durationText }}</span>
                 <input
                     type="date"
                     x-model="statusDates['{{ $status }}']"
