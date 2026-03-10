@@ -24,8 +24,8 @@ class RecruitmentAccountsTableWidget extends BaseWidget
             ->query(RecruitmentContract::query()->where('current_section', RecruitmentContract::SECTION_ACCOUNTS)->latest()->limit(50))
             ->columns([
                 TextColumn::make('contract_no')->label('رقم العقد')->url(fn ($record) => RecruitmentContractResource::getUrl('edit', ['record' => $record])),
-                TextColumn::make('client.name_ar')->label('العميل')->formatStateUsing(fn ($s, $record) => $record->client ? (app()->getLocale() === 'ar' ? $record->client->name_ar : $record->client->name_en) : '—'),
-                TextColumn::make('payment_status')->label('حالة الدفع')->formatStateUsing(fn ($s) => tr("recruitment_contract.payment_status.{$s}", [], null, 'dashboard') ?: $s),
+                TextColumn::make('client.name_ar')->label('العميل')->formatStateUsing(fn ($state, $record) => $record->client ? (app()->getLocale() === 'ar' ? $record->client->name_ar : $record->client->name_en) : '—'),
+                TextColumn::make('payment_status')->label('حالة الدفع')->formatStateUsing(fn ($state) => $state ? (tr("recruitment_contract.payment_status.{$state}", [], null, 'dashboard') ?: $state) : '—'),
                 TextColumn::make('total_cost')->label('الإجمالي')->money('SAR'),
             ])
             ->emptyStateHeading('لا توجد عقود واقفة')

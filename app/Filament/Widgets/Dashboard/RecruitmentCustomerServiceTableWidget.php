@@ -26,7 +26,7 @@ class RecruitmentCustomerServiceTableWidget extends BaseWidget
             ->columns([
                 TextColumn::make('contract_no')->label('رقم العقد')->searchable()->url(fn ($record) => RecruitmentContractResource::getUrl('edit', ['record' => $record])),
                 TextColumn::make('client.name_ar')->label('العميل')->formatStateUsing(fn ($state, $record) => $record->client ? (app()->getLocale() === 'ar' ? $record->client->name_ar : $record->client->name_en) : '—'),
-                TextColumn::make('status')->label('الحالة')->formatStateUsing(fn ($s) => tr("recruitment_contract.status.{$s}", [], null, 'dashboard') ?: $s),
+                TextColumn::make('status')->label('الحالة')->formatStateUsing(fn ($state) => $state ? (tr("recruitment_contract.status.{$state}", [], null, 'dashboard') ?: $state) : '—'),
                 TextColumn::make('created_at')->label('تاريخ الإنشاء')->dateTime()->sortable(),
             ])
             ->emptyStateHeading('لا توجد عقود لم تُحوّل')
