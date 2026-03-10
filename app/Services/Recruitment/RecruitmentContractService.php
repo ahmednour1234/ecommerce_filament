@@ -96,10 +96,11 @@ class RecruitmentContractService
         return $expectedDays[$key] ?? null;
     }
 
-    public function logStatusChange(RecruitmentContract $contract, ?string $oldStatus, string $newStatus, ?string $notes = null, ?string $statusDate = null): void
+    public function logStatusChange(RecruitmentContract $contract, ?string $oldStatus, ?string $newStatus, ?string $notes = null, ?string $statusDate = null): void
     {
+        $newStatus = $newStatus ?? 'new';
         $expectedDays = $this->getExpectedDaysBetweenStatuses($oldStatus, $newStatus);
-        
+
         $contract->statusLogs()->create([
             'old_status' => $oldStatus,
             'new_status' => $newStatus,
