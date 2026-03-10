@@ -30,8 +30,8 @@ class DashboardFilterWidget extends Widget implements HasForms
         $filters = DashboardFilterHelper::parseFiltersFromRequest();
         $filters = DashboardFilterHelper::validateDateRange($filters);
 
-        $this->date_from = $filters['date_from']?->format('Y-m-d') ?? now()->startOfMonth()->format('Y-m-d');
-        $this->date_to = $filters['date_to']?->format('Y-m-d') ?? now()->endOfMonth()->format('Y-m-d');
+        $this->date_from = $filters['date_from'] ? (($filters['date_from'] instanceof \Illuminate\Support\Carbon ? $filters['date_from']->format('Y-m-d') : $filters['date_from'])) : null;
+        $this->date_to = $filters['date_to'] ? (($filters['date_to'] instanceof \Illuminate\Support\Carbon ? $filters['date_to']->format('Y-m-d') : $filters['date_to'])) : null;
 
         $this->filterForm->fill([
             'date_from' => $this->date_from,
@@ -53,9 +53,9 @@ class DashboardFilterWidget extends Widget implements HasForms
                 Grid::make(2)
                     ->schema([
                         DatePicker::make('date_from')
-                            ->label('Start date')
-                            ->required()
-                            ->default(fn () => $this->date_from ?? now()->startOfMonth()->format('Y-m-d'))
+                            ->label('من تاريخ')
+                            ->nullable()
+                            ->default(fn () => $this->date_from)
                             ->displayFormat('d/m/Y')
                             ->native(false)
                             ->live()
@@ -64,9 +64,9 @@ class DashboardFilterWidget extends Widget implements HasForms
                             }),
 
                         DatePicker::make('date_to')
-                            ->label('End date')
-                            ->required()
-                            ->default(fn () => $this->date_to ?? now()->endOfMonth()->format('Y-m-d'))
+                            ->label('إلى تاريخ')
+                            ->nullable()
+                            ->default(fn () => $this->date_to)
                             ->displayFormat('d/m/Y')
                             ->native(false)
                             ->live()
@@ -89,21 +89,17 @@ class DashboardFilterWidget extends Widget implements HasForms
 
     public function applyFilters(): void
     {
-        $this->validate();
-
         $data = $this->filterForm->getState();
-
         $this->date_from = $data['date_from'] ?? $this->date_from;
         $this->date_to = $data['date_to'] ?? $this->date_to;
-
         $this->dispatchFilters();
     }
 
     protected function dispatchFilters(): void
     {
         $filters = [
-            'date_from' => !empty($this->date_from) ? Carbon::parse($this->date_from)->startOfDay() : null,
-            'date_to' => !empty($this->date_to) ? Carbon::parse($this->date_to)->endOfDay() : null,
+            'date_from' => ! empty($this->date_from) ? Carbon::parse($this->date_from)->startOfDay() : null,
+            'date_to' => ! empty($this->date_to) ? Carbon::parse($this->date_to)->endOfDay() : null,
         ];
 
         $filters = DashboardFilterHelper::validateDateRange($filters);

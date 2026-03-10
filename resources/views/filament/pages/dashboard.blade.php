@@ -12,23 +12,14 @@
             :columns="$this->getHeaderWidgetsColumns()"
         />
 
-        {{-- Charts Row --}}
+        @php $footer = $this->getFooterWidgets(); @endphp
+        @if(count($footer) >= 3)
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <x-filament-widgets::widgets
-                :widgets="[$this->getFooterWidgets()[0]]"
-                :columns="1"
-            />
-            <x-filament-widgets::widgets
-                :widgets="[$this->getFooterWidgets()[1]]"
-                :columns="1"
-            />
+            <x-filament-widgets::widgets :widgets="[$footer[0]]" :columns="1" />
+            <x-filament-widgets::widgets :widgets="[$footer[1]]" :columns="1" />
         </div>
-
-        {{-- Table Full Width --}}
-        <x-filament-widgets::widgets
-            :widgets="[$this->getFooterWidgets()[2]]"
-            :columns="1"
-        />
+        <x-filament-widgets::widgets :widgets="[$footer[2]]" :columns="1" />
+        @endif
     </div>
 
 

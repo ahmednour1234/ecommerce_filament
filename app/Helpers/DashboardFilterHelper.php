@@ -9,8 +9,8 @@ class DashboardFilterHelper
     public static function getDefaultFilters(): array
     {
         return [
-            'date_from' => now()->startOfMonth(),
-            'date_to' => now()->endOfMonth(),
+            'date_from' => null,
+            'date_to' => null,
             'branch_id' => null,
             'transaction_type' => 'all',
             'revenue_type_id' => null,
@@ -47,21 +47,16 @@ class DashboardFilterHelper
 
     public static function validateDateRange(array $filters): array
     {
-        if (isset($filters['date_from']) && isset($filters['date_to'])) {
-            $from = $filters['date_from'] instanceof Carbon 
-                ? $filters['date_from'] 
-                : Carbon::parse($filters['date_from']);
-            $to = $filters['date_to'] instanceof Carbon 
-                ? $filters['date_to'] 
-                : Carbon::parse($filters['date_to']);
-
+        $from = $filters['date_from'] ?? null;
+        $to = $filters['date_to'] ?? null;
+        if ($from && $to) {
+            $from = $from instanceof Carbon ? $from : Carbon::parse($from);
+            $to = $to instanceof Carbon ? $to : Carbon::parse($to);
             if ($from->gt($to)) {
-                $defaults = self::getDefaultFilters();
-                $filters['date_from'] = $defaults['date_from'];
-                $filters['date_to'] = $defaults['date_to'];
+                $filters['date_from'] = null;
+                $filters['date_to'] = null;
             }
         }
-
         return $filters;
     }
 

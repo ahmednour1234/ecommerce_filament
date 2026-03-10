@@ -11,7 +11,11 @@ use App\Filament\Widgets\Dashboard\FinanceStatsWidget;
 use App\Filament\Widgets\Dashboard\FinanceTopTypesWidget;
 use App\Filament\Widgets\Dashboard\HRStatsWidget;
 use App\Filament\Widgets\Dashboard\OrderStatsWidget;
+use App\Filament\Widgets\Dashboard\RecruitmentAccountsTableWidget;
 use App\Filament\Widgets\Dashboard\RecruitmentContractsStatsWidget;
+use App\Filament\Widgets\Dashboard\RecruitmentCoordinationDelayedTableWidget;
+use App\Filament\Widgets\Dashboard\RecruitmentCoordinationLatestTableWidget;
+use App\Filament\Widgets\Dashboard\RecruitmentCustomerServiceTableWidget;
 use App\Models\User;
 use Filament\Pages\Dashboard as BaseDashboard;
 
@@ -38,6 +42,8 @@ class Dashboard extends BaseDashboard
             User::TYPE_COORDINATOR => [
                 DashboardFilterWidget::class,
                 RecruitmentContractsStatsWidget::class,
+                RecruitmentCoordinationLatestTableWidget::class,
+                RecruitmentCoordinationDelayedTableWidget::class,
             ],
             User::TYPE_BRANCH_MANAGER => [
                 DashboardFilterWidget::class,
@@ -52,6 +58,7 @@ class Dashboard extends BaseDashboard
             User::TYPE_ACCOUNTANT, User::TYPE_GENERAL_ACCOUNTANT => [
                 DashboardFilterWidget::class,
                 FinanceStatsWidget::class,
+                RecruitmentAccountsTableWidget::class,
             ],
             User::TYPE_COMPANY_OWNER, User::TYPE_SUPER_ADMIN => [
                 DashboardFilterWidget::class,
@@ -63,8 +70,7 @@ class Dashboard extends BaseDashboard
             ],
             User::TYPE_CUSTOMER_SERVICE => [
                 DashboardFilterWidget::class,
-                OrderStatsWidget::class,
-                ComplaintsStatsWidget::class,
+                RecruitmentCustomerServiceTableWidget::class,
             ],
             default => [
                 DashboardFilterWidget::class,

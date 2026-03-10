@@ -34,37 +34,38 @@ class ComplaintsStatsWidget extends BaseWidget
     protected function getStats(): array
     {
         $filters = $this->getFilters();
-        $from = $filters['date_from'] ?? now()->startOfMonth();
-        $to = $filters['date_to'] ?? now()->endOfMonth();
+        $from = $filters['date_from'] ?? null;
+        $to = $filters['date_to'] ?? null;
         $branchId = $filters['branch_id'] ?? null;
 
-        if (is_string($from)) {
+        if ($from && is_string($from)) {
             $from = Carbon::parse($from)->startOfDay();
         }
-        if (is_string($to)) {
+        if ($to && is_string($to)) {
             $to = Carbon::parse($to)->endOfDay();
         }
-
-        $cacheKey = "dashboard_complaints_stats_{$branchId}_{$from->toDateString()}_{$to->toDateString()}";
+        $fromStr = $from ? $from->toDateString() : 'all';
+        $toStr = $to ? $to->toDateString() : 'all';
+        $cacheKey = "dashboard_complaints_stats_{$branchId}_{$fromStr}_{$toStr}";
 
         return Cache::remember($cacheKey, 300, function () use ($from, $to, $branchId) {
-            $baseFilters = [
-                'created_at' => [
+            $baseFilters = [];
+            if ($from && $to) {
+                $baseFilters['created_at'] = [
                     'created_from' => $from->format('Y-m-d'),
                     'created_until' => $to->format('Y-m-d'),
-                ],
-            ];
-            
+                ];
+            }
             if ($branchId) {
                 $baseFilters['branch_id'] = ['value' => $branchId];
             }
 
             $baseUrl = ComplaintResource::getUrl('index');
-            // Extract path from URL if it's a full URL
             $publicUrl = $this->normalizeUrl($baseUrl);
-            $query = Complaint::query()
-                ->whereBetween('created_at', [$from, $to]);
-
+            $query = Complaint::query();
+            if ($from && $to) {
+                $query->whereBetween('created_at', [$from, $to]);
+            }
             if ($branchId) {
                 $query->where('branch_id', $branchId);
             }
