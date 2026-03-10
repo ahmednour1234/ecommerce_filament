@@ -390,7 +390,7 @@ class RecruitmentContractResource extends Resource
                                             ->required()
                                             ->columnSpan(1),
                                         Forms\Components\TextInput::make('total_cost')
-                                            ->label(tr('recruitment_contract.fields.total_cost', [], null, 'dashboard') ?: 'المبلغ المدفوع')
+                                            ->label(tr('recruitment_contract.fields.total_cost', [], null, 'dashboard') ?: 'إجمالي التكلفة')
                                             ->numeric()
                                             ->minValue(0)
                                             ->prefix('ر.س')
@@ -575,7 +575,7 @@ class RecruitmentContractResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('total_cost')
-                    ->label(tr('recruitment_contract.fields.total_cost', [], null, 'dashboard') ?: 'Total Cost')
+                    ->label(tr('recruitment_contract.fields.total_cost', [], null, 'dashboard') ?: 'إجمالي التكلفة')
                     ->money('SAR')
                     ->searchable()
                     ->sortable(),

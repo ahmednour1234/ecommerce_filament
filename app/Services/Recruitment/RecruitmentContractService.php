@@ -27,29 +27,17 @@ class RecruitmentContractService
 
     public function computeTotals(RecruitmentContract $contract): array
     {
-        $totalCost = $contract->direct_cost
-            + $contract->internal_ticket_cost
-            + $contract->external_cost
-            + $contract->vat_cost
-            + $contract->gov_cost;
-
-        $paidTotal = $contract->receipts()
-            ->sum('amount');
-
+        $totalCost = (float) ($contract->total_cost ?? 0);
+        $paidTotal = $contract->receipts()->sum('amount');
         $remainingTotal = max(0, $totalCost - $paidTotal);
-
-        $paymentStatus = 'paid';
-
+        $paymentStatus = $contract->payment_status ?? 'unpaid';
         if ($totalCost > 0) {
             if ($remainingTotal <= 0) {
                 $paymentStatus = 'paid';
             } elseif ($paidTotal > 0) {
                 $paymentStatus = 'partial';
             }
-        } else {
-            $paymentStatus = $contract->payment_status ?? 'paid';
         }
-
         return [
             'total_cost' => $totalCost,
             'paid_total' => $paidTotal,
