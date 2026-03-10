@@ -12,13 +12,109 @@ class RecruitmentContractStatsWidget extends BaseWidget
 {
     protected function getStats(): array
     {
-        $baseQuery = $this->getBaseQuery();
+        $section = RecruitmentContractResource::getUserSection();
+        $baseQuery = $this->getStatsQuery();
         $baseUrl = RecruitmentContractResource::getUrl('index');
-        // Extract path from URL if it's a full URL
         $publicUrl = $this->normalizeUrl($baseUrl);
-
         $currentFilters = $this->getCurrentFilters();
 
+        if ($section === RecruitmentContract::SECTION_CUSTOMER_SERVICE) {
+            return $this->getCustomerServiceStats($baseQuery, $publicUrl, $currentFilters);
+        }
+        if ($section === RecruitmentContract::SECTION_ACCOUNTS) {
+            return $this->getAccountsStats($baseQuery, $publicUrl, $currentFilters);
+        }
+
+        return $this->getCoordinationStats($baseQuery, $publicUrl, $currentFilters);
+    }
+
+    protected function getStatsQuery()
+    {
+        $query = RecruitmentContract::query();
+        $filters = $this->getCurrentFilters();
+        if (isset($filters['branch_id']['value'])) {
+            $query->where('branch_id', $filters['branch_id']['value']);
+        }
+        if (isset($filters['status']['value'])) {
+            $query->where('status', $filters['status']['value']);
+        }
+        if (isset($filters['payment_status']['value'])) {
+            $query->where('payment_status', $filters['payment_status']['value']);
+        }
+        if (isset($filters['current_section']['value'])) {
+            $query->where('current_section', $filters['current_section']['value']);
+        }
+        if (isset($filters['created_at']['created_from'])) {
+            $query->whereDate('created_at', '>=', $filters['created_at']['created_from']);
+        }
+        if (isset($filters['created_at']['created_until'])) {
+            $query->whereDate('created_at', '<=', $filters['created_at']['created_until']);
+        }
+        $search = request()->get('tableSearch');
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('contract_no', 'like', "%{$search}%")
+                    ->orWhereHas('client', function ($q) use ($search) {
+                        $q->where('name_ar', 'like', "%{$search}%")
+                            ->orWhere('name_en', 'like', "%{$search}%");
+                    });
+            });
+        }
+        return $query;
+    }
+
+    protected function getCustomerServiceStats($baseQuery, string $publicUrl, array $currentFilters): array
+    {
+        $newCount = (clone $baseQuery)->where('status', 'new')->count();
+        $atCustomerService = (clone $baseQuery)->where('current_section', RecruitmentContract::SECTION_CUSTOMER_SERVICE)->count();
+        $atAccounts = (clone $baseQuery)->where('current_section', RecruitmentContract::SECTION_ACCOUNTS)->count();
+        $atCoordination = (clone $baseQuery)->where('current_section', RecruitmentContract::SECTION_COORDINATION)->count();
+
+        return [
+            Stat::make('📄 ' . (tr('recruitment_contract.stats.new', [], null, 'dashboard') ?: 'عقود جديدة'), Number::format($newCount))
+                ->description(tr('recruitment_contract.status.new', [], null, 'dashboard') ?: 'جديد')
+                ->color('primary')
+                ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['status' => ['value' => 'new']])))
+                ->extraAttributes(['class' => 'recruitment-stats-card']),
+            Stat::make('👥 عقود لم تُحوّل لقسم الحسابات', Number::format($atCustomerService))
+                ->description('عند خدمة العملاء')
+                ->color('info')
+                ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['current_section' => ['value' => RecruitmentContract::SECTION_CUSTOMER_SERVICE]])))
+                ->extraAttributes(['class' => 'recruitment-stats-card']),
+            Stat::make('💰 عقود عند قسم الحسابات', Number::format($atAccounts))
+                ->description('قسم الحسابات')
+                ->color('success')
+                ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['current_section' => ['value' => RecruitmentContract::SECTION_ACCOUNTS])))
+                ->extraAttributes(['class' => 'recruitment-stats-card']),
+            Stat::make('📋 عقود عند قسم التنسيق', Number::format($atCoordination))
+                ->description('قسم التنسيق')
+                ->color('warning')
+                ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['current_section' => ['value' => RecruitmentContract::SECTION_COORDINATION])))
+                ->extraAttributes(['class' => 'recruitment-stats-card']),
+        ];
+    }
+
+    protected function getAccountsStats($baseQuery, string $publicUrl, array $currentFilters): array
+    {
+        $atAccounts = (clone $baseQuery)->where('current_section', RecruitmentContract::SECTION_ACCOUNTS)->count();
+        $atCoordination = (clone $baseQuery)->where('current_section', RecruitmentContract::SECTION_COORDINATION)->count();
+
+        return [
+            Stat::make('💰 عقود جديدة عندي', Number::format($atAccounts))
+                ->description('عند قسم الحسابات')
+                ->color('primary')
+                ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['current_section' => ['value' => RecruitmentContract::SECTION_ACCOUNTS])))
+                ->extraAttributes(['class' => 'recruitment-stats-card']),
+            Stat::make('📤 عقود تم توجيهها لقسم التنسيق', Number::format($atCoordination))
+                ->description('قسم التنسيق')
+                ->color('success')
+                ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['current_section' => ['value' => RecruitmentContract::SECTION_COORDINATION])))
+                ->extraAttributes(['class' => 'recruitment-stats-card']),
+        ];
+    }
+
+    protected function getCoordinationStats($baseQuery, string $publicUrl, array $currentFilters): array
+    {
         $stats = [];
 
         $newCount = (clone $baseQuery)->where('status', 'new')->count();
@@ -254,6 +350,10 @@ class RecruitmentContractStatsWidget extends BaseWidget
 
         if (isset($tableFilters['payment_status'])) {
             $filters['payment_status'] = $tableFilters['payment_status'];
+        }
+
+        if (isset($tableFilters['current_section'])) {
+            $filters['current_section'] = $tableFilters['current_section'];
         }
 
         if (isset($tableFilters['created_at'])) {

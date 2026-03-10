@@ -94,11 +94,11 @@ class ContractAlertsPage extends Page implements HasTable
                     ->label(tr('recruitment_contract.alerts.alert_type', [], null, 'dashboard') ?: 'نوع التنبيه')
                     ->formatStateUsing(function ($record) use ($alerts) {
                         $alert = $alerts->firstWhere('id', $record->id);
-                        if (!$alert) return '';
-                        
+                        if (!$alert || !isset($alert->alert_type)) return '';
+                        $text = $alert->alert_type === 'stuck_at_section' ? 'عقد عالق عند القسم' : 'تجاوز المدة المتوقعة';
                         return new HtmlString(
                             '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">' .
-                            'تجاوز المدة المتوقعة' .
+                            $text .
                             '</span>'
                         );
                     })

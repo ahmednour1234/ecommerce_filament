@@ -631,6 +631,10 @@ class RecruitmentContractResource extends Resource
                         'partial' => tr('recruitment_contract.payment_status.partial', [], null, 'dashboard') ?: 'Partial',
                     ]),
 
+                Tables\Filters\SelectFilter::make('current_section')
+                    ->label('العقد عند القسم')
+                    ->options(RecruitmentContract::currentSectionOptions()),
+
                 Tables\Filters\SelectFilter::make('nationality_id')
                     ->label(tr('recruitment_contract.fields.nationality', [], null, 'dashboard') ?: 'Nationality')
                     ->options(function () {
@@ -720,6 +724,9 @@ class RecruitmentContractResource extends Resource
     {
         $query = parent::getEloquentQuery();
         $section = static::getUserSection();
+        if ($section === RecruitmentContract::SECTION_CUSTOMER_SERVICE) {
+            return $query;
+        }
         if ($section !== null) {
             $query->where('current_section', $section);
         }
