@@ -148,17 +148,21 @@ class RecruitmentContractResource extends Resource
                                                     ->label(tr('general.show', [], null, 'dashboard') ?: 'عرض')
                                                     ->icon('heroicon-o-eye')
                                                     ->visible(fn ($get) => (bool) $get('client_id'))
-                                                    ->fillForm(function (): array {
-                                                                $form = \Livewire\Livewire::current()?->getForm('form');
-                                                                $state = $form?->getState();
-                                                                return ['client_id' => $state['client_id'] ?? null];
+                                                    ->fillForm(function ($arguments = []): array {
+                                                                $id = $arguments['client_id'] ?? $arguments[0] ?? null;
+                                                                if ($id !== null) {
+                                                                    return ['client_id' => $id];
+                                                                }
+                                                                $component = \Livewire\Livewire::current();
+                                                                $form = $component ? $component->getForm('form') : null;
+                                                                $state = $form ? $form->getState() : [];
+                                                                return ['client_id' => $state['client_id'] ?? $state['data']['client_id'] ?? null];
                                                             })
                                                     ->form([
                                                         Forms\Components\Hidden::make('client_id'),
                                                         Forms\Components\Placeholder::make('client_details')
-                                                            ->statePath('client_id')
-                                                            ->content(function ($state): \Illuminate\Support\HtmlString {
-                                                                $id = $state;
+                                                            ->content(function (\Filament\Forms\Get $get): \Illuminate\Support\HtmlString {
+                                                                $id = $get('client_id');
                                                                 if (! $id) {
                                                                     return new \Illuminate\Support\HtmlString('<p class="text-gray-500">—</p>');
                                                                 }
