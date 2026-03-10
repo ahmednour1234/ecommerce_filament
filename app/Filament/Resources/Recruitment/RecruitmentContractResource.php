@@ -369,6 +369,7 @@ class RecruitmentContractResource extends Resource
                             ]),
                         Forms\Components\Tabs\Tab::make('قسم الحسابات')
                             ->icon('heroicon-o-currency-dollar')
+                            ->visible(fn () => static::getUserSection() === null || static::getUserSection() === RecruitmentContract::SECTION_ACCOUNTS || static::getUserSection() === RecruitmentContract::SECTION_COORDINATION)
                             ->schema([
                                 Forms\Components\Section::make('قسم الحسابات')
                                     ->schema([
@@ -400,7 +401,7 @@ class RecruitmentContractResource extends Resource
                             ]),
                         Forms\Components\Tabs\Tab::make(tr('recruitment_contract.sections.coordination', [], null, 'dashboard') ?: 'قسم التنسيق')
                             ->icon('heroicon-o-map')
-                            ->visible(fn () => auth()->user()?->hasRole(['Admin', 'super_admin']) || auth()->user()?->can('recruitment_contracts.coordination') ?? false)
+                            ->visible(fn () => static::getUserSection() === null || static::getUserSection() === RecruitmentContract::SECTION_COORDINATION)
                             ->schema([
                                 Forms\Components\Section::make(tr('recruitment_contract.sections.coordination', [], null, 'dashboard') ?: 'قسم التنسيق')
                                     ->schema([
@@ -408,7 +409,7 @@ class RecruitmentContractResource extends Resource
                                             ->label('العقد عند القسم')
                                             ->options(RecruitmentContract::currentSectionOptions())
                                             ->default(RecruitmentContract::SECTION_CUSTOMER_SERVICE)
-                                            ->required()
+                                            ->required(fn () => static::canEditCurrentSection())
                                             ->visible(fn () => static::canEditCurrentSection())
                                             ->columnSpan(1),
                         Forms\Components\View::make('filament.forms.components.status-table')
