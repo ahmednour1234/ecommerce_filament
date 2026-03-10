@@ -41,6 +41,9 @@ class EditRecruitmentContract extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
+        if (RecruitmentContractResource::isCustomerServiceTabDisabled()) {
+            $data['client_id'] = $this->record->client_id;
+        }
         if (! auth()->user()?->can('recruitment_contracts.assign_employee_branch')) {
             $data['branch_id'] = $this->record->branch_id;
             $data['marketer_id'] = $this->record->marketer_id;

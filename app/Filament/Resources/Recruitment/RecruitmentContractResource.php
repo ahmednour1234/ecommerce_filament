@@ -149,14 +149,18 @@ class RecruitmentContractResource extends Resource
                                                     ->icon('heroicon-o-eye')
                                                     ->visible(fn ($get) => (bool) $get('client_id'))
                                                     ->fillForm(function ($arguments = []): array {
-                                                                $id = $arguments['client_id'] ?? $arguments[0] ?? null;
-                                                                if ($id !== null) {
-                                                                    return ['client_id' => $id];
+                                                                try {
+                                                                    $id = $arguments['client_id'] ?? $arguments[0] ?? null;
+                                                                    if ($id !== null) {
+                                                                        return ['client_id' => $id];
+                                                                    }
+                                                                    $component = \Livewire\Livewire::current();
+                                                                    $form = $component ? $component->getForm('form') : null;
+                                                                    $state = $form ? $form->getState() : [];
+                                                                    return ['client_id' => $state['client_id'] ?? $state['data']['client_id'] ?? null];
+                                                                } catch (\Throwable $e) {
+                                                                    return ['client_id' => null];
                                                                 }
-                                                                $component = \Livewire\Livewire::current();
-                                                                $form = $component ? $component->getForm('form') : null;
-                                                                $state = $form ? $form->getState() : [];
-                                                                return ['client_id' => $state['client_id'] ?? $state['data']['client_id'] ?? null];
                                                             })
                                                     ->form([
                                                         Forms\Components\Hidden::make('client_id'),
@@ -191,7 +195,6 @@ class RecruitmentContractResource extends Resource
                                                     ->closeModalByEscaping(true)
                                                     ->closeModalByClickingAway(true)
                                             )
-                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
                                             ->columnSpan(1),
                                         Forms\Components\Select::make('branch_id')
                                             ->label(tr('recruitment_contract.fields.branch', [], null, 'dashboard') ?: 'Branch')
