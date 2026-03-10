@@ -724,11 +724,15 @@ class RecruitmentContractResource extends Resource
     {
         $query = parent::getEloquentQuery();
         $section = static::getUserSection();
-        if ($section === RecruitmentContract::SECTION_CUSTOMER_SERVICE) {
+        if ($section === RecruitmentContract::SECTION_CUSTOMER_SERVICE || $section === null) {
             return $query;
         }
-        if ($section !== null) {
-            $query->where('current_section', $section);
+        if ($section === RecruitmentContract::SECTION_ACCOUNTS) {
+            $query->whereIn('current_section', [RecruitmentContract::SECTION_ACCOUNTS, RecruitmentContract::SECTION_COORDINATION]);
+            return $query;
+        }
+        if ($section === RecruitmentContract::SECTION_COORDINATION) {
+            $query->where('current_section', RecruitmentContract::SECTION_COORDINATION);
         }
         return $query;
     }
