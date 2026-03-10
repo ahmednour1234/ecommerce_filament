@@ -706,8 +706,6 @@ class RecruitmentContractResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\ReceiptsRelationManager::class,
-            RelationManagers\ExpensesRelationManager::class,
             RelationManagers\StatusLogsRelationManager::class,
         ];
     }
