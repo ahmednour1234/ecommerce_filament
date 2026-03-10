@@ -79,17 +79,17 @@ class RecruitmentContractStatsWidget extends BaseWidget
             Stat::make('👥 عقود لم تُحوّل لقسم الحسابات', Number::format($atCustomerService))
                 ->description('عند خدمة العملاء')
                 ->color('info')
-                ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['current_section' => ['value' => RecruitmentContract::SECTION_CUSTOMER_SERVICE]]])))
+                ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['current_section' => ['value' => RecruitmentContract::SECTION_CUSTOMER_SERVICE]])))
                 ->extraAttributes(['class' => 'recruitment-stats-card']),
             Stat::make('💰 عقود عند قسم الحسابات', Number::format($atAccounts))
                 ->description('قسم الحسابات')
                 ->color('success')
-                ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['current_section' => ['value' => RecruitmentContract::SECTION_ACCOUNTS]]])))
+                ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['current_section' => ['value' => RecruitmentContract::SECTION_ACCOUNTS]])))
                 ->extraAttributes(['class' => 'recruitment-stats-card']),
             Stat::make('📋 عقود عند قسم التنسيق', Number::format($atCoordination))
                 ->description('قسم التنسيق')
                 ->color('warning')
-                ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['current_section' => ['value' => RecruitmentContract::SECTION_COORDINATION]]])))
+                ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['current_section' => ['value' => RecruitmentContract::SECTION_COORDINATION]])))
                 ->extraAttributes(['class' => 'recruitment-stats-card']),
         ];
     }
@@ -103,12 +103,12 @@ class RecruitmentContractStatsWidget extends BaseWidget
             Stat::make('💰 عقود جديدة عندي', Number::format($atAccounts))
                 ->description('عند قسم الحسابات')
                 ->color('primary')
-                ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['current_section' => ['value' => RecruitmentContract::SECTION_ACCOUNTS]]])))
+                ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['current_section' => ['value' => RecruitmentContract::SECTION_ACCOUNTS]])))
                 ->extraAttributes(['class' => 'recruitment-stats-card']),
             Stat::make('📤 عقود تم توجيهها لقسم التنسيق', Number::format($atCoordination))
                 ->description('قسم التنسيق')
                 ->color('success')
-                ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['current_section' => ['value' => RecruitmentContract::SECTION_COORDINATION]]])))
+                ->url($this->buildUrl($publicUrl, array_merge($currentFilters, ['current_section' => ['value' => RecruitmentContract::SECTION_COORDINATION]])))
                 ->extraAttributes(['class' => 'recruitment-stats-card']),
         ];
     }
