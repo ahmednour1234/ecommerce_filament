@@ -20,10 +20,34 @@ class User extends Authenticatable implements FilamentUser, HasName
      *
      * @var list<string>
      */
+    public const TYPE_COORDINATOR = 'coordinator';
+    public const TYPE_BRANCH_MANAGER = 'branch_manager';
+    public const TYPE_COMPLAINTS_MANAGER = 'complaints_manager';
+    public const TYPE_ACCOUNTANT = 'accountant';
+    public const TYPE_COMPANY_OWNER = 'company_owner';
+    public const TYPE_SUPER_ADMIN = 'super_admin';
+    public const TYPE_CUSTOMER_SERVICE = 'customer_service';
+    public const TYPE_GENERAL_ACCOUNTANT = 'general_accountant';
+
+    public static function typeOptions(): array
+    {
+        return [
+            self::TYPE_COORDINATOR => 'منسق',
+            self::TYPE_BRANCH_MANAGER => 'مدير فرع',
+            self::TYPE_COMPLAINTS_MANAGER => 'مدير شكاوي',
+            self::TYPE_ACCOUNTANT => 'محاسب',
+            self::TYPE_COMPANY_OWNER => 'صاحب الشركة',
+            self::TYPE_SUPER_ADMIN => 'سوبر ادمن',
+            self::TYPE_CUSTOMER_SERVICE => 'خدمة عملاء',
+            self::TYPE_GENERAL_ACCOUNTANT => 'محاسب عام',
+        ];
+    }
+
     protected $fillable = [
         'name',
         'email',
         'password',
+        'type',
     ];
       protected $guarded = [];
 

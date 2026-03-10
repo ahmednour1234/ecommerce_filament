@@ -154,11 +154,14 @@ class ExcelUsersRolesSeeder extends Seeder
             // 3) Create/Update user
             $existsBefore = User::where('email', $email)->exists();
 
+            $userType = $this->resolveUserType($cleanJobTitle, $permText, $isCeo);
+
             $user = User::updateOrCreate(
                 ['email' => $email],
                 [
                     'name' => $name,
                     'password' => Hash::make($plainPassword),
+                    'type' => $userType,
                 ]
             );
 
@@ -358,5 +361,33 @@ class ExcelUsersRolesSeeder extends Seeder
         $t2 = $this->norm($jobTitle);
         return Str::contains($t1, 'التنسيق') || Str::contains($t1, 'قسم التنسيق')
             || Str::contains($t2, 'التنسيق') || Str::contains($t2, 'قسم التنسيق');
+    }
+
+    private function resolveUserType(string $jobTitle, string $permText, bool $isCeo): ?string
+    {
+        if ($isCeo) {
+            return User::TYPE_COMPANY_OWNER;
+        }
+        $t1 = $this->norm($jobTitle);
+        $t2 = $this->norm($permText);
+        $text = $t1 . ' ' . $t2;
+        $jobTitleToType = [
+            'سوبر ادمن' => User::TYPE_SUPER_ADMIN,
+            'مدير فرع' => User::TYPE_BRANCH_MANAGER,
+            'مدير الشكاوى' => User::TYPE_COMPLAINTS_MANAGER,
+            'مدير الشكاوي' => User::TYPE_COMPLAINTS_MANAGER,
+            'محاسب عام' => User::TYPE_GENERAL_ACCOUNTANT,
+            'محاسب' => User::TYPE_ACCOUNTANT,
+            'خدمة عملاء' => User::TYPE_CUSTOMER_SERVICE,
+            'التنسيق' => User::TYPE_COORDINATOR,
+            'قسم التنسيق' => User::TYPE_COORDINATOR,
+            'منسق' => User::TYPE_COORDINATOR,
+        ];
+        foreach ($jobTitleToType as $keyword => $type) {
+            if (Str::contains($text, $keyword)) {
+                return $type;
+            }
+        }
+        return null;
     }
 }

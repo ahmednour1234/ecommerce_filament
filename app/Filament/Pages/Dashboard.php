@@ -12,6 +12,7 @@ use App\Filament\Widgets\Dashboard\FinanceTopTypesWidget;
 use App\Filament\Widgets\Dashboard\HRStatsWidget;
 use App\Filament\Widgets\Dashboard\OrderStatsWidget;
 use App\Filament\Widgets\Dashboard\RecruitmentContractsStatsWidget;
+use App\Models\User;
 use Filament\Pages\Dashboard as BaseDashboard;
 
 class Dashboard extends BaseDashboard
@@ -22,23 +23,81 @@ class Dashboard extends BaseDashboard
 
     protected function getHeaderWidgets(): array
     {
-        return [
-            DashboardFilterWidget::class,
-            OrderStatsWidget::class,
-            FinanceStatsWidget::class,
-            HRStatsWidget::class,
-            RecruitmentContractsStatsWidget::class,
-            ComplaintsStatsWidget::class,
-        ];
+        $type = auth()->user()?->type;
+        if ($type === null) {
+            return [
+                DashboardFilterWidget::class,
+                OrderStatsWidget::class,
+                FinanceStatsWidget::class,
+                HRStatsWidget::class,
+                RecruitmentContractsStatsWidget::class,
+                ComplaintsStatsWidget::class,
+            ];
+        }
+        return match ($type) {
+            User::TYPE_COORDINATOR => [
+                DashboardFilterWidget::class,
+                RecruitmentContractsStatsWidget::class,
+            ],
+            User::TYPE_BRANCH_MANAGER => [
+                DashboardFilterWidget::class,
+                FinanceStatsWidget::class,
+                RecruitmentContractsStatsWidget::class,
+                ComplaintsStatsWidget::class,
+            ],
+            User::TYPE_COMPLAINTS_MANAGER => [
+                DashboardFilterWidget::class,
+                ComplaintsStatsWidget::class,
+            ],
+            User::TYPE_ACCOUNTANT, User::TYPE_GENERAL_ACCOUNTANT => [
+                DashboardFilterWidget::class,
+                FinanceStatsWidget::class,
+            ],
+            User::TYPE_COMPANY_OWNER, User::TYPE_SUPER_ADMIN => [
+                DashboardFilterWidget::class,
+                OrderStatsWidget::class,
+                FinanceStatsWidget::class,
+                HRStatsWidget::class,
+                RecruitmentContractsStatsWidget::class,
+                ComplaintsStatsWidget::class,
+            ],
+            User::TYPE_CUSTOMER_SERVICE => [
+                DashboardFilterWidget::class,
+                OrderStatsWidget::class,
+                ComplaintsStatsWidget::class,
+            ],
+            default => [
+                DashboardFilterWidget::class,
+                OrderStatsWidget::class,
+                FinanceStatsWidget::class,
+                HRStatsWidget::class,
+                RecruitmentContractsStatsWidget::class,
+                ComplaintsStatsWidget::class,
+            ],
+        };
     }
 
     protected function getFooterWidgets(): array
     {
-        return [
+        $type = auth()->user()?->type;
+        if ($type === null) {
+            return [
+                FinanceTopTypesWidget::class,
+                FinanceBranchesComparisonChartWidget::class,
+                FinanceBranchesTableWidget::class,
+            ];
+        }
+        $financeFooter = [
             FinanceTopTypesWidget::class,
             FinanceBranchesComparisonChartWidget::class,
             FinanceBranchesTableWidget::class,
         ];
+        return match ($type) {
+            User::TYPE_COORDINATOR, User::TYPE_COMPLAINTS_MANAGER, User::TYPE_CUSTOMER_SERVICE => [],
+            User::TYPE_BRANCH_MANAGER, User::TYPE_ACCOUNTANT, User::TYPE_GENERAL_ACCOUNTANT => $financeFooter,
+            User::TYPE_COMPANY_OWNER, User::TYPE_SUPER_ADMIN => $financeFooter,
+            default => $financeFooter,
+        };
     }
 
     public static function getNavigationLabel(): string

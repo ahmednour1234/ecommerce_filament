@@ -69,6 +69,12 @@ class UserResource extends Resource
                     ->searchable()
                     ->nullable(),
 
+                Forms\Components\Select::make('type')
+                    ->label(tr('forms.users.type', [], null, 'dashboard') ?: 'نوع المستخدم')
+                    ->options(User::typeOptions())
+                    ->searchable()
+                    ->nullable(),
+
             ]);
     }
 
@@ -88,6 +94,10 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('branch.name')
                     ->label(tr('tables.users.branch', [], null, 'dashboard') ?: 'الفرع')
                     ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('type')
+                    ->label(tr('tables.users.type', [], null, 'dashboard') ?: 'نوع المستخدم')
+                    ->formatStateUsing(fn (?string $state) => $state ? (User::typeOptions()[$state] ?? $state) : '—')
                     ->sortable(),
                 Tables\Columns\TagsColumn::make('roles.name')
                     ->label(tr('tables.users.roles', [], null, 'dashboard') ?: 'Roles'),
