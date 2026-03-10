@@ -69,5 +69,13 @@
         .rtl-dashboard .fi-main {
             padding-top: 0.75rem;
         }
+
+        /* كروت عقود الاستقدام البسيطة - أصغر وأوضح */
+        .rtl-dashboard .recruitment-stat-card-simple {
+            padding: 0.75rem 1rem;
+        }
+        .rtl-dashboard .recruitment-stat-card-simple .fi-stats-overview-stat-value {
+            font-size: 1.25rem;
+        }
     </style>
 </x-filament-panels::page>

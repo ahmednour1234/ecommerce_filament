@@ -12,6 +12,7 @@ use App\Filament\Widgets\Dashboard\FinanceTopTypesWidget;
 use App\Filament\Widgets\Dashboard\HRStatsWidget;
 use App\Filament\Widgets\Dashboard\OrderStatsWidget;
 use App\Filament\Widgets\Dashboard\RecruitmentAccountsTableWidget;
+use App\Filament\Widgets\Dashboard\RecruitmentContractsStatsSimpleWidget;
 use App\Filament\Widgets\Dashboard\RecruitmentContractsStatsWidget;
 use App\Filament\Widgets\Dashboard\RecruitmentCoordinationDelayedTableWidget;
 use App\Filament\Widgets\Dashboard\RecruitmentCoordinationLatestTableWidget;
@@ -28,31 +29,13 @@ class Dashboard extends BaseDashboard
     protected function getHeaderWidgets(): array
     {
         $type = auth()->user()?->type;
-        if ($type === null) {
-            return [
+        return match ($type) {
+            User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER => [
                 DashboardFilterWidget::class,
                 OrderStatsWidget::class,
                 FinanceStatsWidget::class,
                 HRStatsWidget::class,
                 RecruitmentContractsStatsWidget::class,
-                ComplaintsStatsWidget::class,
-            ];
-        }
-        return match ($type) {
-            User::TYPE_COORDINATOR => [
-                DashboardFilterWidget::class,
-                RecruitmentContractsStatsWidget::class,
-                RecruitmentCoordinationLatestTableWidget::class,
-                RecruitmentCoordinationDelayedTableWidget::class,
-            ],
-            User::TYPE_BRANCH_MANAGER => [
-                DashboardFilterWidget::class,
-                FinanceStatsWidget::class,
-                RecruitmentContractsStatsWidget::class,
-                ComplaintsStatsWidget::class,
-            ],
-            User::TYPE_COMPLAINTS_MANAGER => [
-                DashboardFilterWidget::class,
                 ComplaintsStatsWidget::class,
             ],
             User::TYPE_ACCOUNTANT, User::TYPE_GENERAL_ACCOUNTANT => [
@@ -60,12 +43,18 @@ class Dashboard extends BaseDashboard
                 FinanceStatsWidget::class,
                 RecruitmentAccountsTableWidget::class,
             ],
-            User::TYPE_COMPANY_OWNER, User::TYPE_SUPER_ADMIN => [
+            User::TYPE_COORDINATOR => [
                 DashboardFilterWidget::class,
-                OrderStatsWidget::class,
-                FinanceStatsWidget::class,
-                HRStatsWidget::class,
-                RecruitmentContractsStatsWidget::class,
+                RecruitmentContractsStatsSimpleWidget::class,
+                RecruitmentCoordinationLatestTableWidget::class,
+                RecruitmentCoordinationDelayedTableWidget::class,
+            ],
+            User::TYPE_BRANCH_MANAGER => [
+                DashboardFilterWidget::class,
+                RecruitmentContractsStatsSimpleWidget::class,
+            ],
+            User::TYPE_COMPLAINTS_MANAGER => [
+                DashboardFilterWidget::class,
                 ComplaintsStatsWidget::class,
             ],
             User::TYPE_CUSTOMER_SERVICE => [
@@ -74,11 +63,7 @@ class Dashboard extends BaseDashboard
             ],
             default => [
                 DashboardFilterWidget::class,
-                OrderStatsWidget::class,
-                FinanceStatsWidget::class,
-                HRStatsWidget::class,
-                RecruitmentContractsStatsWidget::class,
-                ComplaintsStatsWidget::class,
+                RecruitmentContractsStatsSimpleWidget::class,
             ],
         };
     }
@@ -86,23 +71,15 @@ class Dashboard extends BaseDashboard
     protected function getFooterWidgets(): array
     {
         $type = auth()->user()?->type;
-        if ($type === null) {
-            return [
-                FinanceTopTypesWidget::class,
-                FinanceBranchesComparisonChartWidget::class,
-                FinanceBranchesTableWidget::class,
-            ];
-        }
         $financeFooter = [
             FinanceTopTypesWidget::class,
             FinanceBranchesComparisonChartWidget::class,
             FinanceBranchesTableWidget::class,
         ];
         return match ($type) {
-            User::TYPE_COORDINATOR, User::TYPE_COMPLAINTS_MANAGER, User::TYPE_CUSTOMER_SERVICE => [],
-            User::TYPE_BRANCH_MANAGER, User::TYPE_ACCOUNTANT, User::TYPE_GENERAL_ACCOUNTANT => $financeFooter,
-            User::TYPE_COMPANY_OWNER, User::TYPE_SUPER_ADMIN => $financeFooter,
-            default => $financeFooter,
+            User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER => $financeFooter,
+            User::TYPE_ACCOUNTANT, User::TYPE_GENERAL_ACCOUNTANT => $financeFooter,
+            default => [],
         };
     }
 
