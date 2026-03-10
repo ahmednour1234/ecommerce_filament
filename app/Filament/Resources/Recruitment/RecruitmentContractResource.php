@@ -381,6 +381,7 @@ class RecruitmentContractResource extends Resource
                                         Forms\Components\Select::make('payment_status')
                                             ->label(tr('recruitment_contract.fields.payment_status', [], null, 'dashboard') ?: 'حالة الدفع')
                                             ->disabled(fn () => static::isAccountsTabDisabled())
+                                            ->dehydrated(true)
                                             ->options([
                                                 'partial' => 'جزئي',
                                                 'paid' => 'كلي',
@@ -394,6 +395,7 @@ class RecruitmentContractResource extends Resource
                                             ->minValue(0)
                                             ->prefix('ر.س')
                                             ->disabled(fn () => static::isAccountsTabDisabled())
+                                            ->dehydrated(true)
                                             ->columnSpan(1),
                                     ])
                                     ->columns(2)

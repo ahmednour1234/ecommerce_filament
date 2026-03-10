@@ -59,7 +59,15 @@ class EditRecruitmentContract extends EditRecord
         }
 
         unset($data['status_date'], $data['all_status_dates']);
-        
+
+        $live = $this->form->getState();
+        if (! array_key_exists('total_cost', $data) && array_key_exists('total_cost', $live)) {
+            $data['total_cost'] = $live['total_cost'];
+        }
+        if (! array_key_exists('payment_status', $data) && array_key_exists('payment_status', $live)) {
+            $data['payment_status'] = $live['payment_status'];
+        }
+
         return $data;
     }
 
