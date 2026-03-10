@@ -148,8 +148,11 @@ class RecruitmentContractResource extends Resource
                                                     ->label(tr('general.show', [], null, 'dashboard') ?: 'عرض')
                                                     ->icon('heroicon-o-eye')
                                                     ->visible(fn ($get) => (bool) $get('client_id'))
+                                                    ->fillForm(fn (Forms\Components\Actions\Action $action): array => ['client_id' => $action->getOwner()?->getState()])
                                                     ->form([
+                                                        Forms\Components\Hidden::make('client_id'),
                                                         Forms\Components\Placeholder::make('client_details')
+                                                            ->statePath('client_id')
                                                             ->content(function ($state): \Illuminate\Support\HtmlString {
                                                                 $id = $state;
                                                                 if (! $id) {
