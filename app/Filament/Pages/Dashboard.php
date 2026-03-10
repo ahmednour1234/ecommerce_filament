@@ -54,6 +54,10 @@ class Dashboard extends BaseDashboard
                 DashboardFilterWidget::class,
                 ComplaintsStatsWidget::class,
             ],
+            User::TYPE_HR_MANAGER => [
+                DashboardFilterWidget::class,
+                HRStatsWidget::class,
+            ],
             User::TYPE_CUSTOMER_SERVICE => [
                 DashboardFilterWidget::class,
                 RecruitmentCustomerServiceTableWidget::class,

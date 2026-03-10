@@ -28,6 +28,7 @@ class User extends Authenticatable implements FilamentUser, HasName
     public const TYPE_SUPER_ADMIN = 'super_admin';
     public const TYPE_CUSTOMER_SERVICE = 'customer_service';
     public const TYPE_GENERAL_ACCOUNTANT = 'general_accountant';
+    public const TYPE_HR_MANAGER = 'hr_manager';
 
     public static function typeOptions(): array
     {
@@ -40,6 +41,7 @@ class User extends Authenticatable implements FilamentUser, HasName
             self::TYPE_SUPER_ADMIN => 'سوبر ادمن',
             self::TYPE_CUSTOMER_SERVICE => 'خدمة عملاء',
             self::TYPE_GENERAL_ACCOUNTANT => 'محاسب عام',
+            self::TYPE_HR_MANAGER => 'مدير موارد بشرية',
         ];
     }
 

@@ -376,6 +376,8 @@ class ExcelUsersRolesSeeder extends Seeder
             'مدير فرع' => User::TYPE_BRANCH_MANAGER,
             'مدير الشكاوى' => User::TYPE_COMPLAINTS_MANAGER,
             'مدير الشكاوي' => User::TYPE_COMPLAINTS_MANAGER,
+            'مدير موارد بشرية' => User::TYPE_HR_MANAGER,
+            'الموارد البشرية' => User::TYPE_HR_MANAGER,
             'محاسب عام' => User::TYPE_GENERAL_ACCOUNTANT,
             'محاسب' => User::TYPE_ACCOUNTANT,
             'خدمة عملاء' => User::TYPE_CUSTOMER_SERVICE,
