@@ -148,12 +148,10 @@ class RecruitmentContractResource extends Resource
                                                     ->label(tr('general.show', [], null, 'dashboard') ?: 'عرض')
                                                     ->icon('heroicon-o-eye')
                                                     ->visible(fn ($get) => (bool) $get('client_id'))
-                                                    ->mountUsing(fn (Forms\Components\Select $component) => ['client_id' => $component->getState()])
                                                     ->form([
-                                                        Forms\Components\Hidden::make('client_id'),
                                                         Forms\Components\Placeholder::make('client_details')
-                                                            ->content(function ($get): \Illuminate\Support\HtmlString {
-                                                                $id = $get('client_id');
+                                                            ->content(function ($state): \Illuminate\Support\HtmlString {
+                                                                $id = $state;
                                                                 if (! $id) {
                                                                     return new \Illuminate\Support\HtmlString('<p class="text-gray-500">—</p>');
                                                                 }
@@ -317,12 +315,10 @@ class RecruitmentContractResource extends Resource
                                                     ->label(tr('general.show', [], null, 'dashboard') ?: 'عرض')
                                                     ->icon('heroicon-o-eye')
                                                     ->visible(fn ($get) => (bool) $get('worker_id'))
-                                                    ->mountUsing(fn (Forms\Components\Select $component) => ['worker_id' => $component->getState()])
                                                     ->form([
-                                                        Forms\Components\Hidden::make('worker_id'),
                                                         Forms\Components\Placeholder::make('worker_details')
-                                                            ->content(function ($get): \Illuminate\Support\HtmlString {
-                                                                $id = $get('worker_id');
+                                                            ->content(function ($state): \Illuminate\Support\HtmlString {
+                                                                $id = $state;
                                                                 if (! $id) {
                                                                     return new \Illuminate\Support\HtmlString('<p class="text-gray-500">—</p>');
                                                                 }
