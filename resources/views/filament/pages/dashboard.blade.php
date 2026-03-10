@@ -13,11 +13,13 @@
         />
 
         @php $footer = $this->getFooterWidgets(); @endphp
-        @if(count($footer) >= 3)
+        @if(count($footer) >= 2)
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <x-filament-widgets::widgets :widgets="[$footer[0]]" :columns="1" />
             <x-filament-widgets::widgets :widgets="[$footer[1]]" :columns="1" />
         </div>
+        @endif
+        @if(isset($footer[2]))
         <x-filament-widgets::widgets :widgets="[$footer[2]]" :columns="1" />
         @endif
     </div>

@@ -69,7 +69,6 @@ class Dashboard extends BaseDashboard
     {
         $type = auth()->user()?->type;
         $financeFooter = [
-            FinanceTopTypesWidget::class,
             FinanceBranchesComparisonChartWidget::class,
             FinanceBranchesTableWidget::class,
         ];
