@@ -319,6 +319,10 @@ class RecruitmentContractResource extends Resource
                             ->schema([
                                 Forms\Components\Section::make('قسم الحسابات')
                                     ->schema([
+                                        Forms\Components\Select::make('current_section')
+                                            ->label('العقد عند القسم')
+                                            ->options(RecruitmentContract::currentSectionOptions())
+                                            ->columnSpan(1),
                                         Forms\Components\Select::make('payment_status')
                                             ->label(tr('recruitment_contract.fields.payment_status', [], null, 'dashboard') ?: 'حالة الدفع')
                                             ->options([
@@ -344,6 +348,12 @@ class RecruitmentContractResource extends Resource
                             ->schema([
                                 Forms\Components\Section::make(tr('recruitment_contract.sections.coordination', [], null, 'dashboard') ?: 'قسم التنسيق')
                                     ->schema([
+                                        Forms\Components\Select::make('current_section')
+                                            ->label('العقد عند القسم')
+                                            ->options(RecruitmentContract::currentSectionOptions())
+                                            ->default(RecruitmentContract::SECTION_CUSTOMER_SERVICE)
+                                            ->required()
+                                            ->columnSpan(1),
                         Forms\Components\View::make('filament.forms.components.status-table')
                             ->viewData(function ($record, $get) {
                                 $statusLabels = [
@@ -487,6 +497,11 @@ class RecruitmentContractResource extends Resource
                         default => 'gray',
                     })
                     ->formatStateUsing(fn ($state) => tr("recruitment_contract.status.{$state}", [], null, 'dashboard') ?: $state)
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('current_section')
+                    ->label('العقد عند القسم')
+                    ->formatStateUsing(fn (?string $state) => $state ? (RecruitmentContract::currentSectionOptions()[$state] ?? $state) : '—')
                     ->sortable(),
 
                 Tables\Columns\BadgeColumn::make('payment_status')

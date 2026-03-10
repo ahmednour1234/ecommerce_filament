@@ -17,6 +17,19 @@ class RecruitmentContract extends Model
 {
     use SoftDeletes;
 
+    public const SECTION_CUSTOMER_SERVICE = 'customer_service';
+    public const SECTION_ACCOUNTS = 'accounts';
+    public const SECTION_COORDINATION = 'coordination';
+
+    public static function currentSectionOptions(): array
+    {
+        return [
+            self::SECTION_CUSTOMER_SERVICE => 'خدمة العملاء',
+            self::SECTION_ACCOUNTS => 'قسم الحسابات',
+            self::SECTION_COORDINATION => 'قسم التنسيق',
+        ];
+    }
+
     protected $fillable = [
         'contract_no',
         'client_id',
@@ -54,6 +67,7 @@ class RecruitmentContract extends Model
         'is_paid',
         'paid_at',
         'status',
+        'current_section',
         'arrival_date',
         'trial_end_date',
         'contract_end_date',
