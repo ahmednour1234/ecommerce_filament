@@ -561,7 +561,7 @@ class RecruitmentContractResource extends Resource
 
                 Tables\Columns\TextColumn::make('current_section')
                     ->label('العقد عند القسم')
-                    ->formatStateUsing(fn (?string $state) => $state ? (RecruitmentContract::currentSectionOptions()[$state] ?? $state) : '—')
+                    ->formatStateUsing(fn (?string $state, RecruitmentContract $record) => $record->status === 'received' ? 'تم التسليم' : ($state ? (RecruitmentContract::currentSectionOptions()[$state] ?? $state) : '—'))
                     ->sortable(),
 
                 Tables\Columns\BadgeColumn::make('payment_status')
