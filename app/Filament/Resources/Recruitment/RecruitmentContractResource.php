@@ -151,13 +151,18 @@ class RecruitmentContractResource extends Resource
                                                     ->fillForm(function ($arguments = []): array {
                                                                 try {
                                                                     $id = $arguments['client_id'] ?? $arguments[0] ?? null;
-                                                                    if ($id !== null) {
-                                                                        return ['client_id' => $id];
+                                                                    if ($id === null) {
+                                                                        $component = \Livewire\Livewire::current();
+                                                                        if ($component && property_exists($component, 'record') && $component->record !== null) {
+                                                                            $id = $component->record->client_id ?? null;
+                                                                        }
+                                                                        if ($id === null && $component) {
+                                                                            $form = $component->getForm('form');
+                                                                            $state = $form->getState();
+                                                                            $id = $state['client_id'] ?? $state['data']['client_id'] ?? null;
+                                                                        }
                                                                     }
-                                                                    $component = \Livewire\Livewire::current();
-                                                                    $form = $component ? $component->getForm('form') : null;
-                                                                    $state = $form ? $form->getState() : [];
-                                                                    return ['client_id' => $state['client_id'] ?? $state['data']['client_id'] ?? null];
+                                                                    return ['client_id' => $id];
                                                                 } catch (\Throwable $e) {
                                                                     return ['client_id' => null];
                                                                 }
