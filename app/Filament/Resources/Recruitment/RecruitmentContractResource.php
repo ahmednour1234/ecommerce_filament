@@ -693,7 +693,7 @@ class RecruitmentContractResource extends Resource
                             ->required()
                             ->default(now()),
                     ])
-                    ->visible(fn (RecruitmentContract $record) => static::getUserSection() === RecruitmentContract::SECTION_COORDINATION && $record->current_section === RecruitmentContract::SECTION_COORDINATION)
+                    ->visible(fn (RecruitmentContract $record) => static::getUserSection() === RecruitmentContract::SECTION_COORDINATION && $record->current_section === RecruitmentContract::SECTION_COORDINATION && $record->status !== 'received')
                     ->action(function (RecruitmentContract $record, array $data) {
                         $deliveryDate = \Carbon\Carbon::parse($data['delivery_date'])->toDateString();
                         $service = app(RecruitmentContractService::class);
@@ -732,7 +732,7 @@ class RecruitmentContractResource extends Resource
             return $query;
         }
         if ($section === RecruitmentContract::SECTION_COORDINATION) {
-            $query->where('current_section', RecruitmentContract::SECTION_COORDINATION);
+            return $query;
         }
         return $query;
     }
