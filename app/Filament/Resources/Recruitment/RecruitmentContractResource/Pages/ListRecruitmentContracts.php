@@ -60,7 +60,8 @@ class ListRecruitmentContracts extends ListRecords
                 ->badgeColor('danger')
                 ->url(\App\Filament\Pages\Recruitment\ContractAlertsPage::getUrl()),
             Actions\CreateAction::make()
-                ->label(tr('recruitment_contract.actions.create', [], null, 'dashboard') ?: 'Create Contract'),
+                ->label(tr('recruitment_contract.actions.create', [], null, 'dashboard') ?: 'Create Contract')
+                ->visible(fn () => RecruitmentContractResource::getUserSection() === null || RecruitmentContractResource::getUserSection() === \App\Models\Recruitment\RecruitmentContract::SECTION_CUSTOMER_SERVICE),
             Actions\Action::make('download_template')
                 ->label(tr('recruitment_contract.actions.download_template', [], null, 'dashboard') ?: 'Download Template')
                 ->icon('heroicon-o-arrow-down-tray')
@@ -82,7 +83,8 @@ class ListRecruitmentContracts extends ListRecords
                 ])
                 ->action(function (array $data) {
                     $this->importContracts($data['file']);
-                }),
+                })
+                ->visible(fn () => RecruitmentContractResource::getUserSection() === null || RecruitmentContractResource::getUserSection() === \App\Models\Recruitment\RecruitmentContract::SECTION_CUSTOMER_SERVICE),
         ];
     }
 
