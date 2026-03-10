@@ -228,6 +228,10 @@ class RecruitmentContractResource extends Resource
                         Forms\Components\DatePicker::make('musaned_contract_date')
                             ->label(tr('recruitment_contract.fields.musaned_contract_date', [], null, 'dashboard') ?: 'Musaned Contract Date')
                             ->columnSpan(1),
+
+                        FileUpload::document('musaned_contract_file', 'recruitment_contracts/musaned')
+                            ->label(tr('recruitment_contract.fields.musaned_contract_file', [], null, 'dashboard') ?: 'ملف عقد مساند')
+                            ->columnSpan(1),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -415,10 +419,6 @@ class RecruitmentContractResource extends Resource
 
                         FileUpload::document('visa_image', 'recruitment_contracts/visa')
                             ->label(tr('recruitment_contract.fields.visa_image', [], null, 'dashboard') ?: 'Visa Image')
-                            ->columnSpan(1),
-
-                        FileUpload::document('musaned_contract_file', 'recruitment_contracts/musaned')
-                            ->label(tr('recruitment_contract.fields.musaned_contract_file', [], null, 'dashboard') ?: 'Musaned Contract File')
                             ->columnSpan(1),
                                     ])
                                     ->columns(2)
