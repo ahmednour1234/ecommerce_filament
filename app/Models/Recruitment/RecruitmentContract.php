@@ -152,18 +152,6 @@ class RecruitmentContract extends Model
             }
         });
 
-        static::updating(function ($contract) {
-            if ($contract->isDirty('status')) {
-                $oldStatus = $contract->getOriginal('status');
-                $newStatus = $contract->status;
-
-                if ($oldStatus !== $newStatus) {
-                    $service = app(RecruitmentContractService::class);
-                    $service->logStatusChange($contract, $oldStatus, $newStatus);
-                }
-            }
-        });
-
         static::created(function ($contract) {
             $service = app(RecruitmentContractService::class);
             $service->logStatusChange($contract, null, $contract->status ?? 'new', 'Contract created');
