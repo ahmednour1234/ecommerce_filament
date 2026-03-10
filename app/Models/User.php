@@ -48,6 +48,7 @@ class User extends Authenticatable implements FilamentUser, HasName
         'email',
         'password',
         'type',
+        'branch_id',
     ];
       protected $guarded = [];
 
