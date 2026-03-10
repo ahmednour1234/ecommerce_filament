@@ -43,6 +43,7 @@ class EditRecruitmentContract extends EditRecord
     {
         if (RecruitmentContractResource::isCustomerServiceTabDisabled()) {
             $data['client_id'] = $this->record->client_id;
+            $data['worker_id'] = $this->record->worker_id;
         }
         if (! auth()->user()?->can('recruitment_contracts.assign_employee_branch')) {
             $data['branch_id'] = $this->record->branch_id;

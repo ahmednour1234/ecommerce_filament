@@ -334,10 +334,30 @@ class RecruitmentContractResource extends Resource
                                                     ->label(tr('general.show', [], null, 'dashboard') ?: 'عرض')
                                                     ->icon('heroicon-o-eye')
                                                     ->visible(fn ($get) => (bool) $get('worker_id'))
+                                                    ->fillForm(function ($arguments = []): array {
+                                                        try {
+                                                            $id = $arguments['worker_id'] ?? $arguments[0] ?? null;
+                                                            if ($id === null) {
+                                                                $component = \Livewire\Livewire::current();
+                                                                if ($component && property_exists($component, 'record') && $component->record !== null) {
+                                                                    $id = $component->record->worker_id ?? null;
+                                                                }
+                                                                if ($id === null && $component) {
+                                                                    $form = $component->getForm('form');
+                                                                    $state = $form->getState();
+                                                                    $id = $state['worker_id'] ?? $state['data']['worker_id'] ?? null;
+                                                                }
+                                                            }
+                                                            return ['worker_id' => $id];
+                                                        } catch (\Throwable $e) {
+                                                            return ['worker_id' => null];
+                                                        }
+                                                    })
                                                     ->form([
+                                                        Forms\Components\Hidden::make('worker_id'),
                                                         Forms\Components\Placeholder::make('worker_details')
-                                                            ->content(function ($state): \Illuminate\Support\HtmlString {
-                                                                $id = $state;
+                                                            ->content(function (\Filament\Forms\Get $get): \Illuminate\Support\HtmlString {
+                                                                $id = $get('worker_id');
                                                                 if (! $id) {
                                                                     return new \Illuminate\Support\HtmlString('<p class="text-gray-500">—</p>');
                                                                 }
@@ -368,7 +388,6 @@ class RecruitmentContractResource extends Resource
                                                     ->closeModalByEscaping(true)
                                                     ->closeModalByClickingAway(true)
                                             )
-                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
                                             ->nullable()
                                             ->columnSpan(1),
                                     ])
