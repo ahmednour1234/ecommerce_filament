@@ -48,6 +48,10 @@ class RecruitmentContractResource extends Resource
                             ->schema([
                                 Forms\Components\Section::make(tr('recruitment_contract.sections.basic_data', [], null, 'dashboard') ?: 'البيانات الأساسية')
                     ->schema([
+                        FileUpload::document('visa_image', 'recruitment_contracts/visa')
+                            ->label(tr('recruitment_contract.fields.visa_image', [], null, 'dashboard') ?: 'صورة التأشيرة')
+                            ->columnSpan(1),
+
                         Forms\Components\TextInput::make('contract_no')
                             ->label(tr('recruitment_contract.fields.contract_no', [], null, 'dashboard') ?: 'Contract No')
                             ->disabled()
@@ -432,10 +436,6 @@ class RecruitmentContractResource extends Resource
 
                         FileUpload::document('client_rating_proof_image', 'recruitment_contracts/client_rating')
                             ->label(tr('recruitment_contract.fields.client_rating_proof_image', [], null, 'dashboard') ?: 'صورة إثبات التقييم')
-                            ->columnSpan(1),
-
-                        FileUpload::document('visa_image', 'recruitment_contracts/visa')
-                            ->label(tr('recruitment_contract.fields.visa_image', [], null, 'dashboard') ?: 'Visa Image')
                             ->columnSpan(1),
                                     ])
                                     ->columns(2)
