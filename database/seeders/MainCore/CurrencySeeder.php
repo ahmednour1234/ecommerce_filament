@@ -32,6 +32,17 @@ class CurrencySeeder extends Seeder
             ]
         );
 
+        Currency::updateOrCreate(
+            ['code' => 'SAR'],
+            [
+                'name'       => 'Saudi Riyal',
+                'symbol'     => 'ر.س',
+                'precision'  => 2,
+                'is_default' => false,
+                'is_active'  => true,
+            ]
+        );
+
         // مثال rate واحد
         CurrencyRate::updateOrCreate(
             [

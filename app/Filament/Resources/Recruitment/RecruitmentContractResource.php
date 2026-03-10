@@ -8,6 +8,7 @@ use App\Filament\Concerns\TranslatableNavigation;
 use App\Filament\Forms\Components\FileUpload;
 use App\Models\Recruitment\RecruitmentContract;
 use App\Models\MainCore\Branch;
+use App\Models\MainCore\Currency;
 use App\Models\Client;
 use App\Models\Recruitment\Laborer;
 use App\Models\Recruitment\Profession;
@@ -257,6 +258,7 @@ class RecruitmentContractResource extends Resource
                                                     ->nullable(),
                                             ])
                                             ->createOptionUsing(function (array $data): int {
+                                                $sarCurrencyId = Currency::where('code', 'SAR')->first()?->id ?? Currency::active()->first()?->id;
                                                 $laborer = Laborer::create([
                                                     'name_ar' => $data['name_ar'],
                                                     'passport_number' => $data['passport_number'],
@@ -266,6 +268,7 @@ class RecruitmentContractResource extends Resource
                                                     'experience_level' => $data['experience'] ?? null,
                                                     'phone_1' => $data['phone_1'] ?? null,
                                                     'is_available' => true,
+                                                    'monthly_salary_currency_id' => $sarCurrencyId,
                                                 ]);
                                                 Cache::forget('recruitment_contracts.workers');
                                                 return $laborer->id;
