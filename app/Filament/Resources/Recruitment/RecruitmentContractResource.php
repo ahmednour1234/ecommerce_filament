@@ -22,8 +22,11 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Cache;
+use Filament\Notifications\Notification;
 use App\Filament\Actions\EditAction;
 use App\Filament\Actions\TableDeleteAction;
+use App\Models\User;
+use App\Services\Recruitment\RecruitmentContractService;
 
 
 class RecruitmentContractResource extends Resource
@@ -31,6 +34,40 @@ class RecruitmentContractResource extends Resource
     use TranslatableNavigation;
 
     protected static ?string $model = RecruitmentContract::class;
+
+    public static function getUserSection(): ?string
+    {
+        $user = auth()->user();
+        if (! $user) {
+            return null;
+        }
+        if ($user->hasRole('super_admin') || $user->type === User::TYPE_COMPANY_OWNER || $user->type === User::TYPE_SUPER_ADMIN) {
+            return null;
+        }
+        return match ($user->type) {
+            User::TYPE_CUSTOMER_SERVICE => RecruitmentContract::SECTION_CUSTOMER_SERVICE,
+            User::TYPE_ACCOUNTANT, User::TYPE_GENERAL_ACCOUNTANT => RecruitmentContract::SECTION_ACCOUNTS,
+            User::TYPE_COORDINATOR => RecruitmentContract::SECTION_COORDINATION,
+            default => null,
+        };
+    }
+
+    public static function isCustomerServiceTabDisabled(): bool
+    {
+        $section = static::getUserSection();
+        return $section === RecruitmentContract::SECTION_ACCOUNTS || $section === RecruitmentContract::SECTION_COORDINATION;
+    }
+
+    public static function isAccountsTabDisabled(): bool
+    {
+        return static::getUserSection() === RecruitmentContract::SECTION_COORDINATION;
+    }
+
+    public static function canEditCurrentSection(): bool
+    {
+        $user = auth()->user();
+        return $user && ($user->hasRole('super_admin') || $user->type === User::TYPE_COMPANY_OWNER);
+    }
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationGroup = 'عقود الاستقدام';
@@ -105,6 +142,7 @@ class RecruitmentContractResource extends Resource
                                                 Cache::forget('recruitment_contracts.clients');
                                                 return $client->id;
                                             })
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
                                             ->columnSpan(1),
                                         Forms\Components\Select::make('branch_id')
                                             ->label(tr('recruitment_contract.fields.branch', [], null, 'dashboard') ?: 'Branch')
@@ -121,7 +159,7 @@ class RecruitmentContractResource extends Resource
                                             ->required()
                                             ->searchable()
                                             ->reactive()
-                                            ->disabled(fn () => ! (auth()->user()?->can('recruitment_contracts.assign_employee_branch') ?? false))
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled() || ! (auth()->user()?->can('recruitment_contracts.assign_employee_branch') ?? false))
                                             ->dehydrated(true)
                                             ->columnSpan(1),
                                         Forms\Components\Select::make('marketer_id')
@@ -139,10 +177,11 @@ class RecruitmentContractResource extends Resource
                                             ->default(fn () => auth()->user()?->employee?->id)
                                             ->searchable()
                                             ->nullable()
-                                            ->disabled(fn () => ! (auth()->user()?->can('recruitment_contracts.assign_employee_branch') ?? false))
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled() || ! (auth()->user()?->can('recruitment_contracts.assign_employee_branch') ?? false))
                                             ->dehydrated(true)
                                             ->columnSpan(1),
                                         Forms\Components\DatePicker::make('gregorian_request_date')
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
                                             ->label(tr('recruitment_contract.fields.gregorian_request_date', [], null, 'dashboard') ?: 'Gregorian Request Date')
                                             ->required()
                                             ->default(now())
@@ -231,6 +270,7 @@ class RecruitmentContractResource extends Resource
                                                 Cache::forget('recruitment_contracts.workers');
                                                 return $laborer->id;
                                             })
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
                                             ->nullable()
                                             ->columnSpan(1),
                                     ])
@@ -240,8 +280,10 @@ class RecruitmentContractResource extends Resource
                                     ->schema([
                                         FileUpload::document('visa_image', 'recruitment_contracts/visa')
                                             ->label(tr('recruitment_contract.fields.visa_image', [], null, 'dashboard') ?: 'صورة التأشيرة')
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
                                             ->columnSpan(1),
                                         Forms\Components\Select::make('visa_type')
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
                                             ->label(tr('recruitment_contract.fields.visa_type', [], null, 'dashboard') ?: 'Visa Type')
                                             ->options([
                                                 'domestic_labor' => tr('recruitment_contract.visa_type.domestic_labor', [], null, 'dashboard') ?: 'تأشيرة عمالة منزلية',
@@ -254,8 +296,10 @@ class RecruitmentContractResource extends Resource
                                             ->label(tr('recruitment_contract.fields.visa_no', [], null, 'dashboard') ?: 'Visa No')
                                             ->required()
                                             ->maxLength(255)
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
                                             ->columnSpan(1),
                                         Forms\Components\Select::make('arrival_country_id')
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
                                             ->label(tr('recruitment_contract.fields.arrival_country', [], null, 'dashboard') ?: 'محطة الوصول')
                                             ->options([
                                                 'الرياض' => tr('recruitment_contract.arrival_station.riyadh', [], null, 'dashboard') ?: 'الرياض',
@@ -283,8 +327,10 @@ class RecruitmentContractResource extends Resource
                                             ])
                                             ->searchable()
                                             ->nullable()
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
                                             ->columnSpan(1),
                                         Forms\Components\Select::make('receiving_station_id')
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
                                             ->label(tr('recruitment_contract.fields.receiving_station', [], null, 'dashboard') ?: 'محطة الاستلام')
                                             ->options(SaudiGovernorates::all())
                                             ->searchable()
@@ -298,17 +344,21 @@ class RecruitmentContractResource extends Resource
                                         Forms\Components\TextInput::make('musaned_contract_no')
                                             ->label(tr('recruitment_contract.fields.musaned_contract_no', [], null, 'dashboard') ?: 'Musaned Contract No')
                                             ->maxLength(255)
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
                                             ->columnSpan(1),
                                         Forms\Components\TextInput::make('musaned_documentation_contract_no')
                                             ->label(tr('recruitment_contract.fields.musaned_documentation_contract_no', [], null, 'dashboard') ?: 'رقم التوثيق الالكتروني بمساند')
                                             ->maxLength(255)
                                             ->nullable()
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
                                             ->columnSpan(1),
                                         Forms\Components\DatePicker::make('musaned_contract_date')
                                             ->label(tr('recruitment_contract.fields.musaned_contract_date', [], null, 'dashboard') ?: 'Musaned Contract Date')
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
                                             ->columnSpan(1),
                                         FileUpload::document('musaned_contract_file', 'recruitment_contracts/musaned')
                                             ->label(tr('recruitment_contract.fields.musaned_contract_file', [], null, 'dashboard') ?: 'ملف عقد مساند')
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
                                             ->columnSpan(1),
                                     ])
                                     ->columns(2)
@@ -322,9 +372,11 @@ class RecruitmentContractResource extends Resource
                                         Forms\Components\Select::make('current_section')
                                             ->label('العقد عند القسم')
                                             ->options(RecruitmentContract::currentSectionOptions())
+                                            ->visible(fn () => static::canEditCurrentSection())
                                             ->columnSpan(1),
                                         Forms\Components\Select::make('payment_status')
                                             ->label(tr('recruitment_contract.fields.payment_status', [], null, 'dashboard') ?: 'حالة الدفع')
+                                            ->disabled(fn () => static::isAccountsTabDisabled())
                                             ->options([
                                                 'partial' => 'جزئي',
                                                 'paid' => 'كلي',
@@ -337,6 +389,7 @@ class RecruitmentContractResource extends Resource
                                             ->numeric()
                                             ->minValue(0)
                                             ->prefix('ر.س')
+                                            ->disabled(fn () => static::isAccountsTabDisabled())
                                             ->columnSpan(1),
                                     ])
                                     ->columns(2)
@@ -353,6 +406,7 @@ class RecruitmentContractResource extends Resource
                                             ->options(RecruitmentContract::currentSectionOptions())
                                             ->default(RecruitmentContract::SECTION_CUSTOMER_SERVICE)
                                             ->required()
+                                            ->visible(fn () => static::canEditCurrentSection())
                                             ->columnSpan(1),
                         Forms\Components\View::make('filament.forms.components.status-table')
                             ->viewData(function ($record, $get) {
@@ -601,6 +655,42 @@ class RecruitmentContractResource extends Resource
                     }),
             ])
             ->actions([
+                Tables\Actions\Action::make('transfer_to_accounts')
+                    ->label('توجيه لـ قسم الحسابات')
+                    ->icon('heroicon-o-arrow-right')
+                    ->color('success')
+                    ->visible(fn (RecruitmentContract $record) => static::getUserSection() === RecruitmentContract::SECTION_CUSTOMER_SERVICE && $record->current_section === RecruitmentContract::SECTION_CUSTOMER_SERVICE)
+                    ->action(function (RecruitmentContract $record) {
+                        $record->update(['current_section' => RecruitmentContract::SECTION_ACCOUNTS]);
+                        Notification::make()->title('تم التوجيه لـ قسم الحسابات')->success()->send();
+                    }),
+                Tables\Actions\Action::make('transfer_to_coordination')
+                    ->label('توجيه لـ قسم التنسيق')
+                    ->icon('heroicon-o-arrow-right')
+                    ->color('success')
+                    ->visible(fn (RecruitmentContract $record) => static::getUserSection() === RecruitmentContract::SECTION_ACCOUNTS && $record->current_section === RecruitmentContract::SECTION_ACCOUNTS)
+                    ->action(function (RecruitmentContract $record) {
+                        $record->update(['current_section' => RecruitmentContract::SECTION_COORDINATION]);
+                        Notification::make()->title('تم التوجيه لـ قسم التنسيق')->success()->send();
+                    }),
+                Tables\Actions\Action::make('worker_delivered')
+                    ->label('تم تسليم العاملة')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->form([
+                        Forms\Components\DatePicker::make('delivery_date')
+                            ->label('تاريخ التسليم')
+                            ->required()
+                            ->default(now()),
+                    ])
+                    ->visible(fn (RecruitmentContract $record) => static::getUserSection() === RecruitmentContract::SECTION_COORDINATION && $record->current_section === RecruitmentContract::SECTION_COORDINATION)
+                    ->action(function (RecruitmentContract $record, array $data) {
+                        $deliveryDate = \Carbon\Carbon::parse($data['delivery_date'])->toDateString();
+                        $service = app(RecruitmentContractService::class);
+                        $service->logStatusChange($record, $record->status, 'received', 'تم تسليم العاملة', $deliveryDate);
+                        $record->update(['status' => 'received']);
+                        Notification::make()->title('تم تسجيل تسليم العاملة')->success()->send();
+                    }),
                 Tables\Actions\ViewAction::make(),
                 EditAction::make(),
                 TableDeleteAction::make(),
@@ -620,6 +710,16 @@ class RecruitmentContractResource extends Resource
             RelationManagers\ExpensesRelationManager::class,
             RelationManagers\StatusLogsRelationManager::class,
         ];
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        $query = parent::getEloquentQuery();
+        $section = static::getUserSection();
+        if ($section !== null) {
+            $query->where('current_section', $section);
+        }
+        return $query;
     }
 
     public static function getUrl(string $name = 'index', array $parameters = [], bool $isAbsolute = true, ?string $panel = null, ?\Illuminate\Database\Eloquent\Model $tenant = null): string

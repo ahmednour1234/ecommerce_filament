@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Recruitment\RecruitmentContractResource\Pages;
 
 use App\Filament\Resources\Recruitment\RecruitmentContractResource;
+use App\Models\Recruitment\RecruitmentContract;
 use App\Services\Recruitment\RecruitmentContractService;
 use Filament\Resources\Pages\CreateRecord;
 
@@ -40,6 +41,7 @@ class CreateRecruitmentContract extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
+        $data['current_section'] = RecruitmentContract::SECTION_CUSTOMER_SERVICE;
         if (! auth()->user()?->can('recruitment_contracts.assign_employee_branch')) {
             $data['branch_id'] = auth()->user()?->branch_id;
             $data['marketer_id'] = auth()->user()?->employee?->id;
