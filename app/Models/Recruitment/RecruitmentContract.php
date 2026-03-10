@@ -166,7 +166,7 @@ class RecruitmentContract extends Model
 
         static::created(function ($contract) {
             $service = app(RecruitmentContractService::class);
-            $service->logStatusChange($contract, null, $contract->status, 'Contract created');
+            $service->logStatusChange($contract, null, $contract->status ?? 'new', 'Contract created');
             static::clearCache();
         });
 
