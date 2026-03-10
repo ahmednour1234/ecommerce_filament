@@ -32,15 +32,12 @@ class Dashboard extends BaseDashboard
         return match ($type) {
             User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER => [
                 DashboardFilterWidget::class,
-                OrderStatsWidget::class,
-                FinanceStatsWidget::class,
                 HRStatsWidget::class,
                 RecruitmentContractsStatsWidget::class,
                 ComplaintsStatsWidget::class,
             ],
             User::TYPE_ACCOUNTANT, User::TYPE_GENERAL_ACCOUNTANT => [
                 DashboardFilterWidget::class,
-                FinanceStatsWidget::class,
                 RecruitmentAccountsTableWidget::class,
             ],
             User::TYPE_COORDINATOR => [
