@@ -42,6 +42,7 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\Recruitment\RecruitmentRoleSeeder::class, // Recruitment Manager role and permissions
             \Database\Seeders\Recruitment\RecruitmentContractPermissionsSeeder::class, // Recruitment Contracts permissions
             \Database\Seeders\Recruitment\RecruitmentContractRoleSeeder::class, // Recruitment Contracts Manager role and permissions
+            \Database\Seeders\Recruitment\RecruitmentContractsOnlyRoleSeeder::class,
             \Database\Seeders\Rental\RentalPermissionsSeeder::class, // Rental module permissions
             \Database\Seeders\Rental\RentalRoleSeeder::class, // Rental Section Manager role and permissions
             \Database\Seeders\ContractsPermissionsSeeder::class, // Contracts permissions
