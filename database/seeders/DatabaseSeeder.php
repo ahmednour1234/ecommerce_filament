@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\Sales\SalesSeeder::class, // Must be after Catalog and Accounting
             \Database\Seeders\Finance\FinancePermissionsSeeder::class, // Finance module permissions
             \Database\Seeders\Finance\FinanceSectionRoleSeeder::class, // Finance Section Manager role and permissions
+            \Database\Seeders\Finance\FinanceAccountantRoleSeeder::class, // محاسب role (المالية/الحسابات)
             \Database\Seeders\Finance\FinanceTypesSeeder::class, // Finance types data
             \Database\Seeders\MainCore\CountriesSeeder::class,
             \Database\Seeders\ClientsPermissionsSeeder::class, // Clients module permissions
