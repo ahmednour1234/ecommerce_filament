@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class, // Seed permissions for all resources
             \Database\Seeders\HR\HrPermissionsSeeder::class, // HR module permissions
             \Database\Seeders\HR\HrRoleSeeder::class, // HR Manager role and permissions
+            \Database\Seeders\HR\HrAlertsRoleSeeder::class, // مشرف تنبيهات الموارد البشرية
             \Database\Seeders\HR\HrLookupsSeeder::class, // HR default lookups
             \Database\Seeders\MainCore\MainCoreSeeder::class,
             \Database\Seeders\Housing\HousingStatusSeeder::class,
