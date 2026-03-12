@@ -4,6 +4,7 @@ namespace App\Filament\Widgets\Dashboard;
 
 use App\Filament\Resources\Recruitment\RecruitmentContractResource;
 use App\Models\Recruitment\RecruitmentContract;
+use App\Models\User;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -16,10 +17,12 @@ class RecruitmentAccountsTableWidget extends BaseWidget
     public static function canView(): bool
     {
         $user = auth()->user();
-        $section = RecruitmentContractResource::getUserSection();
-        return $user?->hasRole('super_admin')
-            || $section === RecruitmentContract::SECTION_ACCOUNTS
-            || $user?->can('recruitment_contracts.finance.manage');
+        if (! $user) {
+            return false;
+        }
+        return $user->hasRole('super_admin')
+            || $user->type === User::TYPE_ACCOUNTANT
+            || $user->type === User::TYPE_GENERAL_ACCOUNTANT;
     }
 
     public function table(Table $table): Table
