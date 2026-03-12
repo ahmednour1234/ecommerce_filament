@@ -13,6 +13,12 @@ class SalesStatsWidget extends BaseWidget
 {
     protected static bool $isDiscovered = false;
 
+    public static function canView(): bool
+    {
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('orders.view_any') ?? false;
+    }
+
     protected function getStats(): array
     {
         $totalCustomers = Customer::where('is_active', true)->count();

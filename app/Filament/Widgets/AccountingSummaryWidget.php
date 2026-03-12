@@ -10,6 +10,12 @@ class AccountingSummaryWidget extends BaseWidget
 {
     protected static bool $isDiscovered = false;
 
+    public static function canView(): bool
+    {
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('accounts.view_any') ?? false;
+    }
+
     protected function getStats(): array
     {
         $accountingService = app(AccountingService::class);

@@ -15,6 +15,12 @@ use Illuminate\Support\Number;
 class FinanceBranchesTableWidget extends BaseWidget
 {
     protected static ?int $sort = 2;
+
+    public static function canView(): bool
+    {
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('finance.view_reports') || $user?->can('finance.view_transactions') ?? false;
+    }
     protected int|string|array $columnSpan = 'full';
     protected static ?string $heading = 'ملخص المالية حسب الفروع';
     

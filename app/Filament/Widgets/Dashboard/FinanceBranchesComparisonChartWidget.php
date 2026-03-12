@@ -12,6 +12,12 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
 
     protected static ?string $heading = 'مقارنة الفروع المالية';
 
+    public static function canView(): bool
+    {
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('finance.view_reports') || $user?->can('finance.view_transactions') ?? false;
+    }
+
     protected int|string|array $columnSpan = 'full';
 
     protected static ?int $sort = 6;

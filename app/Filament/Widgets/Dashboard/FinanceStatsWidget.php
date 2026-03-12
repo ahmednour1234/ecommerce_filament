@@ -12,6 +12,12 @@ use Illuminate\Support\Number;
 class FinanceStatsWidget extends BaseWidget
 {
     protected static ?int $sort = 1;
+
+    public static function canView(): bool
+    {
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('finance.view_reports') || $user?->can('finance.view_transactions') ?? false;
+    }
     protected int|string|array $columnSpan = 'full';
     protected ?string $heading = 'إحصائيات المالية';
     

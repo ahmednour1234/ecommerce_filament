@@ -11,6 +11,12 @@ use Illuminate\Support\Number;
 
 class CatalogStatsWidget extends BaseWidget
 {
+    public static function canView(): bool
+    {
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('products.view_any') ?? false;
+    }
+
     protected function getStats(): array
     {
         $totalProducts = Product::where('is_active', true)->count();

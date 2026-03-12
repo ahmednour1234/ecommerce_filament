@@ -12,6 +12,12 @@ use Illuminate\Support\Number;
 class RecruitmentContractsStatsSimpleWidget extends BaseWidget
 {
     protected static ?int $sort = 1;
+
+    public static function canView(): bool
+    {
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('recruitment_contracts.view_any') ?? false;
+    }
     protected int|string|array $columnSpan = 'full';
     protected ?string $heading = 'عقود الاستقدام';
 

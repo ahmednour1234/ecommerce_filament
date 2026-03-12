@@ -12,6 +12,12 @@ class OrdersByStatusChartWidget extends ChartWidget
 {
     protected static bool $isDiscovered = false;
 
+    public static function canView(): bool
+    {
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('orders.view_any') ?? false;
+    }
+
     public ?string $from = null;
     public ?string $to = null;
     public ?int $branch_id = null;

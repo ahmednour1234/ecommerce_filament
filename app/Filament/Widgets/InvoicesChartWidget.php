@@ -11,6 +11,12 @@ class InvoicesChartWidget extends ChartWidget
     protected static bool $isDiscovered = false;
 
     protected static ?int $sort = 4;
+
+    public static function canView(): bool
+    {
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('invoices.view_any') ?? false;
+    }
     
     public function getHeading(): string
     {

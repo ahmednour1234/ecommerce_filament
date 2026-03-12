@@ -16,6 +16,12 @@ class OrderStatsWidget extends BaseWidget
     protected int|string|array $columnSpan = 'full';
     protected ?string $heading = 'إحصائيات الطلبات';
 
+    public static function canView(): bool
+    {
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('orders.view_any') ?? false;
+    }
+
     protected $listeners = ['filters-updated' => '$refresh'];
 
     protected function getFilters(): array

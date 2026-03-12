@@ -13,6 +13,12 @@ use Illuminate\Support\Number;
 class ComplaintsStatsWidget extends BaseWidget
 {
     protected static ?int $sort = 5;
+
+    public static function canView(): bool
+    {
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('complaints.view_any') ?? false;
+    }
     protected int|string|array $columnSpan = 'full';
     protected ?string $heading = null;
 

@@ -9,6 +9,12 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class RequestStatsWidget extends BaseWidget
 {
+    public static function canView(): bool
+    {
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('rental.requests.view_any') ?? false;
+    }
+
     protected function getStats(): array
     {
         return [

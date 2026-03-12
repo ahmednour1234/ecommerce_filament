@@ -16,8 +16,12 @@ class RecruitmentCoordinationDelayedTableWidget extends BaseWidget
 
     public static function canView(): bool
     {
-        return RecruitmentContractResource::getUserSection() === RecruitmentContract::SECTION_COORDINATION
-            || RecruitmentContractResource::getUserSection() === null;
+        $user = auth()->user();
+        $section = RecruitmentContractResource::getUserSection();
+        if ($section !== RecruitmentContract::SECTION_COORDINATION && $section !== null) {
+            return false;
+        }
+        return $user?->hasRole('super_admin') || $user?->can('recruitment_contracts.view_any') ?? false;
     }
 
     public function table(Table $table): Table

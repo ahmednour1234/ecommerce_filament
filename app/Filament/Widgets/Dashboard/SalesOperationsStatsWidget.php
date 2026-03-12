@@ -19,6 +19,12 @@ class SalesOperationsStatsWidget extends BaseWidget
 
     protected static ?int $sort = 3;
 
+    public static function canView(): bool
+    {
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('orders.view_any') ?? false;
+    }
+
     protected int|string|array $columnSpan = 'full';
 
     protected function getStats(): array

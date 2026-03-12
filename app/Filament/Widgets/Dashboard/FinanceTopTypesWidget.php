@@ -9,6 +9,12 @@ use Filament\Widgets\ChartWidget;
 class FinanceTopTypesWidget extends ChartWidget
 {
     protected static ?string $heading = 'أعلى أنواع الإيرادات والمصروفات';
+
+    public static function canView(): bool
+    {
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('finance.view_reports') || $user?->can('finance.view_transactions') ?? false;
+    }
     protected int|string|array $columnSpan = 'full';
     protected static ?int $sort = 4;
     

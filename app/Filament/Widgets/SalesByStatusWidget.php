@@ -12,6 +12,12 @@ class SalesByStatusWidget extends ChartWidget
 
     protected static ?int $sort = 5;
 
+    public static function canView(): bool
+    {
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('orders.view_any') ?? false;
+    }
+
     public function getHeading(): string
     {
         return tr('dashboard.stats.orders_by_status');

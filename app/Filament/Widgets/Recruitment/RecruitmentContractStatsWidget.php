@@ -10,6 +10,12 @@ use Illuminate\Support\Number;
 
 class RecruitmentContractStatsWidget extends BaseWidget
 {
+    public static function canView(): bool
+    {
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('recruitment_contracts.view_any') ?? false;
+    }
+
     protected function getStats(): array
     {
         $section = RecruitmentContractResource::getUserSection();

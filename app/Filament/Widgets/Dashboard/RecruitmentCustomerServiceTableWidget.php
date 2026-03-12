@@ -16,7 +16,11 @@ class RecruitmentCustomerServiceTableWidget extends BaseWidget
 
     public static function canView(): bool
     {
-        return RecruitmentContractResource::getUserSection() === RecruitmentContract::SECTION_CUSTOMER_SERVICE;
+        $user = auth()->user();
+        $section = RecruitmentContractResource::getUserSection();
+        return $user?->hasRole('super_admin')
+            || $section === RecruitmentContract::SECTION_CUSTOMER_SERVICE
+            || ($user?->can('recruitment_contracts.view_any') && $section === null);
     }
 
     public function table(Table $table): Table
