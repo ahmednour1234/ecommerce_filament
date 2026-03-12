@@ -12,8 +12,6 @@ use App\Filament\Widgets\Dashboard\FinanceTopTypesWidget;
 use App\Filament\Widgets\Dashboard\HRStatsWidget;
 use App\Filament\Widgets\Dashboard\OrderStatsWidget;
 use App\Filament\Widgets\Dashboard\RecruitmentAccountsTableWidget;
-use App\Filament\Widgets\Dashboard\RecruitmentContractsStatsSimpleWidget;
-use App\Filament\Widgets\Dashboard\RecruitmentContractsStatsWidget;
 use App\Filament\Widgets\Dashboard\RecruitmentCoordinationDelayedTableWidget;
 use App\Filament\Widgets\Dashboard\RecruitmentCoordinationLatestTableWidget;
 use App\Filament\Widgets\Dashboard\RecruitmentCustomerServiceTableWidget;
@@ -33,7 +31,6 @@ class Dashboard extends BaseDashboard
             User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER => [
                 DashboardFilterWidget::class,
                 HRStatsWidget::class,
-                RecruitmentContractsStatsWidget::class,
                 ComplaintsStatsWidget::class,
             ],
             User::TYPE_ACCOUNTANT, User::TYPE_GENERAL_ACCOUNTANT => [
@@ -42,13 +39,11 @@ class Dashboard extends BaseDashboard
             ],
             User::TYPE_COORDINATOR => [
                 DashboardFilterWidget::class,
-                RecruitmentContractsStatsSimpleWidget::class,
                 RecruitmentCoordinationLatestTableWidget::class,
                 RecruitmentCoordinationDelayedTableWidget::class,
             ],
             User::TYPE_BRANCH_MANAGER => [
                 DashboardFilterWidget::class,
-                RecruitmentContractsStatsSimpleWidget::class,
             ],
             User::TYPE_COMPLAINTS_MANAGER => [
                 DashboardFilterWidget::class,
@@ -64,7 +59,6 @@ class Dashboard extends BaseDashboard
             ],
             default => [
                 DashboardFilterWidget::class,
-                RecruitmentContractsStatsSimpleWidget::class,
             ],
         };
     }

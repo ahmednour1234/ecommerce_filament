@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Recruitment\RecruitmentContractResource\Pages;
 
 use App\Filament\Resources\Recruitment\RecruitmentContractResource;
-use App\Filament\Widgets\Recruitment\RecruitmentContractStatsWidget;
 use App\Imports\RecruitmentContractsImport;
 use App\Jobs\Recruitment\CalculateContractAlertsJob;
 use App\Services\Recruitment\ContractAlertsService;
@@ -90,9 +89,7 @@ class ListRecruitmentContracts extends ListRecords
 
     protected function getHeaderWidgets(): array
     {
-        return [
-            RecruitmentContractStatsWidget::class,
-        ];
+        return [];
     }
 
     protected function downloadTemplate()
