@@ -83,10 +83,6 @@ class RecruitmentContractsStatsWidget extends BaseWidget
             $returnedContracts = (clone $query)->where('status', 'return_during_warranty')->count();
             $runawayContracts = (clone $query)->where('status', 'runaway')->count();
 
-            $totalCost = (clone $query)->sum('total_cost');
-            $paidTotal = (clone $query)->sum('paid_total');
-            $remainingTotal = (clone $query)->sum('remaining_total');
-
             $stats = [];
 
             if ($totalContracts === 0) {
@@ -180,26 +176,6 @@ class RecruitmentContractsStatsWidget extends BaseWidget
                         'status' => ['value' => 'runaway'],
                     ])));
             }
-
-            $stats[] = Stat::make(
-                'إجمالي التكلفة',
-                Number::currency($totalCost, 'SAR')
-            )
-                ->description('جميع العقود')
-                ->descriptionIcon('heroicon-o-currency-dollar')
-                ->color('success')
-                ->icon('heroicon-o-banknotes')
-                ->url($this->buildUrl($publicUrl, $baseFilters));
-
-            $stats[] = Stat::make(
-                'المبلغ المدفوع',
-                Number::currency($paidTotal, 'SAR')
-            )
-                ->description('المتبقي: ' . Number::currency($remainingTotal, 'SAR'))
-                ->descriptionIcon('heroicon-o-arrow-trending-up')
-                ->color('info')
-                ->icon('heroicon-o-arrow-trending-up')
-                ->url($this->buildUrl($publicUrl, $baseFilters));
 
             return $stats;
         });
