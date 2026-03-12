@@ -1,42 +1,56 @@
-<x-filament-panels::page class="rtl-dashboard" x-data="{ activeTab: '{{ ($this->getDashboardTabs()[0]['id'] ?? 'main') }}' }">
+<x-filament-panels::page class="rtl-dashboard dashboard-with-tabs" x-data="{ activeTab: '{{ ($this->getDashboardTabs()[0]['id'] ?? 'main') }}' }">
     @php $tabs = $this->getDashboardTabs(); @endphp
 
-    <div class="mb-6">
-        <div class="fi-section rounded-xl bg-white shadow-sm border border-gray-200/60 dark:border-white/10 dark:bg-white/5 p-4">
-            <div class="flex flex-wrap gap-2 border-b border-gray-200 dark:border-white/10 pb-3 mb-4 -mx-2 px-2 overflow-x-auto">
-                @foreach($tabs as $tab)
-                <button type="button"
-                    @click="activeTab = '{{ $tab['id'] }}'"
-                    x-bind:class="activeTab === '{{ $tab['id'] }}' ? 'fi-tabs-item-active bg-primary-500 text-white' : 'fi-tabs-item bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'"
-                    class="fi-tabs-item rounded-lg px-4 py-2 text-sm font-medium transition">
-                    {{ $tab['label'] }}
-                </button>
-                @endforeach
-            </div>
-
-            <div class="space-y-6">
-                @foreach($tabs as $tab)
-                <div x-show="activeTab === '{{ $tab['id'] }}'" x-transition class="space-y-6"
-                    @if(!$loop->first) style="display: none;" @endif>
-                    @if(!empty($tab['widgets']))
-                    <x-filament-widgets::widgets :widgets="$tab['widgets']" :columns="$this->getHeaderWidgetsColumns()" />
-                    @endif
-                    @if(!empty($tab['footer']))
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        @foreach(array_chunk($tab['footer'], 2) as $chunk)
-                        <x-filament-widgets::widgets :widgets="$chunk" :columns="1" />
-                        @endforeach
-                    </div>
-                    @endif
-                </div>
-                @endforeach
-            </div>
+    <div class="dashboard-tabs-wrapper -mx-4 sm:-mx-6 md:-mx-8 mb-6">
+        <div class="dashboard-tabs-bar flex gap-1 overflow-x-auto border-b border-gray-200 dark:border-white/10 bg-gray-50/80 dark:bg-white/5 px-4 sm:px-6 md:px-8 py-2 scrollbar-thin">
+            @foreach($tabs as $tab)
+            <button type="button"
+                @click="activeTab = '{{ $tab['id'] }}'"
+                x-bind:class="activeTab === '{{ $tab['id'] }}' ? 'dashboard-tab-active' : 'dashboard-tab'"
+                class="rounded-t-lg px-4 py-2.5 text-sm font-medium whitespace-nowrap transition shrink-0">
+                {{ $tab['label'] }}
+            </button>
+            @endforeach
         </div>
+    </div>
+
+    <div class="space-y-6">
+        @foreach($tabs as $tab)
+        <div x-show="activeTab === '{{ $tab['id'] }}'" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="space-y-6"
+            @if(!$loop->first) style="display: none;" @endif>
+            @if(!empty($tab['widgets']))
+            <x-filament-widgets::widgets :widgets="$tab['widgets']" :columns="$this->getHeaderWidgetsColumns()" />
+            @endif
+            @if(!empty($tab['footer']))
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                @foreach(array_chunk($tab['footer'], 2) as $chunk)
+                <x-filament-widgets::widgets :widgets="$chunk" :columns="1" />
+                @endforeach
+            </div>
+            @endif
+        </div>
+        @endforeach
     </div>
 
 
     <style>
-        /* 1) اجعل RTL على مستوى الصفحة بالكامل */
+        .dashboard-tabs-bar .dashboard-tab {
+            color: rgb(107 114 128);
+            background: transparent;
+        }
+        .dashboard-tabs-bar .dashboard-tab:hover {
+            color: rgb(55 65 81);
+            background: rgb(229 231 235 / 0.6);
+        }
+        .dark .dashboard-tabs-bar .dashboard-tab { color: rgb(156 163 175); }
+        .dark .dashboard-tabs-bar .dashboard-tab:hover { color: rgb(229 231 235); background: rgb(255 255 255 / 0.08); }
+        .dashboard-tabs-bar .dashboard-tab-active {
+            color: white;
+            background: rgb(var(--primary-500));
+            border-bottom: 2px solid rgb(var(--primary-500));
+            margin-bottom: -1px;
+        }
+        .dashboard-with-tabs .fi-main > div:first-child { margin-top: 0; }
         .rtl-dashboard {
             direction: rtl;
         }
