@@ -314,6 +314,21 @@ class EmployeeResource extends Resource
             ]);
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+        if ($user && ! $user->hasRole('super_admin') && ! $user->can('hr.view_all_branches')) {
+            $branchId = $user->branch_id;
+            if ($branchId) {
+                $query->where('branch_id', $branchId);
+            } else {
+                $query->whereRaw('1 = 0');
+            }
+        }
+        return $query;
+    }
+
     public static function table(Table $table): Table
     {
         return $table
