@@ -567,6 +567,6 @@ class IncomeReportPage extends Page implements HasTable, HasForms
 
     public static function shouldRegisterNavigation(): bool
     {
-        return static::canAccess();
+        return false;
     }
 }

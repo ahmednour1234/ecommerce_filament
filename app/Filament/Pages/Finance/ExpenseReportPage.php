@@ -358,6 +358,6 @@ class ExpenseReportPage extends Page implements HasTable
 
     public static function shouldRegisterNavigation(): bool
     {
-        return static::canAccess();
+        return false;
     }
 }
