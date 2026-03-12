@@ -1,27 +1,37 @@
-<x-filament-panels::page class="rtl-dashboard">
+<x-filament-panels::page class="rtl-dashboard" x-data="{ activeTab: '{{ ($this->getDashboardTabs()[0]['id'] ?? 'main') }}' }">
+    @php $tabs = $this->getDashboardTabs(); @endphp
 
     <div class="mb-6">
-        <h1 class="text-2xl font-bold mb-4">Dashboard</h1>
-    </div>
+        <div class="fi-section rounded-xl bg-white shadow-sm border border-gray-200/60 dark:border-white/10 dark:bg-white/5 p-4">
+            <div class="flex flex-wrap gap-2 border-b border-gray-200 dark:border-white/10 pb-3 mb-4 -mx-2 px-2 overflow-x-auto">
+                @foreach($tabs as $tab)
+                <button type="button"
+                    @click="activeTab = '{{ $tab['id'] }}'"
+                    x-bind:class="activeTab === '{{ $tab['id'] }}' ? 'fi-tabs-item-active bg-primary-500 text-white' : 'fi-tabs-item bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'"
+                    class="fi-tabs-item rounded-lg px-4 py-2 text-sm font-medium transition">
+                    {{ $tab['label'] }}
+                </button>
+                @endforeach
+            </div>
 
-    <div class="space-y-6">
-
-        {{-- Header Widgets --}}
-        <x-filament-widgets::widgets
-            :widgets="$this->getHeaderWidgets()"
-            :columns="$this->getHeaderWidgetsColumns()"
-        />
-
-        @php $footer = $this->getFooterWidgets(); @endphp
-        @if(count($footer) >= 2)
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <x-filament-widgets::widgets :widgets="[$footer[0]]" :columns="1" />
-            <x-filament-widgets::widgets :widgets="[$footer[1]]" :columns="1" />
+            <div class="space-y-6">
+                @foreach($tabs as $tab)
+                <div x-show="activeTab === '{{ $tab['id'] }}'" x-transition class="space-y-6"
+                    @if(!$loop->first) style="display: none;" @endif>
+                    @if(!empty($tab['widgets']))
+                    <x-filament-widgets::widgets :widgets="$tab['widgets']" :columns="$this->getHeaderWidgetsColumns()" />
+                    @endif
+                    @if(!empty($tab['footer']))
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        @foreach(array_chunk($tab['footer'], 2) as $chunk)
+                        <x-filament-widgets::widgets :widgets="$chunk" :columns="1" />
+                        @endforeach
+                    </div>
+                    @endif
+                </div>
+                @endforeach
+            </div>
         </div>
-        @endif
-        @if(isset($footer[2]))
-        <x-filament-widgets::widgets :widgets="[$footer[2]]" :columns="1" />
-        @endif
     </div>
 
 
