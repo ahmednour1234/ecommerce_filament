@@ -11,6 +11,8 @@ use App\Filament\Widgets\Dashboard\FinanceStatsWidget;
 use App\Filament\Widgets\Dashboard\FinanceTopTypesWidget;
 use App\Filament\Widgets\Dashboard\HRStatsWidget;
 use App\Filament\Widgets\Dashboard\OrderStatsWidget;
+use App\Filament\Widgets\Dashboard\FinancePendingApprovalStatsWidget;
+use App\Filament\Widgets\Dashboard\FinancePendingApprovalTableWidget;
 use App\Filament\Widgets\Dashboard\RecruitmentAccountsTableWidget;
 use App\Filament\Widgets\Dashboard\RecruitmentCoordinationDelayedTableWidget;
 use App\Filament\Widgets\Dashboard\RecruitmentCoordinationLatestTableWidget;
@@ -35,6 +37,8 @@ class Dashboard extends BaseDashboard
             ],
             User::TYPE_ACCOUNTANT, User::TYPE_GENERAL_ACCOUNTANT => [
                 DashboardFilterWidget::class,
+                FinancePendingApprovalStatsWidget::class,
+                FinancePendingApprovalTableWidget::class,
                 RecruitmentAccountsTableWidget::class,
             ],
             User::TYPE_COORDINATOR => [
