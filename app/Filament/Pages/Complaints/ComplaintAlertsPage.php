@@ -30,7 +30,8 @@ class ComplaintAlertsPage extends Page implements HasTable
 
     public static function shouldRegisterNavigation(): bool
     {
-        return (bool) auth()->user();
+        $user = auth()->user();
+        return $user?->hasRole('super_admin') || $user?->can('complaints.view_any') ?? false;
     }
 
     public static function getNavigationLabel(): string
