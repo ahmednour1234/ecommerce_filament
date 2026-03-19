@@ -39,6 +39,7 @@ class AccommodationEntry extends Model
         'customer_name',
         'customer_phone',
         'customer_id_number',
+        'customer_id',
     ];
 
     protected $casts = [
@@ -54,7 +55,7 @@ class AccommodationEntry extends Model
             if (empty($entry->created_by) && auth()->check()) {
                 $entry->created_by = auth()->id();
             }
-            
+
             // Decrease building available capacity
             if ($entry->building_id) {
                 $building = Building::find($entry->building_id);
@@ -81,12 +82,12 @@ class AccommodationEntry extends Model
             if (empty($entry->updated_by) && auth()->check()) {
                 $entry->updated_by = auth()->id();
             }
-            
+
             // Log status change
             if ($entry->isDirty('status_id')) {
                 $oldStatusId = $entry->getOriginal('status_id');
                 $newStatusId = $entry->status_id;
-                
+
                 AccommodationEntryStatusLog::create([
                     'accommodation_entry_id' => $entry->id,
                     'old_status_id' => $oldStatusId,
@@ -95,7 +96,7 @@ class AccommodationEntry extends Model
                     'created_by' => auth()->id(),
                 ]);
             }
-            
+
             // Handle building capacity changes
             if ($entry->isDirty('building_id') || $entry->isDirty('exit_date')) {
                 // If building changed, restore old building capacity and decrease new one
@@ -104,7 +105,7 @@ class AccommodationEntry extends Model
                     if ($oldBuildingId) {
                         Building::where('id', $oldBuildingId)->increment('available_capacity');
                     }
-                    
+
                     if ($entry->building_id) {
                         $building = Building::find($entry->building_id);
                         if ($building && $building->available_capacity > 0) {
@@ -112,7 +113,7 @@ class AccommodationEntry extends Model
                         }
                     }
                 }
-                
+
                 // If exit date is set, restore building capacity
                 if ($entry->exit_date && !$entry->getOriginal('exit_date')) {
                     if ($entry->building_id) {

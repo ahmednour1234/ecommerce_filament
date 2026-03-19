@@ -3,9 +3,11 @@
 namespace App\Filament\Pages\Housing\Recruitment;
 
 use App\Filament\Concerns\TranslatableNavigation;
+use App\Models\Client;
 use App\Models\Recruitment\Laborer;
 use App\Models\Recruitment\Nationality;
 use App\Models\Recruitment\Profession;
+use App\Models\Recruitment\RecruitmentContract;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
@@ -34,9 +36,7 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
     public ?int $building_id = null;
     public ?int $nationality_id = null;
     public ?string $worker_passport_number = null;
-    public ?string $customer_name = null;
-    public ?string $customer_phone = null;
-    public ?string $customer_id_number = null;
+    public ?int $customer_id = null;
 
     public static function getNavigationLabel(): string
     {
@@ -88,6 +88,7 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                             })
                             ->required()
                             ->searchable()
+                            ->live()
                             ->createOptionForm([
                                 \Filament\Forms\Components\TextInput::make('name_ar')
                                     ->label(tr('recruitment.fields.name_ar', [], null, 'dashboard') ?: 'الاسم (عربي)')
@@ -169,45 +170,29 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                                 }
                             }),
 
-                        \Filament\Forms\Components\Select::make('nationality_id')
-                            ->label('الجنسية')
-                            ->options(function () {
-                                $allowedNames = ['الفلبين', 'بنغلادش', 'سريلانكا', 'اثيوبيا', 'اوغندا', 'كينيا', 'بورندي'];
-                                return Nationality::where('is_active', true)
-                                    ->whereIn('name_ar', $allowedNames)
-                                    ->get()
-                                    ->mapWithKeys(function ($nationality) {
-                                        $label = app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en;
-                                        return [$nationality->id => $label];
-                                    })
-                                    ->toArray();
-                            })
-                            ->searchable()
-                            ->columnSpan(1),
-
-                        \Filament\Forms\Components\TextInput::make('worker_passport_number')
-                            ->label('رقم جواز العاملة')
-                            ->columnSpan(1),
+                        \Filament\Forms\Components\Hidden::make('nationality_id'),
+                        \Filament\Forms\Components\Hidden::make('worker_passport_number'),
                     ])
                     ->columns(2),
 
                 \Filament\Forms\Components\Section::make('بيانات العميل')
                     ->schema([
-                        \Filament\Forms\Components\TextInput::make('customer_name')
-                            ->label('اسم العميل')
-                            ->maxLength(255)
-                            ->columnSpan(1),
-
-                        \Filament\Forms\Components\TextInput::make('customer_phone')
-                            ->label('رقم جوال العميل')
-                            ->tel()
-                            ->maxLength(50)
-                            ->columnSpan(1),
-
-                        \Filament\Forms\Components\TextInput::make('customer_id_number')
-                            ->label('رقم هوية العميل')
-                            ->maxLength(255)
-                            ->columnSpan(1),
+                        \Filament\Forms\Components\Select::make('customer_id')
+                            ->label('العميل')
+                            ->options(function () {
+                                return Client::query()
+                                    ->get()
+                                    ->mapWithKeys(function ($client) {
+                                        $label = $client->name_ar;
+                                        if ($client->national_id) {
+                                            $label .= ' (' . $client->national_id . ')';
+                                        }
+                                        return [$client->id => $label];
+                                    })
+                                    ->toArray();
+                            })
+                            ->searchable()
+                            ->columnSpan(2),
                     ])
                     ->columns(2),
 
@@ -215,6 +200,25 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                     ->schema([
                         \Filament\Forms\Components\TextInput::make('contract_no')
                             ->label(tr('housing.accommodation.contract_no', [], null, 'dashboard') ?: 'رقم العقد')
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                if ($state) {
+                                    $contract = RecruitmentContract::where('contract_no', $state)->first();
+                                    if ($contract) {
+                                        if ($contract->worker_id) {
+                                            $set('laborer_id', $contract->worker_id);
+                                            $laborer = Laborer::find($contract->worker_id);
+                                            if ($laborer) {
+                                                $set('worker_passport_number', $laborer->passport_number);
+                                                $set('nationality_id', $laborer->nationality_id);
+                                            }
+                                        }
+                                        if ($contract->client_id) {
+                                            $set('customer_id', $contract->client_id);
+                                        }
+                                    }
+                                }
+                            })
                             ->columnSpan(1),
 
                         \Filament\Forms\Components\Select::make('entry_type')
