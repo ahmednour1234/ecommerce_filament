@@ -72,8 +72,53 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
     {
         return $form
             ->schema([
-                \Filament\Forms\Components\Section::make('بيانات العاملة')
+                \Filament\Forms\Components\Section::make('بيانات العاملة والعميل')
                     ->schema([
+                        // ── رقم العقد ─────────────────────────────────────────
+                        \Filament\Forms\Components\Select::make('contract_no')
+                            ->label(tr('housing.accommodation.contract_no', [], null, 'dashboard') ?: 'رقم العقد')
+                            ->options(function () {
+                                return RecruitmentContract::query()
+                                    ->with('client')
+                                    ->get()
+                                    ->mapWithKeys(function ($contract) {
+                                        $label = $contract->contract_no;
+                                        if ($contract->client) {
+                                            $label .= ' — ' . $contract->client->name_ar;
+                                        }
+                                        return [$contract->contract_no => $label];
+                                    })
+                                    ->toArray();
+                            })
+                            ->searchable()
+                            ->live()
+                            ->placeholder('اختر عقداً أو اتركه فارغاً للاختيار اليدوي')
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                if ($state) {
+                                    $contract = RecruitmentContract::where('contract_no', $state)->first();
+                                    if ($contract) {
+                                        if ($contract->worker_id) {
+                                            $set('laborer_id', $contract->worker_id);
+                                            $laborer = Laborer::find($contract->worker_id);
+                                            if ($laborer) {
+                                                $set('worker_passport_number', $laborer->passport_number);
+                                                $set('nationality_id', $laborer->nationality_id);
+                                            }
+                                        }
+                                        if ($contract->client_id) {
+                                            $set('customer_id', $contract->client_id);
+                                        }
+                                    }
+                                } else {
+                                    $set('laborer_id', null);
+                                    $set('customer_id', null);
+                                    $set('worker_passport_number', null);
+                                    $set('nationality_id', null);
+                                }
+                            })
+                            ->columnSpan(2),
+
+                        // ── العاملة ───────────────────────────────────────────
                         \Filament\Forms\Components\Select::make('laborer_id')
                             ->label(tr('housing.accommodation.laborer', [], null, 'dashboard') ?: 'العاملة')
                             ->options(function () {
@@ -89,6 +134,8 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                             ->required()
                             ->searchable()
                             ->live()
+                            ->disabled(fn ($get) => (bool) $get('contract_no'))
+                            ->dehydrated()
                             ->createOptionForm([
                                 \Filament\Forms\Components\TextInput::make('name_ar')
                                     ->label(tr('recruitment.fields.name_ar', [], null, 'dashboard') ?: 'الاسم (عربي)')
@@ -159,7 +206,6 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                                 Cache::forget('recruitment_accommodation.workers');
                                 return $laborer->id;
                             })
-                            ->columnSpan(1)
                             ->afterStateUpdated(function ($state, callable $set) {
                                 if ($state) {
                                     $laborer = Laborer::find($state);
@@ -168,15 +214,10 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                                         $set('nationality_id', $laborer->nationality_id);
                                     }
                                 }
-                            }),
+                            })
+                            ->columnSpan(1),
 
-                        \Filament\Forms\Components\Hidden::make('nationality_id'),
-                        \Filament\Forms\Components\Hidden::make('worker_passport_number'),
-                    ])
-                    ->columns(2),
-
-                \Filament\Forms\Components\Section::make('بيانات العميل')
-                    ->schema([
+                        // ── العميل ────────────────────────────────────────────
                         \Filament\Forms\Components\Select::make('customer_id')
                             ->label('العميل')
                             ->options(function () {
@@ -192,35 +233,17 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                                     ->toArray();
                             })
                             ->searchable()
-                            ->columnSpan(2),
+                            ->disabled(fn ($get) => (bool) $get('contract_no'))
+                            ->dehydrated()
+                            ->columnSpan(1),
+
+                        \Filament\Forms\Components\Hidden::make('nationality_id'),
+                        \Filament\Forms\Components\Hidden::make('worker_passport_number'),
                     ])
                     ->columns(2),
 
                 \Filament\Forms\Components\Section::make('بيانات الإدخال')
                     ->schema([
-                        \Filament\Forms\Components\TextInput::make('contract_no')
-                            ->label(tr('housing.accommodation.contract_no', [], null, 'dashboard') ?: 'رقم العقد')
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(function ($state, callable $set) {
-                                if ($state) {
-                                    $contract = RecruitmentContract::where('contract_no', $state)->first();
-                                    if ($contract) {
-                                        if ($contract->worker_id) {
-                                            $set('laborer_id', $contract->worker_id);
-                                            $laborer = Laborer::find($contract->worker_id);
-                                            if ($laborer) {
-                                                $set('worker_passport_number', $laborer->passport_number);
-                                                $set('nationality_id', $laborer->nationality_id);
-                                            }
-                                        }
-                                        if ($contract->client_id) {
-                                            $set('customer_id', $contract->client_id);
-                                        }
-                                    }
-                                }
-                            })
-                            ->columnSpan(1),
-
                         \Filament\Forms\Components\Select::make('entry_type')
                             ->label(tr('housing.accommodation.entry_type', [], null, 'dashboard') ?: 'نوع الدخول')
                             ->options([
