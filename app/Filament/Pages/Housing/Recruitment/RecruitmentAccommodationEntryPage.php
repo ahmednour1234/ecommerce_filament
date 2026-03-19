@@ -121,21 +121,26 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                         // ── العاملة ───────────────────────────────────────────
                         \Filament\Forms\Components\Select::make('laborer_id')
                             ->label(tr('housing.accommodation.laborer', [], null, 'dashboard') ?: 'العاملة')
-                            ->options(function () {
+                            ->options(function (\Filament\Forms\Get $get) {
+                                // When a contract is selected, load ALL laborers so the linked one appears
+                                if ($get('contract_no')) {
+                                    return Laborer::orderBy('name_ar')
+                                        ->get()
+                                        ->mapWithKeys(fn ($w) => [$w->id => "{$w->name_ar} ({$w->passport_number})"])
+                                        ->toArray();
+                                }
                                 return Cache::remember('recruitment_accommodation.workers', 21600, function () {
                                     return Laborer::where('is_available', true)
                                         ->get()
-                                        ->mapWithKeys(function ($worker) {
-                                            return [$worker->id => "{$worker->name_ar} ({$worker->passport_number})"];
-                                        })
+                                        ->mapWithKeys(fn ($w) => [$w->id => "{$w->name_ar} ({$w->passport_number})"])
                                         ->toArray();
                                 });
                             })
                             ->required()
                             ->searchable()
                             ->live()
-                            ->disabled(fn ($get) => (bool) $get('contract_no'))
-                            ->dehydrated()
+                            ->disabled(fn (\Filament\Forms\Get $get) => (bool) $get('contract_no'))
+                            ->dehydrated(true)
                             ->createOptionForm([
                                 \Filament\Forms\Components\TextInput::make('name_ar')
                                     ->label(tr('recruitment.fields.name_ar', [], null, 'dashboard') ?: 'الاسم (عربي)')
@@ -233,8 +238,8 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                                     ->toArray();
                             })
                             ->searchable()
-                            ->disabled(fn ($get) => (bool) $get('contract_no'))
-                            ->dehydrated()
+                            ->disabled(fn (\Filament\Forms\Get $get) => (bool) $get('contract_no'))
+                            ->dehydrated(true)
                             ->columnSpan(1),
 
                         \Filament\Forms\Components\Hidden::make('nationality_id'),
