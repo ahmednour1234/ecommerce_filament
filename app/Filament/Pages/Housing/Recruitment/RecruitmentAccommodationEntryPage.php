@@ -98,16 +98,6 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                             ->searchable()
                             ->live()
                             ->placeholder('اختر عقداً أو اتركه فارغاً للاختيار اليدوي')
-                            ->suffixAction(
-                                FormAction::make('viewContract')
-                                    ->icon('heroicon-o-eye')
-                                    ->color('info')
-                                    ->tooltip('عرض بيانات العقد')
-                                    ->visible(fn (\Filament\Forms\Get $get) => (bool) $get('contract_no'))
-                                    ->action(function () {
-                                        $this->viewContractDetails();
-                                    })
-                            )
                             ->afterStateUpdated(function ($state, callable $set) {
                                 if ($state) {
                                     $contract = RecruitmentContract::where('contract_no', $state)->first();
@@ -132,6 +122,17 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                                 }
                             })
                             ->columnSpan(2),
+
+                        // ── زر عرض بيانات العقد ──────────────────────────────
+                        \Filament\Forms\Components\Actions::make([
+                            FormAction::make('viewContractDetails')
+                                ->label('عرض بيانات العقد')
+                                ->icon('heroicon-o-eye')
+                                ->color('info')
+                                ->size('sm')
+                                ->visible(fn (\Filament\Forms\Get $get) => (bool) $get('contract_no'))
+                                ->action(fn () => $this->viewContractDetails()),
+                        ])->columnSpan(2),
 
                         // ── العاملة ───────────────────────────────────────────
                         \Filament\Forms\Components\Select::make('laborer_id')
