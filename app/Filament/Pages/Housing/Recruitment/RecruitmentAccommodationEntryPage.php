@@ -10,6 +10,7 @@ use App\Models\Recruitment\Profession;
 use App\Models\Recruitment\RecruitmentContract;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Components\Actions\Action as FormAction;
 use Filament\Forms\Form;
 use Filament\Pages\Page;
 use Filament\Notifications\Notification;
@@ -37,6 +38,10 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
     public ?int $nationality_id = null;
     public ?string $worker_passport_number = null;
     public ?int $customer_id = null;
+
+    // ── Modal state ───────────────────────────────────────────────
+    public bool $showContractModal = false;
+    public array $contractDetails = [];
 
     public static function getNavigationLabel(): string
     {
@@ -93,6 +98,16 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                             ->searchable()
                             ->live()
                             ->placeholder('اختر عقداً أو اتركه فارغاً للاختيار اليدوي')
+                            ->suffixAction(
+                                FormAction::make('viewContract')
+                                    ->icon('heroicon-o-eye')
+                                    ->color('info')
+                                    ->tooltip('عرض بيانات العقد')
+                                    ->visible(fn (\Filament\Forms\Get $get) => (bool) $get('contract_no'))
+                                    ->action(function () {
+                                        $this->viewContractDetails();
+                                    })
+                            )
                             ->afterStateUpdated(function ($state, callable $set) {
                                 if ($state) {
                                     $contract = RecruitmentContract::where('contract_no', $state)->first();
@@ -300,6 +315,66 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                     ->columns(2),
             ])
             ->statePath('data');
+    }
+
+    public function viewContractDetails(): void
+    {
+        $contractNo = $this->data['contract_no'] ?? null;
+        if (!$contractNo) {
+            Notification::make()->title('لم يتم اختيار عقد')->warning()->send();
+            return;
+        }
+
+        $contract = RecruitmentContract::with(['client', 'worker', 'nationality', 'profession'])
+            ->where('contract_no', $contractNo)
+            ->first();
+
+        if (!$contract) {
+            Notification::make()->title('العقد غير موجود')->danger()->send();
+            return;
+        }
+
+        $statusLabels = [
+            'new'        => 'جديد',
+            'processing' => 'قيد المعالجة',
+            'received'   => 'مستلم',
+            'cancelled'  => 'ملغي',
+            'completed'  => 'مكتمل',
+        ];
+
+        $this->contractDetails = [
+            'contract_no'                       => $contract->contract_no,
+            'status'                            => $statusLabels[$contract->status] ?? $contract->status,
+            'gregorian_request_date'            => $contract->gregorian_request_date?->format('Y-m-d'),
+            'musaned_contract_no'               => $contract->musaned_contract_no,
+            'musaned_documentation_contract_no' => $contract->musaned_documentation_contract_no,
+            'musaned_auth_no'                   => $contract->musaned_auth_no,
+            'musaned_contract_date'             => $contract->musaned_contract_date?->format('Y-m-d'),
+            'visa_no'                           => $contract->visa_no,
+            'visa_date'                         => $contract->visa_date?->format('Y-m-d'),
+            'arrival_date'                      => $contract->arrival_date?->format('Y-m-d'),
+            'trial_end_date'                    => $contract->trial_end_date?->format('Y-m-d'),
+            'contract_end_date'                 => $contract->contract_end_date?->format('Y-m-d'),
+            'monthly_salary'                    => $contract->monthly_salary,
+            'total_cost'                        => $contract->total_cost,
+            'paid_total'                        => $contract->paid_total,
+            'remaining_total'                   => $contract->remaining_total,
+            'client_name'                       => $contract->client?->name_ar,
+            'client_national_id'                => $contract->client?->national_id,
+            'client_mobile'                     => $contract->client?->mobile,
+            'worker_name'                       => $contract->worker?->name_ar,
+            'worker_passport'                   => $contract->worker?->passport_number,
+            'worker_nationality'                => $contract->nationality?->name_ar,
+            'worker_profession'                 => $contract->profession?->name_ar,
+            'worker_gender'                     => $contract->gender === 'female' ? 'أنثى' : ($contract->gender === 'male' ? 'ذكر' : null),
+        ];
+
+        $this->showContractModal = true;
+    }
+
+    public function closeContractModal(): void
+    {
+        $this->showContractModal = false;
     }
 
     public function save(): void
