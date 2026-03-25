@@ -14,8 +14,7 @@ class OrdersByStatusChartWidget extends ChartWidget
 
     public static function canView(): bool
     {
-        $user = auth()->user();
-        return $user?->hasRole('super_admin') || $user?->can('orders.view_any') ?? false;
+        return false;
     }
 
     public ?string $from = null;

@@ -18,8 +18,7 @@ class OrderStatsWidget extends BaseWidget
 
     public static function canView(): bool
     {
-        $user = auth()->user();
-        return $user?->hasRole('super_admin') || $user?->can('orders.view_any') ?? false;
+        return false;
     }
 
     protected $listeners = ['filters-updated' => '$refresh'];
@@ -147,12 +146,12 @@ class OrderStatsWidget extends BaseWidget
             }
             return '/public' . $path;
         }
-        
+
         // If it's already a relative path starting with /public, return as is
         if (str_starts_with($url, '/public')) {
             return $url;
         }
-        
+
         // Otherwise, prepend /public
         return '/public' . $url;
     }
@@ -169,7 +168,7 @@ class OrderStatsWidget extends BaseWidget
                 $params["tableFilters[{$key}][value]"] = $value;
             }
         }
-        
+
         $queryString = http_build_query($params);
         return $baseUrl . ($queryString ? '?' . $queryString : '');
     }
