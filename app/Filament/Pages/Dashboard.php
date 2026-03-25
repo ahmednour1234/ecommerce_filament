@@ -69,7 +69,7 @@ class Dashboard extends BaseDashboard
 
         // ── مالية: تقارير الفروع (مالك + سوبر) ──
         if (in_array($type, [User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER], true)) {
-            $tabs[] = ['id' => 'finance_branches', 'label' => 'تقارير الفروع', 'widgets' => array_merge($filter, [
+            $tabs[] = ['id' => 'finance_branches', 'label' => 'تقارير الفروع', 'pair' => true, 'widgets' => array_merge($filter, [
                 FinanceBranchesComparisonChartWidget::class,
                 FinanceBranchesTableWidget::class,
             ]), 'footer' => []];
@@ -86,7 +86,8 @@ class Dashboard extends BaseDashboard
             default => [],
         };
         if (! empty($recruitmentWidgets)) {
-            $tabs[] = ['id' => 'recruitment', 'label' => 'عقود الاستقدام', 'widgets' => $recruitmentWidgets, 'footer' => []];
+            $pair = ($type === User::TYPE_COORDINATOR);
+            $tabs[] = ['id' => 'recruitment', 'label' => 'عقود الاستقدام', 'pair' => $pair, 'widgets' => $recruitmentWidgets, 'footer' => []];
         }
 
         // ── شكاوي ──
@@ -102,16 +103,13 @@ class Dashboard extends BaseDashboard
             $tabs[] = ['id' => 'hr_stats', 'label' => 'إحصائيات الموارد البشرية', 'widgets' => array_merge($hrFilter, [HRStatsWidget::class]), 'footer' => []];
         }
 
-        // ── موارد بشرية: طلبات الإجازات ──
+        // ── موارد بشرية: طلبات الإجازات + الأعذار في صف واحد ──
         if (in_array($type, [User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER, User::TYPE_HR_MANAGER], true)) {
             $hrFilter = $type === User::TYPE_HR_MANAGER ? $filter : [];
-            $tabs[] = ['id' => 'hr_leaves', 'label' => 'طلبات الإجازات', 'widgets' => array_merge($hrFilter, [HrPendingLeaveRequestsTableWidget::class]), 'footer' => []];
-        }
-
-        // ── موارد بشرية: طلبات الأعذار ──
-        if (in_array($type, [User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER, User::TYPE_HR_MANAGER], true)) {
-            $hrFilter = $type === User::TYPE_HR_MANAGER ? $filter : [];
-            $tabs[] = ['id' => 'hr_excuses', 'label' => 'طلبات الأعذار', 'widgets' => array_merge($hrFilter, [HrPendingExcuseRequestsTableWidget::class]), 'footer' => []];
+            $tabs[] = ['id' => 'hr_requests', 'label' => 'طلبات الإجازات والأعذار', 'pair' => true, 'widgets' => array_merge($hrFilter, [
+                HrPendingLeaveRequestsTableWidget::class,
+                HrPendingExcuseRequestsTableWidget::class,
+            ]), 'footer' => []];
         }
 
         if (empty($tabs)) {

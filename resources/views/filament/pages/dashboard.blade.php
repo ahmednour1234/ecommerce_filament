@@ -18,7 +18,26 @@
             @if($this->activeTab === $tab['id'])
             <div class="space-y-6">
                 @if(!empty($tab['widgets']))
-                <x-filament-widgets::widgets :widgets="$tab['widgets']" :columns="$this->getHeaderWidgetsColumns()" />
+                    @if(!empty($tab['pair']))
+                        {{-- أول widget هو filter (full width) والباقي يتقسم في جدولين --}}
+                        @php
+                            $allWidgets = $tab['widgets'];
+                            $filterWidgets = array_filter($allWidgets, fn($w) => is_string($w) && str_ends_with($w, 'DashboardFilterWidget'));
+                            $contentWidgets = array_values(array_filter($allWidgets, fn($w) => !is_string($w) || !str_ends_with($w, 'DashboardFilterWidget')));
+                        @endphp
+                        @if(!empty($filterWidgets))
+                        <x-filament-widgets::widgets :widgets="array_values($filterWidgets)" :columns="1" />
+                        @endif
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            @foreach(array_chunk($contentWidgets, 1) as $chunk)
+                            <div>
+                                <x-filament-widgets::widgets :widgets="$chunk" :columns="1" />
+                            </div>
+                            @endforeach
+                        </div>
+                    @else
+                    <x-filament-widgets::widgets :widgets="$tab['widgets']" :columns="$this->getHeaderWidgetsColumns()" />
+                    @endif
                 @endif
                 @if(!empty($tab['footer']))
                 <x-filament-widgets::widgets :widgets="$tab['footer']" :columns="$this->getHeaderWidgetsColumns()" />
