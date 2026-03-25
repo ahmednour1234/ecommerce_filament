@@ -20,7 +20,12 @@ class FinanceStatsWidget extends BaseWidget
     }
     protected int|string|array $columnSpan = 'full';
     protected ?string $heading = 'إحصائيات المالية';
-    
+
+    protected function getColumns(): int
+    {
+        return 2;
+    }
+
     protected $listeners = ['filters-updated' => '$refresh'];
 
     protected function getFilters(): array

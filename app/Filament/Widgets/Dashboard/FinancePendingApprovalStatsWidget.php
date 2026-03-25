@@ -12,6 +12,12 @@ use Illuminate\Database\Eloquent\Builder;
 class FinancePendingApprovalStatsWidget extends BaseWidget
 {
     protected static ?int $sort = 0;
+    protected int|string|array $columnSpan = 'full';
+
+    protected function getColumns(): int
+    {
+        return 2;
+    }
 
     public static function canView(): bool
     {

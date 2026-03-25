@@ -90,6 +90,11 @@ class Dashboard extends BaseDashboard
         return $tabs;
     }
 
+    public function getHeaderWidgetsColumns(): int|array
+    {
+        return 2;
+    }
+
     protected function getHeaderWidgets(): array
     {
         $tabs = $this->getDashboardTabs();
