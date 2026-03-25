@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\MainCore\MainCoreSeeder::class,
             \Database\Seeders\Housing\HousingStatusSeeder::class,
             \Database\Seeders\Housing\HousingPermissionsSeeder::class, // Housing module permissions
+            \Database\Seeders\Housing\AccommodationEntryRolesSeeder::class, // Accommodation Entry roles (منسق إيواء, مدير شكاوي الإيواء)
             \Database\Seeders\Housing\DriverManagementRoleSeeder::class, // Driver Management role and permissions
             AllTranslationsSeeder::class, // All translations in one unified seeder
             \Database\Seeders\Catalog\CatalogSeeder::class, // Must be after MainCore (needs Currency)
