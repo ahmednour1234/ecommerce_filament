@@ -128,6 +128,7 @@ class HousingTranslationsSeeder extends Seeder
             'housing.accommodation.entry_type.new_arrival' => ['en' => 'New Arrival', 'ar' => 'وافد جديد'],
             'housing.accommodation.entry_type.return' => ['en' => 'Return', 'ar' => 'استرجاع'],
             'housing.accommodation.entry_type.transfer' => ['en' => 'Transfer', 'ar' => 'نقل'],
+            'housing.recruitment.entry_type.transfer' => ['en' => 'Sponsorship Transfer', 'ar' => 'نقل كفالة'],
             'housing.accommodation.available_buildings_note' => ['en' => 'Only buildings with available capacity > 0 are shown', 'ar' => 'يتم عرض المباني المتاحة فقط (السعة المتاحة > 0)'],
 
             'housing.status.management' => ['en' => 'Status Management', 'ar' => 'إدارة الحالات'],
@@ -164,7 +165,7 @@ class HousingTranslationsSeeder extends Seeder
             'housing.reports.accommodation_duration_report' => ['en' => 'Accommodation Duration Report', 'ar' => 'تقرير مدة الإيواء'],
             'housing.reports.return_frequency_report' => ['en' => 'Return Frequency Report', 'ar' => 'تقرير تكرار الاسترجاع'],
             'housing.reports.view_report' => ['en' => 'View Report', 'ar' => 'عرض التقرير'],
-            
+
             // Reports Stats
             'housing.reports.stats.total_workers' => ['en' => 'Total Workers', 'ar' => 'إجمالي العمال'],
             'housing.reports.stats.total_workers_in_accommodation' => ['en' => 'Total Workers in Accommodation', 'ar' => 'إجمالي العاملة في الإيواء'],

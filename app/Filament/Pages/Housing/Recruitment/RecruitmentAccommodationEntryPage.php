@@ -270,7 +270,7 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                             ->options([
                                 'new_arrival' => tr('housing.accommodation.entry_type.new_arrival', [], null, 'dashboard') ?: 'وافد جديد',
                                 'return' => tr('housing.accommodation.entry_type.return', [], null, 'dashboard') ?: 'استرجاع',
-                                'transfer' => tr('housing.accommodation.entry_type.transfer', [], null, 'dashboard') ?: 'نقل',
+                                'transfer' => tr('housing.recruitment.entry_type.transfer', [], null, 'dashboard') ?: 'نقل كفالة',
                             ])
                             ->required()
                             ->columnSpan(1),

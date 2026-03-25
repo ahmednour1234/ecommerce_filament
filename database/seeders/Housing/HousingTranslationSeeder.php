@@ -268,6 +268,7 @@ class HousingTranslationSeeder extends Seeder
             'housing.accommodation.entry_type.new_arrival' => ['ar' => 'وافد جديد', 'en' => 'New Arrival'],
             'housing.accommodation.entry_type.return' => ['ar' => 'استرجاع', 'en' => 'Return'],
             'housing.accommodation.entry_type.transfer' => ['ar' => 'نقل', 'en' => 'Transfer'],
+            'housing.recruitment.entry_type.transfer' => ['ar' => 'نقل كفالة', 'en' => 'Sponsorship Transfer'],
 
             // Common
             'common.available' => ['ar' => 'متاح', 'en' => 'Available'],
