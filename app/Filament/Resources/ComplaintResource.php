@@ -114,20 +114,6 @@ class ComplaintResource extends Resource
                                             ->nullable()
                                             ->columnSpan(1),
 
-                                        Forms\Components\Select::make('nationality_id')
-                                            ->label(tr('complaint.fields.nationality', [], null, 'dashboard') ?: 'الجنسية')
-                                            ->relationship('nationality', 'name_ar')
-                                            ->options(function () {
-                                                return Cache::remember('complaints.nationalities', 21600, function () {
-                                                    return Nationality::where('is_active', true)->get()->mapWithKeys(function ($nationality) {
-                                                        return [$nationality->id => app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en];
-                                                    })->toArray();
-                                                });
-                                            })
-                                            ->nullable()
-                                            ->searchable()
-                                            ->columnSpan(1),
-
                                         Forms\Components\Textarea::make('complaint_description')
                                             ->label(tr('complaint.fields.complaint_description', [], null, 'dashboard') ?: 'وصف الشكوى')
                                             ->required()
