@@ -516,9 +516,13 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
         $data = $this->form->getState();
 
         // Extract transfer-specific fields before creating the entry
-        $transferClientId    = $data['transfer_client_id'] ?? null;
+        $transferClientId     = $data['transfer_client_id'] ?? null;
         $transferContractFile = $data['transfer_contract_file'] ?? null;
         unset($data['transfer_client_id'], $data['transfer_contract_file']);
+
+        // nationality_id and worker_passport_number are accessible via laborer relation;
+        // do not store them directly to avoid FK constraint issues.
+        unset($data['nationality_id'], $data['worker_passport_number']);
 
         // Parse the all_status_dates JSON map and remove it from entry data
         $allStatusDates = json_decode($data['all_status_dates'] ?? '{}', true) ?? [];

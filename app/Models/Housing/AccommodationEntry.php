@@ -32,8 +32,6 @@ class AccommodationEntry extends Model
         'updated_by',
         'new_sponsor_name',
         'old_sponsor_name',
-        'nationality_id',
-        'worker_passport_number',
         'new_sponsor_phone',
         'old_sponsor_phone',
         'customer_name',
