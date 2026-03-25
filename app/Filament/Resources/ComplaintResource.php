@@ -38,181 +38,245 @@ class ComplaintResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make(tr('complaint.sections.basic_info', [], null, 'dashboard') ?: 'Basic Information')
-                    ->schema([
-                        Forms\Components\TextInput::make('complaint_no')
-                            ->label(tr('complaint.fields.complaint_no', [], null, 'dashboard') ?: 'Complaint No')
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->columnSpan(1),
+                Forms\Components\Tabs::make()
+                    ->tabs([
 
-                        Forms\Components\Select::make('contract_type')
-                            ->label(tr('complaint.fields.contract_type', [], null, 'dashboard') ?: 'Contract Type')
-                            ->options([
-                                'App\Models\Rental\RentalContract' => tr('complaint.contract_type.rental', [], null, 'dashboard') ?: 'Rental Contract',
-                                'App\Models\Recruitment\RecruitmentContract' => tr('complaint.contract_type.recruitment', [], null, 'dashboard') ?: 'Recruitment Contract',
-                            ])
-                            ->nullable()
-                            ->reactive()
-                            ->afterStateUpdated(fn (callable $set) => $set('contract_id', null))
-                            ->columnSpan(1),
+                        // ────────────────────────────────────────────────
+                        // Tab 1 – قسم الشكاوي
+                        // ────────────────────────────────────────────────
+                        Forms\Components\Tabs\Tab::make('قسم الشكاوي')
+                            ->icon('heroicon-o-exclamation-triangle')
+                            ->schema([
+                                Forms\Components\Section::make(tr('complaint.sections.basic_info', [], null, 'dashboard') ?: 'معلومات الشكوى')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('complaint_no')
+                                            ->label(tr('complaint.fields.complaint_no', [], null, 'dashboard') ?: 'رقم الشكوى')
+                                            ->disabled()
+                                            ->dehydrated(false)
+                                            ->columnSpan(1),
 
-                        Forms\Components\Select::make('contract_id')
-                            ->label(tr('complaint.fields.contract', [], null, 'dashboard') ?: 'Contract')
-                            ->options(function (callable $get) {
-                                $contractType = $get('contract_type');
-                                if (!$contractType) {
-                                    return [];
-                                }
+                                        Forms\Components\Select::make('contract_type')
+                                            ->label(tr('complaint.fields.contract_type', [], null, 'dashboard') ?: 'نوع العقد')
+                                            ->options([
+                                                'App\Models\Rental\RentalContract' => tr('complaint.contract_type.rental', [], null, 'dashboard') ?: 'عقد تأجير',
+                                                'App\Models\Recruitment\RecruitmentContract' => tr('complaint.contract_type.recruitment', [], null, 'dashboard') ?: 'عقد استقدام',
+                                            ])
+                                            ->nullable()
+                                            ->reactive()
+                                            ->afterStateUpdated(fn (callable $set) => $set('contract_id', null))
+                                            ->columnSpan(1),
 
-                                if ($contractType === 'App\Models\Rental\RentalContract') {
-                                    return Cache::remember('complaints.rental_contracts', 21600, function () {
-                                        return RentalContract::withTrashed()
-                                            ->get()
-                                            ->mapWithKeys(function ($contract) {
-                                                return [$contract->id => "{$contract->contract_no} - " . ($contract->customer->name ?? 'N/A')];
+                                        Forms\Components\Select::make('contract_id')
+                                            ->label(tr('complaint.fields.contract', [], null, 'dashboard') ?: 'العقد')
+                                            ->options(function (callable $get) {
+                                                $contractType = $get('contract_type');
+                                                if (!$contractType) return [];
+
+                                                if ($contractType === 'App\Models\Rental\RentalContract') {
+                                                    return Cache::remember('complaints.rental_contracts', 21600, function () {
+                                                        return RentalContract::withTrashed()->get()->mapWithKeys(function ($contract) {
+                                                            return [$contract->id => "{$contract->contract_no} - " . ($contract->customer->name ?? 'N/A')];
+                                                        })->toArray();
+                                                    });
+                                                }
+
+                                                if ($contractType === 'App\Models\Recruitment\RecruitmentContract') {
+                                                    return Cache::remember('complaints.recruitment_contracts', 21600, function () {
+                                                        return RecruitmentContract::withTrashed()->get()->mapWithKeys(function ($contract) {
+                                                            $clientName = app()->getLocale() === 'ar' ? $contract->client->name_ar : $contract->client->name_en;
+                                                            return [$contract->id => "{$contract->contract_no} - {$clientName}"];
+                                                        })->toArray();
+                                                    });
+                                                }
+
+                                                return [];
                                             })
-                                            ->toArray();
-                                    });
-                                }
+                                            ->nullable()
+                                            ->searchable()
+                                            ->visible(fn (callable $get) => !empty($get('contract_type')))
+                                            ->columnSpan(1),
 
-                                if ($contractType === 'App\Models\Recruitment\RecruitmentContract') {
-                                    return Cache::remember('complaints.recruitment_contracts', 21600, function () {
-                                        return RecruitmentContract::withTrashed()
-                                            ->get()
-                                            ->mapWithKeys(function ($contract) {
-                                                $clientName = app()->getLocale() === 'ar' ? $contract->client->name_ar : $contract->client->name_en;
-                                                return [$contract->id => "{$contract->contract_no} - {$clientName}"];
+                                        Forms\Components\Select::make('problem_type')
+                                            ->label(tr('complaint.fields.problem_type', [], null, 'dashboard') ?: 'نوع المشكلة')
+                                            ->options([
+                                                'salary_issue' => tr('complaint.problem_type.salary_issue', [], null, 'dashboard') ?: 'مشكلة رواتب',
+                                                'food_issue' => tr('complaint.problem_type.food_issue', [], null, 'dashboard') ?: 'مشكلة طعام',
+                                                'escape' => tr('complaint.problem_type.escape', [], null, 'dashboard') ?: 'هروب',
+                                                'work_refusal' => tr('complaint.problem_type.work_refusal', [], null, 'dashboard') ?: 'رفض عمل',
+                                            ])
+                                            ->nullable()
+                                            ->columnSpan(1),
+
+                                        Forms\Components\TextInput::make('phone_number')
+                                            ->label(tr('complaint.fields.phone_number', [], null, 'dashboard') ?: 'رقم التليفون')
+                                            ->tel()
+                                            ->maxLength(50)
+                                            ->nullable()
+                                            ->columnSpan(1),
+
+                                        Forms\Components\Select::make('nationality_id')
+                                            ->label(tr('complaint.fields.nationality', [], null, 'dashboard') ?: 'الجنسية')
+                                            ->relationship('nationality', 'name_ar')
+                                            ->options(function () {
+                                                return Cache::remember('complaints.nationalities', 21600, function () {
+                                                    return Nationality::where('is_active', true)->get()->mapWithKeys(function ($nationality) {
+                                                        return [$nationality->id => app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en];
+                                                    })->toArray();
+                                                });
                                             })
-                                            ->toArray();
-                                    });
-                                }
+                                            ->nullable()
+                                            ->searchable()
+                                            ->columnSpan(1),
 
-                                return [];
-                            })
-                            ->nullable()
-                            ->searchable()
-                            ->visible(fn (callable $get) => !empty($get('contract_type')))
-                            ->columnSpan(1),
+                                        Forms\Components\Textarea::make('complaint_description')
+                                            ->label(tr('complaint.fields.complaint_description', [], null, 'dashboard') ?: 'وصف الشكوى')
+                                            ->required()
+                                            ->rows(4)
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->columns(2),
 
-                        Forms\Components\Select::make('problem_type')
-                            ->label(tr('complaint.fields.problem_type', [], null, 'dashboard') ?: 'نوع المشكلة')
-                            ->options([
-                                'salary_issue' => tr('complaint.problem_type.salary_issue', [], null, 'dashboard') ?: 'مشكلة رواتب',
-                                'food_issue' => tr('complaint.problem_type.food_issue', [], null, 'dashboard') ?: 'مشكلة طعام',
-                                'escape' => tr('complaint.problem_type.escape', [], null, 'dashboard') ?: 'هروب',
-                                'work_refusal' => tr('complaint.problem_type.work_refusal', [], null, 'dashboard') ?: 'رفض عمل',
-                            ])
-                            ->nullable()
-                            ->columnSpan(1),
+                                Forms\Components\Section::make(tr('complaint.sections.assignment', [], null, 'dashboard') ?: 'التعيين')
+                                    ->schema([
+                                        Forms\Components\Select::make('branch_id')
+                                            ->label(tr('complaint.fields.branch', [], null, 'dashboard') ?: 'الفرع')
+                                            ->options(function () {
+                                                return Cache::remember('complaints.branches', 21600, function () {
+                                                    return Branch::active()->get()->pluck('name', 'id')->toArray();
+                                                });
+                                            })
+                                            ->required()
+                                            ->searchable()
+                                            ->columnSpan(1),
 
-                        Forms\Components\TextInput::make('phone_number')
-                            ->label(tr('complaint.fields.phone_number', [], null, 'dashboard') ?: 'رقم التليفون')
-                            ->tel()
-                            ->maxLength(50)
-                            ->nullable()
-                            ->columnSpan(1),
+                                        Forms\Components\Select::make('assigned_to')
+                                            ->label(tr('complaint.fields.assigned_to', [], null, 'dashboard') ?: 'مسؤول المعالجة')
+                                            ->options(function () {
+                                                return Cache::remember('complaints.users', 21600, function () {
+                                                    return User::all()->pluck('name', 'id')->toArray();
+                                                });
+                                            })
+                                            ->nullable()
+                                            ->searchable()
+                                            ->columnSpan(1),
 
-                        Forms\Components\Select::make('nationality_id')
-                            ->label(tr('complaint.fields.nationality', [], null, 'dashboard') ?: 'الجنسية')
-                            ->relationship('nationality', 'name_ar')
-                            ->options(function () {
-                                return Cache::remember('complaints.nationalities', 21600, function () {
-                                    return Nationality::where('is_active', true)
-                                        ->get()
-                                        ->mapWithKeys(function ($nationality) {
-                                            return [$nationality->id => app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en];
-                                        })
-                                        ->toArray();
-                                });
-                            })
-                            ->nullable()
-                            ->searchable()
-                            ->columnSpan(1),
+                                        Forms\Components\Select::make('priority')
+                                            ->label(tr('complaint.fields.priority', [], null, 'dashboard') ?: 'الأولوية')
+                                            ->options([
+                                                'very_high' => tr('complaint.priority.very_high', [], null, 'dashboard') ?: 'عالي جدا',
+                                            ])
+                                            ->required()
+                                            ->default('very_high')
+                                            ->disabled()
+                                            ->columnSpan(1),
 
-                        Forms\Components\Textarea::make('complaint_description')
-                            ->label(tr('complaint.fields.complaint_description', [], null, 'dashboard') ?: 'وصف الشكوي')
-                            ->required()
-                            ->rows(4)
-                            ->columnSpanFull(),
+                                        Forms\Components\Select::make('status')
+                                            ->label(tr('complaint.fields.status', [], null, 'dashboard') ?: 'الحالة')
+                                            ->options([
+                                                'in_progress' => tr('complaint.status.in_progress', [], null, 'dashboard') ?: 'قيد المعالجة',
+                                                'resolved' => tr('complaint.status.resolved', [], null, 'dashboard') ?: 'تم الحل',
+                                            ])
+                                            ->required()
+                                            ->default('in_progress')
+                                            ->reactive()
+                                            ->columnSpan(1),
+                                    ])
+                                    ->columns(2),
+
+                                Forms\Components\Section::make(tr('complaint.sections.resolution', [], null, 'dashboard') ?: 'الحل')
+                                    ->schema([
+                                        Forms\Components\Textarea::make('branch_action_taken')
+                                            ->label(tr('complaint.fields.branch_action_taken', [], null, 'dashboard') ?: 'الإجراء المتخذ من الفرع المختص')
+                                            ->rows(4)
+                                            ->columnSpanFull(),
+
+                                        Forms\Components\Textarea::make('resolution_notes')
+                                            ->label(tr('complaint.fields.resolution_notes', [], null, 'dashboard') ?: 'ملاحظات الحل')
+                                            ->rows(4)
+                                            ->visible(fn (callable $get) => $get('status') === 'resolved')
+                                            ->columnSpanFull(),
+
+                                        Forms\Components\DateTimePicker::make('in_progress_at')
+                                            ->label(tr('complaint.fields.in_progress_at', [], null, 'dashboard') ?: 'قيد المعالجة في')
+                                            ->visible(fn (callable $get) => $get('status') === 'in_progress')
+                                            ->disabled()
+                                            ->dehydrated(false)
+                                            ->columnSpan(1),
+
+                                        Forms\Components\DateTimePicker::make('resolved_at')
+                                            ->label(tr('complaint.fields.resolved_at', [], null, 'dashboard') ?: 'تاريخ الحل')
+                                            ->visible(fn (callable $get) => $get('status') === 'resolved')
+                                            ->disabled()
+                                            ->dehydrated(false)
+                                            ->columnSpan(1),
+                                    ])
+                                    ->columns(2),
+
+                                // Messages section – Complaints dept
+                                Forms\Components\Section::make('رسائل قسم الشكاوي')
+                                    ->icon('heroicon-o-chat-bubble-left-right')
+                                    ->schema([
+                                        // Log (only on edit/view)
+                                        Forms\Components\Placeholder::make('complaints_messages_display')
+                                            ->label('')
+                                            ->content(function ($record) {
+                                                if (!$record) {
+                                                    return new \Illuminate\Support\HtmlString(
+                                                        '<p class="text-center text-sm text-gray-400 py-4">احفظ الشكوى أولاً لعرض الرسائل</p>'
+                                                    );
+                                                }
+                                                $messages = $record->messages()->with('creator')->orderBy('created_at')->get();
+                                                return new \Illuminate\Support\HtmlString(
+                                                    view('filament.components.complaint-messages-log', compact('messages'))->render()
+                                                );
+                                            })
+                                            ->columnSpanFull(),
+
+                                        Forms\Components\Textarea::make('complaints_message')
+                                            ->label('رسالة جديدة')
+                                            ->placeholder('اكتب رسالتك هنا...')
+                                            ->rows(3)
+                                            ->nullable()
+                                            ->columnSpanFull(),
+                                    ]),
+                            ]),
+
+                        // ────────────────────────────────────────────────
+                        // Tab 2 – قسم التنسيق
+                        // ────────────────────────────────────────────────
+                        Forms\Components\Tabs\Tab::make('قسم التنسيق')
+                            ->icon('heroicon-o-arrows-right-left')
+                            ->schema([
+                                Forms\Components\Section::make('سجل رسائل قسم التنسيق')
+                                    ->icon('heroicon-o-chat-bubble-left-right')
+                                    ->schema([
+                                        // Full log (all departments)
+                                        Forms\Components\Placeholder::make('coordination_messages_display')
+                                            ->label('')
+                                            ->content(function ($record) {
+                                                if (!$record) {
+                                                    return new \Illuminate\Support\HtmlString(
+                                                        '<p class="text-center text-sm text-gray-400 py-4">احفظ الشكوى أولاً لعرض الرسائل</p>'
+                                                    );
+                                                }
+                                                $messages = $record->messages()->with('creator')->orderBy('created_at')->get();
+                                                return new \Illuminate\Support\HtmlString(
+                                                    view('filament.components.complaint-messages-log', compact('messages'))->render()
+                                                );
+                                            })
+                                            ->columnSpanFull(),
+
+                                        Forms\Components\Textarea::make('coordination_message')
+                                            ->label('رسالة جديدة من قسم التنسيق')
+                                            ->placeholder('اكتب ملاحظاتك هنا...')
+                                            ->rows(3)
+                                            ->nullable()
+                                            ->columnSpanFull(),
+                                    ]),
+                            ]),
+
                     ])
-                    ->columns(2),
-
-                Forms\Components\Section::make(tr('complaint.sections.assignment', [], null, 'dashboard') ?: 'Assignment')
-                    ->schema([
-                        Forms\Components\Select::make('branch_id')
-                            ->label(tr('complaint.fields.branch', [], null, 'dashboard') ?: 'Branch')
-                            ->options(function () {
-                                return Cache::remember('complaints.branches', 21600, function () {
-                                    return Branch::active()->get()->pluck('name', 'id')->toArray();
-                                });
-                            })
-                            ->required()
-                            ->searchable()
-                            ->columnSpan(1),
-
-                        Forms\Components\Select::make('assigned_to')
-                            ->label(tr('complaint.fields.assigned_to', [], null, 'dashboard') ?: 'Assigned To')
-                            ->options(function () {
-                                return Cache::remember('complaints.users', 21600, function () {
-                                    return User::all()->pluck('name', 'id')->toArray();
-                                });
-                            })
-                            ->nullable()
-                            ->searchable()
-                            ->columnSpan(1),
-
-                        Forms\Components\Select::make('priority')
-                            ->label(tr('complaint.fields.priority', [], null, 'dashboard') ?: 'Priority')
-                            ->options([
-                                'very_high' => tr('complaint.priority.very_high', [], null, 'dashboard') ?: 'عالي جدا',
-                            ])
-                            ->required()
-                            ->default('very_high')
-                            ->disabled()
-                            ->columnSpan(1),
-
-                        Forms\Components\Select::make('status')
-                            ->label(tr('complaint.fields.status', [], null, 'dashboard') ?: 'Status')
-                            ->options([
-                                'in_progress' => tr('complaint.status.in_progress', [], null, 'dashboard') ?: 'قيد المعالجة',
-                                'resolved' => tr('complaint.status.resolved', [], null, 'dashboard') ?: 'تم الحل',
-                            ])
-                            ->required()
-                            ->default('in_progress')
-                            ->reactive()
-                            ->columnSpan(1),
-                    ])
-                    ->columns(2),
-
-                Forms\Components\Section::make(tr('complaint.sections.resolution', [], null, 'dashboard') ?: 'Resolution')
-                    ->schema([
-                        Forms\Components\Textarea::make('branch_action_taken')
-                            ->label(tr('complaint.fields.branch_action_taken', [], null, 'dashboard') ?: 'الإجراء المتخذ من الفرع المختص')
-                            ->rows(4)
-                            ->columnSpanFull(),
-
-                        Forms\Components\Textarea::make('resolution_notes')
-                            ->label(tr('complaint.fields.resolution_notes', [], null, 'dashboard') ?: 'Resolution Notes')
-                            ->rows(4)
-                            ->visible(fn (callable $get) => $get('status') === 'resolved')
-                            ->columnSpanFull(),
-
-                        Forms\Components\DateTimePicker::make('in_progress_at')
-                            ->label(tr('complaint.fields.in_progress_at', [], null, 'dashboard') ?: 'In Progress At')
-                            ->visible(fn (callable $get) => $get('status') === 'in_progress')
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->columnSpan(1),
-
-                        Forms\Components\DateTimePicker::make('resolved_at')
-                            ->label(tr('complaint.fields.resolved_at', [], null, 'dashboard') ?: 'Resolved At')
-                            ->visible(fn (callable $get) => $get('status') === 'resolved')
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->columnSpan(1),
-                    ])
-                    ->columns(2),
+                    ->columnSpanFull(),
             ]);
     }
 

@@ -49,7 +49,7 @@ class Complaint extends Model
                 $service = app(ComplaintService::class);
                 $complaint->complaint_no = $service->generateComplaintNo();
             }
-            
+
             if (empty($complaint->created_by) && auth()->check()) {
                 $complaint->created_by = auth()->id();
             }
@@ -59,14 +59,14 @@ class Complaint extends Model
             if ($complaint->isDirty('status')) {
                 $oldStatus = $complaint->getOriginal('status');
                 $newStatus = $complaint->status;
-                
+
                 if ($newStatus === 'in_progress' && !$complaint->in_progress_at) {
                     $complaint->in_progress_at = now();
                 }
                 if ($newStatus === 'resolved' && !$complaint->resolved_at) {
                     $complaint->resolved_at = now();
                 }
-                
+
                 if ($oldStatus !== $newStatus) {
                     \App\Models\ComplaintStatusLog::create([
                         'complaint_id' => $complaint->id,
@@ -113,6 +113,11 @@ class Complaint extends Model
     public function notifications(): HasMany
     {
         return $this->hasMany(\App\Models\ComplaintNotification::class);
+    }
+
+    public function messages(): HasMany
+    {
+        return $this->hasMany(\App\Models\ComplaintMessage::class);
     }
 
     public function scopeInProgress($query)
