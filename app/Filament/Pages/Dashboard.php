@@ -128,14 +128,7 @@ class Dashboard extends BaseDashboard
 
     protected function getHeaderWidgets(): array
     {
-        $tabs = $this->getDashboardTabs();
-        foreach ($tabs as $tab) {
-            if ($tab['id'] === $this->activeTab) {
-                return array_merge($tab['widgets'] ?? [], $tab['footer'] ?? []);
-            }
-        }
-        $first = $tabs[0] ?? [];
-        return array_merge($first['widgets'] ?? [], $first['footer'] ?? []) ?: [DashboardFilterWidget::class];
+        return [];
     }
 
     protected function getFooterWidgets(): array
