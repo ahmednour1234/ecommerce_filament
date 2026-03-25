@@ -28,19 +28,7 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
     protected static ?string $navigationTranslationKey = 'sidebar.recruitment_housing.accommodation_entries';
     protected static string $view = 'filament.pages.housing.create-accommodation-entry';
 
-    public ?int $laborer_id = null;
-    public ?string $contract_no = null;
-    public ?string $entry_type = null;
-    public ?string $entry_date = null;
-    public ?string $exit_date = null;
-    public ?int $status_id = null;
-    public ?string $status_key = null;
-    public ?string $status_date = null;
-    public ?string $all_status_dates = null;
-    public ?int $building_id = null;
-    public ?int $nationality_id = null;
-    public ?string $worker_passport_number = null;
-    public ?int $customer_id = null;
+    public array $data = [];
 
     // ── Modal state ───────────────────────────────────────────────
     public bool $showContractModal = false;
