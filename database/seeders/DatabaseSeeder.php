@@ -55,6 +55,7 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\ComplaintPermissionsSeeder::class, // Complaints permissions
             \Database\Seeders\ComplaintRoleSeeder::class, // Complaints Manager role and permissions
             \Database\Seeders\ComplaintsOnlyRoleSeeder::class,
+            \Database\Seeders\ComplaintsRolesAndPermissionsSeeder::class, // Complaints full roles + messages permissions + auto-assign by user type
             \Database\Seeders\HR\EmployeeCommissionPermissionsSeeder::class, // Employee Commission permissions
             \Database\Seeders\HR\EmployeeCommissionRoleSeeder::class, // Employee Commission Manager role and permissions
             \Database\Seeders\Packages\PackagesPermissionsSeeder::class, // Packages module permissions
