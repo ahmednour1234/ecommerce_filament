@@ -35,7 +35,8 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
     public ?string $exit_date = null;
     public ?int $status_id = null;
     public ?string $status_key = null;
-    public array $status_logs_data = [];
+    public ?string $status_date = null;
+    public ?string $all_status_dates = null;
     public ?int $building_id = null;
     public ?int $nationality_id = null;
     public ?string $worker_passport_number = null;
@@ -305,12 +306,6 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                             ->native(false)
                             ->columnSpan(1),
 
-                        \Filament\Forms\Components\Select::make('status_key')
-                            ->label(tr('housing.accommodation.status', [], null, 'dashboard') ?: 'الحالة')
-                            ->options(static::housingStatusOptions())
-                            ->searchable()
-                            ->columnSpan(1),
-
                         \Filament\Forms\Components\Select::make('building_id')
                             ->label(tr('housing.accommodation.building', [], null, 'dashboard') ?: 'المبنى')
                             ->options(function () {
@@ -330,25 +325,38 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
 
                 \Filament\Forms\Components\Section::make('سجل الحالات')
                     ->schema([
-                        \Filament\Forms\Components\Repeater::make('status_logs_data')
-                            ->label(false)
-                            ->schema([
-                                \Filament\Forms\Components\Select::make('status_key')
-                                    ->label('الحالة')
-                                    ->options(static::housingStatusOptions())
-                                    ->required()
-                                    ->searchable(),
-                                \Filament\Forms\Components\DatePicker::make('status_date')
-                                    ->label('التاريخ')
-                                    ->required()
-                                    ->native(false)
-                                    ->default(now()->toDateString()),
-                            ])
-                            ->columns(2)
-                            ->columnSpanFull()
-                            ->addActionLabel('إضافة حالة')
-                            ->defaultItems(0)
-                            ->reorderable(false),
+                        \Filament\Forms\Components\View::make('filament.forms.components.housing-status-table')
+                            ->viewData(function ($get) {
+                                $statusLabels = static::housingStatusOptions();
+
+                                $statusDates = [];
+                                $currentStatus = $get('status_key') ?? '';
+
+                                // Restore dates from all_status_dates hidden field if available
+                                $allDatesJson = $get('all_status_dates') ?? '{}';
+                                $allDates = json_decode($allDatesJson, true) ?? [];
+                                foreach ($statusLabels as $key => $label) {
+                                    if (isset($allDates[$key])) {
+                                        $statusDates[$key] = $allDates[$key];
+                                    }
+                                }
+
+                                return [
+                                    'statuses'             => $statusLabels,
+                                    'statusDates'          => $statusDates,
+                                    'statusDurations'      => [],
+                                    'currentStatus'        => $currentStatus,
+                                    'statusStatePath'      => 'data.status_key',
+                                    'statusDateStatePath'  => 'data.status_date',
+                                ];
+                            })
+                            ->columnSpanFull(),
+
+                        \Filament\Forms\Components\Hidden::make('status_key'),
+                        \Filament\Forms\Components\Hidden::make('status_date')
+                            ->default(now()->toDateString()),
+                        \Filament\Forms\Components\Hidden::make('all_status_dates')
+                            ->default('{}'),
                     ])
                     ->columns(1)
                     ->collapsed(false),
@@ -420,23 +428,24 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
     {
         $data = $this->form->getState();
 
-        // Extract status logs before creating the entry
-        $statusLogsData = $data['status_logs_data'] ?? [];
-        unset($data['status_logs_data']);
+        // Parse the all_status_dates JSON map and remove it from entry data
+        $allStatusDates = json_decode($data['all_status_dates'] ?? '{}', true) ?? [];
+        unset($data['all_status_dates']);
+        unset($data['status_date']);
 
         $data['type'] = 'recruitment';
 
         $entry = \App\Models\Housing\AccommodationEntry::create($data);
 
-        // Persist each status log row
-        foreach ($statusLogsData as $log) {
-            if (!empty($log['status_key']) && !empty($log['status_date'])) {
+        // Persist a log row for every status that has a date filled in
+        foreach ($allStatusDates as $statusKey => $statusDate) {
+            if (!empty($statusKey) && !empty($statusDate)) {
                 \App\Models\Housing\AccommodationEntryStatusLog::create([
                     'accommodation_entry_id' => $entry->id,
                     'old_status_id'          => null,
                     'new_status_id'          => null,
-                    'status_key'             => $log['status_key'],
-                    'status_date'            => $log['status_date'],
+                    'status_key'             => $statusKey,
+                    'status_date'            => $statusDate,
                     'created_by'             => auth()->id(),
                 ]);
             }
