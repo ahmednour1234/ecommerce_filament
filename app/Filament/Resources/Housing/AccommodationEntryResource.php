@@ -368,6 +368,18 @@ class AccommodationEntryResource extends Resource
                 Tables\Filters\SelectFilter::make('status_key')
                     ->label('الحالة')
                     ->options(static::housingStatusOptions()),
+                Tables\Filters\SelectFilter::make('nationality')
+                    ->label('الجنسية')
+                    ->options(fn () => Nationality::where('is_active', true)
+                        ->get()
+                        ->mapWithKeys(fn ($n) => [$n->id => $n->name_ar])
+                        ->toArray()
+                    )
+                    ->query(fn (Builder $query, array $data) =>
+                        $data['value']
+                            ? $query->whereHas('laborer', fn ($q) => $q->where('nationality_id', $data['value']))
+                            : $query
+                    ),
                 Tables\Filters\Filter::make('active')
                     ->label('داخل فقط (بدون تاريخ خروج)')
                     ->query(fn (Builder $query) => $query->whereNull('exit_date')),
