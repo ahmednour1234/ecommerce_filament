@@ -26,7 +26,7 @@ class RentalHousingAlertsPage extends Page implements HasTable
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->can('housing.accommodation_entries.view_any') ?? false;
+        return false;
     }
 
     public function getTitle(): string
@@ -51,7 +51,7 @@ class RentalHousingAlertsPage extends Page implements HasTable
 
                 Tables\Columns\TextColumn::make('laborer.name_ar')
                     ->label('اسم العامل')
-                    ->formatStateUsing(fn ($state, $record) => $record->laborer 
+                    ->formatStateUsing(fn ($state, $record) => $record->laborer
                         ? (app()->getLocale() === 'ar' ? $record->laborer->name_ar : $record->laborer->name_en)
                         : '')
                     ->searchable()
@@ -64,7 +64,7 @@ class RentalHousingAlertsPage extends Page implements HasTable
 
                 Tables\Columns\TextColumn::make('status.name')
                     ->label('الحالة الحالية')
-                    ->formatStateUsing(fn ($state, $record) => $record->status 
+                    ->formatStateUsing(fn ($state, $record) => $record->status
                         ? (app()->getLocale() === 'ar' ? $record->status->name_ar : $record->status->name_en)
                         : '')
                     ->badge()
@@ -79,13 +79,13 @@ class RentalHousingAlertsPage extends Page implements HasTable
                             ->orderBy('status_date', 'desc')
                             ->orderBy('created_at', 'desc')
                             ->first();
-                        
+
                         if ($lastLog) {
-                            return $lastLog->status_date 
+                            return $lastLog->status_date
                                 ? Carbon::parse($lastLog->status_date)->format('Y-m-d')
                                 : $lastLog->created_at->format('Y-m-d');
                         }
-                        
+
                         return $record->entry_date ? $record->entry_date->format('Y-m-d') : '-';
                     })
                     ->sortable(),
@@ -98,20 +98,20 @@ class RentalHousingAlertsPage extends Page implements HasTable
                             ->orderBy('status_date', 'desc')
                             ->orderBy('created_at', 'desc')
                             ->first();
-                        
+
                         $lastUpdateDate = null;
                         if ($lastLog) {
-                            $lastUpdateDate = $lastLog->status_date 
+                            $lastUpdateDate = $lastLog->status_date
                                 ? Carbon::parse($lastLog->status_date)
                                 : $lastLog->created_at;
                         } else {
                             $lastUpdateDate = $record->entry_date ? Carbon::parse($record->entry_date) : null;
                         }
-                        
+
                         if ($lastUpdateDate) {
                             return Carbon::now()->diffInDays($lastUpdateDate) . ' يوم';
                         }
-                        
+
                         return '-';
                     })
                     ->badge()
@@ -121,16 +121,16 @@ class RentalHousingAlertsPage extends Page implements HasTable
                             ->orderBy('status_date', 'desc')
                             ->orderBy('created_at', 'desc')
                             ->first();
-                        
+
                         $lastUpdateDate = null;
                         if ($lastLog) {
-                            $lastUpdateDate = $lastLog->status_date 
+                            $lastUpdateDate = $lastLog->status_date
                                 ? Carbon::parse($lastLog->status_date)
                                 : $lastLog->created_at;
                         } else {
                             $lastUpdateDate = $record->entry_date ? Carbon::parse($record->entry_date) : null;
                         }
-                        
+
                         if ($lastUpdateDate) {
                             $days = Carbon::now()->diffInDays($lastUpdateDate);
                             if ($days > 7) {
@@ -139,14 +139,14 @@ class RentalHousingAlertsPage extends Page implements HasTable
                                 return 'warning';
                             }
                         }
-                        
+
                         return 'success';
                     })
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('building.name_ar')
                     ->label('المبنى')
-                    ->formatStateUsing(fn ($state, $record) => $record->building 
+                    ->formatStateUsing(fn ($state, $record) => $record->building
                         ? (app()->getLocale() === 'ar' ? $record->building->name_ar : $record->building->name_en)
                         : '')
                     ->searchable()
@@ -189,20 +189,20 @@ class RentalHousingAlertsPage extends Page implements HasTable
                     return $log->status_date ? $log->status_date->format('Y-m-d H:i:s') : $log->created_at->format('Y-m-d H:i:s');
                 })
                 ->first();
-            
+
             if ($lastLog) {
-                $lastUpdateDate = $lastLog->status_date 
+                $lastUpdateDate = $lastLog->status_date
                     ? Carbon::parse($lastLog->status_date)
                     : $lastLog->created_at;
-                
+
                 return $lastUpdateDate->lt($oneWeekAgo);
             }
-            
+
             // If no log exists for current status, check entry_date
             if ($entry->entry_date) {
                 return Carbon::parse($entry->entry_date)->lt($oneWeekAgo);
             }
-            
+
             return false;
         })->pluck('id')->toArray();
 
