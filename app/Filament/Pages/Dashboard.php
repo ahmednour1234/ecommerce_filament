@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Filament\Concerns\AddsPublicToUrl;
 use App\Filament\Widgets\Dashboard\ComplaintsStatsWidget;
+use App\Filament\Widgets\Dashboard\LatestComplaintsTableWidget;
 use App\Filament\Widgets\Dashboard\DashboardFilterWidget;
 use App\Filament\Widgets\Dashboard\FinanceBranchesComparisonChartWidget;
 use App\Filament\Widgets\Dashboard\FinanceBranchesTableWidget;
@@ -72,6 +73,7 @@ class Dashboard extends BaseDashboard
             if (! in_array(DashboardFilterWidget::class, $complaints)) {
                 array_unshift($complaints, DashboardFilterWidget::class);
             }
+            $complaints[] = LatestComplaintsTableWidget::class;
             $tabs[] = ['id' => 'complaints', 'label' => 'شكاوي', 'widgets' => $complaints, 'footer' => []];
         }
 
