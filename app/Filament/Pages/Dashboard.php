@@ -13,7 +13,6 @@ use App\Filament\Widgets\Dashboard\FinanceTopTypesWidget;
 use App\Filament\Widgets\Dashboard\HRStatsWidget;
 use App\Filament\Widgets\Dashboard\HrPendingExcuseRequestsTableWidget;
 use App\Filament\Widgets\Dashboard\HrPendingLeaveRequestsTableWidget;
-use App\Filament\Widgets\Dashboard\OrderStatsWidget;
 use App\Filament\Widgets\Dashboard\FinancePendingApprovalStatsWidget;
 use App\Filament\Widgets\Dashboard\FinancePendingApprovalTableWidget;
 use App\Filament\Widgets\Dashboard\RecruitmentAccountsTableWidget;
@@ -77,9 +76,6 @@ class Dashboard extends BaseDashboard
             $tabs[] = ['id' => 'complaints', 'label' => 'شكاوي', 'widgets' => $complaints, 'footer' => []];
         }
 
-        if (in_array($type, [User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER], true)) {
-            $tabs[] = ['id' => 'orders', 'label' => 'طلبات', 'widgets' => [OrderStatsWidget::class], 'footer' => []];
-        }
         if (in_array($type, [User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER, User::TYPE_HR_MANAGER], true)) {
             $hr = $type === User::TYPE_HR_MANAGER
                 ? array_merge($filter, [HRStatsWidget::class, HrPendingLeaveRequestsTableWidget::class, HrPendingExcuseRequestsTableWidget::class])
