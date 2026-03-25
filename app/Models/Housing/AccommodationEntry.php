@@ -200,4 +200,9 @@ class AccommodationEntry extends Model
     {
         return $this->hasMany(AccommodationEntryStatusLog::class);
     }
+
+    public function transferData(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(AccommodationEntryTransfer::class);
+    }
 }

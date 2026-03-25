@@ -257,7 +257,36 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                         ->required(!$readonly)
                         ->disabled($readonly)
                         ->dehydrated(true)
+                        ->live()
                         ->columnSpan(1),
+
+                    \Filament\Forms\Components\Select::make('transfer_client_id')
+                        ->label('عميل نقل كفالة')
+                        ->options(function () {
+                            return \App\Models\Client::query()
+                                ->get()
+                                ->mapWithKeys(function ($client) {
+                                    $label = $client->name_ar;
+                                    if ($client->national_id) $label .= ' (' . $client->national_id . ')';
+                                    return [$client->id => $label];
+                                })->toArray();
+                        })
+                        ->searchable()
+                        ->visible(fn (\Filament\Forms\Get $get) => $get('entry_type') === 'transfer')
+                        ->disabled($readonly)
+                        ->dehydrated(true)
+                        ->columnSpan(1),
+
+                    \Filament\Forms\Components\FileUpload::make('transfer_contract_file')
+                        ->label('صورة عقد نقل الكفالة')
+                        ->disk('public')
+                        ->directory('transfer-contracts')
+                        ->acceptedFileTypes(['image/*', 'application/pdf'])
+                        ->maxSize(10240)
+                        ->visible(fn (\Filament\Forms\Get $get) => $get('entry_type') === 'transfer')
+                        ->disabled($readonly)
+                        ->dehydrated(true)
+                        ->columnSpan(2),
 
                     \Filament\Forms\Components\DateTimePicker::make('entry_date')
                         ->label(tr('housing.accommodation.entry_date', [], null, 'dashboard') ?: 'تاريخ الدخول')
@@ -449,6 +478,11 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
     {
         $data = $this->form->getState();
 
+        // Extract transfer-specific fields before creating the entry
+        $transferClientId    = $data['transfer_client_id'] ?? null;
+        $transferContractFile = $data['transfer_contract_file'] ?? null;
+        unset($data['transfer_client_id'], $data['transfer_contract_file']);
+
         // Parse the all_status_dates JSON map and remove it from entry data
         $allStatusDates = json_decode($data['all_status_dates'] ?? '{}', true) ?? [];
         unset($data['all_status_dates']);
@@ -470,6 +504,17 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                     'created_by'             => auth()->id(),
                 ]);
             }
+        }
+
+        // If this is a sponsorship transfer, save the extra data in its own table
+        if (($entry->entry_type === 'transfer') && ($transferClientId || $transferContractFile)) {
+            \App\Models\Housing\AccommodationEntryTransfer::create([
+                'accommodation_entry_id' => $entry->id,
+                'transfer_client_id'     => $transferClientId,
+                'contract_file_path'     => is_array($transferContractFile) ? (reset($transferContractFile) ?: null) : $transferContractFile,
+                'contract_file_name'     => is_array($transferContractFile) ? (array_key_first($transferContractFile) ?: null) : $transferContractFile,
+                'created_by'             => auth()->id(),
+            ]);
         }
 
         Notification::make()
