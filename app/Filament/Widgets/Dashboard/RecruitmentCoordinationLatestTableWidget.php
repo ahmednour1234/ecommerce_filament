@@ -11,7 +11,7 @@ use Filament\Widgets\TableWidget as BaseWidget;
 class RecruitmentCoordinationLatestTableWidget extends BaseWidget
 {
     protected static ?string $heading = 'آخر العقود وحالاتها';
-    protected int|string|array $columnSpan = 1;
+    protected int|string|array $columnSpan = 'full';
 
     public static function canView(): bool
     {

@@ -35,26 +35,35 @@ class Dashboard extends BaseDashboard
         $filter = [DashboardFilterWidget::class];
         $tabs = [];
 
-        $financeHeader = match ($type) {
-            User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER => array_merge($filter, [
+        // ── مالية: إحصائيات ──
+        if (in_array($type, [User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER], true)) {
+            $tabs[] = ['id' => 'finance_stats', 'label' => 'إحصائيات مالية', 'widgets' => array_merge($filter, [
                 FinanceStatsWidget::class,
                 FinanceTopTypesWidget::class,
-            ]),
-            User::TYPE_ACCOUNTANT, User::TYPE_GENERAL_ACCOUNTANT => array_merge($filter, [
+            ]), 'footer' => []];
+        } elseif (in_array($type, [User::TYPE_ACCOUNTANT, User::TYPE_GENERAL_ACCOUNTANT], true)) {
+            $tabs[] = ['id' => 'finance_stats', 'label' => 'إحصائيات مالية', 'widgets' => array_merge($filter, [
                 FinancePendingApprovalStatsWidget::class,
-                FinancePendingApprovalTableWidget::class,
-            ]),
-            default => [],
-        };
-        $financeFooter = ($type === User::TYPE_SUPER_ADMIN || $type === User::TYPE_COMPANY_OWNER || $type === User::TYPE_ACCOUNTANT || $type === User::TYPE_GENERAL_ACCOUNTANT)
-            ? [FinanceBranchesComparisonChartWidget::class, FinanceBranchesTableWidget::class]
-            : [];
-        if (! empty($financeHeader) || ! empty($financeFooter)) {
-            $tabs[] = ['id' => 'finance', 'label' => 'مالية', 'widgets' => $financeHeader, 'footer' => $financeFooter];
+            ]), 'footer' => []];
         }
 
-        $recruitmentHeader = match ($type) {
-            User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER => [],
+        // ── مالية: معاملات معلقة (محاسبين فقط) ──
+        if (in_array($type, [User::TYPE_ACCOUNTANT, User::TYPE_GENERAL_ACCOUNTANT], true)) {
+            $tabs[] = ['id' => 'finance_pending', 'label' => 'معاملات معلقة', 'widgets' => array_merge($filter, [
+                FinancePendingApprovalTableWidget::class,
+            ]), 'footer' => []];
+        }
+
+        // ── مالية: تقارير الفروع (مالك + سوبر) ──
+        if (in_array($type, [User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER], true)) {
+            $tabs[] = ['id' => 'finance_branches', 'label' => 'تقارير الفروع', 'widgets' => array_merge($filter, [
+                FinanceBranchesComparisonChartWidget::class,
+                FinanceBranchesTableWidget::class,
+            ]), 'footer' => []];
+        }
+
+        // ── عقود الاستقدام ──
+        $recruitmentWidgets = match ($type) {
             User::TYPE_ACCOUNTANT, User::TYPE_GENERAL_ACCOUNTANT => [RecruitmentAccountsTableWidget::class],
             User::TYPE_COORDINATOR => array_merge($filter, [
                 RecruitmentCoordinationLatestTableWidget::class,
@@ -63,24 +72,33 @@ class Dashboard extends BaseDashboard
             User::TYPE_CUSTOMER_SERVICE => array_merge($filter, [RecruitmentCustomerServiceTableWidget::class]),
             default => [],
         };
-        if (! empty($recruitmentHeader)) {
-            $tabs[] = ['id' => 'recruitment', 'label' => 'عقود الاستقدام', 'widgets' => $recruitmentHeader, 'footer' => []];
+        if (! empty($recruitmentWidgets)) {
+            $tabs[] = ['id' => 'recruitment', 'label' => 'عقود الاستقدام', 'widgets' => $recruitmentWidgets, 'footer' => []];
         }
 
+        // ── شكاوي ──
         if (in_array($type, [User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER, User::TYPE_COMPLAINTS_MANAGER], true)) {
-            $complaints = $type === User::TYPE_COMPLAINTS_MANAGER ? $filter : [];
-            if (! in_array(DashboardFilterWidget::class, $complaints)) {
-                array_unshift($complaints, DashboardFilterWidget::class);
-            }
+            $complaints = $type === User::TYPE_COMPLAINTS_MANAGER ? $filter : [DashboardFilterWidget::class];
             $complaints[] = LatestComplaintsTableWidget::class;
             $tabs[] = ['id' => 'complaints', 'label' => 'شكاوي', 'widgets' => $complaints, 'footer' => []];
         }
 
+        // ── موارد بشرية: إحصائيات ──
         if (in_array($type, [User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER, User::TYPE_HR_MANAGER], true)) {
-            $hr = $type === User::TYPE_HR_MANAGER
-                ? array_merge($filter, [HRStatsWidget::class, HrPendingLeaveRequestsTableWidget::class, HrPendingExcuseRequestsTableWidget::class])
-                : [HRStatsWidget::class, HrPendingLeaveRequestsTableWidget::class, HrPendingExcuseRequestsTableWidget::class];
-            $tabs[] = ['id' => 'hr', 'label' => 'موارد بشرية', 'widgets' => $hr, 'footer' => []];
+            $hrFilter = $type === User::TYPE_HR_MANAGER ? $filter : [];
+            $tabs[] = ['id' => 'hr_stats', 'label' => 'إحصائيات الموارد البشرية', 'widgets' => array_merge($hrFilter, [HRStatsWidget::class]), 'footer' => []];
+        }
+
+        // ── موارد بشرية: طلبات الإجازات ──
+        if (in_array($type, [User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER, User::TYPE_HR_MANAGER], true)) {
+            $hrFilter = $type === User::TYPE_HR_MANAGER ? $filter : [];
+            $tabs[] = ['id' => 'hr_leaves', 'label' => 'طلبات الإجازات', 'widgets' => array_merge($hrFilter, [HrPendingLeaveRequestsTableWidget::class]), 'footer' => []];
+        }
+
+        // ── موارد بشرية: طلبات الأعذار ──
+        if (in_array($type, [User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER, User::TYPE_HR_MANAGER], true)) {
+            $hrFilter = $type === User::TYPE_HR_MANAGER ? $filter : [];
+            $tabs[] = ['id' => 'hr_excuses', 'label' => 'طلبات الأعذار', 'widgets' => array_merge($hrFilter, [HrPendingExcuseRequestsTableWidget::class]), 'footer' => []];
         }
 
         if (empty($tabs)) {

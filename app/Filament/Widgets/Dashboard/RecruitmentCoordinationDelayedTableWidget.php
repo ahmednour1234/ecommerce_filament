@@ -12,7 +12,7 @@ use Filament\Widgets\TableWidget as BaseWidget;
 class RecruitmentCoordinationDelayedTableWidget extends BaseWidget
 {
     protected static ?string $heading = 'عقود فيها تأخير للحالة';
-    protected int|string|array $columnSpan = 1;
+    protected int|string|array $columnSpan = 'full';
 
     public static function canView(): bool
     {

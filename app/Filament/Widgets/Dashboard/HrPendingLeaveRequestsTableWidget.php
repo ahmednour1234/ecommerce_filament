@@ -14,7 +14,7 @@ class HrPendingLeaveRequestsTableWidget extends BaseWidget
 {
     protected static ?string $heading = 'تنبيهات HR: طلبات إجازة تنتظر الموافقة';
 
-    protected int|string|array $columnSpan = 1;
+    protected int|string|array $columnSpan = 'full';
 
     public static function canView(): bool
     {
