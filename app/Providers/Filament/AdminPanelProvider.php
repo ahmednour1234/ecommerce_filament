@@ -274,7 +274,15 @@ class AdminPanelProvider extends PanelProvider
         FilamentView::registerRenderHook(
             PanelsRenderHook::HEAD_END,
             fn (): string => <<<'HTML'
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+/* Cairo font for all Filament UI */
+*, *::before, *::after, body, html {
+    font-family: 'Cairo', sans-serif !important;
+}
+
 /* Hide Filament table search (temporary) */
 .fi-ta-search-field:not(.show-search),
 .fi-ta-header-actions .fi-input-wrp input[type="search"]:not(.show-search),
