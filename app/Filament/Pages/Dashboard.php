@@ -3,7 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Filament\Concerns\AddsPublicToUrl;
-use App\Filament\Widgets\Dashboard\ComplaintsStatsWidget;
+
 use App\Filament\Widgets\Dashboard\LatestComplaintsTableWidget;
 use App\Filament\Widgets\Dashboard\DashboardFilterWidget;
 use App\Filament\Widgets\Dashboard\FinanceBranchesComparisonChartWidget;
@@ -69,7 +69,7 @@ class Dashboard extends BaseDashboard
         }
 
         if (in_array($type, [User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER, User::TYPE_COMPLAINTS_MANAGER], true)) {
-            $complaints = $type === User::TYPE_COMPLAINTS_MANAGER ? array_merge($filter, [ComplaintsStatsWidget::class]) : [ComplaintsStatsWidget::class];
+            $complaints = $type === User::TYPE_COMPLAINTS_MANAGER ? $filter : [];
             if (! in_array(DashboardFilterWidget::class, $complaints)) {
                 array_unshift($complaints, DashboardFilterWidget::class);
             }
