@@ -48,7 +48,7 @@ class RecruitmentHousingReportsPage extends Page implements HasTable
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->can('housing.reports.view') ?? false;
+        return false; // hidden temporarily
     }
 
     public function mount(): void
@@ -67,14 +67,14 @@ class RecruitmentHousingReportsPage extends Page implements HasTable
         // Count workers by status from assignments
         $statusCounts = [];
         $totalAssignments = $assignments->count();
-        
+
         foreach ($assignments as $assignment) {
             if ($assignment->status) {
                 $statusKey = $assignment->status->key ?? 'unknown';
-                $statusName = app()->getLocale() === 'ar' 
-                    ? $assignment->status->name_ar 
+                $statusName = app()->getLocale() === 'ar'
+                    ? $assignment->status->name_ar
                     : $assignment->status->name_en;
-                
+
                 if (!isset($statusCounts[$statusKey])) {
                     $statusCounts[$statusKey] = [
                         'count' => 0,

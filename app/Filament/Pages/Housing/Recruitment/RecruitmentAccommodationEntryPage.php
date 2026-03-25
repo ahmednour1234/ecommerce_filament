@@ -407,7 +407,7 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->can('housing.accommodation_entries.create') ?? false;
+        return false; // replaced by AccommodationEntryResource (List/Create/Edit/View)
     }
 
     public function mount(): void

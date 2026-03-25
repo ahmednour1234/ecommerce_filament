@@ -199,6 +199,11 @@ class AccommodationEntry extends Model
         return $this->hasMany(AccommodationEntryStatusLog::class);
     }
 
+    public function customer(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Client::class, 'customer_id');
+    }
+
     public function transferData(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(AccommodationEntryTransfer::class);

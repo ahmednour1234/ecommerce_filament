@@ -49,7 +49,7 @@ class RecruitmentHousingDashboardPage extends Page implements HasForms, HasTable
 
     public static function shouldRegisterNavigation(): bool
     {
-        return false;
+        return false; // hidden — use AccommodationEntryResource list instead
     }
 
     public function mount(): void
