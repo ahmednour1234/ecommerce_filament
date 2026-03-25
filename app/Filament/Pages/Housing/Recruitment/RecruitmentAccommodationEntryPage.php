@@ -34,6 +34,8 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
     public ?string $entry_date = null;
     public ?string $exit_date = null;
     public ?int $status_id = null;
+    public ?string $status_key = null;
+    public array $status_logs_data = [];
     public ?int $building_id = null;
     public ?int $nationality_id = null;
     public ?string $worker_passport_number = null;
@@ -42,6 +44,23 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
     // ── Modal state ───────────────────────────────────────────────
     public bool $showContractModal = false;
     public array $contractDetails = [];
+
+    protected static function housingStatusOptions(): array
+    {
+        return [
+            'unpaid_salary'         => 'عدم دفع راتب',
+            'transfer_sponsorship'  => 'نقل كفاله',
+            'temporary'             => 'مؤقته',
+            'rental'                => 'ايجار',
+            'work_refused'          => 'رفض عمل',
+            'runaway'               => 'هروب',
+            'ready_for_delivery'    => 'جاهز للتسليم',
+            'with_client'           => 'مع العميل',
+            'in_accommodation'      => 'في الايواء',
+            'outside_kingdom'       => 'خارج المملكه',
+            'ready_for_travel'      => 'جاهزه للتسفير',
+        ];
+    }
 
     public static function getNavigationLabel(): string
     {
@@ -286,15 +305,9 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                             ->native(false)
                             ->columnSpan(1),
 
-                        \Filament\Forms\Components\Select::make('status_id')
+                        \Filament\Forms\Components\Select::make('status_key')
                             ->label(tr('housing.accommodation.status', [], null, 'dashboard') ?: 'الحالة')
-                            ->options(function () {
-                                return \App\Models\Housing\HousingStatus::active()
-                                    ->ordered()
-                                    ->get()
-                                    ->pluck('name', 'id')
-                                    ->toArray();
-                            })
+                            ->options(static::housingStatusOptions())
                             ->searchable()
                             ->columnSpan(1),
 
@@ -314,6 +327,31 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                             ->columnSpan(1),
                     ])
                     ->columns(2),
+
+                \Filament\Forms\Components\Section::make('سجل الحالات')
+                    ->schema([
+                        \Filament\Forms\Components\Repeater::make('status_logs_data')
+                            ->label(false)
+                            ->schema([
+                                \Filament\Forms\Components\Select::make('status_key')
+                                    ->label('الحالة')
+                                    ->options(static::housingStatusOptions())
+                                    ->required()
+                                    ->searchable(),
+                                \Filament\Forms\Components\DatePicker::make('status_date')
+                                    ->label('التاريخ')
+                                    ->required()
+                                    ->native(false)
+                                    ->default(now()->toDateString()),
+                            ])
+                            ->columns(2)
+                            ->columnSpanFull()
+                            ->addActionLabel('إضافة حالة')
+                            ->defaultItems(0)
+                            ->reorderable(false),
+                    ])
+                    ->columns(1)
+                    ->collapsed(false),
             ])
             ->statePath('data');
     }
@@ -381,9 +419,28 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
     public function save(): void
     {
         $data = $this->form->getState();
+
+        // Extract status logs before creating the entry
+        $statusLogsData = $data['status_logs_data'] ?? [];
+        unset($data['status_logs_data']);
+
         $data['type'] = 'recruitment';
 
-        \App\Models\Housing\AccommodationEntry::create($data);
+        $entry = \App\Models\Housing\AccommodationEntry::create($data);
+
+        // Persist each status log row
+        foreach ($statusLogsData as $log) {
+            if (!empty($log['status_key']) && !empty($log['status_date'])) {
+                \App\Models\Housing\AccommodationEntryStatusLog::create([
+                    'accommodation_entry_id' => $entry->id,
+                    'old_status_id'          => null,
+                    'new_status_id'          => null,
+                    'status_key'             => $log['status_key'],
+                    'status_date'            => $log['status_date'],
+                    'created_by'             => auth()->id(),
+                ]);
+            }
+        }
 
         Notification::make()
             ->title(tr('messages.saved_successfully', [], null, 'dashboard') ?: 'تم الحفظ بنجاح')

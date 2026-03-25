@@ -40,6 +40,7 @@ class AccommodationEntry extends Model
         'customer_phone',
         'customer_id_number',
         'customer_id',
+        'status_key',
     ];
 
     protected $casts = [
@@ -66,12 +67,13 @@ class AccommodationEntry extends Model
         });
 
         static::created(function ($entry) {
-            // Log initial status if status_id is set
-            if ($entry->status_id) {
+            // Log initial status if status_id or status_key is set
+            if ($entry->status_id || $entry->status_key) {
                 AccommodationEntryStatusLog::create([
                     'accommodation_entry_id' => $entry->id,
                     'old_status_id' => null,
-                    'new_status_id' => $entry->status_id,
+                    'new_status_id' => $entry->status_id ?: null,
+                    'status_key' => $entry->status_key ?: null,
                     'status_date' => $entry->entry_date ? $entry->entry_date->toDateString() : now()->toDateString(),
                     'created_by' => $entry->created_by,
                 ]);
@@ -84,14 +86,12 @@ class AccommodationEntry extends Model
             }
 
             // Log status change
-            if ($entry->isDirty('status_id')) {
-                $oldStatusId = $entry->getOriginal('status_id');
-                $newStatusId = $entry->status_id;
-
+            if ($entry->isDirty('status_id') || $entry->isDirty('status_key')) {
                 AccommodationEntryStatusLog::create([
                     'accommodation_entry_id' => $entry->id,
-                    'old_status_id' => $oldStatusId,
-                    'new_status_id' => $newStatusId,
+                    'old_status_id' => $entry->isDirty('status_id') ? $entry->getOriginal('status_id') : null,
+                    'new_status_id' => $entry->isDirty('status_id') ? $entry->status_id : null,
+                    'status_key' => $entry->isDirty('status_key') ? $entry->status_key : null,
                     'status_date' => now()->toDateString(),
                     'created_by' => auth()->id(),
                 ]);

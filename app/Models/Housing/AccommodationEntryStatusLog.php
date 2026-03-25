@@ -14,6 +14,7 @@ class AccommodationEntryStatusLog extends Model
         'accommodation_entry_id',
         'old_status_id',
         'new_status_id',
+        'status_key',
         'status_date',
         'notes',
         'created_by',
