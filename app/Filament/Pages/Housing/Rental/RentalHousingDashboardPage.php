@@ -53,7 +53,7 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->can('housing.dashboard.view') ?? false;
+        return false;
     }
 
     public function mount(): void
@@ -212,7 +212,7 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
 
                 Tables\Columns\TextColumn::make('laborer.name_ar')
                     ->label('اسم العامل')
-                    ->formatStateUsing(fn ($state, $record) => $record->laborer 
+                    ->formatStateUsing(fn ($state, $record) => $record->laborer
                         ? (app()->getLocale() === 'ar' ? $record->laborer->name_ar : $record->laborer->name_en)
                         : '')
                     ->searchable()
@@ -225,7 +225,7 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
 
                 Tables\Columns\TextColumn::make('status.name')
                     ->label('الحالة')
-                    ->formatStateUsing(fn ($state, $record) => $record->status 
+                    ->formatStateUsing(fn ($state, $record) => $record->status
                         ? (app()->getLocale() === 'ar' ? $record->status->name_ar : $record->status->name_en)
                         : '')
                     ->badge()
@@ -239,7 +239,7 @@ class RentalHousingDashboardPage extends Page implements HasForms, HasTable
 
                 Tables\Columns\TextColumn::make('nationality.name_ar')
                     ->label('الجنسية')
-                    ->formatStateUsing(fn ($state, $record) => $record->nationality 
+                    ->formatStateUsing(fn ($state, $record) => $record->nationality
                         ? (app()->getLocale() === 'ar' ? $record->nationality->name_ar : $record->nationality->name_en)
                         : '')
                     ->searchable()
