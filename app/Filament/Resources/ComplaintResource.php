@@ -138,9 +138,10 @@ class ComplaintResource extends Resource
                                         Forms\Components\Select::make('assigned_to')
                                             ->label(tr('complaint.fields.assigned_to', [], null, 'dashboard') ?: 'مسؤول المعالجة')
                                             ->options(function () {
-                                                return Cache::remember('complaints.users', 21600, function () {
-                                                    return User::all()->pluck('name', 'id')->toArray();
-                                                });
+                                                return User::where('type', \App\Models\User::TYPE_COMPLAINTS_MANAGER)
+                                                    ->get()
+                                                    ->pluck('name', 'id')
+                                                    ->toArray();
                                             })
                                             ->nullable()
                                             ->searchable()
@@ -192,8 +193,6 @@ class ComplaintResource extends Resource
                                         Forms\Components\DateTimePicker::make('resolved_at')
                                             ->label(tr('complaint.fields.resolved_at', [], null, 'dashboard') ?: 'تاريخ الحل')
                                             ->visible(fn (callable $get) => $get('status') === 'resolved')
-                                            ->disabled()
-                                            ->dehydrated(false)
                                             ->columnSpan(1),
                                     ])
                                     ->columns(2),
