@@ -275,6 +275,43 @@ class RecruitmentAccommodationEntryPage extends Page implements HasForms
                         ->visible(fn (\Filament\Forms\Get $get) => $get('entry_type') === 'transfer')
                         ->disabled($readonly)
                         ->dehydrated(true)
+                        ->when(! $readonly, fn ($field) => $field
+                            ->createOptionForm([
+                                \Filament\Forms\Components\TextInput::make('name_ar')
+                                    ->label('الاسم (عربي)')
+                                    ->required()
+                                    ->maxLength(255),
+                                \Filament\Forms\Components\TextInput::make('national_id')
+                                    ->label('رقم الهوية')
+                                    ->maxLength(50)
+                                    ->nullable(),
+                                \Filament\Forms\Components\TextInput::make('mobile')
+                                    ->label('الجوال')
+                                    ->tel()
+                                    ->maxLength(20)
+                                    ->nullable(),
+                                \Filament\Forms\Components\TextInput::make('mobile2')
+                                    ->label('جوال بديل')
+                                    ->tel()
+                                    ->maxLength(20)
+                                    ->nullable(),
+                                \Filament\Forms\Components\TextInput::make('email')
+                                    ->label('البريد الإلكتروني')
+                                    ->email()
+                                    ->maxLength(255)
+                                    ->nullable(),
+                            ])
+                            ->createOptionUsing(function (array $data): int {
+                                $client = \App\Models\Client::create([
+                                    'name_ar'     => $data['name_ar'],
+                                    'national_id' => $data['national_id'] ?? null,
+                                    'mobile'      => $data['mobile'] ?? null,
+                                    'mobile2'     => $data['mobile2'] ?? null,
+                                    'email'       => $data['email'] ?? null,
+                                ]);
+                                return $client->id;
+                            })
+                        )
                         ->columnSpan(1),
 
                     \Filament\Forms\Components\FileUpload::make('transfer_contract_file')
