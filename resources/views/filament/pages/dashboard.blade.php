@@ -1,13 +1,12 @@
-<x-filament-panels::page class="rtl-dashboard dashboard-with-tabs" x-data="{ activeTab: '{{ ($this->getDashboardTabs()[0]['id'] ?? 'main') }}' }">
+<x-filament-panels::page class="rtl-dashboard dashboard-with-tabs">
     @php $tabs = $this->getDashboardTabs(); @endphp
 
     <div class="dashboard-tabs-wrapper -mx-4 sm:-mx-6 md:-mx-8 mb-6">
         <div class="dashboard-tabs-bar flex gap-1 overflow-x-auto border-b border-gray-200 dark:border-white/10 bg-gray-50/80 dark:bg-white/5 px-4 sm:px-6 md:px-8 py-2 scrollbar-thin">
             @foreach($tabs as $tab)
             <button type="button"
-                @click="activeTab = '{{ $tab['id'] }}'"
-                x-bind:class="activeTab === '{{ $tab['id'] }}' ? 'dashboard-tab-active' : 'dashboard-tab'"
-                class="rounded-t-lg px-4 py-2.5 text-sm font-medium whitespace-nowrap transition shrink-0">
+                wire:click="setActiveTab('{{ $tab['id'] }}')"
+                class="rounded-t-lg px-4 py-2.5 text-sm font-medium whitespace-nowrap transition shrink-0 {{ $this->activeTab === $tab['id'] ? 'dashboard-tab-active' : 'dashboard-tab' }}">
                 {{ $tab['label'] }}
             </button>
             @endforeach
@@ -16,19 +15,16 @@
 
     <div class="space-y-6">
         @foreach($tabs as $tab)
-        <div x-show="activeTab === '{{ $tab['id'] }}'" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="space-y-6"
-            @if(!$loop->first) style="display: none;" @endif>
-            @if(!empty($tab['widgets']))
-            <x-filament-widgets::widgets :widgets="$tab['widgets']" :columns="$this->getHeaderWidgetsColumns()" />
-            @endif
-            @if(!empty($tab['footer']))
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                @foreach(array_chunk($tab['footer'], 2) as $chunk)
-                <x-filament-widgets::widgets :widgets="$chunk" :columns="1" />
-                @endforeach
+            @if($this->activeTab === $tab['id'])
+            <div class="space-y-6">
+                @if(!empty($tab['widgets']))
+                <x-filament-widgets::widgets :widgets="$tab['widgets']" :columns="$this->getHeaderWidgetsColumns()" />
+                @endif
+                @if(!empty($tab['footer']))
+                <x-filament-widgets::widgets :widgets="$tab['footer']" :columns="$this->getHeaderWidgetsColumns()" />
+                @endif
             </div>
             @endif
-        </div>
         @endforeach
     </div>
 

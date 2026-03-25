@@ -29,6 +29,19 @@ class Dashboard extends BaseDashboard
     protected static ?string $navigationIcon = 'heroicon-o-home';
     protected static string $view = 'filament.pages.dashboard';
 
+    public string $activeTab = '';
+
+    public function mount(): void
+    {
+        $tabs = $this->getDashboardTabs();
+        $this->activeTab = $tabs[0]['id'] ?? 'main';
+    }
+
+    public function setActiveTab(string $tab): void
+    {
+        $this->activeTab = $tab;
+    }
+
     public function getDashboardTabs(): array
     {
         $type = auth()->user()?->type;
@@ -116,10 +129,13 @@ class Dashboard extends BaseDashboard
     protected function getHeaderWidgets(): array
     {
         $tabs = $this->getDashboardTabs();
+        foreach ($tabs as $tab) {
+            if ($tab['id'] === $this->activeTab) {
+                return array_merge($tab['widgets'] ?? [], $tab['footer'] ?? []);
+            }
+        }
         $first = $tabs[0] ?? [];
-        $widgets = array_merge($first['widgets'] ?? [], $first['footer'] ?? []);
-
-        return $widgets ?: [DashboardFilterWidget::class];
+        return array_merge($first['widgets'] ?? [], $first['footer'] ?? []) ?: [DashboardFilterWidget::class];
     }
 
     protected function getFooterWidgets(): array
