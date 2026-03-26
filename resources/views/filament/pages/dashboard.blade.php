@@ -2,10 +2,7 @@
     @php $sections = $this->getDashboardSections(); @endphp
 
     {{-- ═══ Filter bar (always at top) ═══ --}}
-    <x-filament-widgets::widgets
-        :widgets="[\App\Filament\Widgets\Dashboard\DashboardFilterWidget::class]"
-        :columns="1"
-    />
+    @livewire(\App\Filament\Widgets\Dashboard\DashboardFilterWidget::class)
 
     {{-- ═══ All 4 sections — full page scroll, no tabs ═══ --}}
     <div class="space-y-10 mt-4">
@@ -20,17 +17,20 @@
 
             {{-- Section rows --}}
             <div class="space-y-6">
-                @foreach($section['rows'] as $row)
+                @foreach($section['rows'] as $rowIndex => $row)
                     @if(!empty($row['pair']) && count($row['widgets']) >= 2)
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            @foreach($row['widgets'] as $widget)
-                            <div class="min-w-0">
-                                <x-filament-widgets::widgets :widgets="[$widget]" :columns="1" />
+                        {{-- Side-by-side: render via @livewire directly to bypass Filament's columnSpan=full --}}
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                            @foreach($row['widgets'] as $wIndex => $widgetClass)
+                            <div class="min-w-0 w-full">
+                                @livewire($widgetClass, [], key($widgetClass . '-' . ($section['id'] ?? $loop->parent->index) . '-' . $rowIndex . '-' . $wIndex))
                             </div>
                             @endforeach
                         </div>
                     @else
-                        <x-filament-widgets::widgets :widgets="$row['widgets']" :columns="1" />
+                        @foreach($row['widgets'] as $wIndex => $widgetClass)
+                            @livewire($widgetClass, [], key($widgetClass . '-' . ($section['id'] ?? $loop->parent->index) . '-' . $rowIndex . '-' . $wIndex))
+                        @endforeach
                     @endif
                 @endforeach
             </div>
@@ -79,6 +79,7 @@
             color: rgb(17 24 39);
         }
         .dark .dashboard-section .section-title { color: rgb(243 244 246); }
-        .dashboard-sections .grid > div > .fi-wi { height: 100%; }
+        /* Ensure pair grid children fill cell width */
+        .dashboard-section .grid > div { min-width: 0; }
     </style>
 </x-filament-panels::page>
