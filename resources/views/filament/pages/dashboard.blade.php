@@ -18,18 +18,19 @@
             {{-- Section rows --}}
             <div class="space-y-6">
                 @foreach($section['rows'] as $rowIndex => $row)
+                    @php $sectionId = $section['id'] ?? 's'.$loop->parent->index; @endphp
                     @if(!empty($row['pair']) && count($row['widgets']) >= 2)
-                        {{-- Side-by-side: render via @livewire directly to bypass Filament's columnSpan=full --}}
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                        {{-- Side-by-side pair: @livewire directly (bypasses Filament grid/columnSpan) --}}
+                        <div style="display:flex; flex-wrap:wrap; gap:1.5rem; align-items:flex-start;">
                             @foreach($row['widgets'] as $wIndex => $widgetClass)
-                            <div class="min-w-0 w-full">
-                                @livewire($widgetClass, [], key($widgetClass . '-' . ($section['id'] ?? $loop->parent->index) . '-' . $rowIndex . '-' . $wIndex))
+                            <div style="flex:1 1 0; min-width:0;">
+                                @livewire($widgetClass, [], $sectionId.'-'.$rowIndex.'-'.$wIndex)
                             </div>
                             @endforeach
                         </div>
                     @else
                         @foreach($row['widgets'] as $wIndex => $widgetClass)
-                            @livewire($widgetClass, [], key($widgetClass . '-' . ($section['id'] ?? $loop->parent->index) . '-' . $rowIndex . '-' . $wIndex))
+                            @livewire($widgetClass, [], $sectionId.'-'.$rowIndex.'-'.$wIndex)
                         @endforeach
                     @endif
                 @endforeach
