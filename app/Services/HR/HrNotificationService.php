@@ -25,7 +25,7 @@ class HrNotificationService
         ?string $actionUrl = null
     ): HrNotification {
         $employee = Employee::findOrFail($employeeId);
-        
+
         return HrNotification::create([
             'type' => $type,
             'title' => $title,
@@ -110,7 +110,7 @@ class HrNotificationService
     public function getUnreadCount(?User $user = null): int
     {
         $user = $user ?? Auth::user();
-        
+
         if (!$user) {
             return 0;
         }
@@ -129,7 +129,7 @@ class HrNotificationService
     public function getNotifications(array $filters = [], ?User $user = null): Collection
     {
         $user = $user ?? Auth::user();
-        
+
         if (!$user) {
             return collect([]);
         }
@@ -179,10 +179,19 @@ class HrNotificationService
 
         // Branch manager can see notifications for their branch only
         if ($user->can('hr_notifications.view_branch')) {
+            $branchIds = $user->branches()->pluck('branches.id')->toArray();
             $branchId = $user->branch_id ?? ($user->branch ? $user->branch->id : null);
-            if ($branchId) {
-                return $query->forBranch($branchId);
+            if (!empty($branchId)) {
+                $branchIds[] = (int) $branchId;
             }
+            $branchIds = array_values(array_unique(array_filter($branchIds)));
+
+            if (!empty($branchIds)) {
+                return $query->whereIn('branch_id', $branchIds);
+            }
+
+            // No assigned branches means access to all branches.
+            return $query;
         }
 
         // Employee can see only their own notifications

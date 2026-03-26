@@ -39,7 +39,7 @@ class DashboardService
         foreach ($results as $result) {
             $status = $result->status;
             $count = (int) $result->count;
-            
+
             if (isset($stats[$status])) {
                 $stats[$status] = $count;
             }
@@ -88,10 +88,12 @@ class DashboardService
         if ($user && !$user->hasRole('super_admin') && !$user->can('finance.view_all_branches')) {
             if (method_exists($user, 'branches')) {
                 $branchIds = $user->branches()->pluck('branches.id')->toArray();
+                if (!empty($user->branch_id)) {
+                    $branchIds[] = (int) $user->branch_id;
+                }
+                $branchIds = array_values(array_unique(array_filter($branchIds)));
                 if (!empty($branchIds)) {
                     $branchesQuery->whereIn('id', $branchIds);
-                } else {
-                    $branchesQuery->whereRaw('1 = 0');
                 }
             } elseif ($user->branch_id) {
                 $branchesQuery->where('id', $user->branch_id);
@@ -217,10 +219,12 @@ class DashboardService
         if ($user && !$user->hasRole('super_admin') && !$user->can('finance.view_all_branches')) {
             if (method_exists($user, 'branches')) {
                 $branchIds = $user->branches()->pluck('branches.id')->toArray();
+                if (!empty($user->branch_id)) {
+                    $branchIds[] = (int) $user->branch_id;
+                }
+                $branchIds = array_values(array_unique(array_filter($branchIds)));
                 if (!empty($branchIds)) {
                     $branchesQuery->whereIn('id', $branchIds);
-                } else {
-                    $branchesQuery->whereRaw('1 = 0');
                 }
             } elseif ($user->branch_id) {
                 $branchesQuery->where('id', $user->branch_id);
@@ -343,10 +347,12 @@ class DashboardService
         if ($user && !$user->hasRole('super_admin') && !$user->can('finance.view_all_branches')) {
             if (method_exists($user, 'branches')) {
                 $branchIds = $user->branches()->pluck('branches.id')->toArray();
+                if (!empty($user->branch_id)) {
+                    $branchIds[] = (int) $user->branch_id;
+                }
+                $branchIds = array_values(array_unique(array_filter($branchIds)));
                 if (!empty($branchIds)) {
                     $query->whereIn('branch_id', $branchIds);
-                } else {
-                    $query->whereRaw('1 = 0');
                 }
             } elseif ($user->branch_id) {
                 $query->where('branch_id', $user->branch_id);

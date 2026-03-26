@@ -48,11 +48,13 @@ class BranchTransactionResource extends Resource
 
         if ($user && !$user->hasRole('super_admin') && !$user->can('finance.view_all_branches')) {
             $branchIds = $user->branches()->pluck('branches.id')->toArray();
+            if (!empty($user->branch_id)) {
+                $branchIds[] = (int) $user->branch_id;
+            }
+            $branchIds = array_values(array_unique(array_filter($branchIds)));
 
             if (!empty($branchIds)) {
                 $q->whereIn('branch_id', $branchIds);
-            } else {
-                $q->whereRaw('1 = 0');
             }
         }
 
@@ -66,7 +68,12 @@ class BranchTransactionResource extends Resource
 
         $user = auth()->user();
         $userBranches = $user?->branches()->pluck('branches.id')->toArray() ?? [];
-        $canViewAllBranches = (bool) ($user?->hasRole('super_admin') || $user?->can('finance.view_all_branches'));
+        if (!empty($user?->branch_id)) {
+            $userBranches[] = (int) $user->branch_id;
+        }
+        $userBranches = array_values(array_unique(array_filter($userBranches)));
+        $hasAssignedBranches = !empty($userBranches);
+        $canViewAllBranches = (bool) ($user?->hasRole('super_admin') || $user?->can('finance.view_all_branches') || !$hasAssignedBranches);
 
         return $form->schema([
             Forms\Components\Section::make()

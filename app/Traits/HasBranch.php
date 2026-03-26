@@ -29,7 +29,7 @@ trait HasBranch
     public function scopeForUserBranches($query, $user = null)
     {
         $user = $user ?? auth()->user();
-        
+
         if (!$user) {
             return $query;
         }
@@ -39,12 +39,16 @@ trait HasBranch
             return $query;
         }
 
-        // Get user's branch IDs
+        // Get user's branch IDs from pivot + legacy branch_id.
         $branchIds = $user->branches()->pluck('branches.id')->toArray();
-        
+        if (!empty($user->branch_id)) {
+            $branchIds[] = (int) $user->branch_id;
+        }
+        $branchIds = array_values(array_unique(array_filter($branchIds)));
+
+        // No assigned branch means full access to all branches.
         if (empty($branchIds)) {
-            // If user has no branches, return empty result
-            return $query->whereRaw('1 = 0');
+            return $query;
         }
 
         return $query->whereIn('branch_id', $branchIds);

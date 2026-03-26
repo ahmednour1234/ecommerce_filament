@@ -83,16 +83,25 @@ class HrNotificationResource extends Resource
                 }
 
                 $notificationService = app(HrNotificationService::class);
-                
+
                 if ($user->can('hr_notifications.view_all') || $user->hasRole('super_admin')) {
                     return $query;
                 }
 
                 if ($user->can('hr_notifications.view_branch')) {
+                    $branchIds = $user->branches()->pluck('branches.id')->toArray();
                     $branchId = $user->branch_id ?? ($user->branch ? $user->branch->id : null);
-                    if ($branchId) {
-                        return $query->where('branch_id', $branchId);
+                    if (!empty($branchId)) {
+                        $branchIds[] = (int) $branchId;
                     }
+                    $branchIds = array_values(array_unique(array_filter($branchIds)));
+
+                    if (!empty($branchIds)) {
+                        return $query->whereIn('branch_id', $branchIds);
+                    }
+
+                    // No assigned branches means access to all branches.
+                    return $query;
                 }
 
                 if ($user->employee) {

@@ -319,11 +319,14 @@ class EmployeeResource extends Resource
         $query = parent::getEloquentQuery();
         $user = auth()->user();
         if ($user && ! $user->hasRole('super_admin') && ! $user->can('hr.view_all_branches')) {
-            $branchId = $user->branch_id;
-            if ($branchId) {
-                $query->where('branch_id', $branchId);
-            } else {
-                $query->whereRaw('1 = 0');
+            $branchIds = $user->branches()->pluck('branches.id')->toArray();
+            if (!empty($user->branch_id)) {
+                $branchIds[] = (int) $user->branch_id;
+            }
+            $branchIds = array_values(array_unique(array_filter($branchIds)));
+
+            if (!empty($branchIds)) {
+                $query->whereIn('branch_id', $branchIds);
             }
         }
         return $query;
