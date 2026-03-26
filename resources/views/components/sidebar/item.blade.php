@@ -45,14 +45,14 @@
         }
     }
     
-    $shouldBeOpen = $isActive;
+    $shouldBeOpen = false;
 @endphp
 
 <li class="fi-sidebar-item custom-sidebar-item" data-level="{{ $level }}">
     @if($hasChildren)
         <div 
             x-data="{ 
-                open: $persist({{ $shouldBeOpen ? 'true' : 'false' }}).as('{{ $itemId }}')
+                open: $persist(false).as('{{ $itemId }}')
             }"
             class="fi-sidebar-group"
         >
