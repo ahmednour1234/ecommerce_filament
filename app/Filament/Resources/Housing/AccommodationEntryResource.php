@@ -44,6 +44,59 @@ class AccommodationEntryResource extends Resource
         );
     }
 
+    protected static function safeString(mixed $value, string $default = '—'): string
+    {
+        if ($value === null) {
+            return $default;
+        }
+
+        if (! is_scalar($value)) {
+            return $default;
+        }
+
+        $value = (string) $value;
+
+        if ($value === '') {
+            return $default;
+        }
+
+        if (! mb_check_encoding($value, 'UTF-8')) {
+            $value = @mb_convert_encoding($value, 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252, Windows-1256, ASCII');
+        }
+
+        $value = @iconv('UTF-8', 'UTF-8//IGNORE', $value) ?: $default;
+        $value = preg_replace('/[^\P{C}\n\r\t]+/u', '', $value) ?? $default;
+        $value = trim($value);
+
+        return $value !== '' ? $value : $default;
+    }
+
+    protected static function clientLabel(?Client $client): string
+    {
+        if (! $client) {
+            return '—';
+        }
+
+        $name = static::safeString($client->name_ar, 'بدون اسم');
+        $nationalId = static::safeString($client->national_id, '');
+
+        return $nationalId !== '' && $nationalId !== '—'
+            ? "{$name} ({$nationalId})"
+            : $name;
+    }
+
+    protected static function laborerLabel(?Laborer $laborer): string
+    {
+        if (! $laborer) {
+            return '—';
+        }
+
+        $name = static::safeString($laborer->name_ar, 'بدون اسم');
+        $passport = static::safeString($laborer->passport_number, '-');
+
+        return "{$name} ({$passport})";
+    }
+
     public static function housingStatusOptions(): array
     {
         return [
@@ -79,16 +132,21 @@ class AccommodationEntryResource extends Resource
                         ->label('رقم العقد')
                         ->options(function (): array {
                             return RecruitmentContract::query()
-                                ->with('client:id,name_ar')
+                                ->with('client:id,name_ar,national_id')
                                 ->get()
                                 ->mapWithKeys(function ($contract) {
-                                    $label = $contract->contract_no;
-
-                                    if ($contract->client?->name_ar) {
-                                        $label .= ' - ' . $contract->client->name_ar;
+                                    $contractNo = static::safeString($contract->contract_no, '');
+                                    if ($contractNo === '') {
+                                        return [];
                                     }
 
-                                    return [$contract->contract_no => $label];
+                                    $label = $contractNo;
+
+                                    if ($contract->client) {
+                                        $label .= ' - ' . static::clientLabel($contract->client);
+                                    }
+
+                                    return [$contractNo => static::safeString($label)];
                                 })
                                 ->toArray();
                         })
@@ -105,7 +163,6 @@ class AccommodationEntryResource extends Resource
                             if (blank($state)) {
                                 $set('laborer_id', null);
                                 $set('customer_id', null);
-
                                 return;
                             }
 
@@ -130,7 +187,7 @@ class AccommodationEntryResource extends Resource
                                     ->orderBy('name_ar')
                                     ->get()
                                     ->mapWithKeys(fn ($worker) => [
-                                        $worker->id => trim(($worker->name_ar ?? '') . ' (' . ($worker->passport_number ?? '-') . ')'),
+                                        $worker->id => static::laborerLabel($worker),
                                     ])
                                     ->toArray();
                             }
@@ -141,7 +198,7 @@ class AccommodationEntryResource extends Resource
                                     ->orderBy('name_ar')
                                     ->get()
                                     ->mapWithKeys(fn ($worker) => [
-                                        $worker->id => trim(($worker->name_ar ?? '') . ' (' . ($worker->passport_number ?? '-') . ')'),
+                                        $worker->id => static::laborerLabel($worker),
                                     ])
                                     ->toArray();
                             });
@@ -151,79 +208,68 @@ class AccommodationEntryResource extends Resource
                         ->live()
                         ->disabled($readonly || fn (Forms\Get $get): bool => (bool) $get('contract_no'))
                         ->dehydrated(true)
-                        ->when(! $readonly, function ($field) {
-                            return $field
-                                ->createOptionForm([
-                                    Forms\Components\TextInput::make('name_ar')
-                                        ->label('الاسم (عربي)')
-                                        ->required()
-                                        ->maxLength(255),
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make('name_ar')
+                                ->label('الاسم (عربي)')
+                                ->required()
+                                ->maxLength(255),
 
-                                    Forms\Components\TextInput::make('passport_number')
-                                        ->label('رقم الجواز')
-                                        ->required()
-                                        ->maxLength(255)
-                                        ->unique(Laborer::class, 'passport_number'),
+                            Forms\Components\TextInput::make('passport_number')
+                                ->label('رقم الجواز')
+                                ->required()
+                                ->maxLength(255)
+                                ->unique(Laborer::class, 'passport_number'),
 
-                                    Forms\Components\Select::make('nationality_id')
-                                        ->label('الجنسية')
-                                        ->options(function () {
-                                            return Nationality::query()
-                                                ->where('is_active', true)
-                                                ->whereIn('name_ar', [
-                                                    'الفلبين',
-                                                    'بنغلادش',
-                                                    'سريلانكا',
-                                                    'اثيوبيا',
-                                                    'اوغندا',
-                                                    'كينيا',
-                                                    'بورندي',
-                                                ])
-                                                ->pluck('name_ar', 'id')
-                                                ->toArray();
-                                        })
-                                        ->searchable()
-                                        ->required(),
+                            Forms\Components\Select::make('nationality_id')
+                                ->label('الجنسية')
+                                ->options(fn () => Nationality::query()
+                                    ->where('is_active', true)
+                                    ->pluck('name_ar', 'id')
+                                    ->map(fn ($name) => static::safeString($name))
+                                    ->toArray()
+                                )
+                                ->searchable()
+                                ->required(),
 
-                                    Forms\Components\Select::make('profession_id')
-                                        ->label('المهنة')
-                                        ->options(fn () => Profession::query()
-                                            ->where('is_active', true)
-                                            ->pluck('name_ar', 'id')
-                                            ->toArray()
-                                        )
-                                        ->searchable()
-                                        ->required(),
+                            Forms\Components\Select::make('profession_id')
+                                ->label('المهنة')
+                                ->options(fn () => Profession::query()
+                                    ->where('is_active', true)
+                                    ->pluck('name_ar', 'id')
+                                    ->map(fn ($name) => static::safeString($name))
+                                    ->toArray()
+                                )
+                                ->searchable()
+                                ->required(),
 
-                                    Forms\Components\Select::make('gender')
-                                        ->label('الجنس')
-                                        ->options([
-                                            'male'   => 'ذكر',
-                                            'female' => 'أنثى',
-                                        ])
-                                        ->nullable(),
-
-                                    Forms\Components\TextInput::make('phone_1')
-                                        ->label('الجوال')
-                                        ->tel()
-                                        ->maxLength(50)
-                                        ->nullable(),
+                            Forms\Components\Select::make('gender')
+                                ->label('الجنس')
+                                ->options([
+                                    'male'   => 'ذكر',
+                                    'female' => 'أنثى',
                                 ])
-                                ->createOptionUsing(function (array $data): int {
-                                    $laborer = Laborer::query()->create([
-                                        'name_ar'         => $data['name_ar'],
-                                        'passport_number' => $data['passport_number'],
-                                        'nationality_id'  => $data['nationality_id'],
-                                        'profession_id'   => $data['profession_id'],
-                                        'gender'          => $data['gender'] ?? null,
-                                        'phone_1'         => $data['phone_1'] ?? null,
-                                        'is_available'    => true,
-                                    ]);
+                                ->nullable(),
 
-                                    Cache::forget('recruitment_accommodation.workers');
+                            Forms\Components\TextInput::make('phone_1')
+                                ->label('الجوال')
+                                ->tel()
+                                ->maxLength(50)
+                                ->nullable(),
+                        ])
+                        ->createOptionUsing(function (array $data): int {
+                            $laborer = Laborer::query()->create([
+                                'name_ar'         => static::safeString($data['name_ar'], ''),
+                                'passport_number' => static::safeString($data['passport_number'], ''),
+                                'nationality_id'  => $data['nationality_id'],
+                                'profession_id'   => $data['profession_id'],
+                                'gender'          => $data['gender'] ?? null,
+                                'phone_1'         => isset($data['phone_1']) ? static::safeString($data['phone_1'], '') : null,
+                                'is_available'    => true,
+                            ]);
 
-                                    return $laborer->id;
-                                });
+                            Cache::forget('recruitment_accommodation.workers');
+
+                            return $laborer->id;
                         })
                         ->columnSpan(1),
 
@@ -232,15 +278,9 @@ class AccommodationEntryResource extends Resource
                         ->options(function (): array {
                             return Client::query()
                                 ->get()
-                                ->mapWithKeys(function ($client) {
-                                    $label = $client->name_ar ?? 'بدون اسم';
-
-                                    if (! empty($client->national_id)) {
-                                        $label .= ' (' . $client->national_id . ')';
-                                    }
-
-                                    return [$client->id => $label];
-                                })
+                                ->mapWithKeys(fn ($client) => [
+                                    $client->id => static::clientLabel($client),
+                                ])
                                 ->toArray();
                         })
                         ->searchable()
@@ -266,55 +306,15 @@ class AccommodationEntryResource extends Resource
                         ->options(function (): array {
                             return Client::query()
                                 ->get()
-                                ->mapWithKeys(function ($client) {
-                                    $label = $client->name_ar ?? 'بدون اسم';
-
-                                    if (! empty($client->national_id)) {
-                                        $label .= ' (' . $client->national_id . ')';
-                                    }
-
-                                    return [$client->id => $label];
-                                })
+                                ->mapWithKeys(fn ($client) => [
+                                    $client->id => static::clientLabel($client),
+                                ])
                                 ->toArray();
                         })
                         ->searchable()
                         ->visible(fn (Forms\Get $get): bool => $get('entry_type') === 'transfer')
                         ->disabled($readonly)
                         ->dehydrated(true)
-                        ->when(! $readonly, function ($field) {
-                            return $field
-                                ->createOptionForm([
-                                    Forms\Components\TextInput::make('name_ar')
-                                        ->label('الاسم (عربي)')
-                                        ->required()
-                                        ->maxLength(255),
-
-                                    Forms\Components\TextInput::make('national_id')
-                                        ->label('رقم الهوية')
-                                        ->maxLength(50)
-                                        ->nullable(),
-
-                                    Forms\Components\TextInput::make('mobile')
-                                        ->label('الجوال')
-                                        ->tel()
-                                        ->maxLength(20)
-                                        ->nullable(),
-
-                                    Forms\Components\TextInput::make('email')
-                                        ->label('البريد الإلكتروني')
-                                        ->email()
-                                        ->maxLength(255)
-                                        ->nullable(),
-                                ])
-                                ->createOptionUsing(function (array $data): int {
-                                    return Client::query()->create([
-                                        'name_ar'     => $data['name_ar'],
-                                        'national_id' => $data['national_id'] ?? null,
-                                        'mobile'      => $data['mobile'] ?? null,
-                                        'email'       => $data['email'] ?? null,
-                                    ])->id;
-                                });
-                        })
                         ->columnSpan(1),
 
                     Forms\Components\FileUpload::make('transfer_contract_file')
@@ -352,8 +352,10 @@ class AccommodationEntryResource extends Resource
                             return Building::query()
                                 ->get()
                                 ->mapWithKeys(function ($building) {
-                                    $available = $building->available_capacity ?? 0;
-                                    return [$building->id => ($building->name ?? 'بدون اسم') . ' (' . $available . ' متاح)'];
+                                    $name = static::safeString($building->name, 'بدون اسم');
+                                    $capacity = static::safeString($building->available_capacity, '0');
+
+                                    return [$building->id => "{$name} ({$capacity} متاح)"];
                                 })
                                 ->toArray();
                         })
@@ -372,7 +374,7 @@ class AccommodationEntryResource extends Resource
                             'statuses'            => static::housingStatusOptions(),
                             'statusDates'         => json_decode($get('all_status_dates') ?? '{}', true) ?: [],
                             'statusDurations'     => [],
-                            'currentStatus'       => $get('status_key') ?? '',
+                            'currentStatus'       => static::safeString($get('status_key') ?? '', ''),
                             'statusStatePath'     => 'data.status_key',
                             'statusDateStatePath' => 'data.status_date',
                             'readonly'            => $readonly,
@@ -380,10 +382,8 @@ class AccommodationEntryResource extends Resource
                         ->columnSpanFull(),
 
                     Forms\Components\Hidden::make('status_key'),
-                    Forms\Components\Hidden::make('status_date')
-                        ->default(now()->toDateString()),
-                    Forms\Components\Hidden::make('all_status_dates')
-                        ->default('{}'),
+                    Forms\Components\Hidden::make('status_date')->default(now()->toDateString()),
+                    Forms\Components\Hidden::make('all_status_dates')->default('{}'),
                 ]),
         ];
     }
@@ -405,29 +405,33 @@ class AccommodationEntryResource extends Resource
                     ->label('رقم العقد')
                     ->searchable()
                     ->sortable()
+                    ->formatStateUsing(fn ($state) => static::safeString($state))
                     ->default('—'),
 
                 Tables\Columns\TextColumn::make('laborer.name_ar')
                     ->label('العاملة')
                     ->searchable()
                     ->sortable()
+                    ->formatStateUsing(fn ($state) => static::safeString($state))
                     ->default('—'),
 
                 Tables\Columns\TextColumn::make('laborer.passport_number')
                     ->label('رقم الجواز')
                     ->searchable()
                     ->toggleable()
+                    ->formatStateUsing(fn ($state) => static::safeString($state))
                     ->default('—'),
 
                 Tables\Columns\TextColumn::make('customer.name_ar')
                     ->label('العميل')
                     ->searchable()
+                    ->formatStateUsing(fn ($state) => static::safeString($state))
                     ->default('—'),
 
                 Tables\Columns\TextColumn::make('entry_type')
                     ->label('نوع الدخول')
                     ->badge()
-                    ->formatStateUsing(fn (?string $state): string => static::entryTypeOptions()[$state] ?? ($state ?: '—'))
+                    ->formatStateUsing(fn (?string $state): string => static::entryTypeOptions()[$state] ?? static::safeString($state))
                     ->color(fn (?string $state): string => match ($state) {
                         'new_arrival' => 'success',
                         'return'      => 'warning',
@@ -438,13 +442,14 @@ class AccommodationEntryResource extends Resource
                 Tables\Columns\TextColumn::make('building.name')
                     ->label('المبنى')
                     ->sortable()
+                    ->formatStateUsing(fn ($state) => static::safeString($state))
                     ->default('—'),
 
                 Tables\Columns\TextColumn::make('status_key')
                     ->label('الحالة')
                     ->badge()
                     ->color('info')
-                    ->formatStateUsing(fn (?string $state): string => static::housingStatusOptions()[$state] ?? ($state ?: '—')),
+                    ->formatStateUsing(fn (?string $state): string => static::housingStatusOptions()[$state] ?? static::safeString($state)),
 
                 Tables\Columns\TextColumn::make('entry_date')
                     ->label('تاريخ الدخول')
@@ -472,6 +477,7 @@ class AccommodationEntryResource extends Resource
                     ->options(fn (): array => Nationality::query()
                         ->where('is_active', true)
                         ->pluck('name_ar', 'id')
+                        ->map(fn ($name) => static::safeString($name))
                         ->toArray()
                     )
                     ->query(function (Builder $query, array $data): Builder {
@@ -506,18 +512,22 @@ class AccommodationEntryResource extends Resource
                 ->schema([
                     Infolists\Components\TextEntry::make('contract_no')
                         ->label('رقم العقد')
+                        ->formatStateUsing(fn ($state) => static::safeString($state))
                         ->default('—'),
 
                     Infolists\Components\TextEntry::make('laborer.name_ar')
                         ->label('اسم العاملة')
+                        ->formatStateUsing(fn ($state) => static::safeString($state))
                         ->default('—'),
 
                     Infolists\Components\TextEntry::make('laborer.passport_number')
                         ->label('رقم الجواز')
+                        ->formatStateUsing(fn ($state) => static::safeString($state))
                         ->default('—'),
 
                     Infolists\Components\TextEntry::make('customer.name_ar')
                         ->label('العميل')
+                        ->formatStateUsing(fn ($state) => static::safeString($state))
                         ->default('—'),
                 ])
                 ->columns(2),
@@ -527,7 +537,7 @@ class AccommodationEntryResource extends Resource
                     Infolists\Components\TextEntry::make('entry_type')
                         ->label('نوع الدخول')
                         ->badge()
-                        ->formatStateUsing(fn (?string $state): string => static::entryTypeOptions()[$state] ?? ($state ?: '—'))
+                        ->formatStateUsing(fn (?string $state): string => static::entryTypeOptions()[$state] ?? static::safeString($state))
                         ->color(fn (?string $state): string => match ($state) {
                             'new_arrival' => 'success',
                             'return'      => 'warning',
@@ -547,13 +557,14 @@ class AccommodationEntryResource extends Resource
 
                     Infolists\Components\TextEntry::make('building.name')
                         ->label('المبنى')
+                        ->formatStateUsing(fn ($state) => static::safeString($state))
                         ->default('—'),
 
                     Infolists\Components\TextEntry::make('status_key')
                         ->label('الحالة الحالية')
                         ->badge()
                         ->color('info')
-                        ->formatStateUsing(fn (?string $state): string => static::housingStatusOptions()[$state] ?? ($state ?: '—')),
+                        ->formatStateUsing(fn (?string $state): string => static::housingStatusOptions()[$state] ?? static::safeString($state)),
                 ])
                 ->columns(2),
 
@@ -562,11 +573,12 @@ class AccommodationEntryResource extends Resource
                 ->schema([
                     Infolists\Components\TextEntry::make('transferData.transferClient.name_ar')
                         ->label('عميل نقل الكفالة')
+                        ->formatStateUsing(fn ($state) => static::safeString($state))
                         ->default('—'),
 
                     Infolists\Components\TextEntry::make('transferData.contract_file_path')
                         ->label('ملف عقد نقل الكفالة')
-                        ->formatStateUsing(fn (?string $state): string => $state ? basename($state) : '—'),
+                        ->formatStateUsing(fn (?string $state): string => $state ? static::safeString(basename($state)) : '—'),
                 ])
                 ->columns(2),
 
@@ -579,7 +591,7 @@ class AccommodationEntryResource extends Resource
                                 ->label('الحالة')
                                 ->badge()
                                 ->color('info')
-                                ->formatStateUsing(fn (?string $state): string => static::housingStatusOptions()[$state] ?? ($state ?: '—')),
+                                ->formatStateUsing(fn (?string $state): string => static::housingStatusOptions()[$state] ?? static::safeString($state)),
 
                             Infolists\Components\TextEntry::make('status_date')
                                 ->label('التاريخ')
