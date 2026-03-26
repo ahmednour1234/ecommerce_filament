@@ -4,7 +4,7 @@
     if (empty($item) || !is_array($item)) {
         return;
     }
-    
+
     $hasChildren = !empty($item['children'] ?? []);
     $url = $item['url'] ?? null;
     $titleKey = $item['title'] ?? '';
@@ -12,14 +12,14 @@
     $icon = $item['icon'] ?? null;
     $badge = $item['badge'] ?? null;
     $itemId = 'sidebar-item-' . md5($titleKey . $level);
-    
+
     $currentUrl = request()->url();
     $isActive = false;
-    
+
     if ($url && $currentUrl === $url) {
         $isActive = true;
     }
-    
+
     if ($hasChildren && isset($item['children']) && is_array($item['children'])) {
         foreach ($item['children'] as $child) {
             if (!is_array($child)) {
@@ -44,14 +44,14 @@
             }
         }
     }
-    
+
     $shouldBeOpen = false;
 @endphp
 
 <li class="fi-sidebar-item custom-sidebar-item" data-level="{{ $level }}">
     @if($hasChildren)
-        <div 
-            x-data="{ 
+        <div
+            x-data="{
                 open: $persist(false).as('{{ $itemId }}')
             }"
             class="fi-sidebar-group"
@@ -70,14 +70,14 @@
                         {{ $badge }}
                     </span>
                 @endif
-                <x-filament::icon 
-                    icon="heroicon-m-chevron-down" 
+                <x-filament::icon
+                    icon="heroicon-m-chevron-down"
                     class="h-4 w-4 transition-transform duration-200"
                     x-bind:class="open ? 'rotate-180' : ''"
                 />
             </button>
-            
-            <ul 
+
+            <ul
                 x-show="open"
                 x-collapse
                 class="fi-sidebar-group-items mt-1 space-y-1 ps-7"
