@@ -9,7 +9,6 @@ use App\Filament\Widgets\Dashboard\FinanceBranchesComparisonChartWidget;
 use App\Filament\Widgets\Dashboard\FinanceBranchesTableWidget;
 use App\Filament\Widgets\Dashboard\FinancePendingApprovalTableWidget;
 use App\Filament\Widgets\Dashboard\FinanceStatsWidget;
-use App\Filament\Widgets\Dashboard\FinanceTopTypesWidget;
 use App\Filament\Widgets\Dashboard\HRStatsWidget;
 use App\Filament\Widgets\Dashboard\HrPendingExcuseRequestsTableWidget;
 use App\Filament\Widgets\Dashboard\HrPendingLeaveRequestsTableWidget;
@@ -46,8 +45,8 @@ class Dashboard extends BaseDashboard
             $financeRows = [
                 // Finance stats full width
                 ['pair' => false, 'widgets' => [FinanceStatsWidget::class]],
-                // Two charts side-by-side
-                ['pair' => true, 'widgets' => [FinanceBranchesComparisonChartWidget::class, FinanceTopTypesWidget::class]],
+                // Chart full width
+                ['pair' => false, 'widgets' => [FinanceBranchesComparisonChartWidget::class]],
                 // Two tables side-by-side
                 ['pair' => true, 'widgets' => [FinanceBranchesTableWidget::class, FinancePendingApprovalTableWidget::class]],
             ];
