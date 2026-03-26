@@ -12,7 +12,7 @@ use Illuminate\Support\Number;
 
 class ComplaintsStatsWidget extends BaseWidget
 {
-    protected static ?int $sort = 5;
+    protected static ?int $sort = 1;
 
     public static function canView(): bool
     {
@@ -77,13 +77,13 @@ class ComplaintsStatsWidget extends BaseWidget
             }
 
             $totalComplaints = $query->count();
-            
+
             // Priority-based counts
             $urgentComplaints = (clone $query)->where('priority', 'urgent')->count();
             $highComplaints = (clone $query)->where('priority', 'high')->count();
             $mediumComplaints = (clone $query)->where('priority', 'medium')->count();
             $lowComplaints = (clone $query)->where('priority', 'low')->count();
-            
+
             // Status-based counts
             $pendingComplaints = (clone $query)->where('status', 'pending')->count();
             $inProgressComplaints = (clone $query)->where('status', 'in_progress')->count();
@@ -122,7 +122,7 @@ class ComplaintsStatsWidget extends BaseWidget
                 $urgentDescription = ($urgentPending > 0 || $urgentInProgress > 0)
                     ? 'يحتاج إلى انتباه فوري'
                     : 'عاجل';
-                
+
                 $stats[] = Stat::make(
                     'شكاوي عاجلة',
                     Number::format($urgentComplaints)
@@ -251,12 +251,12 @@ class ComplaintsStatsWidget extends BaseWidget
             }
             return '/public' . $path;
         }
-        
+
         // If it's already a relative path starting with /public, return as is
         if (str_starts_with($url, '/public')) {
             return $url;
         }
-        
+
         // Otherwise, prepend /public
         return '/public' . $url;
     }
@@ -273,7 +273,7 @@ class ComplaintsStatsWidget extends BaseWidget
                 $params["tableFilters[{$key}][value]"] = $value;
             }
         }
-        
+
         $queryString = http_build_query($params);
         return $baseUrl . ($queryString ? '?' . $queryString : '');
     }
