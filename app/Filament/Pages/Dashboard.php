@@ -49,10 +49,8 @@ class Dashboard extends BaseDashboard
                 ['pair' => true, 'widgets' => [FinanceStatsWidget::class, FinancePendingApprovalStatsWidget::class]],
                 // Two charts side-by-side
                 ['pair' => true, 'widgets' => [FinanceBranchesComparisonChartWidget::class, FinanceTopTypesWidget::class]],
-                // Branch breakdown table full width
-                ['pair' => false, 'widgets' => [FinanceBranchesTableWidget::class]],
-                // Top-5 pending approvals table full width
-                ['pair' => false, 'widgets' => [FinancePendingApprovalTableWidget::class]],
+                // Two tables side-by-side
+                ['pair' => true, 'widgets' => [FinanceBranchesTableWidget::class, FinancePendingApprovalTableWidget::class]],
             ];
         } elseif (in_array($type, [User::TYPE_ACCOUNTANT, User::TYPE_GENERAL_ACCOUNTANT], true)) {
             $financeRows = [
