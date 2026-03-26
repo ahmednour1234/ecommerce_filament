@@ -283,6 +283,13 @@ class AdminPanelProvider extends PanelProvider
     font-family: 'Cairo', sans-serif !important;
 }
 
+/* Dashboard: force 2 widgets per row (reduce height) */
+@media (min-width: 768px) {
+    .fi-dashboard-page .fi-wi-container .col-span-full {
+        grid-column: span 1 / span 1 !important;
+    }
+}
+
 /* Hide Filament table search (temporary) */
 .fi-ta-search-field:not(.show-search),
 .fi-ta-header-actions .fi-input-wrp input[type="search"]:not(.show-search),
