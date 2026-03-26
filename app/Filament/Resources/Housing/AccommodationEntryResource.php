@@ -37,32 +37,38 @@ class AccommodationEntryResource extends Resource
     public static function shouldRegisterNavigation(): bool
     {
         $user = auth()->user();
+
         return $user && (
             $user->can('housing.accommodation_entries.view') ||
             $user->can('housing.accommodation_entries.create')
         );
     }
 
-    // ── Housing status options ─────────────────────────────────────────────
-
     public static function housingStatusOptions(): array
     {
         return [
             'unpaid_salary'        => 'عدم دفع راتب',
-            'transfer_sponsorship' => 'نقل كفاله',
-            'temporary'            => 'مؤقته',
-            'rental'               => 'ايجار',
+            'transfer_sponsorship' => 'نقل كفالة',
+            'temporary'            => 'مؤقتة',
+            'rental'               => 'إيجار',
             'work_refused'         => 'رفض عمل',
             'runaway'              => 'هروب',
             'ready_for_delivery'   => 'جاهز للتسليم',
             'with_client'          => 'مع العميل',
-            'in_accommodation'     => 'في الايواء',
-            'outside_kingdom'      => 'خارج المملكه',
-            'ready_for_travel'     => 'جاهزه للتسفير',
+            'in_accommodation'     => 'في الإيواء',
+            'outside_kingdom'      => 'خارج المملكة',
+            'ready_for_travel'     => 'جاهزة للتسفير',
         ];
     }
 
-    // ── Shared form schema ─────────────────────────────────────────────────
+    public static function entryTypeOptions(): array
+    {
+        return [
+            'new_arrival' => 'وافد جديد',
+            'return'      => 'استرجاع',
+            'transfer'    => 'نقل كفالة',
+        ];
+    }
 
     public static function buildFormSchema(bool $readonly = false): array
     {
@@ -71,103 +77,174 @@ class AccommodationEntryResource extends Resource
                 ->schema([
                     Forms\Components\Select::make('contract_no')
                         ->label('رقم العقد')
-                        ->options(fn () => RecruitmentContract::query()
-                            ->with('client')
-                            ->get()
-                            ->mapWithKeys(fn ($c) => [
-                                $c->contract_no => $c->contract_no . ($c->client ? ' — ' . $c->client->name_ar : ''),
-                            ])->toArray()
-                        )
+                        ->options(function (): array {
+                            return RecruitmentContract::query()
+                                ->with('client:id,name_ar')
+                                ->get()
+                                ->mapWithKeys(function ($contract) {
+                                    $label = $contract->contract_no;
+
+                                    if ($contract->client?->name_ar) {
+                                        $label .= ' - ' . $contract->client->name_ar;
+                                    }
+
+                                    return [$contract->contract_no => $label];
+                                })
+                                ->toArray();
+                        })
                         ->searchable()
                         ->live()
-                        ->placeholder('اختر عقداً أو اتركه فارغاً للاختيار اليدوي')
+                        ->placeholder('اختر عقدًا أو اتركه فارغًا للاختيار اليدوي')
                         ->disabled($readonly)
                         ->dehydrated(true)
                         ->afterStateUpdated(function ($state, callable $set) use ($readonly) {
-                            if ($readonly) return;
-                            if ($state) {
-                                $contract = RecruitmentContract::where('contract_no', $state)->first();
-                                if ($contract) {
-                                    if ($contract->worker_id) {
-                                        $set('laborer_id', $contract->worker_id);
-                                    }
-                                    if ($contract->client_id) {
-                                        $set('customer_id', $contract->client_id);
-                                    }
-                                }
-                            } else {
+                            if ($readonly) {
+                                return;
+                            }
+
+                            if (blank($state)) {
                                 $set('laborer_id', null);
                                 $set('customer_id', null);
+
+                                return;
                             }
+
+                            $contract = RecruitmentContract::query()
+                                ->where('contract_no', $state)
+                                ->first();
+
+                            if (! $contract) {
+                                return;
+                            }
+
+                            $set('laborer_id', $contract->worker_id ?: null);
+                            $set('customer_id', $contract->client_id ?: null);
                         })
                         ->columnSpan(2),
 
                     Forms\Components\Select::make('laborer_id')
                         ->label('العاملة')
-                        ->options(fn (Forms\Get $get) => $get('contract_no')
-                            ? Laborer::orderBy('name_ar')->get()
-                                ->mapWithKeys(fn ($w) => [$w->id => "{$w->name_ar} ({$w->passport_number})"])
-                                ->toArray()
-                            : Cache::remember('recruitment_accommodation.workers', 21600, fn () =>
-                                Laborer::where('is_available', true)->get()
-                                    ->mapWithKeys(fn ($w) => [$w->id => "{$w->name_ar} ({$w->passport_number})"])
-                                    ->toArray()
-                              )
-                        )
-                        ->required(!$readonly)
+                        ->options(function (Forms\Get $get): array {
+                            if ($get('contract_no')) {
+                                return Laborer::query()
+                                    ->orderBy('name_ar')
+                                    ->get()
+                                    ->mapWithKeys(fn ($worker) => [
+                                        $worker->id => trim(($worker->name_ar ?? '') . ' (' . ($worker->passport_number ?? '-') . ')'),
+                                    ])
+                                    ->toArray();
+                            }
+
+                            return Cache::remember('recruitment_accommodation.workers', 21600, function () {
+                                return Laborer::query()
+                                    ->where('is_available', true)
+                                    ->orderBy('name_ar')
+                                    ->get()
+                                    ->mapWithKeys(fn ($worker) => [
+                                        $worker->id => trim(($worker->name_ar ?? '') . ' (' . ($worker->passport_number ?? '-') . ')'),
+                                    ])
+                                    ->toArray();
+                            });
+                        })
+                        ->required(! $readonly)
                         ->searchable()
                         ->live()
-                        ->disabled($readonly || fn (Forms\Get $get) => (bool) $get('contract_no'))
+                        ->disabled($readonly || fn (Forms\Get $get): bool => (bool) $get('contract_no'))
                         ->dehydrated(true)
-                        ->when(! $readonly, fn ($field) => $field
-                            ->createOptionForm([
-                                Forms\Components\TextInput::make('name_ar')
-                                    ->label('الاسم (عربي)')->required()->maxLength(255),
-                                Forms\Components\TextInput::make('passport_number')
-                                    ->label('رقم الجواز')->required()->maxLength(255)
-                                    ->unique(Laborer::class, 'passport_number'),
-                                Forms\Components\Select::make('nationality_id')
-                                    ->label('الجنسية')
-                                    ->options(fn () => Nationality::where('is_active', true)
-                                        ->whereIn('name_ar', ['الفلبين', 'بنغلادش', 'سريلانكا', 'اثيوبيا', 'اوغندا', 'كينيا', 'بورندي'])
-                                        ->get()->mapWithKeys(fn ($n) => [$n->id => $n->name_ar])
-                                    )->searchable()->required(),
-                                Forms\Components\Select::make('profession_id')
-                                    ->label('المهنة')
-                                    ->options(fn () => Profession::where('is_active', true)->get()
-                                        ->mapWithKeys(fn ($p) => [$p->id => $p->name_ar])
-                                    )->searchable()->required(),
-                                Forms\Components\Select::make('gender')
-                                    ->label('الجنس')
-                                    ->options(['male' => 'ذكر', 'female' => 'أنثى'])->nullable(),
-                                Forms\Components\TextInput::make('phone_1')
-                                    ->label('الجوال')->tel()->maxLength(50)->nullable(),
-                            ])
-                            ->createOptionUsing(function (array $data): int {
-                                $laborer = Laborer::create([
-                                    'name_ar'         => $data['name_ar'],
-                                    'passport_number' => $data['passport_number'],
-                                    'nationality_id'  => $data['nationality_id'],
-                                    'profession_id'   => $data['profession_id'],
-                                    'gender'          => $data['gender'] ?? null,
-                                    'phone_1'         => $data['phone_1'] ?? null,
-                                    'is_available'    => true,
-                                ]);
-                                Cache::forget('recruitment_accommodation.workers');
-                                return $laborer->id;
-                            })
-                        )
+                        ->when(! $readonly, function ($field) {
+                            return $field
+                                ->createOptionForm([
+                                    Forms\Components\TextInput::make('name_ar')
+                                        ->label('الاسم (عربي)')
+                                        ->required()
+                                        ->maxLength(255),
+
+                                    Forms\Components\TextInput::make('passport_number')
+                                        ->label('رقم الجواز')
+                                        ->required()
+                                        ->maxLength(255)
+                                        ->unique(Laborer::class, 'passport_number'),
+
+                                    Forms\Components\Select::make('nationality_id')
+                                        ->label('الجنسية')
+                                        ->options(function () {
+                                            return Nationality::query()
+                                                ->where('is_active', true)
+                                                ->whereIn('name_ar', [
+                                                    'الفلبين',
+                                                    'بنغلادش',
+                                                    'سريلانكا',
+                                                    'اثيوبيا',
+                                                    'اوغندا',
+                                                    'كينيا',
+                                                    'بورندي',
+                                                ])
+                                                ->pluck('name_ar', 'id')
+                                                ->toArray();
+                                        })
+                                        ->searchable()
+                                        ->required(),
+
+                                    Forms\Components\Select::make('profession_id')
+                                        ->label('المهنة')
+                                        ->options(fn () => Profession::query()
+                                            ->where('is_active', true)
+                                            ->pluck('name_ar', 'id')
+                                            ->toArray()
+                                        )
+                                        ->searchable()
+                                        ->required(),
+
+                                    Forms\Components\Select::make('gender')
+                                        ->label('الجنس')
+                                        ->options([
+                                            'male'   => 'ذكر',
+                                            'female' => 'أنثى',
+                                        ])
+                                        ->nullable(),
+
+                                    Forms\Components\TextInput::make('phone_1')
+                                        ->label('الجوال')
+                                        ->tel()
+                                        ->maxLength(50)
+                                        ->nullable(),
+                                ])
+                                ->createOptionUsing(function (array $data): int {
+                                    $laborer = Laborer::query()->create([
+                                        'name_ar'         => $data['name_ar'],
+                                        'passport_number' => $data['passport_number'],
+                                        'nationality_id'  => $data['nationality_id'],
+                                        'profession_id'   => $data['profession_id'],
+                                        'gender'          => $data['gender'] ?? null,
+                                        'phone_1'         => $data['phone_1'] ?? null,
+                                        'is_available'    => true,
+                                    ]);
+
+                                    Cache::forget('recruitment_accommodation.workers');
+
+                                    return $laborer->id;
+                                });
+                        })
                         ->columnSpan(1),
 
                     Forms\Components\Select::make('customer_id')
                         ->label('العميل')
-                        ->options(fn () => Client::query()->get()
-                            ->mapWithKeys(fn ($c) => [
-                                $c->id => $c->name_ar . ($c->national_id ? ' (' . $c->national_id . ')' : ''),
-                            ])->toArray()
-                        )
+                        ->options(function (): array {
+                            return Client::query()
+                                ->get()
+                                ->mapWithKeys(function ($client) {
+                                    $label = $client->name_ar ?? 'بدون اسم';
+
+                                    if (! empty($client->national_id)) {
+                                        $label .= ' (' . $client->national_id . ')';
+                                    }
+
+                                    return [$client->id => $label];
+                                })
+                                ->toArray();
+                        })
                         ->searchable()
-                        ->disabled($readonly || fn (Forms\Get $get) => (bool) $get('contract_no'))
+                        ->disabled($readonly || fn (Forms\Get $get): bool => (bool) $get('contract_no'))
                         ->dehydrated(true)
                         ->columnSpan(1),
                 ])
@@ -177,69 +254,93 @@ class AccommodationEntryResource extends Resource
                 ->schema([
                     Forms\Components\Select::make('entry_type')
                         ->label('نوع الدخول')
-                        ->options([
-                            'new_arrival' => 'وافد جديد',
-                            'return'      => 'استرجاع',
-                            'transfer'    => 'نقل كفالة',
-                        ])
-                        ->required(!$readonly)
+                        ->options(static::entryTypeOptions())
+                        ->required(! $readonly)
                         ->disabled($readonly)
                         ->dehydrated(true)
                         ->live()
                         ->columnSpan(1),
 
                     Forms\Components\Select::make('transfer_client_id')
-                        ->label('عميل نقل كفالة')
-                        ->options(fn () => Client::query()->get()
-                            ->mapWithKeys(fn ($c) => [
-                                $c->id => $c->name_ar . ($c->national_id ? ' (' . $c->national_id . ')' : ''),
-                            ])->toArray()
-                        )
+                        ->label('عميل نقل الكفالة')
+                        ->options(function (): array {
+                            return Client::query()
+                                ->get()
+                                ->mapWithKeys(function ($client) {
+                                    $label = $client->name_ar ?? 'بدون اسم';
+
+                                    if (! empty($client->national_id)) {
+                                        $label .= ' (' . $client->national_id . ')';
+                                    }
+
+                                    return [$client->id => $label];
+                                })
+                                ->toArray();
+                        })
                         ->searchable()
-                        ->visible(fn (Forms\Get $get) => $get('entry_type') === 'transfer')
+                        ->visible(fn (Forms\Get $get): bool => $get('entry_type') === 'transfer')
                         ->disabled($readonly)
                         ->dehydrated(true)
-                        ->when(! $readonly, fn ($f) => $f
-                            ->createOptionForm([
-                                Forms\Components\TextInput::make('name_ar')
-                                    ->label('الاسم (عربي)')->required()->maxLength(255),
-                                Forms\Components\TextInput::make('national_id')
-                                    ->label('رقم الهوية')->maxLength(50)->nullable(),
-                                Forms\Components\TextInput::make('mobile')
-                                    ->label('الجوال')->tel()->maxLength(20)->nullable(),
-                                Forms\Components\TextInput::make('email')
-                                    ->label('البريد الإلكتروني')->email()->maxLength(255)->nullable(),
-                            ])
-                            ->createOptionUsing(fn (array $data) => Client::create([
-                                'name_ar'     => $data['name_ar'],
-                                'national_id' => $data['national_id'] ?? null,
-                                'mobile'      => $data['mobile'] ?? null,
-                                'email'       => $data['email'] ?? null,
-                            ])->id)
-                        )
+                        ->when(! $readonly, function ($field) {
+                            return $field
+                                ->createOptionForm([
+                                    Forms\Components\TextInput::make('name_ar')
+                                        ->label('الاسم (عربي)')
+                                        ->required()
+                                        ->maxLength(255),
+
+                                    Forms\Components\TextInput::make('national_id')
+                                        ->label('رقم الهوية')
+                                        ->maxLength(50)
+                                        ->nullable(),
+
+                                    Forms\Components\TextInput::make('mobile')
+                                        ->label('الجوال')
+                                        ->tel()
+                                        ->maxLength(20)
+                                        ->nullable(),
+
+                                    Forms\Components\TextInput::make('email')
+                                        ->label('البريد الإلكتروني')
+                                        ->email()
+                                        ->maxLength(255)
+                                        ->nullable(),
+                                ])
+                                ->createOptionUsing(function (array $data): int {
+                                    return Client::query()->create([
+                                        'name_ar'     => $data['name_ar'],
+                                        'national_id' => $data['national_id'] ?? null,
+                                        'mobile'      => $data['mobile'] ?? null,
+                                        'email'       => $data['email'] ?? null,
+                                    ])->id;
+                                });
+                        })
                         ->columnSpan(1),
 
                     Forms\Components\FileUpload::make('transfer_contract_file')
                         ->label('صورة عقد نقل الكفالة')
                         ->disk('public')
                         ->directory('transfer-contracts')
-                        ->acceptedFileTypes(['image/*', 'application/pdf'])
+                        ->acceptedFileTypes([
+                            'image/*',
+                            'application/pdf',
+                        ])
                         ->maxSize(10240)
-                        ->visible(fn (Forms\Get $get) => $get('entry_type') === 'transfer')
+                        ->visible(fn (Forms\Get $get): bool => $get('entry_type') === 'transfer')
                         ->disabled($readonly)
                         ->dehydrated(true)
                         ->columnSpan(2),
 
                     Forms\Components\DateTimePicker::make('entry_date')
                         ->label('تاريخ الدخول')
-                        ->required(!$readonly)
+                        ->required(! $readonly)
                         ->disabled($readonly)
                         ->dehydrated(true)
                         ->native(false)
                         ->columnSpan(1),
 
                     Forms\Components\DateTimePicker::make('exit_date')
-                        ->label('تاريخ خروج')
+                        ->label('تاريخ الخروج')
                         ->disabled($readonly)
                         ->dehydrated(true)
                         ->native(false)
@@ -247,12 +348,16 @@ class AccommodationEntryResource extends Resource
 
                     Forms\Components\Select::make('building_id')
                         ->label('المبنى')
-                        ->options(fn () => Building::query()->get()
-                            ->mapWithKeys(fn ($b) => [
-                                $b->id => $b->name . ' (' . $b->available_capacity . ' متاح)',
-                            ])->toArray()
-                        )
-                        ->required(!$readonly)
+                        ->options(function (): array {
+                            return Building::query()
+                                ->get()
+                                ->mapWithKeys(function ($building) {
+                                    $available = $building->available_capacity ?? 0;
+                                    return [$building->id => ($building->name ?? 'بدون اسم') . ' (' . $available . ' متاح)'];
+                                })
+                                ->toArray();
+                        })
+                        ->required(! $readonly)
                         ->disabled($readonly)
                         ->dehydrated(true)
                         ->searchable()
@@ -262,10 +367,10 @@ class AccommodationEntryResource extends Resource
 
             Forms\Components\Section::make('سجل الحالات')
                 ->schema([
-                    \Filament\Forms\Components\View::make('filament.forms.components.housing-status-table')
-                        ->viewData(fn (Forms\Get $get) => [
+                    Forms\Components\View::make('filament.forms.components.housing-status-table')
+                        ->viewData(fn (Forms\Get $get): array => [
                             'statuses'            => static::housingStatusOptions(),
-                            'statusDates'         => json_decode($get('all_status_dates') ?? '{}', true) ?? [],
+                            'statusDates'         => json_decode($get('all_status_dates') ?? '{}', true) ?: [],
                             'statusDurations'     => [],
                             'currentStatus'       => $get('status_key') ?? '',
                             'statusStatePath'     => 'data.status_key',
@@ -275,14 +380,13 @@ class AccommodationEntryResource extends Resource
                         ->columnSpanFull(),
 
                     Forms\Components\Hidden::make('status_key'),
-                    Forms\Components\Hidden::make('status_date')->default(now()->toDateString()),
-                    Forms\Components\Hidden::make('all_status_dates')->default('{}'),
-                ])
-                ->columns(1),
+                    Forms\Components\Hidden::make('status_date')
+                        ->default(now()->toDateString()),
+                    Forms\Components\Hidden::make('all_status_dates')
+                        ->default('{}'),
+                ]),
         ];
     }
-
-    // ── Filament Resource hooks ────────────────────────────────────────────
 
     public static function form(Form $form): Form
     {
@@ -306,12 +410,14 @@ class AccommodationEntryResource extends Resource
                 Tables\Columns\TextColumn::make('laborer.name_ar')
                     ->label('العاملة')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->default('—'),
 
                 Tables\Columns\TextColumn::make('laborer.passport_number')
                     ->label('رقم الجواز')
                     ->searchable()
-                    ->toggleable(),
+                    ->toggleable()
+                    ->default('—'),
 
                 Tables\Columns\TextColumn::make('customer.name_ar')
                     ->label('العميل')
@@ -321,13 +427,8 @@ class AccommodationEntryResource extends Resource
                 Tables\Columns\TextColumn::make('entry_type')
                     ->label('نوع الدخول')
                     ->badge()
-                    ->formatStateUsing(fn (?string $state) => match ($state) {
-                        'new_arrival' => 'وافد جديد',
-                        'return'      => 'استرجاع',
-                        'transfer'    => 'نقل كفالة',
-                        default       => $state ?? '—',
-                    })
-                    ->color(fn (?string $state) => match ($state) {
+                    ->formatStateUsing(fn (?string $state): string => static::entryTypeOptions()[$state] ?? ($state ?: '—'))
+                    ->color(fn (?string $state): string => match ($state) {
                         'new_arrival' => 'success',
                         'return'      => 'warning',
                         'transfer'    => 'info',
@@ -343,7 +444,7 @@ class AccommodationEntryResource extends Resource
                     ->label('الحالة')
                     ->badge()
                     ->color('info')
-                    ->formatStateUsing(fn (?string $state) => static::housingStatusOptions()[$state] ?? ($state ?: '—')),
+                    ->formatStateUsing(fn (?string $state): string => static::housingStatusOptions()[$state] ?? ($state ?: '—')),
 
                 Tables\Columns\TextColumn::make('entry_date')
                     ->label('تاريخ الدخول')
@@ -360,29 +461,32 @@ class AccommodationEntryResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('entry_type')
                     ->label('نوع الدخول')
-                    ->options([
-                        'new_arrival' => 'وافد جديد',
-                        'return'      => 'استرجاع',
-                        'transfer'    => 'نقل كفالة',
-                    ]),
+                    ->options(static::entryTypeOptions()),
+
                 Tables\Filters\SelectFilter::make('status_key')
                     ->label('الحالة')
                     ->options(static::housingStatusOptions()),
+
                 Tables\Filters\SelectFilter::make('nationality')
                     ->label('الجنسية')
-                    ->options(fn () => Nationality::where('is_active', true)
-                        ->get()
-                        ->mapWithKeys(fn ($n) => [$n->id => $n->name_ar])
+                    ->options(fn (): array => Nationality::query()
+                        ->where('is_active', true)
+                        ->pluck('name_ar', 'id')
                         ->toArray()
                     )
-                    ->query(fn (Builder $query, array $data) =>
-                        $data['value']
-                            ? $query->whereHas('laborer', fn ($q) => $q->where('nationality_id', $data['value']))
-                            : $query
-                    ),
+                    ->query(function (Builder $query, array $data): Builder {
+                        if (blank($data['value'] ?? null)) {
+                            return $query;
+                        }
+
+                        return $query->whereHas('laborer', function (Builder $subQuery) use ($data) {
+                            $subQuery->where('nationality_id', $data['value']);
+                        });
+                    }),
+
                 Tables\Filters\Filter::make('active')
                     ->label('داخل فقط (بدون تاريخ خروج)')
-                    ->query(fn (Builder $query) => $query->whereNull('exit_date')),
+                    ->query(fn (Builder $query): Builder => $query->whereNull('exit_date')),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()->label('عرض'),
@@ -401,13 +505,20 @@ class AccommodationEntryResource extends Resource
             Infolists\Components\Section::make('بيانات العاملة والعميل')
                 ->schema([
                     Infolists\Components\TextEntry::make('contract_no')
-                        ->label('رقم العقد')->default('—'),
+                        ->label('رقم العقد')
+                        ->default('—'),
+
                     Infolists\Components\TextEntry::make('laborer.name_ar')
-                        ->label('اسم العاملة')->default('—'),
+                        ->label('اسم العاملة')
+                        ->default('—'),
+
                     Infolists\Components\TextEntry::make('laborer.passport_number')
-                        ->label('رقم الجواز')->default('—'),
+                        ->label('رقم الجواز')
+                        ->default('—'),
+
                     Infolists\Components\TextEntry::make('customer.name_ar')
-                        ->label('العميل')->default('—'),
+                        ->label('العميل')
+                        ->default('—'),
                 ])
                 ->columns(2),
 
@@ -416,40 +527,46 @@ class AccommodationEntryResource extends Resource
                     Infolists\Components\TextEntry::make('entry_type')
                         ->label('نوع الدخول')
                         ->badge()
-                        ->formatStateUsing(fn (?string $state) => match ($state) {
-                            'new_arrival' => 'وافد جديد',
-                            'return'      => 'استرجاع',
-                            'transfer'    => 'نقل كفالة',
-                            default       => $state ?? '—',
-                        })
-                        ->color(fn (?string $state) => match ($state) {
+                        ->formatStateUsing(fn (?string $state): string => static::entryTypeOptions()[$state] ?? ($state ?: '—'))
+                        ->color(fn (?string $state): string => match ($state) {
                             'new_arrival' => 'success',
                             'return'      => 'warning',
                             'transfer'    => 'info',
                             default       => 'gray',
                         }),
+
                     Infolists\Components\TextEntry::make('entry_date')
-                        ->label('تاريخ الدخول')->date('Y-m-d')->default('—'),
+                        ->label('تاريخ الدخول')
+                        ->date('Y-m-d')
+                        ->default('—'),
+
                     Infolists\Components\TextEntry::make('exit_date')
-                        ->label('تاريخ الخروج')->date('Y-m-d')->default('—'),
+                        ->label('تاريخ الخروج')
+                        ->date('Y-m-d')
+                        ->default('—'),
+
                     Infolists\Components\TextEntry::make('building.name')
-                        ->label('المبنى')->default('—'),
+                        ->label('المبنى')
+                        ->default('—'),
+
                     Infolists\Components\TextEntry::make('status_key')
                         ->label('الحالة الحالية')
                         ->badge()
                         ->color('info')
-                        ->formatStateUsing(fn (?string $state) => static::housingStatusOptions()[$state] ?? ($state ?: '—')),
+                        ->formatStateUsing(fn (?string $state): string => static::housingStatusOptions()[$state] ?? ($state ?: '—')),
                 ])
                 ->columns(2),
 
             Infolists\Components\Section::make('بيانات نقل الكفالة')
-                ->visible(fn ($record) => $record?->entry_type === 'transfer')
+                ->visible(fn ($record): bool => $record?->entry_type === 'transfer')
                 ->schema([
                     Infolists\Components\TextEntry::make('transferData.transferClient.name_ar')
-                        ->label('عميل نقل كفالة')->default('—'),
+                        ->label('عميل نقل الكفالة')
+                        ->default('—'),
+
                     Infolists\Components\TextEntry::make('transferData.contract_file_path')
                         ->label('ملف عقد نقل الكفالة')
-                        ->formatStateUsing(fn (?string $state) => $state ? basename($state) : '—'),
+                        ->formatStateUsing(fn (?string $state): string => $state ? basename($state) : '—'),
                 ])
                 ->columns(2),
 
@@ -462,9 +579,12 @@ class AccommodationEntryResource extends Resource
                                 ->label('الحالة')
                                 ->badge()
                                 ->color('info')
-                                ->formatStateUsing(fn (?string $state) => static::housingStatusOptions()[$state] ?? ($state ?: '—')),
+                                ->formatStateUsing(fn (?string $state): string => static::housingStatusOptions()[$state] ?? ($state ?: '—')),
+
                             Infolists\Components\TextEntry::make('status_date')
-                                ->label('التاريخ')->date('Y-m-d')->default('—'),
+                                ->label('التاريخ')
+                                ->date('Y-m-d')
+                                ->default('—'),
                         ])
                         ->columns(2),
                 ]),
