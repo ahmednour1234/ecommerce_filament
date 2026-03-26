@@ -7,7 +7,6 @@ use App\Filament\Widgets\Dashboard\ComplaintsStatsWidget;
 use App\Filament\Widgets\Dashboard\DashboardFilterWidget;
 use App\Filament\Widgets\Dashboard\FinanceBranchesComparisonChartWidget;
 use App\Filament\Widgets\Dashboard\FinanceBranchesTableWidget;
-use App\Filament\Widgets\Dashboard\FinancePendingApprovalStatsWidget;
 use App\Filament\Widgets\Dashboard\FinancePendingApprovalTableWidget;
 use App\Filament\Widgets\Dashboard\FinanceStatsWidget;
 use App\Filament\Widgets\Dashboard\FinanceTopTypesWidget;
@@ -45,8 +44,8 @@ class Dashboard extends BaseDashboard
         $financeRows = [];
         if (in_array($type, [User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER], true)) {
             $financeRows = [
-                // Two stat widgets side-by-side
-                ['pair' => true, 'widgets' => [FinanceStatsWidget::class, FinancePendingApprovalStatsWidget::class]],
+                // Finance stats full width
+                ['pair' => false, 'widgets' => [FinanceStatsWidget::class]],
                 // Two charts side-by-side
                 ['pair' => true, 'widgets' => [FinanceBranchesComparisonChartWidget::class, FinanceTopTypesWidget::class]],
                 // Two tables side-by-side
@@ -54,7 +53,6 @@ class Dashboard extends BaseDashboard
             ];
         } elseif (in_array($type, [User::TYPE_ACCOUNTANT, User::TYPE_GENERAL_ACCOUNTANT], true)) {
             $financeRows = [
-                ['pair' => false, 'widgets' => [FinancePendingApprovalStatsWidget::class]],
                 ['pair' => false, 'widgets' => [FinancePendingApprovalTableWidget::class]],
             ];
         }
