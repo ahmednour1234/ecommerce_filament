@@ -67,6 +67,7 @@ class DatabaseSeeder extends Seeder
             \Modules\ServiceTransfer\Database\Seeders\ServiceTransferPermissionsSeeder::class, // Service Transfer permissions
             \Database\Seeders\ServiceTransfer\ServiceTransferRoleSeeder::class, // Service Transfer Manager role and permissions
             \Modules\ServiceTransfer\Database\Seeders\ServiceTransferTranslationsSeeder::class, // Service Transfer translations
+            UserManagementRoleSeeder::class, // User management role: users, roles, permissions
             SuperAdminSeeder::class, // Create super_admin role with ALL permissions (must be last)
             AdditionalUsersSeeder::class, // Create additional users with super_admin role
         ]);
