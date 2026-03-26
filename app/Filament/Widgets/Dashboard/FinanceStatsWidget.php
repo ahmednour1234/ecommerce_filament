@@ -76,11 +76,7 @@ class FinanceStatsWidget extends BaseWidget
                 ->color('info')
                 ->icon('heroicon-o-document-text'),
 
-            Stat::make('عدد معاملات المصروفات', Number::format($kpis['expense_count']))
-                ->description('معاملات المصروفات في الفترة المحددة')
-                ->descriptionIcon('heroicon-o-document-minus')
-                ->color('warning')
-                ->icon('heroicon-o-document-duplicate'),
+
         ];
     }
 }
