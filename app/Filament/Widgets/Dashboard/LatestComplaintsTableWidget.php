@@ -11,7 +11,7 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class LatestComplaintsTableWidget extends BaseWidget
 {
-    protected static ?string $heading = 'آخر 10 شكاوي';
+    protected static ?string $heading = 'آخر 5 شكاوي';
     protected static ?int $sort = 6;
     protected int|string|array $columnSpan = 'full';
 
@@ -30,7 +30,7 @@ class LatestComplaintsTableWidget extends BaseWidget
                 Complaint::query()
                     ->with(['branch', 'assignedUser', 'creator'])
                     ->latest('created_at')
-                    ->limit(10)
+                    ->limit(5)
             )
             ->columns([
                 TextColumn::make('complaint_no')

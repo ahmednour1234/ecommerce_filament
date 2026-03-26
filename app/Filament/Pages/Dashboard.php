@@ -3,18 +3,18 @@
 namespace App\Filament\Pages;
 
 use App\Filament\Concerns\AddsPublicToUrl;
-
-use App\Filament\Widgets\Dashboard\LatestComplaintsTableWidget;
+use App\Filament\Widgets\Dashboard\ComplaintsStatsWidget;
 use App\Filament\Widgets\Dashboard\DashboardFilterWidget;
 use App\Filament\Widgets\Dashboard\FinanceBranchesComparisonChartWidget;
 use App\Filament\Widgets\Dashboard\FinanceBranchesTableWidget;
+use App\Filament\Widgets\Dashboard\FinancePendingApprovalStatsWidget;
+use App\Filament\Widgets\Dashboard\FinancePendingApprovalTableWidget;
 use App\Filament\Widgets\Dashboard\FinanceStatsWidget;
 use App\Filament\Widgets\Dashboard\FinanceTopTypesWidget;
 use App\Filament\Widgets\Dashboard\HRStatsWidget;
 use App\Filament\Widgets\Dashboard\HrPendingExcuseRequestsTableWidget;
 use App\Filament\Widgets\Dashboard\HrPendingLeaveRequestsTableWidget;
-use App\Filament\Widgets\Dashboard\FinancePendingApprovalStatsWidget;
-use App\Filament\Widgets\Dashboard\FinancePendingApprovalTableWidget;
+use App\Filament\Widgets\Dashboard\LatestComplaintsTableWidget;
 use App\Filament\Widgets\Dashboard\RecruitmentAccountsTableWidget;
 use App\Filament\Widgets\Dashboard\RecruitmentCoordinationDelayedTableWidget;
 use App\Filament\Widgets\Dashboard\RecruitmentCoordinationLatestTableWidget;
@@ -29,94 +29,118 @@ class Dashboard extends BaseDashboard
     protected static ?string $navigationIcon = 'heroicon-o-home';
     protected static string $view = 'filament.pages.dashboard';
 
-    public string $activeTab = '';
-
-    public function mount(): void
-    {
-        $tabs = $this->getDashboardTabs();
-        $this->activeTab = $tabs[0]['id'] ?? 'main';
-    }
-
-    public function setActiveTab(string $tab): void
-    {
-        $this->activeTab = $tab;
-    }
-
-    public function getDashboardTabs(): array
+    /**
+     * Returns the 4 dashboard sections:
+     * 1. المالية  2. الشكاوي  3. عقود الاستقدام  4. الموارد البشرية
+     * Each section has rows; each row is either full-width or a 2-column pair.
+     */
+    public function getDashboardSections(): array
     {
         $type = auth()->user()?->type;
-        $filter = [DashboardFilterWidget::class];
-        $tabs = [];
+        $sections = [];
 
-        // ── مالية: إحصائيات ──
+        // ─────────────────────────────────────
+        // Section 1: المالية
+        // ─────────────────────────────────────
+        $financeRows = [];
         if (in_array($type, [User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER], true)) {
-            $tabs[] = ['id' => 'finance_stats', 'label' => 'إحصائيات مالية', 'widgets' => array_merge($filter, [
-                FinanceStatsWidget::class,
-                FinanceTopTypesWidget::class,
-            ]), 'footer' => []];
+            $financeRows = [
+                // Two stat widgets side-by-side
+                ['pair' => true, 'widgets' => [FinanceStatsWidget::class, FinancePendingApprovalStatsWidget::class]],
+                // Two charts side-by-side
+                ['pair' => true, 'widgets' => [FinanceBranchesComparisonChartWidget::class, FinanceTopTypesWidget::class]],
+                // Branch breakdown table full width
+                ['pair' => false, 'widgets' => [FinanceBranchesTableWidget::class]],
+                // Top-5 pending approvals table full width
+                ['pair' => false, 'widgets' => [FinancePendingApprovalTableWidget::class]],
+            ];
         } elseif (in_array($type, [User::TYPE_ACCOUNTANT, User::TYPE_GENERAL_ACCOUNTANT], true)) {
-            $tabs[] = ['id' => 'finance_stats', 'label' => 'إحصائيات مالية', 'widgets' => array_merge($filter, [
-                FinancePendingApprovalStatsWidget::class,
-            ]), 'footer' => []];
+            $financeRows = [
+                ['pair' => false, 'widgets' => [FinancePendingApprovalStatsWidget::class]],
+                ['pair' => false, 'widgets' => [FinancePendingApprovalTableWidget::class]],
+            ];
+        }
+        if (! empty($financeRows)) {
+            $sections[] = [
+                'id'    => 'finance',
+                'label' => 'المالية',
+                'icon'  => 'heroicon-o-banknotes',
+                'rows'  => $financeRows,
+            ];
         }
 
-        // ── مالية: معاملات معلقة (محاسبين فقط) ──
-        if (in_array($type, [User::TYPE_ACCOUNTANT, User::TYPE_GENERAL_ACCOUNTANT], true)) {
-            $tabs[] = ['id' => 'finance_pending', 'label' => 'معاملات معلقة', 'widgets' => array_merge($filter, [
-                FinancePendingApprovalTableWidget::class,
-            ]), 'footer' => []];
-        }
-
-        // ── مالية: تقارير الفروع (مالك + سوبر) ──
-        if (in_array($type, [User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER], true)) {
-            $tabs[] = ['id' => 'finance_branches', 'label' => 'تقارير الفروع', 'pair' => true, 'widgets' => array_merge($filter, [
-                FinanceBranchesComparisonChartWidget::class,
-                FinanceBranchesTableWidget::class,
-            ]), 'footer' => []];
-        }
-
-        // ── عقود الاستقدام ──
-        $recruitmentWidgets = match ($type) {
-            User::TYPE_ACCOUNTANT, User::TYPE_GENERAL_ACCOUNTANT => [RecruitmentAccountsTableWidget::class],
-            User::TYPE_COORDINATOR => array_merge($filter, [
-                RecruitmentCoordinationLatestTableWidget::class,
-                RecruitmentCoordinationDelayedTableWidget::class,
-            ]),
-            User::TYPE_CUSTOMER_SERVICE => array_merge($filter, [RecruitmentCustomerServiceTableWidget::class]),
-            default => [],
-        };
-        if (! empty($recruitmentWidgets)) {
-            $pair = ($type === User::TYPE_COORDINATOR);
-            $tabs[] = ['id' => 'recruitment', 'label' => 'عقود الاستقدام', 'pair' => $pair, 'widgets' => $recruitmentWidgets, 'footer' => []];
-        }
-
-        // ── شكاوي ──
+        // ─────────────────────────────────────
+        // Section 2: الشكاوي
+        // ─────────────────────────────────────
         if (in_array($type, [User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER, User::TYPE_COMPLAINTS_MANAGER], true)) {
-            $complaints = $type === User::TYPE_COMPLAINTS_MANAGER ? $filter : [DashboardFilterWidget::class];
-            $complaints[] = LatestComplaintsTableWidget::class;
-            $tabs[] = ['id' => 'complaints', 'label' => 'شكاوي', 'widgets' => $complaints, 'footer' => []];
+            $sections[] = [
+                'id'    => 'complaints',
+                'label' => 'الشكاوي',
+                'icon'  => 'heroicon-o-chat-bubble-left-ellipsis',
+                'rows'  => [
+                    ['pair' => false, 'widgets' => [ComplaintsStatsWidget::class]],
+                    ['pair' => false, 'widgets' => [LatestComplaintsTableWidget::class]],
+                ],
+            ];
         }
 
-        // ── موارد بشرية: إحصائيات ──
+        // ─────────────────────────────────────
+        // Section 3: عقود الاستقدام
+        // ─────────────────────────────────────
+        $recruitmentRows = [];
+        if (in_array($type, [User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER, User::TYPE_COORDINATOR], true)) {
+            $recruitmentRows = [
+                ['pair' => true, 'widgets' => [
+                    RecruitmentCoordinationLatestTableWidget::class,
+                    RecruitmentCoordinationDelayedTableWidget::class,
+                ]],
+            ];
+        } elseif ($type === User::TYPE_CUSTOMER_SERVICE) {
+            $recruitmentRows = [
+                ['pair' => false, 'widgets' => [RecruitmentCustomerServiceTableWidget::class]],
+            ];
+        } elseif (in_array($type, [User::TYPE_ACCOUNTANT, User::TYPE_GENERAL_ACCOUNTANT], true)) {
+            $recruitmentRows = [
+                ['pair' => false, 'widgets' => [RecruitmentAccountsTableWidget::class]],
+            ];
+        }
+        if (! empty($recruitmentRows)) {
+            $sections[] = [
+                'id'    => 'recruitment',
+                'label' => 'عقود الاستقدام',
+                'icon'  => 'heroicon-o-document-text',
+                'rows'  => $recruitmentRows,
+            ];
+        }
+
+        // ─────────────────────────────────────
+        // Section 4: الموارد البشرية
+        // ─────────────────────────────────────
         if (in_array($type, [User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER, User::TYPE_HR_MANAGER], true)) {
-            $hrFilter = $type === User::TYPE_HR_MANAGER ? $filter : [];
-            $tabs[] = ['id' => 'hr_stats', 'label' => 'إحصائيات الموارد البشرية', 'widgets' => array_merge($hrFilter, [HRStatsWidget::class]), 'footer' => []];
+            $sections[] = [
+                'id'    => 'hr',
+                'label' => 'الموارد البشرية',
+                'icon'  => 'heroicon-o-users',
+                'rows'  => [
+                    ['pair' => false, 'widgets' => [HRStatsWidget::class]],
+                    ['pair' => true, 'widgets' => [
+                        HrPendingLeaveRequestsTableWidget::class,
+                        HrPendingExcuseRequestsTableWidget::class,
+                    ]],
+                ],
+            ];
         }
 
-        // ── موارد بشرية: طلبات الإجازات + الأعذار في صف واحد ──
-        if (in_array($type, [User::TYPE_SUPER_ADMIN, User::TYPE_COMPANY_OWNER, User::TYPE_HR_MANAGER], true)) {
-            $hrFilter = $type === User::TYPE_HR_MANAGER ? $filter : [];
-            $tabs[] = ['id' => 'hr_requests', 'label' => 'طلبات الإجازات والأعذار', 'pair' => true, 'widgets' => array_merge($hrFilter, [
-                HrPendingLeaveRequestsTableWidget::class,
-                HrPendingExcuseRequestsTableWidget::class,
-            ]), 'footer' => []];
+        if (empty($sections)) {
+            $sections[] = [
+                'id'    => 'main',
+                'label' => 'الرئيسية',
+                'icon'  => 'heroicon-o-home',
+                'rows'  => [],
+            ];
         }
 
-        if (empty($tabs)) {
-            $tabs[] = ['id' => 'main', 'label' => 'الرئيسية', 'widgets' => $filter, 'footer' => []];
-        }
-
-        return $tabs;
+        return $sections;
     }
 
     public function getHeaderWidgetsColumns(): int|array

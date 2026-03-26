@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class FinancePendingApprovalTableWidget extends BaseWidget
 {
-    protected static ?string $heading = 'معاملات تنتظر الموافقة';
+    protected static ?string $heading = 'آخر 5 معاملات تنتظر الموافقة';
 
     protected int|string|array $columnSpan = 'full';
 
@@ -47,7 +47,7 @@ class FinancePendingApprovalTableWidget extends BaseWidget
             }
         }
 
-        return $q->latest('trx_date')->limit(50);
+        return $q->latest('trx_date')->limit(5);
     }
 
     public function table(Table $table): Table
@@ -73,7 +73,7 @@ class FinancePendingApprovalTableWidget extends BaseWidget
                     ->placeholder('—'),
             ])
             ->emptyStateHeading('لا توجد معاملات تنتظر الموافقة')
-            ->paginated([10, 25, 50])
+            ->paginated(false)
             ->headerActions([
                 \Filament\Tables\Actions\Action::make('view_all')
                     ->label('عرض الكل')

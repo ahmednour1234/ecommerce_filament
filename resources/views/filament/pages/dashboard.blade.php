@@ -1,122 +1,131 @@
-<x-filament-panels::page class="rtl-dashboard dashboard-with-tabs">
-    @php $tabs = $this->getDashboardTabs(); @endphp
+<x-filament-panels::page class="rtl-dashboard dashboard-sections">
+    @php $sections = $this->getDashboardSections(); @endphp
 
-    <div class="dashboard-tabs-wrapper -mx-4 sm:-mx-6 md:-mx-8 mb-6">
-        <div class="dashboard-tabs-bar flex gap-1 overflow-x-auto border-b border-gray-200 dark:border-white/10 bg-gray-50/80 dark:bg-white/5 px-4 sm:px-6 md:px-8 py-2 scrollbar-thin">
-            @foreach($tabs as $tab)
-            <button type="button"
-                wire:click="setActiveTab('{{ $tab['id'] }}')"
-                class="rounded-t-lg px-4 py-2.5 text-sm font-medium whitespace-nowrap transition shrink-0 {{ $this->activeTab === $tab['id'] ? 'dashboard-tab-active' : 'dashboard-tab' }}">
-                {{ $tab['label'] }}
-            </button>
-            @endforeach
-        </div>
+    {{-- ═══ Filter bar (always at top) ═══ --}}
+    <x-filament-widgets::widgets
+        :widgets="[\App\Filament\Widgets\Dashboard\DashboardFilterWidget::class]"
+        :columns="1"
+    />
+
+    {{-- ═══ Section quick-navigation pills ═══ --}}
+    @if(count($sections) > 1)
+    <div class="section-quick-nav flex flex-wrap gap-2 my-2">
+        @foreach($sections as $section)
+        <a href="#section-{{ $section['id'] }}"
+           class="section-nav-pill">
+            {{ $section['label'] }}
+        </a>
+        @endforeach
     </div>
+    @endif
 
-    <div class="space-y-6">
-        @foreach($tabs as $tab)
-            @if($this->activeTab === $tab['id'])
+    {{-- ═══ The 4 sections ═══ --}}
+    <div class="space-y-12 mt-4">
+        @foreach($sections as $section)
+        <div id="section-{{ $section['id'] }}" class="dashboard-section scroll-mt-20">
+
+            {{-- Section header --}}
+            <div class="section-header">
+                <span class="section-accent"></span>
+                <h2 class="section-title">{{ $section['label'] }}</h2>
+            </div>
+
+            {{-- Section rows --}}
             <div class="space-y-6">
-                @if(!empty($tab['widgets']))
-                    @if(!empty($tab['pair']))
-                        {{-- أول widget هو filter (full width) والباقي يتقسم في جدولين --}}
-                        @php
-                            $allWidgets = $tab['widgets'];
-                            $filterWidgets = array_filter($allWidgets, fn($w) => is_string($w) && str_ends_with($w, 'DashboardFilterWidget'));
-                            $contentWidgets = array_values(array_filter($allWidgets, fn($w) => !is_string($w) || !str_ends_with($w, 'DashboardFilterWidget')));
-                        @endphp
-                        @if(!empty($filterWidgets))
-                        <x-filament-widgets::widgets :widgets="array_values($filterWidgets)" :columns="1" />
-                        @endif
+                @foreach($section['rows'] as $row)
+                    @if(!empty($row['pair']) && count($row['widgets']) >= 2)
+                        {{-- Two widgets / tables / charts side by side --}}
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            @foreach(array_chunk($contentWidgets, 1) as $chunk)
-                            <div>
-                                <x-filament-widgets::widgets :widgets="$chunk" :columns="1" />
+                            @foreach($row['widgets'] as $widget)
+                            <div class="min-w-0">
+                                <x-filament-widgets::widgets :widgets="[$widget]" :columns="1" />
                             </div>
                             @endforeach
                         </div>
                     @else
-                    <x-filament-widgets::widgets :widgets="$tab['widgets']" :columns="$this->getHeaderWidgetsColumns()" />
+                        {{-- Full-width row --}}
+                        <x-filament-widgets::widgets :widgets="$row['widgets']" :columns="1" />
                     @endif
-                @endif
-                @if(!empty($tab['footer']))
-                <x-filament-widgets::widgets :widgets="$tab['footer']" :columns="$this->getHeaderWidgetsColumns()" />
-                @endif
+                @endforeach
             </div>
-            @endif
+
+        </div>
         @endforeach
     </div>
 
-
     <style>
-        .dashboard-tabs-bar .dashboard-tab {
-            color: rgb(107 114 128);
-            background: transparent;
-        }
-        .dashboard-tabs-bar .dashboard-tab:hover {
-            color: rgb(55 65 81);
-            background: rgb(229 231 235 / 0.6);
-        }
-        .dark .dashboard-tabs-bar .dashboard-tab { color: rgb(156 163 175); }
-        .dark .dashboard-tabs-bar .dashboard-tab:hover { color: rgb(229 231 235); background: rgb(255 255 255 / 0.08); }
-        .dashboard-tabs-bar .dashboard-tab-active {
-            color: white;
-            background: rgb(var(--primary-500));
-            border-bottom: 2px solid rgb(var(--primary-500));
-            margin-bottom: -1px;
-        }
-        .dashboard-with-tabs .fi-main > div:first-child { margin-top: 0; }
-        .rtl-dashboard {
-            direction: rtl;
-        }
-
-        /* 2) محاذاة النصوص داخل عناصر Filament بدون تكسير layout */
+        /* ── RTL & base ── */
+        .rtl-dashboard { direction: rtl; }
         .rtl-dashboard .fi-section,
         .rtl-dashboard .fi-header-heading,
         .rtl-dashboard .fi-section-header-heading,
-        .rtl-dashboard .fi-section-header-description {
-            text-align: right;
-        }
-
+        .rtl-dashboard .fi-section-header-description { text-align: right; }
         .rtl-dashboard .fi-input-wrp input,
         .rtl-dashboard .fi-select-wrp select,
-        .rtl-dashboard .fi-ta-search-field input {
-            text-align: right;
-        }
-
-        /* 3) جدول Filament */
-        .rtl-dashboard .fi-ta-table {
-            direction: rtl;
-        }
-
+        .rtl-dashboard .fi-ta-search-field input { text-align: right; }
+        .rtl-dashboard .fi-ta-table { direction: rtl; }
         .rtl-dashboard .fi-ta-table th,
-        .rtl-dashboard .fi-ta-table td {
-            text-align: right;
-        }
-
-        /* أرقام/مبالغ: خليه end يبقى يسار عشان القراءة تكون صح */
-        .rtl-dashboard .fi-ta-table td[align="end"] {
-            text-align: left !important;
-        }
-
-        /* 4) تحسين الشكل */
+        .rtl-dashboard .fi-ta-table td { text-align: right; }
+        .rtl-dashboard .fi-ta-table td[align="end"] { text-align: left !important; }
         .rtl-dashboard .fi-stats-overview-stat,
         .rtl-dashboard .fi-widget,
-        .rtl-dashboard .fi-section {
-            border-radius: 0.75rem;
+        .rtl-dashboard .fi-section { border-radius: 0.75rem; }
+        .rtl-dashboard .fi-main { padding-top: 0.75rem; }
+
+        /* ── Section header ── */
+        .dashboard-section .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid rgba(var(--primary-400), 0.35);
+        }
+        .dashboard-section .section-accent {
+            display: inline-block;
+            width: 0.35rem;
+            height: 1.75rem;
+            border-radius: 9999px;
+            background: rgb(var(--primary-500));
+            flex-shrink: 0;
+        }
+        .dashboard-section .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: rgb(17 24 39);
+        }
+        .dark .dashboard-section .section-title { color: rgb(243 244 246); }
+
+        /* ── Quick-nav pills ── */
+        .section-nav-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            border: 1.5px solid rgba(var(--primary-400), 0.5);
+            color: rgb(var(--primary-700));
+            background: rgba(var(--primary-50), 0.7);
+            text-decoration: none;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .section-nav-pill:hover {
+            background: rgba(var(--primary-100), 1);
+            border-color: rgb(var(--primary-500));
+        }
+        .dark .section-nav-pill {
+            color: rgb(var(--primary-300));
+            background: rgba(var(--primary-900), 0.25);
+            border-color: rgba(var(--primary-600), 0.5);
+        }
+        .dark .section-nav-pill:hover {
+            background: rgba(var(--primary-800), 0.4);
+            border-color: rgb(var(--primary-500));
         }
 
-        /* 5) تصغير الـ padding العلوي لو الهيدر كبير */
-        .rtl-dashboard .fi-main {
-            padding-top: 0.75rem;
-        }
-
-        /* كروت عقود الاستقدام البسيطة - أصغر وأوضح */
-        .rtl-dashboard .recruitment-stat-card-simple {
-            padding: 0.75rem 1rem;
-        }
-        .rtl-dashboard .recruitment-stat-card-simple .fi-stats-overview-stat-value {
-            font-size: 1.25rem;
-        }
+        /* ── Pair grid: ensure equal height cards ── */
+        .dashboard-sections .grid > div > .fi-wi { height: 100%; }
     </style>
 </x-filament-panels::page>
+
