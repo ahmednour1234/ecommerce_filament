@@ -18,12 +18,13 @@ class HrPendingExcuseRequestsTableWidget extends BaseWidget
     public static function canView(): bool
     {
         $user = auth()->user();
+        $type = strtolower($user?->type ?? '');
         return $user?->hasRole('super_admin')
             || $user?->can('hr_excuse_requests.view_any')
             || $user?->can('hr_excuse_requests.approve')
-            || (strtolower($user?->type) === 'hr_manager')
-            || (strtolower($user?->type) === 'company_owner')
-            || (strtolower($user?->type) === 'branch_manager');
+            || (str_contains($type, 'hr'))
+            || ($type === 'company_owner')
+            || ($type === 'branch_manager');
     }
 
     public function table(Table $table): Table
