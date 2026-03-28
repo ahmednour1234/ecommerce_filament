@@ -8,11 +8,12 @@ use App\Models\User;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class FinancePendingApprovalStatsWidget extends BaseWidget
 {
-    protected static ?int $sort = 0;
-    protected int|string|array $columnSpan = 'full';
+    protected static ?int $sort = 21;
+    protected int|string|array $columnSpan = 1;
 
     protected function getColumns(): int
     {
@@ -21,7 +22,7 @@ class FinancePendingApprovalStatsWidget extends BaseWidget
 
     public static function canView(): bool
     {
-        $user = auth()->user();
+        $user = Auth::user();
         if (! $user) {
             return false;
         }
@@ -34,7 +35,7 @@ class FinancePendingApprovalStatsWidget extends BaseWidget
     protected function getStats(): array
     {
         $query = BranchTransaction::query()->pending();
-        $user = auth()->user();
+        $user = Auth::user();
         if ($user && ! $user->hasRole('super_admin') && ! $user->can('finance.view_all_branches')) {
             $branchIds = $user->branches()->pluck('branches.id')->toArray();
             if (!empty($user->branch_id)) {

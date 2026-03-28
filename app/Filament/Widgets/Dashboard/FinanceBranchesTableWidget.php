@@ -9,19 +9,20 @@ use App\Support\Money;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Number;
 
 class FinanceBranchesTableWidget extends BaseWidget
 {
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 22;
 
     public static function canView(): bool
     {
-        $user = auth()->user();
+        $user = Auth::user();
         return $user?->hasRole('super_admin') || $user?->can('finance.view_reports') || $user?->can('finance.view_transactions') ?? false;
     }
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 1;
     protected static ?string $heading = 'ملخص المالية حسب الفروع';
 
     protected $listeners = ['filters-updated' => '$refresh'];
