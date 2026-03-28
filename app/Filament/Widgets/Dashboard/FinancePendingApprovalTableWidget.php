@@ -12,6 +12,7 @@ use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
 
 class FinancePendingApprovalTableWidget extends BaseWidget
+    protected static ?string $navigationGroup = 'قسم المعاملات المالية';
 {
     protected static ?string $heading = 'آخر 5 معاملات تنتظر الموافقة';
 
