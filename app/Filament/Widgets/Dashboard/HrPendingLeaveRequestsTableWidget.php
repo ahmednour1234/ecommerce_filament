@@ -12,9 +12,9 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class HrPendingLeaveRequestsTableWidget extends BaseWidget
 {
+    protected static ?int $sort = 31;
     protected static ?string $heading = 'تنبيهات HR: طلبات إجازة تنتظر الموافقة';
-
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 1;
 
     public static function canView(): bool
     {
