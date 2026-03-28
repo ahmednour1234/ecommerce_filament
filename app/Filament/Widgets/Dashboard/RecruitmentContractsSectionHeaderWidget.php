@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 class RecruitmentContractsSectionHeaderWidget extends Widget
 {
     protected static string $view = 'filament.widgets.recruitment-contracts-section-header-widget';
-    protected static ?int $sort = 29;
+    protected static ?int $sort = 20;
     protected int|string|array $columnSpan = 'full';
 
     public static function canView(): bool

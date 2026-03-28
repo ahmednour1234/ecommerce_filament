@@ -10,7 +10,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 class RecruitmentContractsStatusStatsWidget extends BaseWidget
 {
     protected ?string $heading = null;
-    protected static ?int $sort = 30;
+    protected static ?int $sort = 22;
     protected int|string|array $columnSpan = 'full';
 
     public static function canView(): bool

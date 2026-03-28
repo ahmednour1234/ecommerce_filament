@@ -9,9 +9,9 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class HRContractsStatsWidget extends BaseWidget
 {
-    protected static ?int $sort = 30;
+    protected static ?int $sort = 21;
     protected int|string|array $columnSpan = 'full';
-    protected ?string $heading = 'قسم عقود الاستقدام';
+    protected ?string $heading = null;
 
     public static function canView(): bool
     {
