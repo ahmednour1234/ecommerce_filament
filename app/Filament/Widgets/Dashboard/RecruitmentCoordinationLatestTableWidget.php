@@ -20,7 +20,8 @@ class RecruitmentCoordinationLatestTableWidget extends BaseWidget
         if ($section !== RecruitmentContract::SECTION_COORDINATION && $section !== null) {
             return false;
         }
-        return $user?->hasRole('super_admin') || $user?->can('recruitment_contracts.view_any') ?? false;
+        // return $user?->hasRole('super_admin') || $user?->can('recruitment_contracts.view_any') ?? false;
+    return false; // Temporarily disable this widget for all users until permissions are properly set up
     }
 
     public function table(Table $table): Table

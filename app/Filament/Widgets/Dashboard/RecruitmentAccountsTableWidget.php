@@ -20,9 +20,11 @@ class RecruitmentAccountsTableWidget extends BaseWidget
         if (! $user) {
             return false;
         }
-        return $user->hasRole('super_admin')
-            || $user->type === User::TYPE_ACCOUNTANT
-            || $user->type === User::TYPE_GENERAL_ACCOUNTANT;
+    //     return $user->hasRole('super_admin')
+    //         || $user->type === User::TYPE_ACCOUNTANT
+    //         || $user->type === User::TYPE_GENERAL_ACCOUNTANT;
+    //
+    return false; // Temporarily disable this widget for all users until permissions are properly set up
     }
 
     public function table(Table $table): Table
