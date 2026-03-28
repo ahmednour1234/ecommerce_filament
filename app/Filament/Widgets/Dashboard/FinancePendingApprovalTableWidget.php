@@ -25,8 +25,8 @@ class FinancePendingApprovalTableWidget extends BaseWidget
             return false;
         }
         // Only show for users of type 'صاحب الشركة' (company owner) or 'موارد بشرية' (HR)
-        $hrType = defined('App\\Models\\User::TYPE_HR') ? User::TYPE_HR : 'hr';
-        return $user->type === User::TYPE_COMPANY_OWNER || $user->type === $hrType;
+        // Allow if type is company owner or type is exactly 'HR' (case-insensitive)
+        return $user->type === User::TYPE_COMPANY_OWNER || strtolower($user->type) === 'hr';
     }
 
     protected function getTableQuery(): Builder
