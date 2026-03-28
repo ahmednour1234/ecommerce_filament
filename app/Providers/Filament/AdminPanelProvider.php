@@ -126,7 +126,6 @@ class AdminPanelProvider extends PanelProvider
             )
             ->widgets([
                 Widgets\AccountWidget::class,
-                \App\Filament\Widgets\Dashboard\FinanceSectionHeader::class,
                 \App\Filament\Widgets\Dashboard\FinanceBranchesTableWidget::class,
                 \App\Filament\Widgets\Dashboard\FinancePendingApprovalTableWidget::class,
             ])
