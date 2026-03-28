@@ -10,16 +10,17 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class FinancePendingApprovalTableWidget extends BaseWidget
 {
+    protected static ?int $sort = 21;
     protected static ?string $heading = 'آخر 5 معاملات تنتظر الموافقة';
-
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 1;
 
     public static function canView(): bool
     {
-        $user = auth()->user();
+        $user = Auth::user();
         if (! $user) {
             return false;
         }
@@ -35,7 +36,7 @@ class FinancePendingApprovalTableWidget extends BaseWidget
             ->with(['branch', 'currency', 'financeType'])
             ->pending();
 
-        $user = auth()->user();
+        $user = Auth::user();
         if ($user && ! $user->hasRole('super_admin') && ! $user->can('finance.view_all_branches')) {
             $branchIds = $user->branches()->pluck('branches.id')->toArray();
             if (!empty($user->branch_id)) {
@@ -94,7 +95,7 @@ class FinancePendingApprovalTableWidget extends BaseWidget
                     ->action(function (BranchTransaction $record) {
                         $record->update([
                             'status' => 'approved',
-                            'approved_by' => auth()->id(),
+                            'approved_by' => Auth::id(),
                             'approved_at' => now(),
                         ]);
                         \Filament\Notifications\Notification::make()
@@ -103,7 +104,7 @@ class FinancePendingApprovalTableWidget extends BaseWidget
                             ->send();
                     })
                     ->visible(fn (BranchTransaction $record) => $record->status === 'pending'
-                        && (auth()->user()?->hasRole('super_admin') || (auth()->user()?->can('finance.approve_transactions') ?? false))),
+                        && (Auth::user()?->hasRole('super_admin') || (Auth::user()?->can('finance.approve_transactions') ?? false))),
                 \Filament\Tables\Actions\Action::make('reject')
                     ->label('رفض')
                     ->icon('heroicon-o-x-circle')
@@ -118,7 +119,7 @@ class FinancePendingApprovalTableWidget extends BaseWidget
                     ->action(function (BranchTransaction $record, array $data) {
                         $record->update([
                             'status' => 'rejected',
-                            'rejected_by' => auth()->id(),
+                            'rejected_by' => Auth::id(),
                             'rejected_at' => now(),
                             'rejection_reason' => $data['rejection_reason'],
                         ]);
@@ -128,7 +129,7 @@ class FinancePendingApprovalTableWidget extends BaseWidget
                             ->send();
                     })
                     ->visible(fn (BranchTransaction $record) => $record->status === 'pending'
-                        && (auth()->user()?->hasRole('super_admin') || (auth()->user()?->can('finance.reject_transactions') ?? false))),
+                        && (Auth::user()?->hasRole('super_admin') || (Auth::user()?->can('finance.reject_transactions') ?? false))),
                 \Filament\Tables\Actions\Action::make('edit')
                     ->label('تعديل')
                     ->url(fn (BranchTransaction $record) => BranchTransactionResource::getUrl('edit', ['record' => $record])),
