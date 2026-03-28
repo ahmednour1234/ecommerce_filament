@@ -35,14 +35,17 @@ class FinancePendingApprovalTableWidget extends BaseWidget
             ->pending();
 
         $user = auth()->user();
-        if ($user && ! $user->hasRole('super_admin') && ! $user->can('finance.view_all_branches')) {
-            $branchIds = $user->branches()->pluck('branches.id')->toArray();
-            if (!empty($user->branch_id)) {
-                $branchIds[] = (int) $user->branch_id;
-            }
-            $branchIds = array_values(array_unique(array_filter($branchIds)));
-            if (! empty($branchIds)) {
-                $q->whereIn('branch_id', $branchIds);
+        // If user is company owner, show all branches. Otherwise, restrict to user's branches.
+        if ($user && $user->type !== User::TYPE_COMPANY_OWNER) {
+            if (! $user->hasRole('super_admin') && ! $user->can('finance.view_all_branches')) {
+                $branchIds = $user->branches()->pluck('branches.id')->toArray();
+                if (!empty($user->branch_id)) {
+                    $branchIds[] = (int) $user->branch_id;
+                }
+                $branchIds = array_values(array_unique(array_filter($branchIds)));
+                if (! empty($branchIds)) {
+                    $q->whereIn('branch_id', $branchIds);
+                }
             }
         }
 
