@@ -18,9 +18,11 @@ class RecruitmentCustomerServiceTableWidget extends BaseWidget
     {
         $user = auth()->user();
         $section = RecruitmentContractResource::getUserSection();
-        return $user?->hasRole('super_admin')
-            || $section === RecruitmentContract::SECTION_CUSTOMER_SERVICE
-            || ($user?->can('recruitment_contracts.view_any') && $section === null);
+        // return $user?->hasRole('super_admin')
+        //     || $section === RecruitmentContract::SECTION_CUSTOMER_SERVICE
+        //     || ($user?->can('recruitment_contracts.view_any') && $section === null);
+        return false; // Temporarily disable this widget for all users until permissions are properly set up
+
     }
 
     public function table(Table $table): Table
