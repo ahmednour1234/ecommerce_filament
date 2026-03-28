@@ -22,7 +22,7 @@ class FinanceBranchesTableWidget extends BaseWidget
         $user = Auth::user();
         return $user?->hasRole('super_admin') || $user?->can('finance.view_reports') || $user?->can('finance.view_transactions') ?? false;
     }
-    protected int|string|array $columnSpan = 1;
+    protected int|string|array $columnSpan = 6;
     protected static ?string $heading = 'ملخص المالية حسب الفروع';
 
     protected $listeners = ['filters-updated' => '$refresh'];
