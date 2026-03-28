@@ -21,7 +21,9 @@ class HrPendingExcuseRequestsTableWidget extends BaseWidget
         return $user?->hasRole('super_admin')
             || $user?->can('hr_excuse_requests.view_any')
             || $user?->can('hr_excuse_requests.approve')
-            || $user?->type === User::TYPE_HR_MANAGER;
+            || (strtolower($user?->type) === 'hr_manager')
+            || (strtolower($user?->type) === 'company_owner')
+            || (strtolower($user?->type) === 'branch_manager');
     }
 
     public function table(Table $table): Table
