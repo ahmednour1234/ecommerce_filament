@@ -15,7 +15,8 @@ class FinanceBranchesComparisonChartWidget extends ChartWidget
     public static function canView(): bool
     {
         $user = auth()->user();
-        return $user?->hasRole('super_admin') || $user?->can('finance.view_reports') || $user?->can('finance.view_transactions') ?? false;
+        //return $user?->hasRole('super_admin') || $user?->can('finance.view_reports') || $user?->can('finance.view_transactions') ?? false;
+        return false; // Temporarily disable this widget for all users until permissions are properly set up
     }
 
     protected int|string|array $columnSpan = 'full';
