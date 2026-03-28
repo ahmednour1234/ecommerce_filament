@@ -24,10 +24,8 @@ class FinancePendingApprovalTableWidget extends BaseWidget
         if (! $user) {
             return false;
         }
-        return $user->hasRole('super_admin')
-            || $user->type === User::TYPE_ACCOUNTANT
-            || $user->type === User::TYPE_GENERAL_ACCOUNTANT
-            || $user->can('finance.view_transactions');
+        // Only show for users of type 'صاحب الشركة' (company owner)
+        return $user->type === User::TYPE_COMPANY_OWNER;
     }
 
     protected function getTableQuery(): Builder
