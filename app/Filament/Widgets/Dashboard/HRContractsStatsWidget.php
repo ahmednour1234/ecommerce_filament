@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets\Dashboard;
 
 use App\Models\Recruitment\RecruitmentContract;
+use App\Filament\Resources\Recruitment\RecruitmentContractResource;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -30,19 +31,19 @@ class HRContractsStatsWidget extends BaseWidget
             Stat::make('عقود قسم الحسابات', $accountsCount)
                 ->icon('heroicon-o-banknotes')
                 ->color('info')
-                ->url(route('filament.admin.resources.recruitment-contracts.index', ['tableFilters' => ['department' => ['value' => 'accounts']]])),
+                ->url(RecruitmentContractResource::getUrl('index', ['tableFilters' => ['current_section' => ['value' => RecruitmentContract::SECTION_ACCOUNTS]]])),
             Stat::make('عقود قسم التنسيق', $coordinationCount)
                 ->icon('heroicon-o-users')
                 ->color('warning')
-                ->url(route('filament.admin.resources.recruitment-contracts.index', ['tableFilters' => ['department' => ['value' => 'coordination']]])),
+                ->url(RecruitmentContractResource::getUrl('index', ['tableFilters' => ['current_section' => ['value' => RecruitmentContract::SECTION_COORDINATION]]])),
             Stat::make('عقود خدمة العملاء', $customerServiceCount)
                 ->icon('heroicon-o-user-group')
                 ->color('success')
-                ->url(route('filament.admin.resources.recruitment-contracts.index', ['tableFilters' => ['department' => ['value' => 'customer_service']]])),
+                ->url(RecruitmentContractResource::getUrl('index', ['tableFilters' => ['current_section' => ['value' => RecruitmentContract::SECTION_CUSTOMER_SERVICE]]])),
             Stat::make('عقود تم التسليم', $deliveredCount)
                 ->icon('heroicon-o-check-circle')
                 ->color('primary')
-                ->url(route('filament.admin.resources.recruitment-contracts.index', ['tableFilters' => ['status' => ['value' => 'delivered']]])),
+                ->url(RecruitmentContractResource::getUrl('index', ['tableFilters' => ['status' => ['value' => 'delivered']]])),
         ];
     }
 }
