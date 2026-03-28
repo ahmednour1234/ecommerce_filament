@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 class FinancePendingApprovalTableWidget extends BaseWidget
 {
     protected static ?string $heading = 'آخر 5 معاملات تنتظر الموافقة';
+    protected static string $view = 'filament.widgets.finance-section-header-widget';
 
     protected int|string|array $columnSpan = 'full';
 
