@@ -21,9 +21,9 @@ class HRContractsStatsWidget extends BaseWidget
     protected function getStats(): array
     {
         // عد العقود حسب القسم (مثال: استخدم الحقول المناسبة في جدول العقود)
-        $accountsCount = RecruitmentContract::where('department', 'accounts')->count();
-        $coordinationCount = RecruitmentContract::where('department', 'coordination')->count();
-        $customerServiceCount = RecruitmentContract::where('department', 'customer_service')->count();
+        $accountsCount = RecruitmentContract::where('current_section', RecruitmentContract::SECTION_ACCOUNTS)->count();
+        $coordinationCount = RecruitmentContract::where('current_section', RecruitmentContract::SECTION_COORDINATION)->count();
+        $customerServiceCount = RecruitmentContract::where('current_section', RecruitmentContract::SECTION_CUSTOMER_SERVICE)->count();
         $deliveredCount = RecruitmentContract::where('status', 'delivered')->count();
 
         return [
