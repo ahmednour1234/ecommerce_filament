@@ -10,7 +10,7 @@ class HRContractsStatsWidget extends BaseWidget
 {
     protected static ?int $sort = 30;
     protected int|string|array $columnSpan = 'full';
-    protected static ?string $heading = 'إحصائيات العقود حسب القسم';
+    protected ?string $heading = 'قسم عقود الاستقدام';
 
     public static function canView(): bool
     {
