@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 
 class FinancePendingApprovalStatsWidget extends BaseWidget
 {
-    protected static ?int $sort = 21;
+    protected static ?int $sort = 11;
     protected int|string|array $columnSpan = 1;
 
     protected function getColumns(): int

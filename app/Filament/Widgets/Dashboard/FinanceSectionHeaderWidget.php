@@ -10,7 +10,7 @@ class FinanceSectionHeaderWidget extends Widget
 {
     protected static string $view = 'filament.widgets.finance-section-header-widget';
 
-    protected static ?int $sort = 20;
+    protected static ?int $sort = 10;
 
     protected int|string|array $columnSpan = 'full';
 

@@ -15,7 +15,7 @@ use Illuminate\Support\Number;
 
 class FinanceBranchesTableWidget extends BaseWidget
 {
-    protected static ?int $sort = 22;
+    protected static ?int $sort = 12;
 
     public static function canView(): bool
     {
