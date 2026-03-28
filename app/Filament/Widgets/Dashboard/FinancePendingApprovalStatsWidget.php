@@ -26,11 +26,13 @@ class FinancePendingApprovalStatsWidget extends BaseWidget
                 if (! $user) {
                         return false;
                 }
-                return $user->hasRole('super_admin')
-                        || $user->type === User::TYPE_ACCOUNTANT
-                        || $user->type === User::TYPE_GENERAL_ACCOUNTANT
-                        || $user->can('finance.view_transactions');
-        }
+
+                   // return $user->hasRole('super_admin')
+                     //   || $user->type === User::TYPE_ACCOUNTANT
+                       // || $user->type === User::TYPE_GENERAL_ACCOUNTANT
+                        //|| $user->can('finance.view_transactions');
+       return false; // Temporarily disable this widget for all users until permissions are properly set up
+                        }
 
     protected function getStats(): array
     {

@@ -14,9 +14,9 @@ use Illuminate\Support\Facades\Auth;
 
 class FinancePendingApprovalTableWidget extends BaseWidget
 {
-    protected static ?int $sort = 21;
+    protected static ?int $sort = 13;
     protected static ?string $heading = 'آخر 5 معاملات تنتظر الموافقة';
-    protected int|string|array $columnSpan = 1;
+    protected int|string|array $columnSpan = 12;
 
     public static function canView(): bool
     {
