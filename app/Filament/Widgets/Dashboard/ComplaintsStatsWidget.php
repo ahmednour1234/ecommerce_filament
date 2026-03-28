@@ -17,8 +17,9 @@ class ComplaintsStatsWidget extends BaseWidget
     public static function canView(): bool
     {
         $user = auth()->user();
-        return $user?->hasRole('super_admin') || $user?->can('complaints.view_any') ?? false;
-    }
+      //  return $user?->hasRole('super_admin') || $user?->can('complaints.view_any') ?? false;
+    return false; // Temporarily disable this widget for all users until permissions are properly set up
+      }
     protected int|string|array $columnSpan = 'full';
     protected ?string $heading = null;
 
