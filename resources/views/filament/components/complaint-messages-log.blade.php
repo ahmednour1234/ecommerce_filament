@@ -45,8 +45,8 @@
                         @php
                             $attachmentPath = $message->attachment;
                             $isImage = preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $attachmentPath);
-                            // Build correct storage URL - route /storage/{path}
-                            $fileUrl = route('storage.file', ['path' => $attachmentPath]);
+                            // Use direct URL to /storage/ path
+                            $fileUrl = '/storage/' . $attachmentPath;
                         @endphp
 
                         @if($isImage)
