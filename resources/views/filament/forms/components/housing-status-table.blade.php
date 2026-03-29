@@ -7,6 +7,7 @@
     $statusStatePath = $statusStatePath ?? 'data.status_key';
     $statusDateStatePath = $statusDateStatePath ?? 'data.status_date';
     $statusKeysStatePath = $statusKeysStatePath ?? 'data.status_keys';
+    $existingAttachments = $existingAttachments ?? [];
     $readonly = $readonly ?? false;
 @endphp
 
@@ -15,6 +16,9 @@
         currentStatus: @js($currentStatus),
         selectedStatuses: @js($selectedStatuses),
         statusDates: @js($statusDates),
+        existingAttachments: @js($existingAttachments),
+        newAttachments: {},
+        uploading: {},
         init() {
             if (!Array.isArray(this.selectedStatuses)) {
                 this.selectedStatuses = [];
@@ -102,6 +106,7 @@
             <div class="w-5 shrink-0"></div>
             <span class="flex-1">الحالة</span>
             <span class="w-36 shrink-0">التاريخ</span>
+            <span class="w-24 shrink-0 text-center">مرفق PDF</span>
         </div>
         @foreach($statuses as $status => $label)
             <div
@@ -129,6 +134,44 @@
                     :disabled="@js($readonly) || !selectedStatuses.includes('{{ $status }}')"
                     class="fi-input w-36 shrink-0 rounded border border-gray-300 bg-white px-2 py-1 text-gray-950 outline-none transition placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 dark:border-gray-600 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-500 dark:focus:ring-primary-500 text-xs"
                 />
+                {{-- PDF attachment upload per status --}}
+                <div class="w-24 shrink-0 flex items-center justify-center gap-1"
+                    x-show="selectedStatuses.includes('{{ $status }}')"
+                >
+                    <template x-if="uploading['{{ $status }}']">
+                        <span class="text-xs text-gray-400">جاري الرفع...</span>
+                    </template>
+                    <template x-if="!uploading['{{ $status }}'] && newAttachments['{{ $status }}']">
+                        <span class="text-xs text-green-600 font-medium">✓ تم الرفع</span>
+                    </template>
+                    <template x-if="!uploading['{{ $status }}'] && !newAttachments['{{ $status }}'] && existingAttachments['{{ $status }}']">
+                        <a :href="'/storage/' + existingAttachments['{{ $status }}']" target="_blank"
+                           class="text-xs text-primary-600 underline hover:text-primary-800">عرض</a>
+                    </template>
+                    @if(!$readonly)
+                    <label class="cursor-pointer" :class="{ 'opacity-40 pointer-events-none': uploading['{{ $status }}'] }">
+                        <span class="text-xs border border-gray-300 rounded px-1.5 py-0.5 hover:border-primary-500 hover:text-primary-600 transition-colors select-none">رفع</span>
+                        <input
+                            type="file"
+                            accept="application/pdf,image/*"
+                            class="hidden"
+                            :disabled="uploading['{{ $status }}']"
+                            x-on:change="
+                                const file = $event.target.files[0];
+                                if (file) {
+                                    uploading['{{ $status }}'] = true;
+                                    $wire.upload(
+                                        'statusPdfs.{{ $status }}',
+                                        file,
+                                        () => { uploading['{{ $status }}'] = false; newAttachments['{{ $status }}'] = true; },
+                                        () => { uploading['{{ $status }}'] = false; }
+                                    );
+                                }
+                            "
+                        />
+                    </label>
+                    @endif
+                </div>
             </div>
         @endforeach
     </div>

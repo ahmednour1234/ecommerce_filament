@@ -371,15 +371,16 @@ class AccommodationEntryResource extends Resource
                 ->schema([
                     Forms\Components\View::make('filament.forms.components.housing-status-table')
                         ->viewData(fn (Forms\Get $get): array => [
-                            'statuses'            => static::housingStatusOptions(),
-                            'statusDates'         => json_decode($get('all_status_dates') ?? '{}', true) ?: [],
-                            'statusDurations'     => [],
-                            'currentStatus'       => static::safeString($get('status_key') ?? '', ''),
-                            'selectedStatuses'    => array_values(array_filter((array) ($get('status_keys') ?? []))),
-                            'statusStatePath'     => 'data.status_key',
-                            'statusDateStatePath' => 'data.status_date',
-                            'statusKeysStatePath' => 'data.status_keys',
-                            'readonly'            => $readonly,
+                            'statuses'                => static::housingStatusOptions(),
+                            'statusDates'             => json_decode($get('all_status_dates') ?? '{}', true) ?: [],
+                            'statusDurations'         => [],
+                            'currentStatus'           => static::safeString($get('status_key') ?? '', ''),
+                            'selectedStatuses'        => array_values(array_filter((array) ($get('status_keys') ?? []))),
+                            'statusStatePath'         => 'data.status_key',
+                            'statusDateStatePath'     => 'data.status_date',
+                            'statusKeysStatePath'     => 'data.status_keys',
+                            'existingAttachments'     => json_decode($get('existing_status_attachments') ?? '{}', true) ?: [],
+                            'readonly'                => $readonly,
                         ])
                         ->columnSpanFull(),
 
@@ -387,6 +388,7 @@ class AccommodationEntryResource extends Resource
                     Forms\Components\Hidden::make('status_keys')->default([]),
                     Forms\Components\Hidden::make('status_date')->default(now()->toDateString()),
                     Forms\Components\Hidden::make('all_status_dates')->default('{}'),
+                    Forms\Components\Hidden::make('existing_status_attachments')->default('{}'),
                 ]),
         ];
     }

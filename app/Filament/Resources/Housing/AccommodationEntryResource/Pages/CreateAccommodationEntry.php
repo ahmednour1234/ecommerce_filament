@@ -17,6 +17,9 @@ class CreateAccommodationEntry extends CreateRecord
     private ?int $pendingTransferClientId = null;
     private mixed $pendingTransferContractFile = null;
 
+    /** Temporary uploaded files keyed by status_key, set via $wire.upload() from the status table component */
+    public array $statusPdfs = [];
+
     public function getTitle(): string
     {
         return 'إضافة إدخال إيواء جديد';
@@ -71,6 +74,16 @@ class CreateAccommodationEntry extends CreateRecord
                     'status_date'            => $statusDate,
                     'created_by'             => auth()->id(),
                 ]);
+            }
+        }
+
+        // Save PDF attachments to their respective status logs
+        foreach ($this->statusPdfs as $statusKey => $uploadedFile) {
+            if ($uploadedFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile) {
+                $path = $uploadedFile->storePublicly('accommodation-entries/status-pdfs', 'public');
+                AccommodationEntryStatusLog::where('accommodation_entry_id', $entry->id)
+                    ->where('status_key', $statusKey)
+                    ->update(['attachment' => $path]);
             }
         }
 

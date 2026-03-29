@@ -13,6 +13,9 @@ class EditAccommodationEntry extends EditRecord
 {
     protected static string $resource = AccommodationEntryResource::class;
 
+    /** Temporary uploaded files keyed by status_key, set via $wire.upload() from the status table component */
+    public array $statusPdfs = [];
+
     public function getTitle(): string
     {
         return 'تعديل إدخال الإيواء';
@@ -32,14 +35,19 @@ class EditAccommodationEntry extends EditRecord
     {
         // Load status log dates into the all_status_dates JSON field
         $allDates = [];
+        $existingAttachments = [];
         foreach ($this->record->statusLogs as $log) {
             if ($log->status_key && $log->status_date) {
                 $allDates[$log->status_key] = is_string($log->status_date)
                     ? $log->status_date
                     : $log->status_date->toDateString();
             }
+            if ($log->status_key && $log->attachment) {
+                $existingAttachments[$log->status_key] = $log->attachment;
+            }
         }
         $data['all_status_dates'] = json_encode($allDates);
+        $data['existing_status_attachments'] = json_encode($existingAttachments);
 
         $statusKeys = array_values(array_filter((array) ($data['status_keys'] ?? [])));
         if (count($statusKeys) === 0 && !empty($data['status_key'])) {
@@ -106,6 +114,16 @@ class EditAccommodationEntry extends EditRecord
                 ->delete();
         } else {
             AccommodationEntryStatusLog::where('accommodation_entry_id', $record->id)->delete();
+        }
+
+        // Save new PDF attachments to their respective status logs
+        foreach ($this->statusPdfs as $statusKey => $uploadedFile) {
+            if ($uploadedFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile) {
+                $path = $uploadedFile->storePublicly('accommodation-entries/status-pdfs', 'public');
+                AccommodationEntryStatusLog::where('accommodation_entry_id', $record->id)
+                    ->where('status_key', $statusKey)
+                    ->update(['attachment' => $path]);
+            }
         }
 
         // Update or create transfer data
