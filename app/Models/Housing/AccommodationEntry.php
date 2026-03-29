@@ -5,6 +5,7 @@ namespace App\Models\Housing;
 use App\Models\MainCore\Branch;
 use App\Models\Recruitment\Laborer;
 use App\Models\Recruitment\Nationality;
+use App\Models\Recruitment\RecruitmentContract;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -209,5 +210,10 @@ class AccommodationEntry extends Model
     public function transferData(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(AccommodationEntryTransfer::class);
+    }
+
+    public function recruitmentContract(): BelongsTo
+    {
+        return $this->belongsTo(RecruitmentContract::class, 'contract_no', 'contract_no');
     }
 }

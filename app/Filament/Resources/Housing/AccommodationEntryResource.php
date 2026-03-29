@@ -411,6 +411,24 @@ class AccommodationEntryResource extends Resource
                     ->formatStateUsing(fn ($state) => static::safeString($state))
                     ->default('—'),
 
+                Tables\Columns\TextColumn::make('recruitmentContract.arrival_date')
+                    ->label('تاريخ الوصول')
+                    ->date('Y-m-d')
+                    ->toggleable()
+                    ->placeholder('—'),
+
+                Tables\Columns\TextColumn::make('recruitmentContract.trial_end_date')
+                    ->label('نهاية فترة التجربة')
+                    ->date('Y-m-d')
+                    ->toggleable()
+                    ->placeholder('—'),
+
+                Tables\Columns\TextColumn::make('recruitmentContract.contract_end_date')
+                    ->label('نهاية فترة الضمان')
+                    ->date('Y-m-d')
+                    ->toggleable()
+                    ->placeholder('—'),
+
                 Tables\Columns\TextColumn::make('laborer.name_ar')
                     ->label('العاملة')
                     ->searchable()
@@ -644,7 +662,11 @@ class AccommodationEntryResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('type', 'recruitment');
+        return parent::getEloquentQuery()
+            ->where('type', 'recruitment')
+            ->with([
+                'recruitmentContract:id,contract_no,arrival_date,trial_end_date,contract_end_date',
+            ]);
     }
 
     public static function getPages(): array

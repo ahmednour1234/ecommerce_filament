@@ -30,19 +30,18 @@ class ReceivingRecruitmentReportService
         foreach ($contractsWithoutDates as $contract) {
             $arrivalDate = null;
 
-            if ($contract->visa_date) {
+            $receivedLog = $contract->statusLogs()
+                ->where('new_status', 'received')
+                ->orderBy('status_date', 'desc')
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            if ($receivedLog?->status_date) {
+                $arrivalDate = \Carbon\Carbon::parse($receivedLog->status_date);
+            } elseif ($receivedLog?->created_at) {
+                $arrivalDate = \Carbon\Carbon::parse($receivedLog->created_at);
+            } elseif ($contract->visa_date) {
                 $arrivalDate = \Carbon\Carbon::parse($contract->visa_date);
-            } else {
-                $receivedLog = $contract->statusLogs()
-                    ->where('new_status', 'received')
-                    ->orderBy('created_at', 'desc')
-                    ->first();
-                
-                if ($receivedLog) {
-                    $arrivalDate = $receivedLog->status_date 
-                        ? \Carbon\Carbon::parse($receivedLog->status_date)
-                        : \Carbon\Carbon::parse($receivedLog->created_at);
-                }
             }
 
             if ($arrivalDate) {
@@ -164,10 +163,10 @@ class ReceivingRecruitmentReportService
         return [
             'id' => $contract->id,
             'contract_no' => $contract->contract_no,
-            'client' => $locale === 'ar' 
-                ? ($contract->client->name_ar ?? '') 
+            'client' => $locale === 'ar'
+                ? ($contract->client->name_ar ?? '')
                 : ($contract->client->name_en ?? ''),
-            'worker' => $contract->worker 
+            'worker' => $contract->worker
                 ? ($locale === 'ar' ? $contract->worker->name_ar : $contract->worker->name_en)
                 : '',
             'passport_number' => $contract->worker?->passport_number ?? '',
