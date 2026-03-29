@@ -130,6 +130,8 @@ class BranchTransactionResource extends Resource
                         ->searchable()
                         ->preload()
                         ->default($saudiCountryId)
+                        ->disabled()
+                        ->dehydrated()
                         ->nullable(),
 
                     Forms\Components\Select::make('currency_id')
@@ -138,7 +140,9 @@ class BranchTransactionResource extends Resource
                         ->searchable()
                         ->preload()
                         ->required()
-                        ->default($defaultCurrencyId),
+                        ->default($defaultCurrencyId)
+                        ->disabled()
+                        ->dehydrated(),
 
                     Forms\Components\TextInput::make('amount')
                         ->label(tr('forms.branch_transactions.amount', [], null, 'dashboard') ?: 'Amount')
