@@ -45,20 +45,26 @@
                         @php
                             $attachmentPath = $message->attachment;
                             $isImage = preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $attachmentPath);
-                            $isPdf = preg_match('/\.pdf$/i', $attachmentPath);
+                            // Build correct storage URL - route /storage/{path}
+                            $fileUrl = route('storage.file', ['path' => $attachmentPath]);
                         @endphp
 
                         @if($isImage)
-                            <img src="/storage/{{ $attachmentPath }}" alt="الصورة المرفقة"
-                                 class="max-w-xs h-auto rounded cursor-pointer hover:opacity-90 transition"
-                                 onclick="window.open('/storage/{{ $attachmentPath }}', '_blank')">
+                            <img src="{{ $fileUrl }}" alt="الصورة المرفقة"
+                                 class="max-w-xs h-auto rounded cursor-pointer hover:opacity-80 transition shadow-md"
+                                 onclick="window.open('{{ $fileUrl }}', '_blank')">
                         @else
-                            <a href="/storage/{{ $attachmentPath }}" target="_blank"
-                               class="flex items-center gap-2 px-3 py-2 text-sm {{ $isComplaints ? 'text-blue-600 dark:text-blue-400 hover:text-blue-800' : 'text-white hover:opacity-90' }}">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <a href="{{ $fileUrl }}" target="_blank" download
+                               class="flex items-center gap-2 px-4 py-2 text-sm font-medium
+                               {{ $isComplaints ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50' : 'bg-white/20 text-white hover:bg-white/30' }}
+                               transition rounded-lg">
+                                <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H7a1 1 0 01-1-1v-6z" clip-rule="evenodd"/>
                                 </svg>
-                                <span>{{ basename($attachmentPath) }}</span>
+                                <span class="truncate flex-1">{{ basename($attachmentPath) }}</span>
+                                <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                </svg>
                             </a>
                         @endif
                     </div>
