@@ -7,6 +7,8 @@ use App\Filament\Concerns\TranslatableNavigation;
 use App\Filament\Resources\Finance\BranchTransactionResource\Pages;
 use App\Models\Finance\BranchTransaction;
 use App\Models\Finance\FinanceType;
+use App\Models\MainCore\Country;
+use App\Models\MainCore\Currency;
 use App\Services\MainCore\CurrencyService;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -64,7 +66,8 @@ class BranchTransactionResource extends Resource
     public static function form(Form $form): Form
     {
         $defaultCurrency = app(CurrencyService::class)->defaultCurrency();
-        $defaultCurrencyId = $defaultCurrency?->id;
+        $defaultCurrencyId = Currency::where('code', 'SAR')->value('id') ?? $defaultCurrency?->id;
+        $saudiCountryId = Country::where('iso2', 'SA')->value('id');
 
         $user = auth()->user();
         $userBranches = $user?->branches()->pluck('branches.id')->toArray() ?? [];
@@ -126,6 +129,7 @@ class BranchTransactionResource extends Resource
                         ->getOptionLabelFromRecordUsing(fn ($record) => $record->name_text ?? $record->name['en'] ?? '')
                         ->searchable()
                         ->preload()
+                        ->default($saudiCountryId)
                         ->nullable(),
 
                     Forms\Components\Select::make('currency_id')

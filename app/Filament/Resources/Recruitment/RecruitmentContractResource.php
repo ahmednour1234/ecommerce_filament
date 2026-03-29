@@ -250,6 +250,131 @@ class RecruitmentContractResource extends Resource
                                             ->required()
                                             ->default(now())
                                             ->columnSpan(1),
+                                    ])
+                                    ->columns(2)
+                                    ->columnSpanFull(),
+                                Forms\Components\Section::make('بيانات التأشيرة')
+                                    ->schema([
+                                        FileUpload::document('visa_image', 'recruitment_contracts/visa')
+                                            ->label(tr('recruitment_contract.fields.visa_image', [], null, 'dashboard') ?: 'صورة التأشيرة')
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
+                                            ->columnSpan(1),
+                                        Forms\Components\Select::make('visa_type')
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
+                                            ->label(tr('recruitment_contract.fields.visa_type', [], null, 'dashboard') ?: 'Visa Type')
+                                            ->options([
+                                                'domestic_labor' => tr('recruitment_contract.visa_type.domestic_labor', [], null, 'dashboard') ?: 'تأشيرة عمالة منزلية',
+                                                'comprehensive_qualification' => tr('recruitment_contract.visa_type.comprehensive_qualification', [], null, 'dashboard') ?: 'تأشيرة التأهيل الشامل',
+                                            ])
+                                            ->required()
+                                            ->reactive()
+                                            ->columnSpan(1),
+                                        Forms\Components\TextInput::make('visa_no')
+                                            ->label(tr('recruitment_contract.fields.visa_no', [], null, 'dashboard') ?: 'Visa No')
+                                            ->required()
+                                            ->maxLength(255)
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
+                                            ->columnSpan(1),
+                                        Forms\Components\Select::make('arrival_country_id')
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
+                                            ->label(tr('recruitment_contract.fields.arrival_country', [], null, 'dashboard') ?: 'محطة الوصول')
+                                            ->options([
+                                                'الرياض' => tr('recruitment_contract.arrival_station.riyadh', [], null, 'dashboard') ?: 'الرياض',
+                                                'الدمام' => tr('recruitment_contract.arrival_station.dammam', [], null, 'dashboard') ?: 'الدمام',
+                                                'جده' => tr('recruitment_contract.arrival_station.jeddah', [], null, 'dashboard') ?: 'جده',
+                                                'الطائف' => tr('recruitment_contract.arrival_station.taif', [], null, 'dashboard') ?: 'الطائف',
+                                                'القصيم' => tr('recruitment_contract.arrival_station.qassim', [], null, 'dashboard') ?: 'القصيم',
+                                                'جيزان' => tr('recruitment_contract.arrival_station.jizan', [], null, 'dashboard') ?: 'جيزان',
+                                                'سكاكا' => tr('recruitment_contract.arrival_station.sakaka', [], null, 'dashboard') ?: 'سكاكا',
+                                                'المدينة المنورة' => tr('recruitment_contract.arrival_station.madinah', [], null, 'dashboard') ?: 'المدينة المنورة',
+                                            ])
+                                            ->searchable()
+                                            ->nullable()
+                                            ->columnSpan(1),
+                                        Forms\Components\Select::make('departure_country_id')
+                                            ->label(tr('recruitment_contract.fields.departure_country', [], null, 'dashboard') ?: 'محطة القدوم')
+                                            ->options([
+                                                'نيروبي' => 'نيروبي',
+                                                'كمبالا' => 'كمبالا',
+                                                'مانيلا' => 'مانيلا',
+                                                'كولومبو' => 'كولومبو',
+                                                'دكا' => 'دكا',
+                                                'اديس ابابا' => 'اديس ابابا',
+                                                'دار السلام' => 'دار السلام',
+                                            ])
+                                            ->searchable()
+                                            ->nullable()
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
+                                            ->columnSpan(1),
+                                        Forms\Components\Select::make('receiving_station_id')
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
+                                            ->label(tr('recruitment_contract.fields.receiving_station', [], null, 'dashboard') ?: 'محطة الاستلام')
+                                            ->options(SaudiGovernorates::all())
+                                            ->searchable()
+                                            ->nullable()
+                                            ->columnSpan(1),
+                                    ])
+                                    ->columns(2)
+                                    ->columnSpanFull(),
+                                Forms\Components\Section::make(tr('recruitment_contract.sections.musaned_data', [], null, 'dashboard') ?: 'بيانات مساند')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('musaned_contract_no')
+                                            ->label(tr('recruitment_contract.fields.musaned_contract_no', [], null, 'dashboard') ?: 'Musaned Contract No')
+                                            ->maxLength(255)
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
+                                            ->columnSpan(1),
+                                        Forms\Components\DatePicker::make('musaned_contract_date')
+                                            ->label(tr('recruitment_contract.fields.musaned_contract_date', [], null, 'dashboard') ?: 'Musaned Contract Date')
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
+                                            ->columnSpan(1),
+                                        FileUpload::document('musaned_contract_file', 'recruitment_contracts/musaned')
+                                            ->label(tr('recruitment_contract.fields.musaned_contract_file', [], null, 'dashboard') ?: 'ملف عقد مساند')
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
+                                            ->columnSpan(1),
+                                    ])
+                                    ->columns(2)
+                                    ->columnSpanFull(),
+                            ]),
+                        Forms\Components\Tabs\Tab::make('قسم الحسابات')
+                            ->icon('heroicon-o-currency-dollar')
+                            ->visible(fn () => static::getUserSection() === null || static::getUserSection() === RecruitmentContract::SECTION_ACCOUNTS || static::getUserSection() === RecruitmentContract::SECTION_COORDINATION)
+                            ->schema([
+                                Forms\Components\Section::make('قسم الحسابات')
+                                    ->schema([
+                                        Forms\Components\Select::make('current_section')
+                                            ->label('العقد عند القسم')
+                                            ->options(RecruitmentContract::currentSectionOptions())
+                                            ->visible(fn () => static::canEditCurrentSection())
+                                            ->columnSpan(1),
+                                        Forms\Components\Select::make('payment_status')
+                                            ->label(tr('recruitment_contract.fields.payment_status', [], null, 'dashboard') ?: 'حالة الدفع')
+                                            ->disabled(fn () => static::isAccountsTabDisabled())
+                                            ->dehydrated(true)
+                                            ->options([
+                                                'partial' => 'جزئي',
+                                                'paid' => 'كلي',
+                                            ])
+                                            ->default('partial')
+                                            ->required()
+                                            ->columnSpan(1),
+                                        Forms\Components\TextInput::make('total_cost')
+                                            ->label(tr('recruitment_contract.fields.total_cost', [], null, 'dashboard') ?: 'إجمالي التكلفة')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->prefix('ر.س')
+                                            ->disabled(fn () => static::isAccountsTabDisabled())
+                                            ->dehydrated(true)
+                                            ->columnSpan(1),
+                                    ])
+                                    ->columns(2)
+                                    ->columnSpanFull(),
+                            ]),
+                        Forms\Components\Tabs\Tab::make(tr('recruitment_contract.sections.coordination', [], null, 'dashboard') ?: 'قسم التنسيق')
+                            ->icon('heroicon-o-map')
+                            ->visible(fn () => static::getUserSection() === null || static::getUserSection() === RecruitmentContract::SECTION_COORDINATION)
+                            ->schema([
+                                Forms\Components\Section::make(tr('recruitment_contract.sections.coordination', [], null, 'dashboard') ?: 'قسم التنسيق')
+                                    ->schema([
                                         Forms\Components\Select::make('worker_id')
                                             ->label(tr('recruitment_contract.fields.worker', [], null, 'dashboard') ?: 'العاملة')
                                             ->options(function () {
@@ -263,6 +388,7 @@ class RecruitmentContractResource extends Resource
                                                 });
                                             })
                                             ->searchable()
+                                            ->disabled(fn () => static::isCoordinationTabDisabled())
                                             ->createOptionForm([
                                                 Forms\Components\TextInput::make('name_ar')
                                                     ->label(tr('recruitment.fields.name_ar', [], null, 'dashboard') ?: 'Name (Arabic)')
@@ -397,131 +523,6 @@ class RecruitmentContractResource extends Resource
                                             )
                                             ->nullable()
                                             ->columnSpan(1),
-                                    ])
-                                    ->columns(2)
-                                    ->columnSpanFull(),
-                                Forms\Components\Section::make('بيانات التأشيرة')
-                                    ->schema([
-                                        FileUpload::document('visa_image', 'recruitment_contracts/visa')
-                                            ->label(tr('recruitment_contract.fields.visa_image', [], null, 'dashboard') ?: 'صورة التأشيرة')
-                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
-                                            ->columnSpan(1),
-                                        Forms\Components\Select::make('visa_type')
-                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
-                                            ->label(tr('recruitment_contract.fields.visa_type', [], null, 'dashboard') ?: 'Visa Type')
-                                            ->options([
-                                                'domestic_labor' => tr('recruitment_contract.visa_type.domestic_labor', [], null, 'dashboard') ?: 'تأشيرة عمالة منزلية',
-                                                'comprehensive_qualification' => tr('recruitment_contract.visa_type.comprehensive_qualification', [], null, 'dashboard') ?: 'تأشيرة التأهيل الشامل',
-                                            ])
-                                            ->required()
-                                            ->reactive()
-                                            ->columnSpan(1),
-                                        Forms\Components\TextInput::make('visa_no')
-                                            ->label(tr('recruitment_contract.fields.visa_no', [], null, 'dashboard') ?: 'Visa No')
-                                            ->required()
-                                            ->maxLength(255)
-                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
-                                            ->columnSpan(1),
-                                        Forms\Components\Select::make('arrival_country_id')
-                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
-                                            ->label(tr('recruitment_contract.fields.arrival_country', [], null, 'dashboard') ?: 'محطة الوصول')
-                                            ->options([
-                                                'الرياض' => tr('recruitment_contract.arrival_station.riyadh', [], null, 'dashboard') ?: 'الرياض',
-                                                'الدمام' => tr('recruitment_contract.arrival_station.dammam', [], null, 'dashboard') ?: 'الدمام',
-                                                'جده' => tr('recruitment_contract.arrival_station.jeddah', [], null, 'dashboard') ?: 'جده',
-                                                'الطائف' => tr('recruitment_contract.arrival_station.taif', [], null, 'dashboard') ?: 'الطائف',
-                                                'القصيم' => tr('recruitment_contract.arrival_station.qassim', [], null, 'dashboard') ?: 'القصيم',
-                                                'جيزان' => tr('recruitment_contract.arrival_station.jizan', [], null, 'dashboard') ?: 'جيزان',
-                                                'سكاكا' => tr('recruitment_contract.arrival_station.sakaka', [], null, 'dashboard') ?: 'سكاكا',
-                                                'المدينة المنورة' => tr('recruitment_contract.arrival_station.madinah', [], null, 'dashboard') ?: 'المدينة المنورة',
-                                            ])
-                                            ->searchable()
-                                            ->nullable()
-                                            ->columnSpan(1),
-                                        Forms\Components\Select::make('departure_country_id')
-                                            ->label(tr('recruitment_contract.fields.departure_country', [], null, 'dashboard') ?: 'محطة القدوم')
-                                            ->options([
-                                                'نيروبي' => 'نيروبي',
-                                                'كمبالا' => 'كمبالا',
-                                                'مانيلا' => 'مانيلا',
-                                                'كولومبو' => 'كولومبو',
-                                                'دكا' => 'دكا',
-                                                'اديس ابابا' => 'اديس ابابا',
-                                                'دار السلام' => 'دار السلام',
-                                            ])
-                                            ->searchable()
-                                            ->nullable()
-                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
-                                            ->columnSpan(1),
-                                        Forms\Components\Select::make('receiving_station_id')
-                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
-                                            ->label(tr('recruitment_contract.fields.receiving_station', [], null, 'dashboard') ?: 'محطة الاستلام')
-                                            ->options(SaudiGovernorates::all())
-                                            ->searchable()
-                                            ->nullable()
-                                            ->columnSpan(1),
-                                    ])
-                                    ->columns(2)
-                                    ->columnSpanFull(),
-                                Forms\Components\Section::make(tr('recruitment_contract.sections.musaned_data', [], null, 'dashboard') ?: 'بيانات مساند')
-                                    ->schema([
-                                        Forms\Components\TextInput::make('musaned_contract_no')
-                                            ->label(tr('recruitment_contract.fields.musaned_contract_no', [], null, 'dashboard') ?: 'Musaned Contract No')
-                                            ->maxLength(255)
-                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
-                                            ->columnSpan(1),
-                                        Forms\Components\DatePicker::make('musaned_contract_date')
-                                            ->label(tr('recruitment_contract.fields.musaned_contract_date', [], null, 'dashboard') ?: 'Musaned Contract Date')
-                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
-                                            ->columnSpan(1),
-                                        FileUpload::document('musaned_contract_file', 'recruitment_contracts/musaned')
-                                            ->label(tr('recruitment_contract.fields.musaned_contract_file', [], null, 'dashboard') ?: 'ملف عقد مساند')
-                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
-                                            ->columnSpan(1),
-                                    ])
-                                    ->columns(2)
-                                    ->columnSpanFull(),
-                            ]),
-                        Forms\Components\Tabs\Tab::make('قسم الحسابات')
-                            ->icon('heroicon-o-currency-dollar')
-                            ->visible(fn () => static::getUserSection() === null || static::getUserSection() === RecruitmentContract::SECTION_ACCOUNTS || static::getUserSection() === RecruitmentContract::SECTION_COORDINATION)
-                            ->schema([
-                                Forms\Components\Section::make('قسم الحسابات')
-                                    ->schema([
-                                        Forms\Components\Select::make('current_section')
-                                            ->label('العقد عند القسم')
-                                            ->options(RecruitmentContract::currentSectionOptions())
-                                            ->visible(fn () => static::canEditCurrentSection())
-                                            ->columnSpan(1),
-                                        Forms\Components\Select::make('payment_status')
-                                            ->label(tr('recruitment_contract.fields.payment_status', [], null, 'dashboard') ?: 'حالة الدفع')
-                                            ->disabled(fn () => static::isAccountsTabDisabled())
-                                            ->dehydrated(true)
-                                            ->options([
-                                                'partial' => 'جزئي',
-                                                'paid' => 'كلي',
-                                            ])
-                                            ->default('partial')
-                                            ->required()
-                                            ->columnSpan(1),
-                                        Forms\Components\TextInput::make('total_cost')
-                                            ->label(tr('recruitment_contract.fields.total_cost', [], null, 'dashboard') ?: 'إجمالي التكلفة')
-                                            ->numeric()
-                                            ->minValue(0)
-                                            ->prefix('ر.س')
-                                            ->disabled(fn () => static::isAccountsTabDisabled())
-                                            ->dehydrated(true)
-                                            ->columnSpan(1),
-                                    ])
-                                    ->columns(2)
-                                    ->columnSpanFull(),
-                            ]),
-                        Forms\Components\Tabs\Tab::make(tr('recruitment_contract.sections.coordination', [], null, 'dashboard') ?: 'قسم التنسيق')
-                            ->icon('heroicon-o-map')
-                            ->visible(fn () => static::getUserSection() === null || static::getUserSection() === RecruitmentContract::SECTION_COORDINATION)
-                            ->schema([
-                                Forms\Components\Section::make(tr('recruitment_contract.sections.coordination', [], null, 'dashboard') ?: 'قسم التنسيق')
-                                    ->schema([
                                         Forms\Components\TextInput::make('musaned_documentation_contract_no')
                                             ->label(tr('recruitment_contract.fields.musaned_documentation_contract_no', [], null, 'dashboard') ?: 'رقم التوثيق الالكتروني بمساند')
                                             ->maxLength(255)
