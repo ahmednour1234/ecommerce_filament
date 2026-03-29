@@ -95,7 +95,7 @@ class ContractAlertsPage extends Page implements HasTable
                     ->color(fn (string $state): string => match ($state) {
                         'new' => 'primary',
                         'external_office_approval', 'contract_accepted_external_office', 'waiting_approval', 'contract_accepted_labor_ministry' => 'info',
-                        'sent_to_saudi_embassy', 'visa_issued', 'waiting_flight_booking', 'arrival_scheduled', 'received' => 'success',
+                        'sent_to_saudi_embassy', 'visa_cancelled', 'visa_issued', 'waiting_flight_booking', 'arrival_scheduled', 'received' => 'success',
                         'return_during_warranty' => 'warning',
                         'runaway' => 'danger',
                         default => 'gray',
@@ -122,7 +122,7 @@ class ContractAlertsPage extends Page implements HasTable
                     ->formatStateUsing(function ($record) use ($alerts) {
                         $alert = $alerts->firstWhere('id', $record->id);
                         if (!$alert || !isset($alert->days_overdue)) return '';
-                        
+
                         return $alert->days_overdue . ' ' . (tr('recruitment_contract.alerts.days', [], null, 'dashboard') ?: 'يوم');
                     }),
 
@@ -131,7 +131,7 @@ class ContractAlertsPage extends Page implements HasTable
                     ->formatStateUsing(function ($record) use ($alerts) {
                         $alert = $alerts->firstWhere('id', $record->id);
                         if (!$alert || !isset($alert->expected_days)) return '';
-                        
+
                         return $alert->expected_days . ' ' . (tr('recruitment_contract.alerts.days', [], null, 'dashboard') ?: 'يوم');
                     }),
 
@@ -140,7 +140,7 @@ class ContractAlertsPage extends Page implements HasTable
                     ->formatStateUsing(function ($record) use ($alerts) {
                         $alert = $alerts->firstWhere('id', $record->id);
                         if (!$alert || !isset($alert->last_status_change)) return '';
-                        
+
                         return $alert->last_status_change->format('Y-m-d');
                     }),
             ])

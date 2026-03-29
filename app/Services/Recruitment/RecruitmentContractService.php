@@ -86,8 +86,9 @@ class RecruitmentContractService
             'waiting_approval' => 4,
             'contract_accepted_labor_ministry' => 5,
             'sent_to_saudi_embassy' => 6,
-            'visa_issued' => 7,
-            'waiting_flight_booking' => 8,
+            'visa_cancelled' => 7,
+            'visa_issued' => 8,
+            'waiting_flight_booking' => 9,
         ];
 
         $expectedDays = [
@@ -96,8 +97,10 @@ class RecruitmentContractService
             '3-4' => 5, // contract_accepted_external_office -> waiting_approval
             '4-5' => 4, // waiting_approval -> contract_accepted_labor_ministry
             '5-6' => 7, // contract_accepted_labor_ministry -> sent_to_saudi_embassy
-            '6-7' => 10, // sent_to_saudi_embassy -> visa_issued
-            '7-8' => 6, // visa_issued -> waiting_flight_booking
+            '6-7' => null, // sent_to_saudi_embassy -> visa_cancelled
+            '6-8' => 10, // sent_to_saudi_embassy -> visa_issued (bypassing cancellation)
+            '7-8' => 10, // visa_cancelled -> visa_issued
+            '8-9' => 6, // visa_issued -> waiting_flight_booking
         ];
 
         if (!$fromStatus || !isset($statusOrder[$fromStatus]) || !isset($statusOrder[$toStatus])) {

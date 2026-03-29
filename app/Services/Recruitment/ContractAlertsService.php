@@ -23,7 +23,9 @@ class ContractAlertsService
             'contract_accepted_external_office-waiting_approval' => 5,
             'waiting_approval-contract_accepted_labor_ministry' => 4,
             'contract_accepted_labor_ministry-sent_to_saudi_embassy' => 7,
+            'sent_to_saudi_embassy-visa_cancelled' => null,
             'sent_to_saudi_embassy-visa_issued' => 10,
+            'visa_cancelled-visa_issued' => 10,
             'visa_issued-waiting_flight_booking' => 6,
         ];
 
@@ -46,6 +48,7 @@ class ContractAlertsService
                     'waiting_approval',
                     'contract_accepted_labor_ministry',
                     'sent_to_saudi_embassy',
+                    'visa_cancelled',
                     'visa_issued',
                     'waiting_flight_booking'
                 ])
