@@ -38,11 +38,13 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
 
     public function mount(): void
     {
+        $sarCurrencyId = Currency::where('code', 'SAR')->value('id');
+
         $this->form->fill([
             'branch_id' => null,
             'from' => now()->startOfYear()->format('Y-m-d'),
             'to' => now()->format('Y-m-d'),
-            'currency_id' => null,
+            'currency_id' => $sarCurrencyId,
             'kind' => null,
             'finance_type_id' => null,
             'status' => 'approved',
@@ -345,7 +347,7 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
         }
 
         DB::statement('SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci');
-        
+
         $unionQueries = [];
         foreach ($allRows as $row) {
             $id = (string)$row['id'];
@@ -353,14 +355,14 @@ class IncomeStatementByBranchPage extends Page implements HasForms, HasTable
             $type = mb_convert_encoding($row['type'] ?? '', 'UTF-8', 'UTF-8');
             $amount = (float)$row['amount'];
             $financeTypeId = $row['finance_type_id'];
-            
+
             if (!mb_check_encoding($section, 'UTF-8')) {
                 $section = mb_convert_encoding($section, 'UTF-8', mb_detect_encoding($section, ['UTF-8', 'Windows-1256', 'ISO-8859-6'], true) ?: 'UTF-8');
             }
             if (!mb_check_encoding($type, 'UTF-8')) {
                 $type = mb_convert_encoding($type, 'UTF-8', mb_detect_encoding($type, ['UTF-8', 'Windows-1256', 'ISO-8859-6'], true) ?: 'UTF-8');
             }
-            
+
             $unionQueries[] = DB::query()->selectRaw('? as id, ? as section, ? as type, ? as amount, ? as finance_type_id', [
                 $id,
                 $section,
