@@ -38,11 +38,6 @@ class BranchStatementPage extends Page implements HasTable, HasForms
     protected static bool $shouldRegisterNavigation = false;
     protected static string $view = 'filament.pages.finance.branch-statement';
 
-    public static function canAccess(): bool
-    {
-        return false;
-    }
-
     public ?array $data = [];
 
     public function mount(): void
@@ -572,8 +567,7 @@ class BranchStatementPage extends Page implements HasTable, HasForms
 
     public static function canAccess(): bool
     {
-        $user = auth()->user();
-        return $user?->hasRole('super_admin') || $user?->can('finance.view_reports') ?? false;
+        return false;
     }
 
     public static function shouldRegisterNavigation(): bool
