@@ -241,6 +241,15 @@ class ComplaintResource extends Resource
                                             ->rows(3)
                                             ->nullable()
                                             ->columnSpanFull(),
+
+                                        Forms\Components\FileUpload::make('complaints_message_attachment')
+                                            ->label('صورة أو مستند')
+                                            ->disk('public')
+                                            ->directory('complaints/messages')
+                                            ->acceptedFileTypes(['image/*', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
+                                            ->maxSize(10240)
+                                            ->nullable()
+                                            ->columnSpanFull(),
                                     ]),
                             ]),
 
@@ -273,6 +282,15 @@ class ComplaintResource extends Resource
                                             ->label('رسالة جديدة من قسم التنسيق')
                                             ->placeholder('اكتب ملاحظاتك هنا...')
                                             ->rows(3)
+                                            ->nullable()
+                                            ->columnSpanFull(),
+
+                                        Forms\Components\FileUpload::make('coordination_message_attachment')
+                                            ->label('صورة أو مستند')
+                                            ->disk('public')
+                                            ->directory('complaints/messages')
+                                            ->acceptedFileTypes(['image/*', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
+                                            ->maxSize(10240)
                                             ->nullable()
                                             ->columnSpanFull(),
                                     ]),

@@ -10,6 +10,7 @@ class ComplaintMessage extends Model
     protected $fillable = [
         'complaint_id',
         'body',
+        'attachment',
         'department',
         'created_by',
     ];
