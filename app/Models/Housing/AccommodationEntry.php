@@ -39,11 +39,13 @@ class AccommodationEntry extends Model
         'customer_id_number',
         'customer_id',
         'status_key',
+        'status_keys',
     ];
 
     protected $casts = [
         'entry_date' => 'datetime',
         'exit_date' => 'datetime',
+        'status_keys' => 'array',
     ];
 
     protected static function boot()

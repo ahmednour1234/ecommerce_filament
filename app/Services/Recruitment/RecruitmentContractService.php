@@ -7,6 +7,37 @@ use Illuminate\Support\Facades\DB;
 
 class RecruitmentContractService
 {
+    public function syncArrivalDates(RecruitmentContract $contract, ?string $arrivalDate = null): void
+    {
+        $arrival = null;
+
+        if (!empty($arrivalDate)) {
+            $arrival = \Carbon\Carbon::parse($arrivalDate);
+        } else {
+            $receivedLog = $contract->statusLogs()
+                ->where('new_status', 'received')
+                ->orderBy('status_date', 'desc')
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            if ($receivedLog?->status_date) {
+                $arrival = \Carbon\Carbon::parse($receivedLog->status_date);
+            } elseif ($receivedLog?->created_at) {
+                $arrival = \Carbon\Carbon::parse($receivedLog->created_at);
+            }
+        }
+
+        if (!$arrival) {
+            return;
+        }
+
+        $contract->updateQuietly([
+            'arrival_date' => $arrival->toDateString(),
+            'trial_end_date' => $arrival->copy()->addDays(90)->toDateString(),
+            'contract_end_date' => $arrival->copy()->addYears(2)->toDateString(),
+        ]);
+    }
+
     public function generateContractNo(): string
     {
         $date = now()->format('Ymd');
@@ -105,6 +136,10 @@ class RecruitmentContractService
             $oldStatus = $contract->status;
             $contract->update(['status' => $newStatus]);
             $this->logStatusChange($contract, $oldStatus, $newStatus, $notes, $statusDate);
+
+            if ($newStatus === 'received') {
+                $this->syncArrivalDates($contract, $statusDate);
+            }
         });
     }
 }

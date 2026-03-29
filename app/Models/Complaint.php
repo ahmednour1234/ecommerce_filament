@@ -24,6 +24,7 @@ class Complaint extends Model
         'phone_number',
         'nationality_id',
         'complaint_description',
+        'attachment',
         'status',
         'priority',
         'branch_id',

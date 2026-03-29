@@ -41,6 +41,12 @@ class EditAccommodationEntry extends EditRecord
         }
         $data['all_status_dates'] = json_encode($allDates);
 
+        $statusKeys = array_values(array_filter((array) ($data['status_keys'] ?? [])));
+        if (count($statusKeys) === 0 && !empty($data['status_key'])) {
+            $statusKeys = [$data['status_key']];
+        }
+        $data['status_keys'] = $statusKeys;
+
         // Load transfer data
         $transfer = $this->record->transferData;
         if ($transfer) {
@@ -62,6 +68,17 @@ class EditAccommodationEntry extends EditRecord
 
         // Extract status log data
         $allStatusDates = json_decode($data['all_status_dates'] ?? '{}', true) ?? [];
+        $selectedStatusKeys = array_values(array_filter((array) ($data['status_keys'] ?? [])));
+
+        $data['status_keys'] = $selectedStatusKeys;
+        $data['status_key'] = count($selectedStatusKeys) > 0
+            ? end($selectedStatusKeys)
+            : null;
+
+        if (!empty($selectedStatusKeys) && empty($data['status_date']) && !empty($allStatusDates[$data['status_key']])) {
+            $data['status_date'] = $allStatusDates[$data['status_key']];
+        }
+
         unset($data['all_status_dates'], $data['status_date']);
 
         // These are not stored on the entry
@@ -72,13 +89,23 @@ class EditAccommodationEntry extends EditRecord
         $record->update($data);
 
         // Upsert one log row per status key (preserves history, updates existing)
+        $selectedLookup = array_flip($selectedStatusKeys);
+
         foreach ($allStatusDates as $statusKey => $statusDate) {
-            if ($statusKey && $statusDate) {
+            if ($statusKey && $statusDate && isset($selectedLookup[$statusKey])) {
                 AccommodationEntryStatusLog::updateOrCreate(
                     ['accommodation_entry_id' => $record->id, 'status_key' => $statusKey],
                     ['status_date' => $statusDate, 'created_by' => auth()->id()]
                 );
             }
+        }
+
+        if (!empty($selectedStatusKeys)) {
+            AccommodationEntryStatusLog::where('accommodation_entry_id', $record->id)
+                ->whereNotIn('status_key', $selectedStatusKeys)
+                ->delete();
+        } else {
+            AccommodationEntryStatusLog::where('accommodation_entry_id', $record->id)->delete();
         }
 
         // Update or create transfer data

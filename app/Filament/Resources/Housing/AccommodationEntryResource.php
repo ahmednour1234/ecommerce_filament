@@ -375,13 +375,16 @@ class AccommodationEntryResource extends Resource
                             'statusDates'         => json_decode($get('all_status_dates') ?? '{}', true) ?: [],
                             'statusDurations'     => [],
                             'currentStatus'       => static::safeString($get('status_key') ?? '', ''),
+                            'selectedStatuses'    => array_values(array_filter((array) ($get('status_keys') ?? []))),
                             'statusStatePath'     => 'data.status_key',
                             'statusDateStatePath' => 'data.status_date',
+                            'statusKeysStatePath' => 'data.status_keys',
                             'readonly'            => $readonly,
                         ])
                         ->columnSpanFull(),
 
                     Forms\Components\Hidden::make('status_key'),
+                    Forms\Components\Hidden::make('status_keys')->default([]),
                     Forms\Components\Hidden::make('status_date')->default(now()->toDateString()),
                     Forms\Components\Hidden::make('all_status_dates')->default('{}'),
                 ]),
@@ -449,7 +452,17 @@ class AccommodationEntryResource extends Resource
                     ->label('الحالة')
                     ->badge()
                     ->color('info')
-                    ->formatStateUsing(fn (?string $state): string => static::housingStatusOptions()[$state] ?? static::safeString($state)),
+                    ->formatStateUsing(function (?string $state, AccommodationEntry $record): string {
+                        $selected = array_values(array_filter((array) ($record->status_keys ?? [])));
+
+                        if (count($selected) > 0) {
+                            return collect($selected)
+                                ->map(fn (string $key) => static::housingStatusOptions()[$key] ?? static::safeString($key))
+                                ->implode('، ');
+                        }
+
+                        return static::housingStatusOptions()[$state] ?? static::safeString($state);
+                    }),
 
                 Tables\Columns\TextColumn::make('entry_date')
                     ->label('تاريخ الدخول')
@@ -470,7 +483,23 @@ class AccommodationEntryResource extends Resource
 
                 Tables\Filters\SelectFilter::make('status_key')
                     ->label('الحالة')
-                    ->options(static::housingStatusOptions()),
+                    ->options(static::housingStatusOptions())
+                    ->multiple()
+                    ->query(function (Builder $query, array $data): Builder {
+                        $values = array_values(array_filter((array) ($data['values'] ?? [])));
+
+                        if (count($values) === 0) {
+                            return $query;
+                        }
+
+                        return $query->where(function (Builder $subQuery) use ($values) {
+                            $subQuery->whereIn('status_key', $values);
+
+                            foreach ($values as $value) {
+                                $subQuery->orWhereJsonContains('status_keys', $value);
+                            }
+                        });
+                    }),
 
                 Tables\Filters\SelectFilter::make('nationality')
                     ->label('الجنسية')
@@ -564,7 +593,17 @@ class AccommodationEntryResource extends Resource
                         ->label('الحالة الحالية')
                         ->badge()
                         ->color('info')
-                        ->formatStateUsing(fn (?string $state): string => static::housingStatusOptions()[$state] ?? static::safeString($state)),
+                        ->formatStateUsing(function (?string $state, AccommodationEntry $record): string {
+                            $selected = array_values(array_filter((array) ($record->status_keys ?? [])));
+
+                            if (count($selected) > 0) {
+                                return collect($selected)
+                                    ->map(fn (string $key) => static::housingStatusOptions()[$key] ?? static::safeString($key))
+                                    ->implode('، ');
+                            }
+
+                            return static::housingStatusOptions()[$state] ?? static::safeString($state);
+                        }),
                 ])
                 ->columns(2),
 

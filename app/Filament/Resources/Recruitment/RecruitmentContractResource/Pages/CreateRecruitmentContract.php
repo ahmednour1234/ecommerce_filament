@@ -21,21 +21,21 @@ class CreateRecruitmentContract extends CreateRecord
     {
         $parsed = parse_url($url);
         $path = $parsed['path'] ?? '';
-        
+
         if (str_contains($path, '/admin/') && !str_contains($path, '/public/admin/')) {
             if (str_starts_with($path, '/public/')) {
                 $path = substr($path, 7);
             }
             $newPath = str_replace('/admin/', '/public/admin/', $path);
-            
+
             $scheme = $parsed['scheme'] ?? 'https';
             $host = $parsed['host'] ?? '';
             $query = isset($parsed['query']) ? '?' . $parsed['query'] : '';
             $fragment = isset($parsed['fragment']) ? '#' . $parsed['fragment'] : '';
-            
+
             return $scheme . '://' . $host . $newPath . $query . $fragment;
         }
-        
+
         return $url;
     }
 
@@ -78,9 +78,19 @@ class CreateRecruitmentContract extends CreateRecord
                 ->where('new_status', '!=', $statusKey)
                 ->orderBy('created_at', 'desc')
                 ->first();
-            
+
             $oldStatusForLog = $previousStatus ? $previousStatus->new_status : null;
             $service->logStatusChange($this->record, $oldStatusForLog, $statusKey, null, $date);
+        }
+
+        $receivedDate = $allStatusDates['received'] ?? null;
+
+        if ($status === 'received' && !empty($statusDate)) {
+            $receivedDate = $statusDate;
+        }
+
+        if (!empty($receivedDate)) {
+            $service->syncArrivalDates($this->record, $receivedDate);
         }
     }
 }

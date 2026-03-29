@@ -119,6 +119,23 @@ class ComplaintResource extends Resource
                                             ->required()
                                             ->rows(4)
                                             ->columnSpanFull(),
+
+                                        Forms\Components\FileUpload::make('attachment')
+                                            ->label('مرفق الشكوى (صورة أو مستند)')
+                                            ->disk('public')
+                                            ->directory('complaints/attachments')
+                                            ->visibility('public')
+                                            ->acceptedFileTypes([
+                                                'image/*',
+                                                'application/pdf',
+                                                'application/msword',
+                                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                                            ])
+                                            ->maxSize(10240)
+                                            ->nullable()
+                                            ->openable()
+                                            ->downloadable()
+                                            ->columnSpanFull(),
                                     ])
                                     ->columns(2),
 
