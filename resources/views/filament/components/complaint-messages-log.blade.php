@@ -38,6 +38,31 @@
                         : 'rounded-tr-sm bg-blue-500 text-white dark:bg-blue-600' }}">
                     {{ $message->body }}
                 </div>
+
+                {{-- Attachment if exists --}}
+                @if($message->attachment)
+                    <div class="mt-1.5 rounded-lg overflow-hidden {{ $isComplaints ? 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700' : 'bg-blue-50 dark:bg-blue-900/20' }}">
+                        @php
+                            $attachmentPath = $message->attachment;
+                            $isImage = preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $attachmentPath);
+                            $isPdf = preg_match('/\.pdf$/i', $attachmentPath);
+                        @endphp
+
+                        @if($isImage)
+                            <img src="/storage/{{ $attachmentPath }}" alt="الصورة المرفقة"
+                                 class="max-w-xs h-auto rounded cursor-pointer hover:opacity-90 transition"
+                                 onclick="window.open('/storage/{{ $attachmentPath }}', '_blank')">
+                        @else
+                            <a href="/storage/{{ $attachmentPath }}" target="_blank"
+                               class="flex items-center gap-2 px-3 py-2 text-sm {{ $isComplaints ? 'text-blue-600 dark:text-blue-400 hover:text-blue-800' : 'text-white hover:opacity-90' }}">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H7a1 1 0 01-1-1v-6z" clip-rule="evenodd"/>
+                                </svg>
+                                <span>{{ basename($attachmentPath) }}</span>
+                            </a>
+                        @endif
+                    </div>
+                @endif
             </div>
         </div>
     @empty
