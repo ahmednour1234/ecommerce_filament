@@ -143,6 +143,7 @@ class ComplaintResource extends Resource
                                                     ->pluck('name', 'id')
                                                     ->toArray();
                                             })
+                                            ->getOptionLabelUsing(fn ($value): ?string => User::find($value)?->name)
                                             ->nullable()
                                             ->searchable()
                                             ->columnSpan(1),
