@@ -64,6 +64,13 @@ class RecruitmentContractResource extends Resource
         return static::getUserSection() === RecruitmentContract::SECTION_COORDINATION;
     }
 
+    public static function isCoordinationTabDisabled(): bool
+    {
+        $section = static::getUserSection();
+        // Only coordinators (and super admins / company owners who have no section) can edit coordination fields
+        return $section !== null && $section !== RecruitmentContract::SECTION_COORDINATION;
+    }
+
     public static function canEditCurrentSection(): bool
     {
         $user = auth()->user();
@@ -463,12 +470,6 @@ class RecruitmentContractResource extends Resource
                                             ->maxLength(255)
                                             ->disabled(fn () => static::isCustomerServiceTabDisabled())
                                             ->columnSpan(1),
-                                        Forms\Components\TextInput::make('musaned_documentation_contract_no')
-                                            ->label(tr('recruitment_contract.fields.musaned_documentation_contract_no', [], null, 'dashboard') ?: 'رقم التوثيق الالكتروني بمساند')
-                                            ->maxLength(255)
-                                            ->nullable()
-                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
-                                            ->columnSpan(1),
                                         Forms\Components\DatePicker::make('musaned_contract_date')
                                             ->label(tr('recruitment_contract.fields.musaned_contract_date', [], null, 'dashboard') ?: 'Musaned Contract Date')
                                             ->disabled(fn () => static::isCustomerServiceTabDisabled())
@@ -521,6 +522,12 @@ class RecruitmentContractResource extends Resource
                             ->schema([
                                 Forms\Components\Section::make(tr('recruitment_contract.sections.coordination', [], null, 'dashboard') ?: 'قسم التنسيق')
                                     ->schema([
+                                        Forms\Components\TextInput::make('musaned_documentation_contract_no')
+                                            ->label(tr('recruitment_contract.fields.musaned_documentation_contract_no', [], null, 'dashboard') ?: 'رقم التوثيق الالكتروني بمساند')
+                                            ->maxLength(255)
+                                            ->nullable()
+                                            ->disabled(fn () => static::isCoordinationTabDisabled())
+                                            ->columnSpan(1),
                                         Forms\Components\Select::make('current_section')
                                             ->label('العقد عند القسم')
                                             ->options(RecruitmentContract::currentSectionOptions())
