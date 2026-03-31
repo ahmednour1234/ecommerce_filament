@@ -146,8 +146,9 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                 // ===== Find relations =====
                 $profession = $this->findProfession($professionName);
                 $nationality = $this->findNationality($nationalityName);
-                $arrivalCountryId = $this->mapCountryIdByName($arrivalCountry);
-                $departureCountryId = $this->mapCountryIdByName($departureCountry);
+                // arrival/departure store Arabic city names as strings (not FK integers)
+                $arrivalCountryValue  = $arrivalCountry  ? trim((string) $arrivalCountry)  : null;
+                $departureCountryValue = $departureCountry ? trim((string) $departureCountry) : null;
                 $receivingStationId = $this->mapReceivingStationIdByName($receivingStation);
 
                 // ===== Build contract data =====
@@ -159,8 +160,8 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                     'visa_type' => $visaType,
                     'visa_date' => $visaDate ? $this->parseDate($visaDate) : null,
                     'status' => $status,
-                    'arrival_country_id' => $arrivalCountryId,
-                    'departure_country_id' => $departureCountryId,
+                    'arrival_country_id' => $arrivalCountryValue,
+                    'departure_country_id' => $departureCountryValue,
                     'receiving_station_id' => $receivingStationId,
                     'profession_id' => $profession?->id,
                     'nationality_id' => $nationality?->id,
