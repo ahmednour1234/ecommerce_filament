@@ -578,6 +578,7 @@ class RentalContractResource extends Resource
             return now()->toDateString();
         }
 
+        $duration = (int) $duration;
         $date = Carbon::parse($startDate);
         return match($durationType) {
             'day' => $date->addDays($duration)->toDateString(),
