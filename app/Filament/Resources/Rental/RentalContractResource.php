@@ -565,18 +565,6 @@ class RentalContractResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\Action::make('print_contract')
-                    ->label(tr('rental.print.contract', [], null, 'dashboard') ?: 'Print Contract')
-                    ->icon('heroicon-o-printer')
-                    ->url(fn ($record) => route('rental.contracts.print', $record))
-                    ->openUrlInNewTab()
-                    ->visible(fn () => auth()->user()?->can('rental.print.contract')),
-                Tables\Actions\Action::make('print_invoice')
-                    ->label(tr('rental.print.invoice', [], null, 'dashboard') ?: 'Print Invoice')
-                    ->icon('heroicon-o-document-text')
-                    ->url(fn ($record) => route('rental.contracts.invoice', $record))
-                    ->openUrlInNewTab()
-                    ->visible(fn () => auth()->user()?->can('rental.print.invoice')),
                 EditAction::make(),
                 TableDeleteAction::make(),
             ])

@@ -14,18 +14,6 @@ class ViewRentalContract extends ViewRecord
     {
         return [
             Actions\EditAction::make(),
-            Actions\Action::make('print_contract')
-                ->label(tr('rental.print.contract', [], null, 'dashboard') ?: 'Print Contract')
-                ->icon('heroicon-o-printer')
-                ->url(fn () => route('rental.contracts.print', $this->record))
-                ->openUrlInNewTab()
-                ->visible(fn () => auth()->user()?->can('rental.print.contract')),
-            Actions\Action::make('print_invoice')
-                ->label(tr('rental.print.invoice', [], null, 'dashboard') ?: 'Print Invoice')
-                ->icon('heroicon-o-document-text')
-                ->url(fn () => route('rental.contracts.invoice', $this->record))
-                ->openUrlInNewTab()
-                ->visible(fn () => auth()->user()?->can('rental.print.invoice')),
         ];
     }
 }
