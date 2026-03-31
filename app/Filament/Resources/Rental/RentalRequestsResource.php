@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Rental;
 use App\Filament\Resources\Rental\RentalRequestsResource\Pages;
 use App\Filament\Concerns\TranslatableNavigation;
 use App\Models\Rental\RentalContractRequest;
+use App\Models\Client;
 use App\Services\Rental\RentalContractService;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -41,23 +42,60 @@ class RentalRequestsResource extends Resource
                     ->searchable(),
 
                 Forms\Components\Select::make('customer_id')
-                    ->label(tr('rental.fields.customer', [], null, 'dashboard') ?: 'Customer')
+                    ->label(tr('rental.fields.customer', [], null, 'dashboard') ?: 'العميل')
                     ->options(function () {
                         return Cache::remember('rental.customers', 21600, function () {
                             return \App\Models\Sales\Customer::active()->get()->pluck('name', 'id')->toArray();
                         });
                     })
                     ->required()
-                    ->searchable(),
+                    ->searchable()
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name_ar')
+                            ->label(tr('general.clients.name_ar', [], null, 'dashboard') ?: 'الاسم (عربي)')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('national_id')
+                            ->label(tr('general.clients.national_id', [], null, 'dashboard') ?: 'رقم الهوية')
+                            ->required()
+                            ->maxLength(255)
+                            ->unique(Client::class, 'national_id'),
+                        Forms\Components\TextInput::make('mobile')
+                            ->label(tr('general.clients.mobile', [], null, 'dashboard') ?: 'الجوال')
+                            ->required()
+                            ->tel()
+                            ->maxLength(50),
+                        Forms\Components\Radio::make('marital_status')
+                            ->label(tr('general.clients.marital_status', [], null, 'dashboard') ?: 'الحالة الاجتماعية')
+                            ->required()
+                            ->options([
+                                'single'   => tr('general.clients.single', [], null, 'dashboard') ?: 'أعزب',
+                                'married'  => tr('general.clients.married', [], null, 'dashboard') ?: 'متزوج',
+                                'divorced' => tr('general.clients.divorced', [], null, 'dashboard') ?: 'مطلق',
+                                'widowed'  => tr('general.clients.widowed', [], null, 'dashboard') ?: 'أرمل',
+                            ]),
+                        Forms\Components\Radio::make('classification')
+                            ->label(tr('general.clients.classification', [], null, 'dashboard') ?: 'التصنيف')
+                            ->required()
+                            ->options([
+                                'new'     => tr('general.clients.new', [], null, 'dashboard') ?: 'جديد',
+                                'vip'     => tr('general.clients.vip', [], null, 'dashboard') ?: 'VIP',
+                                'blocked' => tr('general.clients.blocked', [], null, 'dashboard') ?: 'محظور',
+                            ])
+                            ->default('new'),
+                    ])
+                    ->createOptionUsing(function (array $data): int {
+                        $client = Client::create($data);
+                        Cache::forget('rental.customers');
+                        return $client->id;
+                    }),
 
-                Forms\Components\Select::make('desired_package_id')
-                    ->label(tr('rental.fields.package', [], null, 'dashboard') ?: 'Package')
-                    ->options(function () {
-                        return Cache::remember('rental.packages', 21600, function () {
-                            return \App\Models\Package::where('type', 'rental')->where('status', 'active')->get()->pluck('name', 'id')->toArray();
-                        });
-                    })
-                    ->searchable(),
+                Forms\Components\TextInput::make('desired_amount')
+                    ->label(tr('rental.fields.amount', [], null, 'dashboard') ?: 'المبلغ')
+                    ->numeric()
+                    ->default(0)
+                    ->minValue(0)
+                    ->prefix('ر.س'),
 
                 Forms\Components\Select::make('desired_country_id')
                     ->label(tr('rental.fields.country', [], null, 'dashboard') ?: 'Country')
@@ -142,9 +180,9 @@ class RentalRequestsResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('desiredPackage.name')
-                    ->label(tr('rental.fields.package', [], null, 'dashboard') ?: 'Package')
-                    ->searchable()
+                Tables\Columns\TextColumn::make('desired_amount')
+                    ->label(tr('rental.fields.amount', [], null, 'dashboard') ?: 'المبلغ')
+                    ->money('SAR')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('start_date')

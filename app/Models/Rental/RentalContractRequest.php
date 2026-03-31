@@ -20,6 +20,7 @@ class RentalContractRequest extends Model
         'branch_id',
         'customer_id',
         'desired_package_id',
+        'desired_amount',
         'desired_country_id',
         'profession_id',
         'worker_gender',
@@ -31,7 +32,8 @@ class RentalContractRequest extends Model
     ];
 
     protected $casts = [
-        'start_date' => 'date',
+        'start_date'      => 'date',
+        'desired_amount'  => 'decimal:2',
     ];
 
     protected static function boot()
