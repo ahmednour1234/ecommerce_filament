@@ -265,17 +265,19 @@ class RentalContractResource extends Resource
                                 $taxPercent    = (float) ($get('tax_percent') ?? 0);
                                 $discountType  = $get('discount_type') ?? 'none';
                                 $discountValue = (float) ($get('discount_value') ?? 0);
+                                $paidTotal     = (float) ($get('paid_total') ?? 0);
                                 $discount = match ($discountType) {
                                     'percent' => $amount * $discountValue / 100,
                                     'fixed'   => $discountValue,
                                     default   => 0,
                                 };
-                                $subtotal = max(0, $amount - $discount);
-                                $taxValue = $subtotal * $taxPercent / 100;
-                                $total    = $subtotal + $taxValue;
+                                $subtotal  = max(0, $amount - $discount);
+                                $taxValue  = $subtotal * $taxPercent / 100;
+                                $total     = $subtotal + $taxValue;
                                 $set('subtotal', round($subtotal, 2));
                                 $set('tax_value', round($taxValue, 2));
                                 $set('total', round($total, 2));
+                                $set('remaining_total', round(max(0, $total - $paidTotal), 2));
                             })
                             ->columnSpan(1),
 
@@ -292,17 +294,19 @@ class RentalContractResource extends Resource
                                 $taxPercent    = (float) ($get('tax_percent') ?? 0);
                                 $discountType  = $get('discount_type') ?? 'none';
                                 $discountValue = (float) ($get('discount_value') ?? 0);
+                                $paidTotal     = (float) ($get('paid_total') ?? 0);
                                 $discount = match ($discountType) {
                                     'percent' => $amount * $discountValue / 100,
                                     'fixed'   => $discountValue,
                                     default   => 0,
                                 };
-                                $subtotal = max(0, $amount - $discount);
-                                $taxValue = $subtotal * $taxPercent / 100;
-                                $total    = $subtotal + $taxValue;
+                                $subtotal  = max(0, $amount - $discount);
+                                $taxValue  = $subtotal * $taxPercent / 100;
+                                $total     = $subtotal + $taxValue;
                                 $set('subtotal', round($subtotal, 2));
                                 $set('tax_value', round($taxValue, 2));
                                 $set('total', round($total, 2));
+                                $set('remaining_total', round(max(0, $total - $paidTotal), 2));
                             })
                             ->columnSpan(1),
 
@@ -320,17 +324,19 @@ class RentalContractResource extends Resource
                                 $taxPercent    = (float) ($get('tax_percent') ?? 0);
                                 $discountType  = $get('discount_type') ?? 'none';
                                 $discountValue = (float) ($get('discount_value') ?? 0);
+                                $paidTotal     = (float) ($get('paid_total') ?? 0);
                                 $discount = match ($discountType) {
                                     'percent' => $amount * $discountValue / 100,
                                     'fixed'   => $discountValue,
                                     default   => 0,
                                 };
-                                $subtotal = max(0, $amount - $discount);
-                                $taxValue = $subtotal * $taxPercent / 100;
-                                $total    = $subtotal + $taxValue;
+                                $subtotal  = max(0, $amount - $discount);
+                                $taxValue  = $subtotal * $taxPercent / 100;
+                                $total     = $subtotal + $taxValue;
                                 $set('subtotal', round($subtotal, 2));
                                 $set('tax_value', round($taxValue, 2));
                                 $set('total', round($total, 2));
+                                $set('remaining_total', round(max(0, $total - $paidTotal), 2));
                             })
                             ->columnSpan(1),
 
@@ -346,17 +352,19 @@ class RentalContractResource extends Resource
                                 $taxPercent    = (float) ($get('tax_percent') ?? 0);
                                 $discountType  = $get('discount_type') ?? 'none';
                                 $discountValue = (float) ($get('discount_value') ?? 0);
+                                $paidTotal     = (float) ($get('paid_total') ?? 0);
                                 $discount = match ($discountType) {
                                     'percent' => $amount * $discountValue / 100,
                                     'fixed'   => $discountValue,
                                     default   => 0,
                                 };
-                                $subtotal = max(0, $amount - $discount);
-                                $taxValue = $subtotal * $taxPercent / 100;
-                                $total    = $subtotal + $taxValue;
+                                $subtotal  = max(0, $amount - $discount);
+                                $taxValue  = $subtotal * $taxPercent / 100;
+                                $total     = $subtotal + $taxValue;
                                 $set('subtotal', round($subtotal, 2));
                                 $set('tax_value', round($taxValue, 2));
                                 $set('total', round($total, 2));
+                                $set('remaining_total', round(max(0, $total - $paidTotal), 2));
                             })
                             ->visible(fn (callable $get) => $get('discount_type') !== 'none')
                             ->columnSpan(1),
@@ -382,14 +390,24 @@ class RentalContractResource extends Resource
                             ->content(fn (callable $get) => number_format((float) ($get('total') ?? 0), 2) . ' ر.س')
                             ->columnSpan(1),
 
-                        Forms\Components\Placeholder::make('remaining_total')
-                            ->label(tr('rental.fields.remaining_total', [], null, 'dashboard') ?: 'المتبقي')
-                            ->content(fn ($record) => $record ? number_format($record->remaining_total, 2) . ' ر.س' : '0.00 ر.س')
+                        Forms\Components\TextInput::make('paid_total')
+                            ->label(tr('rental.fields.paid_total', [], null, 'dashboard') ?: 'المبلغ المدفوع')
+                            ->numeric()
+                            ->default(0)
+                            ->step(0.01)
+                            ->minValue(0)
+                            ->prefix('ر.س')
+                            ->reactive()
+                            ->afterStateUpdated(function (callable $set, callable $get) {
+                                $total     = (float) ($get('total') ?? 0);
+                                $paidTotal = (float) ($get('paid_total') ?? 0);
+                                $set('remaining_total', round(max(0, $total - $paidTotal), 2));
+                            })
                             ->columnSpan(1),
 
-                        Forms\Components\Placeholder::make('paid_total')
-                            ->label(tr('rental.fields.paid_total', [], null, 'dashboard') ?: 'المبلغ المدفوع')
-                            ->content(fn ($record) => $record ? number_format($record->paid_total, 2) . ' ر.س' : '0.00 ر.س')
+                        Forms\Components\Placeholder::make('remaining_total')
+                            ->label(tr('rental.fields.remaining_total', [], null, 'dashboard') ?: 'المتبقي')
+                            ->content(fn (callable $get) => number_format((float) ($get('remaining_total') ?? 0), 2) . ' ر.س')
                             ->columnSpan(1),
                     ])
                     ->columns(2),
