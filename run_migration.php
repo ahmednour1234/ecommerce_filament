@@ -24,13 +24,14 @@ try {
 
     $sql = "ALTER TABLE recruitment_contracts MODIFY COLUMN status ENUM(
         'new',
+        'foreign_embassy_approval',
         'external_office_approval',
         'contract_accepted_external_office',
         'waiting_approval',
         'contract_accepted_labor_ministry',
         'sent_to_saudi_embassy',
-        'visa_cancelled',
         'visa_issued',
+        'visa_cancelled',
         'travel_permit_after_visa_issued',
         'waiting_flight_booking',
         'arrival_scheduled',
@@ -40,7 +41,7 @@ try {
     ) DEFAULT 'new'";
 
     $pdo->exec($sql);
-    echo "Migration applied successfully. visa_cancelled added to status ENUM.\n";
+    echo "Migration applied successfully. foreign_embassy_approval and visa_cancelled added to status ENUM.\n";
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage() . "\n";
 }

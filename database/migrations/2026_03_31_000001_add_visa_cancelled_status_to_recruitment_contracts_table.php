@@ -8,13 +8,14 @@ return new class extends Migration {
     {
         DB::statement("ALTER TABLE recruitment_contracts MODIFY COLUMN status ENUM(
             'new',
+            'foreign_embassy_approval',
             'external_office_approval',
             'contract_accepted_external_office',
             'waiting_approval',
             'contract_accepted_labor_ministry',
             'sent_to_saudi_embassy',
-            'visa_cancelled',
             'visa_issued',
+            'visa_cancelled',
             'travel_permit_after_visa_issued',
             'waiting_flight_booking',
             'arrival_scheduled',

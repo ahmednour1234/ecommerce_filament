@@ -487,25 +487,26 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
         $codeInt = (int) $code;
 
         // Validate range
-        if ($codeInt < 1 || $codeInt > 14) {
+        if ($codeInt < 1 || $codeInt > 15) {
             return 'new';
         }
 
         $statusMap = [
             1  => 'new',                               // جديد
-            2  => 'external_office_approval',          // موافقة المكتب الخارجي
-            3  => 'contract_accepted_external_office', // قبول العقد من مكتب الخارجي
-            4  => 'waiting_approval',                  // انتظار الابروف
-            5  => 'contract_accepted_labor_ministry',  // قبول العقد من مكتب العمل الخارجي
-            6  => 'sent_to_saudi_embassy',             // إرسال التأشيرة إلى السفارة السعودية
-            7  => 'visa_cancelled',                    // الغاء التفييز
+            2  => 'foreign_embassy_approval',          // موافقة السفارة الأجنبية
+            3  => 'external_office_approval',          // موافقة المكتب الخارجي
+            4  => 'contract_accepted_external_office', // قبول العقد من مكتب الخارجي
+            5  => 'waiting_approval',                  // انتظار الابروف
+            6  => 'contract_accepted_labor_ministry',  // قبول العقد من مكتب العمل الخارجي
+            7  => 'sent_to_saudi_embassy',             // إرسال التأشيرة إلى السفارة السعودية
             8  => 'visa_issued',                       // تم التفييز
-            9  => 'travel_permit_after_visa_issued',   // تصريح سفر بعد تم التفييز
-            10 => 'waiting_flight_booking',            // انتظار حجز تذكرة الطيران
-            11 => 'arrival_scheduled',                 // معاد الوصول
-            12 => 'received',                          // تم الاستلام
-            13 => 'return_during_warranty',            // رجيع خلال فترة الضمان
-            14 => 'runaway',                           // هروب
+            9  => 'visa_cancelled',                    // إلغاء التفييز
+            10 => 'travel_permit_after_visa_issued',   // تصريح سفر
+            11 => 'waiting_flight_booking',            // انتظار حجز تذكرة الطيران
+            12 => 'arrival_scheduled',                 // معاد الوصول
+            13 => 'received',                          // تم الاستلام
+            14 => 'return_during_warranty',            // رجيع خلال فترة الضمان
+            15 => 'runaway',                           // هروب
         ];
 
         return $statusMap[$codeInt] ?? 'new';
