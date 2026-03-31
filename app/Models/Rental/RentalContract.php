@@ -70,14 +70,14 @@ class RentalContract extends Model
                 $service = app(RentalContractService::class);
                 $contract->contract_no = $service->generateContractNo();
             }
-            
+
             if (empty($contract->created_by) && auth()->check()) {
                 $contract->created_by = auth()->id();
             }
         });
 
         static::saving(function ($contract) {
-            if ($contract->isDirty(['package_id', 'discount_type', 'discount_value', 'tax_percent']) || $contract->isNew()) {
+            if ($contract->isDirty(['amount', 'package_id', 'discount_type', 'discount_value', 'tax_percent']) || !$contract->exists) {
                 $service = app(RentalContractService::class);
                 $totals = $service->computeTotals($contract);
                 $contract->fill($totals);
@@ -88,7 +88,7 @@ class RentalContract extends Model
             if ($contract->isDirty('status')) {
                 $oldStatus = $contract->getOriginal('status');
                 $newStatus = $contract->status;
-                
+
                 if ($oldStatus !== $newStatus) {
                     $service = app(RentalContractService::class);
                     $service->logStatusChange($contract, $oldStatus, $newStatus);

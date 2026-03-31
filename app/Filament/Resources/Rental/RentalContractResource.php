@@ -260,6 +260,26 @@ class RentalContractResource extends Resource
                             ->minValue(0)
                             ->prefix('ر.س')
                             ->reactive()
+                            ->afterStateHydrated(function (callable $set, $record) {
+                                if (!$record) return;
+                                $amount        = (float) ($record->amount ?? 0);
+                                $taxPercent    = (float) ($record->tax_percent ?? 0);
+                                $discountType  = $record->discount_type ?? 'none';
+                                $discountValue = (float) ($record->discount_value ?? 0);
+                                $paidTotal     = (float) ($record->paid_total ?? 0);
+                                $discount = match ($discountType) {
+                                    'percent' => $amount * $discountValue / 100,
+                                    'fixed'   => $discountValue,
+                                    default   => 0,
+                                };
+                                $subtotal = max(0, $amount - $discount);
+                                $taxValue = $subtotal * $taxPercent / 100;
+                                $total    = $subtotal + $taxValue;
+                                $set('subtotal', round($subtotal, 2));
+                                $set('tax_value', round($taxValue, 2));
+                                $set('total', round($total, 2));
+                                $set('remaining_total', round(max(0, $total - $paidTotal), 2));
+                            })
                             ->afterStateUpdated(function (callable $set, callable $get) {
                                 $amount        = (float) ($get('amount') ?? 0);
                                 $taxPercent    = (float) ($get('tax_percent') ?? 0);
@@ -375,19 +395,28 @@ class RentalContractResource extends Resource
                             ->visible(fn (callable $get) => $get('discount_type') !== 'none')
                             ->columnSpanFull(),
 
-                        Forms\Components\Placeholder::make('subtotal')
-                            ->label(tr('rental.fields.subtotal', [], null, 'dashboard') ?: 'Subtotal')
-                            ->content(fn (callable $get) => number_format((float) ($get('subtotal') ?? 0), 2) . ' ر.س')
+                        Forms\Components\TextInput::make('subtotal')
+                            ->label(tr('rental.fields.subtotal', [], null, 'dashboard') ?: 'المجموع الفرعي')
+                            ->numeric()
+                            ->prefix('ر.س')
+                            ->disabled()
+                            ->dehydrated(false)
                             ->columnSpan(1),
 
-                        Forms\Components\Placeholder::make('tax_value')
-                            ->label(tr('rental.fields.tax_value', [], null, 'dashboard') ?: 'Tax Value')
-                            ->content(fn (callable $get) => number_format((float) ($get('tax_value') ?? 0), 2) . ' ر.س')
+                        Forms\Components\TextInput::make('tax_value')
+                            ->label(tr('rental.fields.tax_value', [], null, 'dashboard') ?: 'قيمة الضريبة')
+                            ->numeric()
+                            ->prefix('ر.س')
+                            ->disabled()
+                            ->dehydrated(false)
                             ->columnSpan(1),
 
-                        Forms\Components\Placeholder::make('total')
-                            ->label(tr('rental.fields.total', [], null, 'dashboard') ?: 'Total')
-                            ->content(fn (callable $get) => number_format((float) ($get('total') ?? 0), 2) . ' ر.س')
+                        Forms\Components\TextInput::make('total')
+                            ->label(tr('rental.fields.total', [], null, 'dashboard') ?: 'الإجمالي')
+                            ->numeric()
+                            ->prefix('ر.س')
+                            ->disabled()
+                            ->dehydrated(false)
                             ->columnSpan(1),
 
                         Forms\Components\TextInput::make('paid_total')
@@ -405,9 +434,12 @@ class RentalContractResource extends Resource
                             })
                             ->columnSpan(1),
 
-                        Forms\Components\Placeholder::make('remaining_total')
+                        Forms\Components\TextInput::make('remaining_total')
                             ->label(tr('rental.fields.remaining_total', [], null, 'dashboard') ?: 'المتبقي')
-                            ->content(fn (callable $get) => number_format((float) ($get('remaining_total') ?? 0), 2) . ' ر.س')
+                            ->numeric()
+                            ->prefix('ر.س')
+                            ->disabled()
+                            ->dehydrated(false)
                             ->columnSpan(1),
                     ])
                     ->columns(2),

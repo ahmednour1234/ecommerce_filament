@@ -14,17 +14,17 @@ class RentalContractService
         $year = now()->format('Y');
         $month = now()->format('m');
         $prefix = "CR-{$year}{$month}-";
-        
+
         $last = RentalContract::withTrashed()
             ->where('contract_no', 'like', $prefix . '%')
             ->orderByDesc('id')
             ->value('contract_no');
-        
+
         $seq = 1;
         if ($last && preg_match('/' . preg_quote($prefix, '/') . '(\d+)/', $last, $m)) {
             $seq = ((int) $m[1]) + 1;
         }
-        
+
         return $prefix . str_pad((string) $seq, 4, '0', STR_PAD_LEFT);
     }
 
@@ -32,17 +32,17 @@ class RentalContractService
     {
         $date = now()->format('Ymd');
         $prefix = "REQ-{$date}-";
-        
+
         $last = RentalContractRequest::withTrashed()
             ->where('request_no', 'like', $prefix . '%')
             ->orderByDesc('id')
             ->value('request_no');
-        
+
         $seq = 1;
         if ($last && preg_match('/' . preg_quote($prefix, '/') . '(\d+)/', $last, $m)) {
             $seq = ((int) $m[1]) + 1;
         }
-        
+
         return $prefix . str_pad((string) $seq, 4, '0', STR_PAD_LEFT);
     }
 
@@ -59,37 +59,25 @@ class RentalContractService
 
         $subtotal = max(0, $baseAmount - $discountValue);
         $taxValue = $subtotal * ($contract->tax_percent / 100);
-        $total = $subtotal + $taxValue;
+        $total    = $subtotal + $taxValue;
 
-        $paidTotal = $contract->payments()
-            ->where('status', 'posted')
-            ->sum('amount');
-
-        $refundedTotal = $contract->payments()
-            ->where('status', 'refunded')
-            ->sum('amount');
-
-        $paidTotal = $paidTotal - $refundedTotal;
+        // Use the manually-entered paid_total (form input) rather than recalculating from payments
+        $paidTotal      = (float) ($contract->paid_total ?? 0);
         $remainingTotal = max(0, $total - $paidTotal);
 
         $paymentStatus = 'unpaid';
-        if ($remainingTotal <= 0) {
+        if ($remainingTotal <= 0 && $total > 0) {
             $paymentStatus = 'paid';
         } elseif ($paidTotal > 0) {
             $paymentStatus = 'partial';
         }
 
-        if ($contract->status === 'cancelled' && $refundedTotal > 0) {
-            $paymentStatus = 'refunded';
-        }
-
         return [
-            'subtotal'       => round($subtotal, 2),
-            'tax_value'      => round($taxValue, 2),
-            'total'          => round($total, 2),
-            'paid_total'     => round($paidTotal, 2),
+            'subtotal'        => round($subtotal, 2),
+            'tax_value'       => round($taxValue, 2),
+            'total'           => round($total, 2),
             'remaining_total' => round($remainingTotal, 2),
-            'payment_status' => $paymentStatus,
+            'payment_status'  => $paymentStatus,
         ];
     }
 
