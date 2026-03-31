@@ -9,8 +9,9 @@ use App\Models\Rental\RentalContract;
 use App\Models\MainCore\Branch;
 use App\Models\Sales\Customer;
 use App\Models\Recruitment\Laborer;
-use App\Models\Recruitment\Profession;
-use App\Models\MainCore\Country;
+use App\Models\Recruitment\Nationality;
+use App\Models\MainCore\Currency;
+use App\Models\Client;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -42,8 +43,12 @@ class RentalContractResource extends Resource
                         Forms\Components\Select::make('branch_id')
                             ->label(tr('rental.fields.branch', [], null, 'dashboard') ?: 'Branch')
                             ->options(function () {
-                                return Cache::remember('rental.branches', 21600, function () {
-                                    return Branch::active()->get()->pluck('name', 'id')->toArray();
+                                return Cache::remember('rental.branches_limited', 21600, function () {
+                                    return Branch::active()
+                                        ->whereIn('name', ['حفر الباطن', 'الرياض', 'عرعر'])
+                                        ->get()
+                                        ->pluck('name', 'id')
+                                        ->toArray();
                                 });
                             })
                             ->required()
@@ -61,30 +66,54 @@ class RentalContractResource extends Resource
                             ->required()
                             ->searchable()
                             ->reactive()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name_ar')
+                                    ->label(tr('general.clients.name_ar', [], null, 'dashboard') ?: 'الاسم (عربي)')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('national_id')
+                                    ->label(tr('general.clients.national_id', [], null, 'dashboard') ?: 'رقم الهوية')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->unique(Client::class, 'national_id'),
+                                Forms\Components\TextInput::make('mobile')
+                                    ->label(tr('general.clients.mobile', [], null, 'dashboard') ?: 'الجوال')
+                                    ->required()
+                                    ->tel()
+                                    ->maxLength(50),
+                                Forms\Components\Radio::make('marital_status')
+                                    ->label(tr('general.clients.marital_status', [], null, 'dashboard') ?: 'الحالة الاجتماعية')
+                                    ->required()
+                                    ->options([
+                                        'single'   => tr('general.clients.single', [], null, 'dashboard') ?: 'أعزب',
+                                        'married'  => tr('general.clients.married', [], null, 'dashboard') ?: 'متزوج',
+                                        'divorced' => tr('general.clients.divorced', [], null, 'dashboard') ?: 'مطلق',
+                                        'widowed'  => tr('general.clients.widowed', [], null, 'dashboard') ?: 'أرمل',
+                                    ]),
+                                Forms\Components\Radio::make('classification')
+                                    ->label(tr('general.clients.classification', [], null, 'dashboard') ?: 'التصنيف')
+                                    ->required()
+                                    ->options([
+                                        'new'     => tr('general.clients.new', [], null, 'dashboard') ?: 'جديد',
+                                        'vip'     => tr('general.clients.vip', [], null, 'dashboard') ?: 'VIP',
+                                        'blocked' => tr('general.clients.blocked', [], null, 'dashboard') ?: 'محظور',
+                                    ])
+                                    ->default('new'),
+                            ])
+                            ->createOptionUsing(function (array $data): int {
+                                $client = Client::create($data);
+                                Cache::forget('rental.customers');
+                                return $client->id;
+                            })
                             ->columnSpan(1),
 
-                        Forms\Components\Select::make('package_id')
-                            ->label(tr('rental.fields.package', [], null, 'dashboard') ?: 'Package')
-                            ->options(function () {
-                                return Cache::remember('rental.packages', 21600, function () {
-                                    return \App\Models\Package::where('type', 'rental')
-                                        ->where('status', 'active')
-                                        ->get()
-                                        ->pluck('name', 'id')
-                                        ->toArray();
-                                });
-                            })
+                        Forms\Components\TextInput::make('amount')
+                            ->label(tr('rental.fields.amount', [], null, 'dashboard') ?: 'المبلغ')
+                            ->numeric()
                             ->required()
-                            ->searchable()
+                            ->minValue(0)
+                            ->prefix('ر.س')
                             ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                                if ($state) {
-                                    $package = \App\Models\Package::find($state);
-                                    if ($package) {
-                                        $set('tax_percent', $package->tax_percent ?? 0);
-                                    }
-                                }
-                            })
                             ->columnSpan(1),
 
                         Forms\Components\TextInput::make('request_no')
@@ -105,34 +134,63 @@ class RentalContractResource extends Resource
                                 });
                             })
                             ->searchable()
-                            ->columnSpan(1),
-
-                        Forms\Components\Select::make('country_id')
-                            ->label(tr('rental.fields.country', [], null, 'dashboard') ?: 'Country')
-                            ->options(function () {
-                                return Cache::remember('rental.countries', 21600, function () {
-                                    $rentalCountryCodes = ['BD', 'PH', 'LK', 'UG', 'ET', 'KE', 'BI'];
-                                    return Country::where('is_active', true)
-                                        ->whereIn('iso2', $rentalCountryCodes)
-                                        ->get()
-                                        ->pluck('name_text', 'id')
-                                        ->toArray();
-                                });
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name_ar')
+                                    ->label(tr('recruitment.fields.name_ar', [], null, 'dashboard') ?: 'الاسم (عربي)')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('passport_number')
+                                    ->label(tr('recruitment.fields.passport_number', [], null, 'dashboard') ?: 'رقم الجواز')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->unique(Laborer::class, 'passport_number'),
+                                Forms\Components\Select::make('nationality_id')
+                                    ->label(tr('recruitment.fields.nationality', [], null, 'dashboard') ?: 'الجنسية')
+                                    ->options(function () {
+                                        return Nationality::where('is_active', true)
+                                            ->whereIn('name_ar', ['الفلبين', 'بنغلادش', 'سريلانكا', 'اثيوبيا', 'اوغندا', 'كينيا', 'بورندي'])
+                                            ->get()
+                                            ->mapWithKeys(fn ($n) => [$n->id => $n->name_ar]);
+                                    })
+                                    ->searchable()
+                                    ->required(),
+                                Forms\Components\Select::make('gender')
+                                    ->label(tr('recruitment.fields.gender', [], null, 'dashboard') ?: 'الجنس')
+                                    ->options([
+                                        'male'   => tr('recruitment_contract.gender.male', [], null, 'dashboard') ?: 'ذكر',
+                                        'female' => tr('recruitment_contract.gender.female', [], null, 'dashboard') ?: 'أنثى',
+                                    ])
+                                    ->nullable(),
+                                Forms\Components\Select::make('experience')
+                                    ->label(tr('recruitment.fields.experience', [], null, 'dashboard') ?: 'الخبرة')
+                                    ->options([
+                                        'unspecified' => tr('recruitment_contract.experience.unspecified', [], null, 'dashboard') ?: 'غير محدد',
+                                        'new'         => tr('recruitment_contract.experience.new', [], null, 'dashboard') ?: 'جديد',
+                                        'ex_worker'   => tr('recruitment_contract.experience.ex_worker', [], null, 'dashboard') ?: 'سبق العمل EX',
+                                    ])
+                                    ->nullable(),
+                                Forms\Components\TextInput::make('phone_1')
+                                    ->label(tr('recruitment.fields.phone_1', [], null, 'dashboard') ?: 'الجوال')
+                                    ->tel()
+                                    ->maxLength(50)
+                                    ->nullable(),
+                            ])
+                            ->createOptionUsing(function (array $data): int {
+                                $sarCurrencyId = Currency::where('code', 'SAR')->first()?->id ?? Currency::first()?->id;
+                                $laborer = Laborer::create([
+                                    'name_ar'                    => $data['name_ar'],
+                                    'name_en'                    => $data['name_ar'],
+                                    'passport_number'            => $data['passport_number'],
+                                    'nationality_id'             => $data['nationality_id'],
+                                    'gender'                     => $data['gender'] ?? null,
+                                    'experience_level'           => $data['experience'] ?? null,
+                                    'phone_1'                    => $data['phone_1'] ?? null,
+                                    'is_available'               => true,
+                                    'monthly_salary_currency_id' => $sarCurrencyId,
+                                ]);
+                                Cache::forget('rental.workers');
+                                return $laborer->id;
                             })
-                            ->searchable()
-                            ->columnSpan(1),
-
-                        Forms\Components\Select::make('profession_id')
-                            ->label(tr('rental.fields.profession', [], null, 'dashboard') ?: 'Profession')
-                            ->options(function () {
-                                return Cache::remember('rental.professions', 21600, function () {
-                                    return Profession::where('is_active', true)
-                                        ->get()
-                                        ->pluck('name_ar', 'id')
-                                        ->toArray();
-                                });
-                            })
-                            ->searchable()
                             ->columnSpan(1),
 
                         Forms\Components\DatePicker::make('start_date')
