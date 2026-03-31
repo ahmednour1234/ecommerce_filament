@@ -165,7 +165,7 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                     'profession_id' => $profession?->id,
                     'nationality_id' => $nationality?->id,
                     'gender' => $this->normalizeGender($gender),
-                    'experience' => $experience ? trim((string) $experience) : null,
+                    'experience' => $this->normalizeExperience($experience),
                     'religion' => $religion ? trim((string) $religion) : null,
                     'workplace_ar' => $workplaceAr ? trim((string) $workplaceAr) : null,
                     'workplace_en' => $workplaceEn ? trim((string) $workplaceEn) : null,
@@ -541,6 +541,32 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
         if (in_array($normalized, ['female', 'أنثى', 'f', 'امرأة'])) return 'female';
 
         return null;
+    }
+
+    protected function normalizeExperience($value): ?string
+    {
+        if (empty($value)) return 'unspecified';
+
+        $v = mb_strtolower(trim((string) $value), 'UTF-8');
+
+        // Already a valid ENUM value
+        if (in_array($v, ['unspecified', 'new', 'ex_worker'])) return $v;
+
+        // Arabic: جديد / بدون خبرة
+        if (in_array($v, ['جديد', 'بدون خبرة', 'لا توجد', 'لا يوجد', '0', '0 years', '0 سنوات'])) return 'new';
+
+        // Numeric years string like "4 years", "2 سنوات", "3" etc.
+        if (preg_match('/^(\d+)/', $v, $m)) {
+            $years = (int) $m[1];
+            return $years === 0 ? 'new' : 'ex_worker';
+        }
+
+        // Arabic/English "خبرة" or "experienced"
+        if (str_contains($v, 'خبرة') || str_contains($v, 'experienc') || str_contains($v, 'ex_worker')) {
+            return 'ex_worker';
+        }
+
+        return 'unspecified';
     }
 
     protected function parseDecimal($value): ?float
