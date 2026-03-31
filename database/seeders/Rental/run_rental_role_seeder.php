@@ -1,6 +1,8 @@
 <?php
 // Standalone script - seeds Rental role & permissions without Laravel bootstrap
-$envFile = __DIR__ . '/.env';
+// Run from project root: php database/seeders/Rental/run_rental_role_seeder.php
+
+$envFile = dirname(__DIR__, 3) . '/.env';
 $env = [];
 if (file_exists($envFile)) {
     foreach (file($envFile) as $line) {
