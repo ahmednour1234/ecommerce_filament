@@ -99,7 +99,6 @@ class ListRecruitmentContracts extends ListRecords
             'passport_no' => 'PASSPORT NO / رقم الجواز',
             'client_name' => 'CLIENT NAME / اسم العميل',
             'client_national_id' => 'CLIENT NATIONAL ID / رقم هوية العميل',
-            'sponsor_name' => 'SPONSOR NAME / اسم الكفيل',
             'branch_name' => 'BRANCH NAME / اسم الفرع',
             'visa_no' => 'VISA NO / رقم التأشيرة',
             'visa_type' => 'VISA TYPE (domestic_labor/comprehensive_qualification) / نوع التأشيرة',
@@ -117,11 +116,9 @@ class ListRecruitmentContracts extends ListRecords
             'monthly_salary' => 'MONTHLY SALARY / الراتب الشهري',
             'gregorian_request_date' => 'GREGORIAN REQUEST DATE (YYYY-MM-DD) / تاريخ الطلب',
             'hijri_request_date' => 'HIJRI REQUEST DATE / التاريخ الهجري',
-            'status' => 'STATUS (1-14) / الحالة (1=جديد, 2=موافقة السفارة الأجنبية, 3=موافقة مكتب الإرسال الخارجيه, 4=تم القبول من مكتب الإرسال الخارجيه, 5=موافقة وزارة العمل الأجنبية, 6=تم القبول من وزارة العمل الأجنبية, 7=تم الإرسال للسفارة السعودية, 8=تم إصدار التأشيرة, 9=وصل للمملكة العربية السعودية, 10=رجيع خلال فتره الضمان, 11=خارج المملكه خلال فتره الضمان, 12=نقل خدمات العمالة المنزليه, 13=هروب, 14=مؤقته)',
+            'status' => 'STATUS (1-14) / الحالة (1=جديد, 2=موافقة المكتب الخارجي, 3=قبول العقد من مكتب الخارجي, 4=انتظار الابروف, 5=قبول العقد من مكتب العمل الخارجي, 6=إرسال التأشيرة إلى السفارة السعودية, 7=الغاء التفييز, 8=تم التفييز, 9=تصريح سفر بعد تم التفييز, 10=انتظار حجز تذكرة الطيران, 11=معاد الوصول, 12=تم الاستلام, 13=رجيع خلال فترة الضمان, 14=هروب)',
             'payment_status' => 'PAYMENT STATUS (1-3) / حالة الدفع (1=غير مدفوع, 2=جزئي, 3=مدفوع)',
-            'musaned_contract_no' => 'MUSANED CONTRACT NO / رقم عقد مساند',
-            'musaned_documentation_contract_no' => 'MUSANED DOCUMENTATION CONTRACT NO / رقم عقد توثيق مساند',
-            'musaned_auth_no' => 'MUSANED AUTH NO / رقم تفويض مساند',
+            'arrival_date' => 'ARRIVAL DATE / تاريخ الوصول (مثال: وصول يوم 06-04-2026 الساعة 15:35 مساءً مطار)',
             'musaned_contract_date' => 'MUSANED CONTRACT DATE (YYYY-MM-DD) / تاريخ عقد مساند',
         ];
 

@@ -104,10 +104,8 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                     'حالة_الدفع',
                     'payment',
                 ]);
-                $musanedContractNo = $this->getValue($rowArray, ['musaned_contract_no', 'musaned_contract_no', 'رقم عقد مساند']);
-                $musanedDocumentationContractNo = $this->getValue($rowArray, ['musaned_documentation_contract_no', 'musaned_documentation_contract_no', 'رقم عقد توثيق مساند']);
-                $musanedAuthNo = $this->getValue($rowArray, ['musaned_auth_no', 'musaned_auth_no', 'رقم تفويض مساند']);
                 $musanedContractDate = $this->getValue($rowArray, ['musaned_contract_date', 'musaned_contract_date', 'تاريخ عقد مساند']);
+                $arrivalDateRaw = $this->getValue($rowArray, ['arrival_date', 'تاريخ الوصول']);
 
                 $workerName = $workerName ? trim((string) $workerName) : null;
                 $passportNo = $passportNo ? trim((string) $passportNo) : null;
@@ -174,10 +172,8 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                     'monthly_salary' => $this->parseDecimal($monthlySalary),
                     'gregorian_request_date' => $gregorianRequestDate ? ($this->parseDate($gregorianRequestDate) ?? now()) : now(),
                     'hijri_request_date' => $hijriRequestDate ? trim((string) $hijriRequestDate) : null,
-                    'musaned_contract_no' => $musanedContractNo ? trim((string) $musanedContractNo) : null,
-                    'musaned_documentation_contract_no' => $musanedDocumentationContractNo ? trim((string) $musanedDocumentationContractNo) : null,
-                    'musaned_auth_no' => $musanedAuthNo ? trim((string) $musanedAuthNo) : null,
                     'musaned_contract_date' => $musanedContractDate ? $this->parseDate($musanedContractDate) : null,
+                    'arrival_date' => $arrivalDateRaw ? $this->parseArrivalDate($arrivalDateRaw) : null,
                     'created_by' => $this->defaultUserId,
                 ];
 
@@ -285,12 +281,12 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
         try {
             $name = trim($name);
             $governorates = SaudiGovernorates::all();
-            
+
             // Check if the name exists in the governorates list
             if (isset($governorates[$name])) {
                 return $name;
             }
-            
+
             // Try case-insensitive match
             foreach ($governorates as $key => $value) {
                 if (mb_strtolower($key, 'UTF-8') === mb_strtolower($name, 'UTF-8')) {
@@ -431,6 +427,25 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
         return $branch;
     }
 
+    protected function parseArrivalDate($value): ?string
+    {
+        if (empty($value)) return null;
+
+        $s = trim((string) $value);
+
+        // Format: "وصول يوم 06-04-2026 الساعة 15:35 مساءً مطار ..."
+        // Extract DD-MM-YYYY
+        if (preg_match('/(\d{1,2}-\d{1,2}-\d{4})/', $s, $m)) {
+            try {
+                return Carbon::createFromFormat('d-m-Y', $m[1])->toDateString();
+            } catch (\Throwable $e) {}
+        }
+
+        // Fallback to generic parseDate
+        $parsed = $this->parseDate($value);
+        return $parsed?->toDateString();
+    }
+
     protected function parseDate($date): ?Carbon
     {
         if (empty($date)) return null;
@@ -470,27 +485,27 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
 
         // Convert to integer
         $codeInt = (int) $code;
-        
+
         // Validate range
         if ($codeInt < 1 || $codeInt > 14) {
             return 'new';
         }
 
         $statusMap = [
-            1 => 'new', // جديد
-            2 => 'foreign_embassy_approval', // موافقة السفارة الأجنبية
-            3 => 'external_sending_office_approval', // موافقة مكتب الإرسال الخارجيه
-            4 => 'accepted_by_external_sending_office', // تم القبول من مكتب الإرسال الخارجيه
-            5 => 'foreign_labor_ministry_approval', // موافقة وزارة العمل الأجنبية
-            6 => 'accepted_by_foreign_labor_ministry', // تم القبول من وزارة العمل الأجنبية
-            7 => 'sent_to_saudi_embassy', // تم الإرسال للسفارة السعودية
-            8 => 'visa_issued', // تم إصدار التأشيرة
-            9 => 'arrived_in_saudi_arabia', // وصل للمملكة العربية السعودية
-            10 => 'return_during_warranty', // رجيع خلال فتره الضمان
-            11 => 'outside_kingdom_during_warranty', // خارج المملكه خلال فتره الضمان
-            12 => 'labor_services_transfer', // نقل خدمات العمالة المنزليه
-            13 => 'runaway', // هروب
-            14 => 'temporary', // مؤقته
+            1  => 'new',                               // جديد
+            2  => 'external_office_approval',          // موافقة المكتب الخارجي
+            3  => 'contract_accepted_external_office', // قبول العقد من مكتب الخارجي
+            4  => 'waiting_approval',                  // انتظار الابروف
+            5  => 'contract_accepted_labor_ministry',  // قبول العقد من مكتب العمل الخارجي
+            6  => 'sent_to_saudi_embassy',             // إرسال التأشيرة إلى السفارة السعودية
+            7  => 'visa_cancelled',                    // الغاء التفييز
+            8  => 'visa_issued',                       // تم التفييز
+            9  => 'travel_permit_after_visa_issued',   // تصريح سفر بعد تم التفييز
+            10 => 'waiting_flight_booking',            // انتظار حجز تذكرة الطيران
+            11 => 'arrival_scheduled',                 // معاد الوصول
+            12 => 'received',                          // تم الاستلام
+            13 => 'return_during_warranty',            // رجيع خلال فترة الضمان
+            14 => 'runaway',                           // هروب
         ];
 
         return $statusMap[$codeInt] ?? 'new';
@@ -521,7 +536,7 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
         if (empty($gender)) return null;
 
         $normalized = mb_strtolower(trim($gender), 'UTF-8');
-        
+
         if (in_array($normalized, ['male', 'ذكر', 'm', 'رجل'])) return 'male';
         if (in_array($normalized, ['female', 'أنثى', 'f', 'امرأة'])) return 'female';
 
@@ -548,7 +563,7 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
 
         // Convert to integer
         $codeInt = (int) $raw;
-        
+
         // Validate range (1-3)
         if ($codeInt < 1 || $codeInt > 3) {
             return 'unpaid';
