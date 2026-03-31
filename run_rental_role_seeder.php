@@ -14,9 +14,9 @@ if (file_exists($envFile)) {
 
 $host     = $env['DB_HOST'] ?? '127.0.0.1';
 $port     = $env['DB_PORT'] ?? '3306';
-$dbname   = $env['DB_DATABASE'] ?? 'laravel';
-$username = $env['DB_USERNAME'] ?? 'root';
-$password = $env['DB_PASSWORD'] ?? '';
+$dbname   = $env['DB_DATABASE'] ?? 'u414283222_system';
+$username = $env['DB_USERNAME'] ?? 'u414283222_system';
+$password = $env['DB_PASSWORD'] ?? '#As8nX9j';
 
 try {
     $pdo = new PDO("mysql:host={$host};port={$port};dbname={$dbname};charset=utf8mb4", $username, $password);
