@@ -83,7 +83,7 @@ class ComplaintResource extends Resource
                                                 if ($contractType === 'App\Models\Recruitment\RecruitmentContract') {
                                                     return Cache::remember('complaints.recruitment_contracts', 21600, function () {
                                                         return RecruitmentContract::withTrashed()->get()->mapWithKeys(function ($contract) {
-                                                            $clientName = app()->getLocale() === 'ar' ? $contract->client->name_ar : $contract->client->name_en;
+                                                            $clientName = app()->getLocale() === 'ar' ? ($contract->client?->name_ar ?? '—') : ($contract->client?->name_en ?? '—');
                                                             return [$contract->id => "{$contract->contract_no} - {$clientName}"];
                                                         })->toArray();
                                                     });
