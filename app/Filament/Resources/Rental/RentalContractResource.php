@@ -12,6 +12,7 @@ use App\Models\Recruitment\Laborer;
 use App\Models\Recruitment\Nationality;
 use App\Models\MainCore\Currency;
 use App\Models\Client;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -34,10 +35,42 @@ class RentalContractResource extends Resource
     protected static ?string $navigationLabel = 'عقود التأجير';
     protected static ?int $navigationSort = 1;
 
+    public static function getUserSection(): ?string
+    {
+        $user = auth()->user();
+        if (! $user) {
+            return null;
+        }
+        if ($user->hasRole('super_admin') || $user->type === User::TYPE_COMPANY_OWNER || $user->type === User::TYPE_SUPER_ADMIN) {
+            return null;
+        }
+        return match ($user->type) {
+            User::TYPE_CUSTOMER_SERVICE => 'customer_service',
+            User::TYPE_ACCOUNTANT, User::TYPE_GENERAL_ACCOUNTANT => 'accounts',
+            default => null,
+        };
+    }
+
+    public static function isCustomerServiceTabDisabled(): bool
+    {
+        return static::getUserSection() === 'accounts';
+    }
+
+    public static function isAccountsTabDisabled(): bool
+    {
+        return static::getUserSection() === 'customer_service';
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+                Forms\Components\Tabs::make('rental_contract_tabs')
+                    ->tabs([
+                        Forms\Components\Tabs\Tab::make('خدمة العملاء')
+                            ->icon('heroicon-o-user-group')
+                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
+                            ->schema([
                 Forms\Components\Section::make()
                     ->schema([
                         Forms\Components\Select::make('branch_id')
@@ -251,6 +284,19 @@ class RentalContractResource extends Resource
                     ])
                     ->columns(2),
 
+                Forms\Components\Section::make()
+                    ->schema([
+                        Forms\Components\Textarea::make('notes')
+                            ->label(tr('rental.fields.notes', [], null, 'dashboard') ?: 'Notes')
+                            ->rows(3)
+                            ->columnSpanFull(),
+                    ]),
+                            ]), // end خدمة العملاء tab
+
+                        Forms\Components\Tabs\Tab::make('قسم الحسابات')
+                            ->icon('heroicon-o-calculator')
+                            ->disabled(fn () => static::isAccountsTabDisabled())
+                            ->schema([
                 Forms\Components\Section::make(tr('rental.contracts.pricing', [], null, 'dashboard') ?: 'Pricing')
                     ->schema([
                         Forms\Components\TextInput::make('amount')
@@ -443,14 +489,9 @@ class RentalContractResource extends Resource
                             ->columnSpan(1),
                     ])
                     ->columns(2),
-
-                Forms\Components\Section::make()
-                    ->schema([
-                        Forms\Components\Textarea::make('notes')
-                            ->label(tr('rental.fields.notes', [], null, 'dashboard') ?: 'Notes')
-                            ->rows(3)
-                            ->columnSpanFull(),
-                    ]),
+                            ]), // end قسم الحسابات tab
+                    ])
+                    ->columnSpanFull(),
             ]);
     }
 
