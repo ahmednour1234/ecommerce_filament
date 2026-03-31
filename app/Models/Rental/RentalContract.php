@@ -41,6 +41,7 @@ class RentalContract extends Model
         'subtotal',
         'tax_value',
         'total',
+        'amount',
         'paid_total',
         'remaining_total',
         'notes',
@@ -50,6 +51,7 @@ class RentalContract extends Model
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
+        'amount' => 'decimal:2',
         'tax_percent' => 'decimal:2',
         'discount_value' => 'decimal:2',
         'subtotal' => 'decimal:2',

@@ -234,6 +234,20 @@ class RentalContractResource extends Resource
                             ->label(tr('rental.fields.end_date', [], null, 'dashboard') ?: 'End Date')
                             ->required()
                             ->columnSpan(1),
+
+                        Forms\Components\Select::make('status')
+                            ->label(tr('rental.fields.status', [], null, 'dashboard') ?: 'الحالة')
+                            ->options([
+                                'active'    => tr('rental.status.active', [], null, 'dashboard') ?: 'نشط',
+                                'suspended' => tr('rental.status.suspended', [], null, 'dashboard') ?: 'معلق',
+                                'completed' => tr('rental.status.completed', [], null, 'dashboard') ?: 'مكتمل',
+                                'cancelled' => tr('rental.status.cancelled', [], null, 'dashboard') ?: 'ملغي',
+                                'returned'  => tr('rental.status.returned', [], null, 'dashboard') ?: 'مسترجعة',
+                                'archived'  => tr('rental.status.archived', [], null, 'dashboard') ?: 'مؤرشفة',
+                            ])
+                            ->default('active')
+                            ->required()
+                            ->columnSpan(1),
                     ])
                     ->columns(2),
 
@@ -369,8 +383,13 @@ class RentalContractResource extends Resource
                             ->columnSpan(1),
 
                         Forms\Components\Placeholder::make('remaining_total')
-                            ->label(tr('rental.fields.remaining_total', [], null, 'dashboard') ?: 'Remaining')
+                            ->label(tr('rental.fields.remaining_total', [], null, 'dashboard') ?: 'المتبقي')
                             ->content(fn ($record) => $record ? number_format($record->remaining_total, 2) . ' ر.س' : '0.00 ر.س')
+                            ->columnSpan(1),
+
+                        Forms\Components\Placeholder::make('paid_total')
+                            ->label(tr('rental.fields.paid_total', [], null, 'dashboard') ?: 'المبلغ المدفوع')
+                            ->content(fn ($record) => $record ? number_format($record->paid_total, 2) . ' ر.س' : '0.00 ر.س')
                             ->columnSpan(1),
                     ])
                     ->columns(2),
