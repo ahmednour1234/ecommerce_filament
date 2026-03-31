@@ -540,13 +540,14 @@ class RecruitmentContractResource extends Resource
                             ->viewData(function ($record, $get) {
                                 $statusLabels = [
                                     'new' => tr('recruitment_contract.status.new', [], null, 'dashboard') ?: 'جديد',
+                                    'foreign_embassy_approval' => tr('recruitment_contract.status.foreign_embassy_approval', [], null, 'dashboard') ?: 'موافقة السفارة الأجنبية',
                                     'external_office_approval' => tr('recruitment_contract.status.external_office_approval', [], null, 'dashboard') ?: 'موافقة المكتب الخارجي',
                                     'contract_accepted_external_office' => tr('recruitment_contract.status.contract_accepted_external_office', [], null, 'dashboard') ?: 'قبول العقد من مكتب الخارجي',
                                     'waiting_approval' => tr('recruitment_contract.status.waiting_approval', [], null, 'dashboard') ?: 'انتظار الابروف',
                                     'contract_accepted_labor_ministry' => tr('recruitment_contract.status.contract_accepted_labor_ministry', [], null, 'dashboard') ?: 'قبول العقد من مكتب العمل الخارجي',
                                     'sent_to_saudi_embassy' => tr('recruitment_contract.status.sent_to_saudi_embassy', [], null, 'dashboard') ?: 'إرسال التأشيرة إلى السفارة السعودية',
-                                    'visa_cancelled' => tr('recruitment_contract.status.visa_cancelled', [], null, 'dashboard') ?: 'الغاء التفييز',
                                     'visa_issued' => tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم التفييز',
+                                    'visa_cancelled' => tr('recruitment_contract.status.visa_cancelled', [], null, 'dashboard') ?: 'إلغاء التفييز',
                                     'travel_permit_after_visa_issued' => tr('recruitment_contract.status.travel_permit_after_visa_issued', [], null, 'dashboard') ?: 'تصريح سفر بعد تم التفييز',
                                     'waiting_flight_booking' => tr('recruitment_contract.status.waiting_flight_booking', [], null, 'dashboard') ?: 'انتظار حجز تذكرة الطيران',
                                     'arrival_scheduled' => tr('recruitment_contract.status.arrival_scheduled', [], null, 'dashboard') ?: 'معاد الوصول',
@@ -557,13 +558,14 @@ class RecruitmentContractResource extends Resource
 
                                 $statusDurations = [
                                     'new' => null,
+                                    'foreign_embassy_approval' => 5,
                                     'external_office_approval' => 5,
                                     'contract_accepted_external_office' => 5,
                                     'waiting_approval' => 5,
                                     'contract_accepted_labor_ministry' => 4,
                                     'sent_to_saudi_embassy' => 7,
-                                    'visa_cancelled' => null,
                                     'visa_issued' => 10,
+                                    'visa_cancelled' => null,
                                     'travel_permit_after_visa_issued' => 6,
                                     'waiting_flight_booking' => null,
                                     'arrival_scheduled' => null,
@@ -733,12 +735,14 @@ class RecruitmentContractResource extends Resource
                     ->label(tr('recruitment_contract.fields.status', [], null, 'dashboard') ?: 'Status')
                     ->options([
                         'new' => tr('recruitment_contract.status.new', [], null, 'dashboard') ?: 'جديد',
+                        'foreign_embassy_approval' => tr('recruitment_contract.status.foreign_embassy_approval', [], null, 'dashboard') ?: 'موافقة السفارة الأجنبية',
                         'external_office_approval' => tr('recruitment_contract.status.external_office_approval', [], null, 'dashboard') ?: 'موافقة المكتب الخارجي',
                         'contract_accepted_external_office' => tr('recruitment_contract.status.contract_accepted_external_office', [], null, 'dashboard') ?: 'قبول العقد من مكتب الخارجي',
                         'waiting_approval' => tr('recruitment_contract.status.waiting_approval', [], null, 'dashboard') ?: 'انتظار الابروف',
                         'contract_accepted_labor_ministry' => tr('recruitment_contract.status.contract_accepted_labor_ministry', [], null, 'dashboard') ?: 'قبول العقد من مكتب العمل الخارجي',
                         'sent_to_saudi_embassy' => tr('recruitment_contract.status.sent_to_saudi_embassy', [], null, 'dashboard') ?: 'إرسال التأشيرة إلى السفارة السعودية',
                         'visa_issued' => tr('recruitment_contract.status.visa_issued', [], null, 'dashboard') ?: 'تم التفييز',
+                        'visa_cancelled' => tr('recruitment_contract.status.visa_cancelled', [], null, 'dashboard') ?: 'إلغاء التفييز',
                         'travel_permit_after_visa_issued' => tr('recruitment_contract.status.travel_permit_after_visa_issued', [], null, 'dashboard') ?: 'تصريح سفر بعد تم التفييز',
                         'waiting_flight_booking' => tr('recruitment_contract.status.waiting_flight_booking', [], null, 'dashboard') ?: 'انتظار حجز تذكرة الطيران',
                         'arrival_scheduled' => tr('recruitment_contract.status.arrival_scheduled', [], null, 'dashboard') ?: 'معاد الوصول',
