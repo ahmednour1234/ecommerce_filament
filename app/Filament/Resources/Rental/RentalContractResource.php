@@ -107,15 +107,6 @@ class RentalContractResource extends Resource
                             })
                             ->columnSpan(1),
 
-                        Forms\Components\TextInput::make('amount')
-                            ->label(tr('rental.fields.amount', [], null, 'dashboard') ?: 'المبلغ')
-                            ->numeric()
-                            ->required()
-                            ->minValue(0)
-                            ->prefix('ر.س')
-                            ->reactive()
-                            ->columnSpan(1),
-
                         Forms\Components\TextInput::make('request_no')
                             ->label(tr('rental.fields.request_no', [], null, 'dashboard') ?: 'Request No')
                             ->maxLength(255)
@@ -248,6 +239,32 @@ class RentalContractResource extends Resource
 
                 Forms\Components\Section::make(tr('rental.contracts.pricing', [], null, 'dashboard') ?: 'Pricing')
                     ->schema([
+                        Forms\Components\TextInput::make('amount')
+                            ->label(tr('rental.fields.amount', [], null, 'dashboard') ?: 'المبلغ')
+                            ->numeric()
+                            ->required()
+                            ->minValue(0)
+                            ->prefix('ر.س')
+                            ->reactive()
+                            ->afterStateUpdated(function (callable $set, callable $get) {
+                                $amount        = (float) ($get('amount') ?? 0);
+                                $taxPercent    = (float) ($get('tax_percent') ?? 0);
+                                $discountType  = $get('discount_type') ?? 'none';
+                                $discountValue = (float) ($get('discount_value') ?? 0);
+                                $discount = match ($discountType) {
+                                    'percent' => $amount * $discountValue / 100,
+                                    'fixed'   => $discountValue,
+                                    default   => 0,
+                                };
+                                $subtotal = max(0, $amount - $discount);
+                                $taxValue = $subtotal * $taxPercent / 100;
+                                $total    = $subtotal + $taxValue;
+                                $set('subtotal', round($subtotal, 2));
+                                $set('tax_value', round($taxValue, 2));
+                                $set('total', round($total, 2));
+                            })
+                            ->columnSpan(1),
+
                         Forms\Components\TextInput::make('tax_percent')
                             ->label(tr('rental.fields.tax_percent', [], null, 'dashboard') ?: 'Tax %')
                             ->numeric()
@@ -255,17 +272,52 @@ class RentalContractResource extends Resource
                             ->step(0.01)
                             ->minValue(0)
                             ->maxValue(100)
+                            ->reactive()
+                            ->afterStateUpdated(function (callable $set, callable $get) {
+                                $amount        = (float) ($get('amount') ?? 0);
+                                $taxPercent    = (float) ($get('tax_percent') ?? 0);
+                                $discountType  = $get('discount_type') ?? 'none';
+                                $discountValue = (float) ($get('discount_value') ?? 0);
+                                $discount = match ($discountType) {
+                                    'percent' => $amount * $discountValue / 100,
+                                    'fixed'   => $discountValue,
+                                    default   => 0,
+                                };
+                                $subtotal = max(0, $amount - $discount);
+                                $taxValue = $subtotal * $taxPercent / 100;
+                                $total    = $subtotal + $taxValue;
+                                $set('subtotal', round($subtotal, 2));
+                                $set('tax_value', round($taxValue, 2));
+                                $set('total', round($total, 2));
+                            })
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('discount_type')
                             ->label(tr('rental.fields.discount_type', [], null, 'dashboard') ?: 'Discount Type')
                             ->options([
-                                'none' => tr('rental.discount_type.none', [], null, 'dashboard') ?: 'None',
+                                'none'    => tr('rental.discount_type.none', [], null, 'dashboard') ?: 'None',
                                 'percent' => tr('rental.discount_type.percent', [], null, 'dashboard') ?: 'Percent',
-                                'fixed' => tr('rental.discount_type.fixed', [], null, 'dashboard') ?: 'Fixed',
+                                'fixed'   => tr('rental.discount_type.fixed', [], null, 'dashboard') ?: 'Fixed',
                             ])
                             ->default('none')
                             ->reactive()
+                            ->afterStateUpdated(function (callable $set, callable $get) {
+                                $amount        = (float) ($get('amount') ?? 0);
+                                $taxPercent    = (float) ($get('tax_percent') ?? 0);
+                                $discountType  = $get('discount_type') ?? 'none';
+                                $discountValue = (float) ($get('discount_value') ?? 0);
+                                $discount = match ($discountType) {
+                                    'percent' => $amount * $discountValue / 100,
+                                    'fixed'   => $discountValue,
+                                    default   => 0,
+                                };
+                                $subtotal = max(0, $amount - $discount);
+                                $taxValue = $subtotal * $taxPercent / 100;
+                                $total    = $subtotal + $taxValue;
+                                $set('subtotal', round($subtotal, 2));
+                                $set('tax_value', round($taxValue, 2));
+                                $set('total', round($total, 2));
+                            })
                             ->columnSpan(1),
 
                         Forms\Components\TextInput::make('discount_value')
@@ -274,6 +326,24 @@ class RentalContractResource extends Resource
                             ->default(0)
                             ->step(0.01)
                             ->minValue(0)
+                            ->reactive()
+                            ->afterStateUpdated(function (callable $set, callable $get) {
+                                $amount        = (float) ($get('amount') ?? 0);
+                                $taxPercent    = (float) ($get('tax_percent') ?? 0);
+                                $discountType  = $get('discount_type') ?? 'none';
+                                $discountValue = (float) ($get('discount_value') ?? 0);
+                                $discount = match ($discountType) {
+                                    'percent' => $amount * $discountValue / 100,
+                                    'fixed'   => $discountValue,
+                                    default   => 0,
+                                };
+                                $subtotal = max(0, $amount - $discount);
+                                $taxValue = $subtotal * $taxPercent / 100;
+                                $total    = $subtotal + $taxValue;
+                                $set('subtotal', round($subtotal, 2));
+                                $set('tax_value', round($taxValue, 2));
+                                $set('total', round($total, 2));
+                            })
                             ->visible(fn (callable $get) => $get('discount_type') !== 'none')
                             ->columnSpan(1),
 
@@ -285,22 +355,22 @@ class RentalContractResource extends Resource
 
                         Forms\Components\Placeholder::make('subtotal')
                             ->label(tr('rental.fields.subtotal', [], null, 'dashboard') ?: 'Subtotal')
-                            ->content(fn ($record) => $record ? number_format($record->subtotal, 2) : '0.00')
+                            ->content(fn (callable $get) => number_format((float) ($get('subtotal') ?? 0), 2) . ' ر.س')
                             ->columnSpan(1),
 
                         Forms\Components\Placeholder::make('tax_value')
                             ->label(tr('rental.fields.tax_value', [], null, 'dashboard') ?: 'Tax Value')
-                            ->content(fn ($record) => $record ? number_format($record->tax_value, 2) : '0.00')
+                            ->content(fn (callable $get) => number_format((float) ($get('tax_value') ?? 0), 2) . ' ر.س')
                             ->columnSpan(1),
 
                         Forms\Components\Placeholder::make('total')
                             ->label(tr('rental.fields.total', [], null, 'dashboard') ?: 'Total')
-                            ->content(fn ($record) => $record ? number_format($record->total, 2) : '0.00')
+                            ->content(fn (callable $get) => number_format((float) ($get('total') ?? 0), 2) . ' ر.س')
                             ->columnSpan(1),
 
                         Forms\Components\Placeholder::make('remaining_total')
                             ->label(tr('rental.fields.remaining_total', [], null, 'dashboard') ?: 'Remaining')
-                            ->content(fn ($record) => $record ? number_format($record->remaining_total, 2) : '0.00')
+                            ->content(fn ($record) => $record ? number_format($record->remaining_total, 2) . ' ر.س' : '0.00 ر.س')
                             ->columnSpan(1),
                     ])
                     ->columns(2),
