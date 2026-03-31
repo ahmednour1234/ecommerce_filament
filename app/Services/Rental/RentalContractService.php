@@ -48,48 +48,47 @@ class RentalContractService
 
     public function computeTotals(RentalContract $contract): array
     {
-        $package = $contract->package;
-        $packageTotal = $package ? $package->total : 0;
-        
+        $baseAmount = (float) ($contract->amount ?? ($contract->package?->total ?? 0));
+
         $discountValue = 0;
         if ($contract->discount_type === 'percent') {
-            $discountValue = $packageTotal * ($contract->discount_value / 100);
+            $discountValue = $baseAmount * ($contract->discount_value / 100);
         } elseif ($contract->discount_type === 'fixed') {
             $discountValue = $contract->discount_value;
         }
-        
-        $subtotal = max(0, $packageTotal - $discountValue);
+
+        $subtotal = max(0, $baseAmount - $discountValue);
         $taxValue = $subtotal * ($contract->tax_percent / 100);
         $total = $subtotal + $taxValue;
-        
+
         $paidTotal = $contract->payments()
             ->where('status', 'posted')
             ->sum('amount');
-        
+
         $refundedTotal = $contract->payments()
             ->where('status', 'refunded')
             ->sum('amount');
-        
+
         $paidTotal = $paidTotal - $refundedTotal;
         $remainingTotal = max(0, $total - $paidTotal);
-        
+
         $paymentStatus = 'unpaid';
         if ($remainingTotal <= 0) {
             $paymentStatus = 'paid';
         } elseif ($paidTotal > 0) {
             $paymentStatus = 'partial';
         }
-        
+
         if ($contract->status === 'cancelled' && $refundedTotal > 0) {
             $paymentStatus = 'refunded';
         }
-        
+
         return [
-            'subtotal' => $subtotal,
-            'tax_value' => $taxValue,
-            'total' => $total,
-            'paid_total' => $paidTotal,
-            'remaining_total' => $remainingTotal,
+            'subtotal'       => round($subtotal, 2),
+            'tax_value'      => round($taxValue, 2),
+            'total'          => round($total, 2),
+            'paid_total'     => round($paidTotal, 2),
+            'remaining_total' => round($remainingTotal, 2),
             'payment_status' => $paymentStatus,
         ];
     }
@@ -97,48 +96,44 @@ class RentalContractService
     public function convertRequestToContract(RentalContractRequest $request): RentalContract
     {
         return DB::transaction(function () use ($request) {
-            $package = $request->desiredPackage;
-            if (!$package) {
-                throw new \Exception('Package not found');
-            }
-            
-            $startDate = $request->start_date;
-            $duration = $request->duration;
+            $startDate    = $request->start_date;
+            $duration     = (int) $request->duration;
             $durationType = $request->duration_type;
-            
-            $endDate = match($durationType) {
-                'day' => Carbon::parse($startDate)->addDays($duration),
+
+            $endDate = match ($durationType) {
+                'day'   => Carbon::parse($startDate)->addDays($duration),
                 'month' => Carbon::parse($startDate)->addMonths($duration),
-                'year' => Carbon::parse($startDate)->addYears($duration),
+                'year'  => Carbon::parse($startDate)->addYears($duration),
                 default => Carbon::parse($startDate)->addMonths($duration),
             };
-            
+
             $contract = RentalContract::create([
-                'contract_no' => $this->generateContractNo(),
-                'request_no' => $request->request_no,
-                'branch_id' => $request->branch_id,
-                'customer_id' => $request->customer_id,
-                'worker_id' => null,
-                'country_id' => $request->desired_country_id,
-                'profession_id' => $request->profession_id,
-                'package_id' => $package->id,
-                'status' => 'active',
+                'contract_no'    => $this->generateContractNo(),
+                'request_no'     => $request->request_no,
+                'branch_id'      => $request->branch_id,
+                'customer_id'    => $request->customer_id,
+                'worker_id'      => null,
+                'country_id'     => $request->desired_country_id,
+                'profession_id'  => $request->profession_id,
+                'package_id'     => null,
+                'amount'         => $request->desired_amount ?? 0,
+                'status'         => 'active',
                 'payment_status' => 'unpaid',
-                'start_date' => $startDate,
-                'end_date' => $endDate->toDateString(),
-                'duration_type' => $durationType,
-                'duration' => $duration,
-                'tax_percent' => $package->tax_percent ?? 0,
-                'discount_type' => 'none',
+                'start_date'     => $startDate,
+                'end_date'       => $endDate->toDateString(),
+                'duration_type'  => $durationType,
+                'duration'       => $duration,
+                'tax_percent'    => 0,
+                'discount_type'  => 'none',
                 'discount_value' => 0,
-                'created_by' => auth()->id(),
+                'created_by'     => auth()->id(),
             ]);
-            
+
             $totals = $this->computeTotals($contract);
             $contract->update($totals);
-            
+
             $request->update(['status' => 'converted']);
-            
+
             return $contract->fresh();
         });
     }
