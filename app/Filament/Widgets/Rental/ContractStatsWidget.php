@@ -9,6 +9,8 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class ContractStatsWidget extends BaseWidget
 {
+    protected static ?string $navigationGroup = 'قسم عقود الايجار';
+
     public static function canView(): bool
     {
         $user = auth()->user();
