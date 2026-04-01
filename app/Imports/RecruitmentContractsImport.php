@@ -156,6 +156,7 @@ class RecruitmentContractsImport implements ToCollection, WithHeadingRow
                     'client_id' => $client?->id,
                     'branch_id' => $branch?->id,
                     'worker_id' => $worker->id,
+                    'current_section' => RecruitmentContract::SECTION_COORDINATION,
                     'visa_no' => $visaNoValue,
                     'visa_type' => $visaType,
                     'visa_date' => $visaDate ? $this->parseDate($visaDate) : null,
