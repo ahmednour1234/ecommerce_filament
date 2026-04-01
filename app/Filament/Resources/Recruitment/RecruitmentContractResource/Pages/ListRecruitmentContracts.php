@@ -82,8 +82,7 @@ class ListRecruitmentContracts extends ListRecords
                 ])
                 ->action(function (array $data) {
                     $this->importContracts($data['file']);
-                })
-                ->visible(fn () => RecruitmentContractResource::getUserSection() === null || RecruitmentContractResource::getUserSection() === \App\Models\Recruitment\RecruitmentContract::SECTION_CUSTOMER_SERVICE),
+                }),
         ];
     }
 
