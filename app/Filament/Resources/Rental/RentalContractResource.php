@@ -270,19 +270,13 @@ class RentalContractResource extends Resource
 
                         Forms\Components\Select::make('status')
                             ->label(tr('rental.fields.status', [], null, 'dashboard') ?: 'الحالة')
-                            ->options(function () {
+                            ->options(function ($record) {
                                 $user = auth()->user();
                                 $isOwner = $user?->hasRole('super_admin')
                                     || $user?->type === \App\Models\User::TYPE_COMPANY_OWNER
                                     || $user?->type === \App\Models\User::TYPE_SUPER_ADMIN;
 
-                                if (! $isOwner) {
-                                    return [
-                                        'pending_approval' => tr('rental.status.pending_approval', [], null, 'dashboard') ?: 'ينتظر الموافقة',
-                                    ];
-                                }
-
-                                return [
+                                $all = [
                                     'pending_approval' => tr('rental.status.pending_approval', [], null, 'dashboard') ?: 'ينتظر الموافقة',
                                     'active'           => tr('rental.status.active', [], null, 'dashboard') ?: 'نشط',
                                     'suspended'        => tr('rental.status.suspended', [], null, 'dashboard') ?: 'معلق',
@@ -292,24 +286,23 @@ class RentalContractResource extends Resource
                                     'archived'         => tr('rental.status.archived', [], null, 'dashboard') ?: 'مؤرشفة',
                                     'rejected'         => tr('rental.status.rejected', [], null, 'dashboard') ?: 'مرفوض',
                                 ];
+
+                                // Non-owners on CREATE only → lock to pending_approval
+                                if (! $isOwner && ! $record) {
+                                    return [
+                                        'pending_approval' => tr('rental.status.pending_approval', [], null, 'dashboard') ?: 'ينتظر الموافقة',
+                                    ];
+                                }
+
+                                return $all;
                             })
                             ->default('pending_approval')
-                            ->disabled(function ($record) {
-                                $user = auth()->user();
-                                $isOwner = $user?->hasRole('super_admin')
-                                    || $user?->type === \App\Models\User::TYPE_COMPANY_OWNER
-                                    || $user?->type === \App\Models\User::TYPE_SUPER_ADMIN;
-                                // Non-owners cannot change status at all
-                                return ! $isOwner;
-                            })
-                            ->dehydrated(function ($record) {
-                                $user = auth()->user();
-                                $isOwner = $user?->hasRole('super_admin')
-                                    || $user?->type === \App\Models\User::TYPE_COMPANY_OWNER
-                                    || $user?->type === \App\Models\User::TYPE_SUPER_ADMIN;
-                                // Still save value even when disabled for new records
-                                return true;
-                            })
+                            ->disabled(fn ($record) => ! (
+                                auth()->user()?->hasRole('super_admin')
+                                || auth()->user()?->type === \App\Models\User::TYPE_COMPANY_OWNER
+                                || auth()->user()?->type === \App\Models\User::TYPE_SUPER_ADMIN
+                            ) && ! $record)
+                            ->dehydrated(true)
                             ->required()
                             ->columnSpan(1),
                     ])
