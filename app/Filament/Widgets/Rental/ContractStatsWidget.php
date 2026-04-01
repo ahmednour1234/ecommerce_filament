@@ -10,6 +10,8 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 class ContractStatsWidget extends BaseWidget
 {
     protected static ?string $navigationGroup = 'قسم عقود الايجار';
+    protected static ?int $sort = 41;
+    protected int|string|array $columnSpan = 'full';
 
     public static function canView(): bool
     {

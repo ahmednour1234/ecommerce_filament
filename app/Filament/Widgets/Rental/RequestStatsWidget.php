@@ -9,6 +9,9 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class RequestStatsWidget extends BaseWidget
 {
+    protected static ?int $sort = 42;
+    protected int|string|array $columnSpan = 'full';
+
     public static function canView(): bool
     {
         $user = auth()->user();
