@@ -276,7 +276,13 @@ class RentalContractResource extends Resource
                                     || $user?->type === \App\Models\User::TYPE_COMPANY_OWNER
                                     || $user?->type === \App\Models\User::TYPE_SUPER_ADMIN;
 
-                                $all = [
+                                if (! $isOwner) {
+                                    return [
+                                        'pending_approval' => tr('rental.status.pending_approval', [], null, 'dashboard') ?: 'ينتظر الموافقة',
+                                    ];
+                                }
+
+                                return [
                                     'pending_approval' => tr('rental.status.pending_approval', [], null, 'dashboard') ?: 'ينتظر الموافقة',
                                     'active'           => tr('rental.status.active', [], null, 'dashboard') ?: 'نشط',
                                     'suspended'        => tr('rental.status.suspended', [], null, 'dashboard') ?: 'معلق',
@@ -286,19 +292,23 @@ class RentalContractResource extends Resource
                                     'archived'         => tr('rental.status.archived', [], null, 'dashboard') ?: 'مؤرشفة',
                                     'rejected'         => tr('rental.status.rejected', [], null, 'dashboard') ?: 'مرفوض',
                                 ];
-
-                                if (! $isOwner) {
-                                    unset($all['active'], $all['rejected']);
-                                }
-
-                                return $all;
                             })
-                            ->default(function () {
+                            ->default('pending_approval')
+                            ->disabled(function ($record) {
                                 $user = auth()->user();
                                 $isOwner = $user?->hasRole('super_admin')
                                     || $user?->type === \App\Models\User::TYPE_COMPANY_OWNER
                                     || $user?->type === \App\Models\User::TYPE_SUPER_ADMIN;
-                                return $isOwner ? 'active' : 'pending_approval';
+                                // Non-owners cannot change status at all
+                                return ! $isOwner;
+                            })
+                            ->dehydrated(function ($record) {
+                                $user = auth()->user();
+                                $isOwner = $user?->hasRole('super_admin')
+                                    || $user?->type === \App\Models\User::TYPE_COMPANY_OWNER
+                                    || $user?->type === \App\Models\User::TYPE_SUPER_ADMIN;
+                                // Still save value even when disabled for new records
+                                return true;
                             })
                             ->required()
                             ->columnSpan(1),
