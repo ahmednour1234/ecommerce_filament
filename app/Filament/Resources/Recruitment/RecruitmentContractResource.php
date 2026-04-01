@@ -690,6 +690,11 @@ class RecruitmentContractResource extends Resource
                     ->formatStateUsing(fn (?string $state, RecruitmentContract $record) => $record->status === 'received' ? 'تم التسليم' : ($state ? (RecruitmentContract::currentSectionOptions()[$state] ?? $state) : '—'))
                     ->sortable(),
 
+                Tables\Columns\TextColumn::make('arrival_date')
+                    ->label(tr('recruitment_contract.fields.arrival_date', [], null, 'dashboard') ?: 'تاريخ الوصول')
+                    ->dateTime('Y-m-d H:i')
+                    ->sortable(),
+
                 Tables\Columns\BadgeColumn::make('payment_status')
                     ->label(tr('recruitment_contract.fields.payment_status', [], null, 'dashboard') ?: 'Payment Status')
                     ->colors([
