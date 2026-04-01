@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Rental\RentalContractResource\Pages;
 
 use App\Filament\Resources\Rental\RentalContractResource;
+use App\Filament\Widgets\Rental\ContractStatsWidget;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
@@ -15,6 +16,13 @@ class ListRentalContracts extends ListRecords
         return [
             Actions\CreateAction::make()
                 ->label(tr('rental.contracts.create', [], null, 'dashboard') ?: 'Create Contract'),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            ContractStatsWidget::class,
         ];
     }
 }

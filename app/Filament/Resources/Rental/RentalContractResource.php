@@ -270,15 +270,36 @@ class RentalContractResource extends Resource
 
                         Forms\Components\Select::make('status')
                             ->label(tr('rental.fields.status', [], null, 'dashboard') ?: 'الحالة')
-                            ->options([
-                                'active'    => tr('rental.status.active', [], null, 'dashboard') ?: 'نشط',
-                                'suspended' => tr('rental.status.suspended', [], null, 'dashboard') ?: 'معلق',
-                                'completed' => tr('rental.status.completed', [], null, 'dashboard') ?: 'مكتمل',
-                                'cancelled' => tr('rental.status.cancelled', [], null, 'dashboard') ?: 'ملغي',
-                                'returned'  => tr('rental.status.returned', [], null, 'dashboard') ?: 'مسترجعة',
-                                'archived'  => tr('rental.status.archived', [], null, 'dashboard') ?: 'مؤرشفة',
-                            ])
-                            ->default('active')
+                            ->options(function () {
+                                $user = auth()->user();
+                                $isOwner = $user?->hasRole('super_admin')
+                                    || $user?->type === \App\Models\User::TYPE_COMPANY_OWNER
+                                    || $user?->type === \App\Models\User::TYPE_SUPER_ADMIN;
+
+                                $all = [
+                                    'pending_approval' => tr('rental.status.pending_approval', [], null, 'dashboard') ?: 'ينتظر الموافقة',
+                                    'active'           => tr('rental.status.active', [], null, 'dashboard') ?: 'نشط',
+                                    'suspended'        => tr('rental.status.suspended', [], null, 'dashboard') ?: 'معلق',
+                                    'completed'        => tr('rental.status.completed', [], null, 'dashboard') ?: 'مكتمل',
+                                    'cancelled'        => tr('rental.status.cancelled', [], null, 'dashboard') ?: 'ملغي',
+                                    'returned'         => tr('rental.status.returned', [], null, 'dashboard') ?: 'مسترجعة',
+                                    'archived'         => tr('rental.status.archived', [], null, 'dashboard') ?: 'مؤرشفة',
+                                    'rejected'         => tr('rental.status.rejected', [], null, 'dashboard') ?: 'مرفوض',
+                                ];
+
+                                if (! $isOwner) {
+                                    unset($all['active'], $all['rejected']);
+                                }
+
+                                return $all;
+                            })
+                            ->default(function () {
+                                $user = auth()->user();
+                                $isOwner = $user?->hasRole('super_admin')
+                                    || $user?->type === \App\Models\User::TYPE_COMPANY_OWNER
+                                    || $user?->type === \App\Models\User::TYPE_SUPER_ADMIN;
+                                return $isOwner ? 'active' : 'pending_approval';
+                            })
                             ->required()
                             ->columnSpan(1),
                     ])
@@ -538,12 +559,12 @@ class RentalContractResource extends Resource
                 Tables\Columns\BadgeColumn::make('status')
                     ->label(tr('rental.fields.status', [], null, 'dashboard') ?: 'Status')
                     ->colors([
-                        'success' => 'active',
-                        'warning' => 'suspended',
-                        'info' => 'completed',
-                        'danger' => 'cancelled',
+                        'success'  => 'active',
+                        'warning'  => ['suspended', 'pending_approval'],
+                        'info'     => 'completed',
+                        'danger'   => ['cancelled', 'rejected'],
                         'secondary' => 'returned',
-                        'gray' => 'archived',
+                        'gray'     => 'archived',
                     ])
                     ->formatStateUsing(fn ($state) => tr("rental.status.{$state}", [], null, 'dashboard') ?: $state)
                     ->sortable(),
@@ -569,12 +590,14 @@ class RentalContractResource extends Resource
                 Tables\Filters\SelectFilter::make('status')
                     ->label(tr('rental.fields.status', [], null, 'dashboard') ?: 'Status')
                     ->options([
-                        'active' => tr('rental.status.active', [], null, 'dashboard') ?: 'Active',
+                        'pending_approval' => tr('rental.status.pending_approval', [], null, 'dashboard') ?: 'ينتظر الموافقة',
+                        'active'    => tr('rental.status.active', [], null, 'dashboard') ?: 'Active',
                         'suspended' => tr('rental.status.suspended', [], null, 'dashboard') ?: 'Suspended',
                         'completed' => tr('rental.status.completed', [], null, 'dashboard') ?: 'Completed',
                         'cancelled' => tr('rental.status.cancelled', [], null, 'dashboard') ?: 'Cancelled',
-                        'returned' => tr('rental.status.returned', [], null, 'dashboard') ?: 'Returned',
-                        'archived' => tr('rental.status.archived', [], null, 'dashboard') ?: 'Archived',
+                        'returned'  => tr('rental.status.returned', [], null, 'dashboard') ?: 'Returned',
+                        'archived'  => tr('rental.status.archived', [], null, 'dashboard') ?: 'Archived',
+                        'rejected'  => tr('rental.status.rejected', [], null, 'dashboard') ?: 'مرفوض',
                     ]),
 
                 Tables\Filters\SelectFilter::make('payment_status')
@@ -606,6 +629,44 @@ class RentalContractResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
+                Tables\Actions\Action::make('approve')
+                    ->label(tr('rental.actions.approve', [], null, 'dashboard') ?: 'موافقة')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->modalHeading(tr('rental.actions.approve_heading', [], null, 'dashboard') ?: 'الموافقة على العقد')
+                    ->modalDescription(tr('rental.actions.approve_confirm', [], null, 'dashboard') ?: 'هل أنت متأكد من الموافقة على هذا العقد وتفعيله؟')
+                    ->visible(fn ($record) => $record->status === 'pending_approval' && (
+                        auth()->user()?->hasRole('super_admin') ||
+                        auth()->user()?->type === \App\Models\User::TYPE_COMPANY_OWNER ||
+                        auth()->user()?->type === \App\Models\User::TYPE_SUPER_ADMIN
+                    ))
+                    ->action(function ($record) {
+                        $record->update(['status' => 'active']);
+                        \Filament\Notifications\Notification::make()
+                            ->title(tr('rental.actions.approved_success', [], null, 'dashboard') ?: 'تم تفعيل العقد بنجاح')
+                            ->success()
+                            ->send();
+                    }),
+                Tables\Actions\Action::make('reject')
+                    ->label(tr('rental.actions.reject', [], null, 'dashboard') ?: 'رفض')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading(tr('rental.actions.reject_heading', [], null, 'dashboard') ?: 'رفض العقد')
+                    ->modalDescription(tr('rental.actions.reject_confirm', [], null, 'dashboard') ?: 'هل أنت متأكد من رفض هذا العقد؟')
+                    ->visible(fn ($record) => $record->status === 'pending_approval' && (
+                        auth()->user()?->hasRole('super_admin') ||
+                        auth()->user()?->type === \App\Models\User::TYPE_COMPANY_OWNER ||
+                        auth()->user()?->type === \App\Models\User::TYPE_SUPER_ADMIN
+                    ))
+                    ->action(function ($record) {
+                        $record->update(['status' => 'rejected']);
+                        \Filament\Notifications\Notification::make()
+                            ->title(tr('rental.actions.rejected_success', [], null, 'dashboard') ?: 'تم رفض العقد')
+                            ->danger()
+                            ->send();
+                    }),
                 EditAction::make(),
                 TableDeleteAction::make(),
             ])

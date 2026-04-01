@@ -75,6 +75,8 @@ class RentalTranslationsSeeder extends Seeder
             'rental.status.cancelled' => ['en' => 'Cancelled', 'ar' => 'ملغي'],
             'rental.status.returned' => ['en' => 'Returned', 'ar' => 'مسترجعة'],
             'rental.status.archived' => ['en' => 'Archived', 'ar' => 'مؤرشفة'],
+            'rental.status.pending_approval' => ['en' => 'Pending Approval', 'ar' => 'ينتظر الموافقة'],
+            'rental.status.rejected' => ['en' => 'Rejected', 'ar' => 'مرفوض'],
             'rental.payment_status.paid' => ['en' => 'Paid', 'ar' => 'مدفوع'],
             'rental.payment_status.unpaid' => ['en' => 'Unpaid', 'ar' => 'غير مدفوع'],
             'rental.payment_status.partial' => ['en' => 'Partial', 'ar' => 'جزئي'],
@@ -173,6 +175,18 @@ class RentalTranslationsSeeder extends Seeder
             'rental.actions.update_status' => ['en' => 'Update Status', 'ar' => 'تحديث الحالة'],
             'rental.actions.sync_finance' => ['en' => 'Sync with Finance', 'ar' => 'مزامنة مع المالية'],
             'rental.actions.calculate' => ['en' => 'Calculate', 'ar' => 'حساب القيمة'],
+            'rental.actions.approve' => ['en' => 'Approve', 'ar' => 'موافقة'],
+            'rental.actions.approve_heading' => ['en' => 'Approve Contract', 'ar' => 'الموافقة على العقد'],
+            'rental.actions.approve_confirm' => ['en' => 'Are you sure you want to approve this contract and activate it?', 'ar' => 'هل أنت متأكد من الموافقة على هذا العقد وتفعيله؟'],
+            'rental.actions.approved_success' => ['en' => 'Contract activated successfully', 'ar' => 'تم تفعيل العقد بنجاح'],
+            'rental.actions.reject' => ['en' => 'Reject', 'ar' => 'رفض'],
+            'rental.actions.reject_heading' => ['en' => 'Reject Contract', 'ar' => 'رفض العقد'],
+            'rental.actions.reject_confirm' => ['en' => 'Are you sure you want to reject this contract?', 'ar' => 'هل أنت متأكد من رفض هذا العقد؟'],
+            'rental.actions.rejected_success' => ['en' => 'Contract rejected', 'ar' => 'تم رفض العقد'],
+            'rental.stats.active_contracts' => ['en' => 'Active Contracts', 'ar' => 'العقود النشطة'],
+            'rental.stats.active_contracts_desc' => ['en' => 'Active rental contracts', 'ar' => 'عقود تأجير نشطة'],
+            'rental.stats.pending_approval' => ['en' => 'Pending Approval', 'ar' => 'ينتظر الموافقة'],
+            'rental.stats.pending_approval_desc' => ['en' => 'Contracts awaiting owner approval', 'ar' => 'عقود تنتظر موافقة صاحب الشركة'],
         ]);
 
         $this->command->info('Step 9: Saving translations to database...');
