@@ -156,6 +156,10 @@ class ComplaintResource extends Resource
                                             ->label(tr('complaint.fields.assigned_to', [], null, 'dashboard') ?: 'مسؤول المعالجة')
                                             ->options(function () {
                                                 return User::where('type', \App\Models\User::TYPE_COMPLAINTS_MANAGER)
+                                                    ->orWhereHas('roles', function ($q) {
+                                                        $q->where('name', 'like', '%مسؤل شكاوي%')
+                                                          ->orWhere('name', 'like', '%مشرف شكاوي%');
+                                                    })
                                                     ->get()
                                                     ->pluck('name', 'id')
                                                     ->toArray();
