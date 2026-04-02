@@ -13,6 +13,7 @@ class CreateBranchTransaction extends BaseCreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         if (empty($data['branch_id'])) {
+            /** @var \App\Models\User|null $user */
             $user = Auth::user();
             $fallbackBranchId = null;
 
