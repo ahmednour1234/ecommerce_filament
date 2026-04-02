@@ -157,8 +157,7 @@ class ComplaintResource extends Resource
                                             ->options(function () {
                                                 return User::where('type', \App\Models\User::TYPE_COMPLAINTS_MANAGER)
                                                     ->orWhereHas('roles', function ($q) {
-                                                        $q->where('name', 'like', '%مسؤل شكاوي%')
-                                                          ->orWhere('name', 'like', '%مشرف شكاوي%');
+                                                        $q->where('name', 'like', '%شكاوي%');
                                                     })
                                                     ->get()
                                                     ->pluck('name', 'id')
