@@ -206,8 +206,65 @@ class AccommodationEntryResource extends Resource
                         ->required(! $readonly)
                         ->searchable()
                         ->live()
-                        ->disabled($readonly || fn (Forms\Get $get): bool => (bool) $get('contract_no'))
+                        ->disabled($readonly)
                         ->dehydrated(true)
+                        ->suffixAction(
+                            Forms\Components\Actions\Action::make('showLaborer')
+                                ->label('عرض')
+                                ->icon('heroicon-o-eye')
+                                ->visible(fn ($get) => (bool) $get('laborer_id'))
+                                ->fillForm(function ($arguments = []): array {
+                                    try {
+                                        $id = $arguments['laborer_id'] ?? $arguments[0] ?? null;
+                                        if ($id === null) {
+                                            $component = \Livewire\Livewire::current();
+                                            if ($component && property_exists($component, 'record') && $component->record !== null) {
+                                                $id = $component->record->laborer_id ?? null;
+                                            }
+                                            if ($id === null && $component) {
+                                                $form = $component->getForm('form');
+                                                $state = $form->getState();
+                                                $id = $state['laborer_id'] ?? $state['data']['laborer_id'] ?? null;
+                                            }
+                                        }
+                                        return ['laborer_id' => $id];
+                                    } catch (\Throwable $e) {
+                                        return ['laborer_id' => null];
+                                    }
+                                })
+                                ->form([
+                                    Forms\Components\Hidden::make('laborer_id'),
+                                    Forms\Components\Placeholder::make('laborer_details')
+                                        ->content(function (\Filament\Forms\Get $get): \Illuminate\Support\HtmlString {
+                                            $id = $get('laborer_id');
+                                            if (! $id) {
+                                                return new \Illuminate\Support\HtmlString('<p class="text-gray-500">—</p>');
+                                            }
+                                            $worker = \App\Models\Recruitment\Laborer::with(['nationality', 'profession'])->find($id);
+                                            if (! $worker) {
+                                                return new \Illuminate\Support\HtmlString('<p class="text-gray-500">—</p>');
+                                            }
+                                            $rows = [
+                                                'الاسم (عربي)'  => $worker->name_ar ?? '—',
+                                                'الاسم (إنجليزي)' => $worker->name_en ?? '—',
+                                                'رقم الجواز'    => $worker->passport_number ?? '—',
+                                                'الجنسية'       => $worker->nationality?->name_ar ?? '—',
+                                                'المهنة'        => $worker->profession?->name_ar ?? '—',
+                                                'الهاتف'        => $worker->phone_1 ?? '—',
+                                            ];
+                                            $html = '<div class="space-y-1 text-sm">';
+                                            foreach ($rows as $label => $value) {
+                                                $html .= '<p><span class="font-medium text-gray-500">' . e($label) . ':</span> ' . e($value) . '</p>';
+                                            }
+                                            $html .= '</div>';
+                                            return new \Illuminate\Support\HtmlString($html);
+                                        }),
+                                ])
+                                ->modalHeading('بيانات العاملة')
+                                ->modalSubmitAction(false)
+                                ->closeModalByEscaping(true)
+                                ->closeModalByClickingAway(true)
+                        )
                         ->createOptionForm([
                             Forms\Components\TextInput::make('name_ar')
                                 ->label('الاسم (عربي)')
@@ -284,8 +341,65 @@ class AccommodationEntryResource extends Resource
                                 ->toArray();
                         })
                         ->searchable()
-                        ->disabled($readonly || fn (Forms\Get $get): bool => (bool) $get('contract_no'))
+                        ->disabled($readonly)
                         ->dehydrated(true)
+                        ->suffixAction(
+                            Forms\Components\Actions\Action::make('showClient')
+                                ->label('عرض')
+                                ->icon('heroicon-o-eye')
+                                ->visible(fn ($get) => (bool) $get('customer_id'))
+                                ->fillForm(function ($arguments = []): array {
+                                    try {
+                                        $id = $arguments['customer_id'] ?? $arguments[0] ?? null;
+                                        if ($id === null) {
+                                            $component = \Livewire\Livewire::current();
+                                            if ($component && property_exists($component, 'record') && $component->record !== null) {
+                                                $id = $component->record->customer_id ?? null;
+                                            }
+                                            if ($id === null && $component) {
+                                                $form = $component->getForm('form');
+                                                $state = $form->getState();
+                                                $id = $state['customer_id'] ?? $state['data']['customer_id'] ?? null;
+                                            }
+                                        }
+                                        return ['customer_id' => $id];
+                                    } catch (\Throwable $e) {
+                                        return ['customer_id' => null];
+                                    }
+                                })
+                                ->form([
+                                    Forms\Components\Hidden::make('customer_id'),
+                                    Forms\Components\Placeholder::make('client_details')
+                                        ->content(function (\Filament\Forms\Get $get): \Illuminate\Support\HtmlString {
+                                            $id = $get('customer_id');
+                                            if (! $id) {
+                                                return new \Illuminate\Support\HtmlString('<p class="text-gray-500">—</p>');
+                                            }
+                                            $client = \App\Models\Client::find($id);
+                                            if (! $client) {
+                                                return new \Illuminate\Support\HtmlString('<p class="text-gray-500">—</p>');
+                                            }
+                                            $rows = [
+                                                'الاسم (عربي)'      => $client->name_ar ?? '—',
+                                                'الاسم (إنجليزي)'   => $client->name_en ?? '—',
+                                                'رقم الهوية'        => $client->national_id ?? '—',
+                                                'الجوال'            => $client->mobile ?? '—',
+                                                'الحالة الاجتماعية' => $client->marital_status ?? '—',
+                                                'التصنيف'           => $client->classification ?? '—',
+                                            ];
+                                            $html = '<div class="space-y-1 text-sm">';
+                                            foreach ($rows as $label => $value) {
+                                                $html .= '<p><span class="font-medium text-gray-500">' . e($label) . ':</span> ' . e($value) . '</p>';
+                                            }
+                                            $html .= '</div>';
+                                            return new \Illuminate\Support\HtmlString($html);
+                                        }),
+                                ])
+                                ->modalHeading('بيانات العميل')
+                                ->modalSubmitAction(false)
+                                ->closeModalByEscaping(true)
+                                ->closeModalByClickingAway(true)
+                        )
                         ->columnSpan(1),
                 ])
                 ->columns(2),

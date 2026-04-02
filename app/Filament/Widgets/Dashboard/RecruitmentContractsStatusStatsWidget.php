@@ -30,20 +30,27 @@ class RecruitmentContractsStatusStatsWidget extends BaseWidget
 
         $statusLabels = [
             'new' => 'جديد',
+            'external_office_approval' => 'بانتظار موافقة المكتب الخارجي',
             'external_office_approved' => 'موافقة المكتب الخارجي',
+            'contract_accepted_external_office' => 'قبول العقد من المكتب الخارجي',
             'external_office_accepted' => 'قبول العقد من مكتب خارجي',
+            'waiting_approval' => 'انتظار الموافقة',
             'waiting_bio' => 'انتظار البروف',
+            'contract_accepted_labor_ministry' => 'قبول العقد من وزارة العمل',
             'external_office_accepted2' => 'قبول العقد من مكتب العمل الخارجي',
             'sent_to_saudi_embassy' => 'إرسال التأشيرة إلى السفارة السعودية',
             'visa_issued' => 'إصدار التأشيرة',
+            'visa_cancelled' => 'إلغاء التفييز',
             'distinguished' => 'تم التمييز',
             'travel_permit' => 'تصريح سفر',
+            'travel_permit_after_visa_issued' => 'تصريح سفر بعد تم التفييز',
             'waiting_flight_booking' => 'انتظار حجز تذكرة الطيران',
+            'arrival_scheduled' => 'معاد الوصول',
             'arrival_date' => 'ميعاد الوصول',
             'received' => 'تم الاستلام',
             'return_during_warranty' => 'رجع خلال فترة الضمان',
             'escape' => 'هروب',
-            'contract_accepted_labor_ministry' => 'قبول العقد من وزارة العمل',
+            'runaway' => 'هروب',
         ];
 
         $stats = [];
