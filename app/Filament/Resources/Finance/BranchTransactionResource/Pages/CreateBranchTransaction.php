@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Finance\BranchTransactionResource\Pages;
 
 use App\Filament\Resources\Finance\BranchTransactionResource;
 use App\Filament\Pages\BaseCreateRecord;
+use Illuminate\Support\Facades\Auth;
 
 class CreateBranchTransaction extends BaseCreateRecord
 {
@@ -11,7 +12,22 @@ class CreateBranchTransaction extends BaseCreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['created_by'] = auth()->id();
+        if (empty($data['branch_id'])) {
+            $user = Auth::user();
+            $fallbackBranchId = null;
+
+            if ($user) {
+                $fallbackBranchId = $user->branches()->pluck('branches.id')->first();
+                $fallbackBranchId ??= $user->branch_id;
+            }
+
+            if (!empty($fallbackBranchId)) {
+                $data['branch_id'] = (int) $fallbackBranchId;
+            }
+        }
+
+        $data['created_by'] = Auth::id();
+
         return $data;
     }
 
