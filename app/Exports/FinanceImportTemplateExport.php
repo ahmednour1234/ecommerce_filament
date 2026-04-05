@@ -15,10 +15,12 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class FinanceImportTemplateExport implements FromArray, WithStyles, WithColumnWidths, WithTitle
 {
     protected string $kind;
+    protected ?string $branchName;
 
-    public function __construct(string $kind)
+    public function __construct(string $kind, ?string $branchName = null)
     {
         $this->kind = $kind;
+        $this->branchName = $branchName;
     }
 
     public function array(): array
@@ -30,7 +32,13 @@ class FinanceImportTemplateExport implements FromArray, WithStyles, WithColumnWi
             $this->kind === 'expense' ? 'المصروف' : 'الإيراد',
         ];
 
-        $data = [$headers];
+        $data = [];
+
+        if ($this->branchName) {
+            $data[] = ['الفرع: ' . $this->branchName, '', '', ''];
+        }
+
+        $data[] = $headers;
 
         for ($i = 1; $i <= 100; $i++) {
             $data[] = ['', '', '', ''];
@@ -42,6 +50,30 @@ class FinanceImportTemplateExport implements FromArray, WithStyles, WithColumnWi
     public function styles(Worksheet $sheet): void
     {
         $sheet->setRightToLeft(true);
+
+        $headerRow = $this->branchName ? 2 : 1;
+        $dataStartRow = $headerRow + 1;
+        $lastRow = $headerRow + 100;
+
+        if ($this->branchName) {
+            $infoStyle = [
+                'font' => [
+                    'bold' => true,
+                    'color' => ['rgb' => '1F497D'],
+                ],
+                'fill' => [
+                    'fillType' => Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => 'DCE6F1'],
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                ],
+            ];
+            $sheet->mergeCells('A1:D1');
+            $sheet->getStyle('A1:D1')->applyFromArray($infoStyle);
+            $sheet->getRowDimension(1)->setRowHeight(22);
+        }
 
         $headerStyle = [
             'font' => [
@@ -64,8 +96,8 @@ class FinanceImportTemplateExport implements FromArray, WithStyles, WithColumnWi
             ],
         ];
 
-        $sheet->getStyle('A1:D1')->applyFromArray($headerStyle);
-        $sheet->getRowDimension(1)->setRowHeight(25);
+        $sheet->getStyle("A{$headerRow}:D{$headerRow}")->applyFromArray($headerStyle);
+        $sheet->getRowDimension($headerRow)->setRowHeight(25);
 
         $borderStyle = [
             'borders' => [
@@ -76,11 +108,11 @@ class FinanceImportTemplateExport implements FromArray, WithStyles, WithColumnWi
             ],
         ];
 
-        $sheet->getStyle('A1:D201')->applyFromArray($borderStyle);
+        $sheet->getStyle("A{$headerRow}:D{$lastRow}")->applyFromArray($borderStyle);
 
-        $sheet->freezePane('A2');
+        $sheet->freezePane("A{$dataStartRow}");
 
-        for ($row = 2; $row <= 201; $row++) {
+        for ($row = $dataStartRow; $row <= $lastRow; $row++) {
             $sheet->getRowDimension($row)->setRowHeight(20);
         }
     }

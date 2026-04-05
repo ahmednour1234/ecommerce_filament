@@ -191,26 +191,60 @@ class ImportBranchTransactionsPage extends Page implements HasForms
 
     protected function getHeaderActions(): array
     {
+        $user = auth()->user();
+        $userBranches = $user?->branches()->pluck('branches.id')->toArray() ?? [];
+        $canViewAllBranches = (bool) ($user?->hasRole('super_admin') || $user?->can('finance.view_all_branches'));
+
         return [
             \Filament\Actions\Action::make('download_template')
                 ->label(tr('pages.finance.import.download_template', [], null, 'dashboard') ?: 'تحميل قالب Excel')
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('success')
-                ->url(function () {
+                ->modalHeading(tr('pages.finance.import.download_template', [], null, 'dashboard') ?: 'تحميل قالب Excel')
+                ->modalSubmitActionLabel(tr('actions.download', [], null, 'dashboard') ?: 'تحميل')
+                ->form([
+                    Forms\Components\Select::make('branch_id')
+                        ->label(tr('forms.branch_transactions.branch_id', [], null, 'dashboard') ?: 'الفرع')
+                        ->placeholder(tr('forms.common.select_placeholder', [], null, 'dashboard') ?: 'اختر')
+                        ->options(function () use ($canViewAllBranches, $userBranches) {
+                            $query = Branch::where('status', 'active');
+                            if (!$canViewAllBranches && !empty($userBranches)) {
+                                $query->whereIn('id', $userBranches);
+                            }
+                            return $query->pluck('name', 'id');
+                        })
+                        ->searchable()
+                        ->nullable(),
+
+                    Forms\Components\Select::make('kind')
+                        ->label(tr('forms.finance_types.kind', [], null, 'dashboard') ?: 'النوع')
+                        ->options([
+                            'income' => tr('forms.finance_types.kind_income', [], null, 'dashboard') ?: 'إيراد',
+                            'expense' => tr('forms.finance_types.kind_expense', [], null, 'dashboard') ?: 'مصروف',
+                        ])
+                        ->required()
+                        ->native(false)
+                        ->default('expense'),
+                ])
+                ->fillForm(function () {
                     try {
                         $data = $this->form->getRawState();
-                        $kind = $data['kind'] ?? 'expense';
+                        return [
+                            'kind' => in_array($data['kind'] ?? '', ['income', 'expense']) ? $data['kind'] : 'expense',
+                            'branch_id' => $data['branch_id'] ?? null,
+                        ];
                     } catch (\Exception $e) {
-                        $kind = 'expense';
+                        return ['kind' => 'expense', 'branch_id' => null];
                     }
-
-                    if (!in_array($kind, ['income', 'expense'])) {
-                        $kind = 'expense';
-                    }
-
-                    return route('finance.import.template', ['kind' => $kind]);
                 })
-                ->openUrlInNewTab(false),
+                ->action(function (array $data) {
+                    $kind = in_array($data['kind'] ?? '', ['income', 'expense']) ? $data['kind'] : 'expense';
+                    $url = route('finance.import.template', [
+                        'kind' => $kind,
+                        'branch_id' => $data['branch_id'] ?? null,
+                    ]);
+                    return redirect($url);
+                }),
         ];
     }
 
