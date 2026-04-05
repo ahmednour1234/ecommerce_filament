@@ -151,11 +151,20 @@ class BranchTransactionImport implements ToCollection, WithHeadingRow
             $data['finance_type_id'] = $this->finance_type_id;
         } elseif (!empty($row['finance_type_id'] ?? $row['finance_type'])) {
             $typeKey = $row['finance_type_id'] ?? $row['finance_type'];
-            $financeType = is_numeric($typeKey)
-                ? FinanceType::find($typeKey)
-                : FinanceType::where('name_ar', $typeKey)
-                    ->orWhere('name_en', $typeKey)
-                    ->first();
+            $financeType = null;
+
+            if (is_numeric($typeKey)) {
+                $financeType = FinanceType::find($typeKey);
+            } else {
+                // Search by name in JSON array
+                $financeType = FinanceType::all()
+                    ->first(function($type) use ($typeKey) {
+                        return (is_array($type->name) &&
+                            (($type->name['ar'] ?? '') === $typeKey ||
+                             ($type->name['en'] ?? '') === $typeKey)) ||
+                               $type->name === $typeKey;
+                    });
+            }
 
             if ($financeType) {
                 $data['finance_type_id'] = $financeType->id;
