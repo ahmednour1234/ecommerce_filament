@@ -47,7 +47,12 @@ class ListBranchTransactions extends ListRecords
 
                             \Filament\Forms\Components\Select::make('finance_type_id')
                                 ->label('النوع')
-                                ->options(\App\Models\Finance\FinanceType::where('is_active', true)->pluck('name_ar', 'id'))
+                                ->options(function () {
+                                    return \App\Models\Finance\FinanceType::where('is_active', true)->get()
+                                        ->mapWithKeys(fn($type) => [
+                                            $type->id => $type->name['ar'] ?? $type->name['en'] ?? ''
+                                        ]);
+                                })
                                 ->searchable(),
 
                             \Filament\Forms\Components\Select::make('currency_id')
@@ -57,7 +62,12 @@ class ListBranchTransactions extends ListRecords
 
                             \Filament\Forms\Components\Select::make('country_id')
                                 ->label('الدولة')
-                                ->options(\App\Models\MainCore\Country::pluck('name_ar', 'id'))
+                                ->options(function () {
+                                    return \App\Models\MainCore\Country::get()
+                                        ->mapWithKeys(fn($country) => [
+                                            $country->id => $country->name_ar ?? $country->name ?? ''
+                                        ]);
+                                })
                                 ->searchable(),
 
                             \Filament\Forms\Components\DatePicker::make('trx_date')
