@@ -35,13 +35,13 @@ class ListBranchTransactions extends ListRecords
                                 ->options(function () {
                                     $user = auth()->user();
                                     if ($user?->hasRole('super_admin')) {
-                                        return \App\Models\MainCore\Branch::pluck('name_ar', 'id');
+                                        return \App\Models\MainCore\Branch::pluck('name', 'id');
                                     }
                                     $userBranches = $user?->branches()->pluck('branches.id')->toArray() ?? [];
                                     if (!empty($user?->branch_id)) {
                                         $userBranches[] = (int) $user->branch_id;
                                     }
-                                    return \App\Models\MainCore\Branch::whereIn('id', array_unique($userBranches))->pluck('name_ar', 'id');
+                                    return \App\Models\MainCore\Branch::whereIn('id', array_unique($userBranches))->pluck('name', 'id');
                                 })
                                 ->searchable(),
 
@@ -57,7 +57,12 @@ class ListBranchTransactions extends ListRecords
 
                             \Filament\Forms\Components\Select::make('currency_id')
                                 ->label('العملة')
-                                ->options(\App\Models\MainCore\Currency::pluck('code', 'id'))
+                                ->options(function () {
+                                    return \App\Models\MainCore\Currency::get()
+                                        ->mapWithKeys(fn($currency) => [
+                                            $currency->id => $currency->code . ' - ' . ($currency->name ?? '')
+                                        ]);
+                                })
                                 ->searchable(),
 
                             \Filament\Forms\Components\Select::make('country_id')
@@ -65,7 +70,7 @@ class ListBranchTransactions extends ListRecords
                                 ->options(function () {
                                     return \App\Models\MainCore\Country::get()
                                         ->mapWithKeys(fn($country) => [
-                                            $country->id => $country->name_ar ?? $country->name ?? ''
+                                            $country->id => $country->name['ar'] ?? $country->name['en'] ?? ''
                                         ]);
                                 })
                                 ->searchable(),

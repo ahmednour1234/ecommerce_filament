@@ -92,7 +92,7 @@ class BranchTransactionImport implements ToCollection, WithHeadingRow
             $branchKey = $row['branch_id'] ?? $row['branch'];
             $branch = is_numeric($branchKey)
                 ? Branch::find($branchKey)
-                : Branch::where('name_ar', $branchKey)->orWhere('name_en', $branchKey)->first();
+                : Branch::where('name', $branchKey)->first();
 
             if ($branch && (in_array($branch->id, $userBranches) || $user->hasRole('super_admin'))) {
                 $data['branch_id'] = $branch->id;
@@ -117,12 +117,22 @@ class BranchTransactionImport implements ToCollection, WithHeadingRow
             $data['country_id'] = $this->country_id;
         } elseif (!empty($row['country_id'] ?? $row['country'])) {
             $countryKey = $row['country_id'] ?? $row['country'];
-            $country = is_numeric($countryKey)
-                ? Country::find($countryKey)
-                : Country::where('name_ar', $countryKey)
-                    ->orWhere('name_en', $countryKey)
-                    ->orWhere('iso2', $countryKey)
-                    ->first();
+            $country = null;
+
+            if (is_numeric($countryKey)) {
+                $country = Country::find($countryKey);
+            } else {
+                // Search by iso2 or name in JSON array
+                $country = Country::where('iso2', strtoupper($countryKey))->first();
+                if (!$country) {
+                    $country = Country::all()
+                        ->first(function($c) use ($countryKey) {
+                            return is_array($c->name) &&
+                                (($c->name['ar'] ?? '') === $countryKey ||
+                                 ($c->name['en'] ?? '') === $countryKey);
+                        });
+                }
+            }
 
             if ($country) {
                 $data['country_id'] = $country->id;
@@ -136,10 +146,7 @@ class BranchTransactionImport implements ToCollection, WithHeadingRow
             $currencyKey = $row['currency_id'] ?? $row['currency'];
             $currency = is_numeric($currencyKey)
                 ? Currency::find($currencyKey)
-                : Currency::where('code', strtoupper($currencyKey))
-                    ->orWhere('name_ar', $currencyKey)
-                    ->orWhere('name_en', $currencyKey)
-                    ->first();
+                : Currency::where('code', strtoupper($currencyKey))->first();
 
             if ($currency) {
                 $data['currency_id'] = $currency->id;
