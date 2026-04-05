@@ -204,6 +204,24 @@ class BranchTransactionImport implements ToCollection, WithHeadingRow
 
         // Set default values
         $data['created_by'] = auth()->user()->id;
+        $data['status'] = 'pending';
+
+        return $data;
+    }
+
+    protected function parseDate($dateValue): string
+    {
+        if ($dateValue instanceof \DateTime) {
+            return $dateValue->format('Y-m-d');
+        }
+
+        // Handle Excel date serial numbers
+        if (is_numeric($dateValue)) {
+            $excelDate = intval($dateValue);
+            // Excel epoch is 1900-01-01
+            $date = \Carbon\Carbon::createFromFormat('Y-m-d', '1900-01-01')
+                ->addDays($excelDate - 2); // -2 for Excel's leap year bug
+            return $date->format('Y-m-d');
         }
 
         // Try parsing string dates
