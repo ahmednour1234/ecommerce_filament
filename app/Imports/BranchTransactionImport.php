@@ -16,6 +16,34 @@ class BranchTransactionImport implements ToCollection, WithHeadingRow
 {
     protected $errors = [];
     protected $successCount = 0;
+    protected ?int $branch_id = null;
+    protected ?int $finance_type_id = null;
+    protected ?int $currency_id = null;
+    protected ?int $country_id = null;
+    protected ?string $default_date = null;
+    protected ?string $payment_method = null;
+    protected ?string $notes = null;
+    protected bool $allow_partial = true;
+
+    public function __construct(
+        ?int $branch_id = null,
+        ?int $finance_type_id = null,
+        ?int $currency_id = null,
+        ?int $country_id = null,
+        ?string $default_date = null,
+        ?string $payment_method = null,
+        ?string $notes = null,
+        bool $allow_partial = true,
+    ) {
+        $this->branch_id = $branch_id;
+        $this->finance_type_id = $finance_type_id;
+        $this->currency_id = $currency_id;
+        $this->country_id = $country_id;
+        $this->default_date = $default_date;
+        $this->payment_method = $payment_method;
+        $this->notes = $notes;
+        $this->allow_partial = $allow_partial;
+    }
 
     public function collection(Collection $rows)
     {
@@ -42,8 +70,11 @@ class BranchTransactionImport implements ToCollection, WithHeadingRow
                     $this->successCount++;
                 }
             } catch (\Exception $e) {
+                if (!$this->allow_partial) {
+                    throw $e;
+                }
                 $this->errors[] = [
-                    'row' => $index + 2, // +2 for header row and 0-based index
+                    'row' => $index + 2,
                     'error' => $e->getMessage()
                 ];
             }
@@ -54,8 +85,10 @@ class BranchTransactionImport implements ToCollection, WithHeadingRow
     {
         $data = [];
 
-        // Map branch
-        if (!empty($row['branch_id'] ?? $row['branch'])) {
+        // Map branch - use form default if provided
+        if ($this->branch_id) {
+            $data['branch_id'] = $this->branch_id;
+        } elseif (!empty($row['branch_id'] ?? $row['branch'])) {
             $branchKey = $row['branch_id'] ?? $row['branch'];
             $branch = is_numeric($branchKey)
                 ? Branch::find($branchKey)
@@ -73,12 +106,16 @@ class BranchTransactionImport implements ToCollection, WithHeadingRow
         // Map transaction date
         if (!empty($row['trx_date'] ?? $row['transaction_date'])) {
             $data['trx_date'] = $this->parseDate($row['trx_date'] ?? $row['transaction_date']);
+        } elseif ($this->default_date) {
+            $data['trx_date'] = $this->parseDate($this->default_date);
         } else {
             $data['trx_date'] = now()->toDateString();
         }
 
-        // Map country
-        if (!empty($row['country_id'] ?? $row['country'])) {
+        // Map country - use form default if provided
+        if ($this->country_id) {
+            $data['country_id'] = $this->country_id;
+        } elseif (!empty($row['country_id'] ?? $row['country'])) {
             $countryKey = $row['country_id'] ?? $row['country'];
             $country = is_numeric($countryKey)
                 ? Country::find($countryKey)
@@ -92,8 +129,10 @@ class BranchTransactionImport implements ToCollection, WithHeadingRow
             }
         }
 
-        // Map currency
-        if (!empty($row['currency_id'] ?? $row['currency'])) {
+        // Map currency - use form default if provided
+        if ($this->currency_id) {
+            $data['currency_id'] = $this->currency_id;
+        } elseif (!empty($row['currency_id'] ?? $row['currency'])) {
             $currencyKey = $row['currency_id'] ?? $row['currency'];
             $currency = is_numeric($currencyKey)
                 ? Currency::find($currencyKey)
@@ -107,8 +146,10 @@ class BranchTransactionImport implements ToCollection, WithHeadingRow
             }
         }
 
-        // Map finance type
-        if (!empty($row['finance_type_id'] ?? $row['finance_type'])) {
+        // Map finance type - use form default if provided
+        if ($this->finance_type_id) {
+            $data['finance_type_id'] = $this->finance_type_id;
+        } elseif (!empty($row['finance_type_id'] ?? $row['finance_type'])) {
             $typeKey = $row['finance_type_id'] ?? $row['finance_type'];
             $financeType = is_numeric($typeKey)
                 ? FinanceType::find($typeKey)
@@ -128,9 +169,11 @@ class BranchTransactionImport implements ToCollection, WithHeadingRow
             throw new \Exception('Amount is required');
         }
 
-        // Map payment method (optional)
+        // Map payment method - use form default if not in row
         if (!empty($row['payment_method'])) {
             $data['payment_method'] = $row['payment_method'];
+        } elseif ($this->payment_method) {
+            $data['payment_method'] = $this->payment_method;
         }
 
         // Map recipient name (optional)
@@ -143,31 +186,15 @@ class BranchTransactionImport implements ToCollection, WithHeadingRow
             $data['reference_no'] = $row['reference_no'];
         }
 
-        // Map notes (optional)
+        // Map notes - use form default if not in row
         if (!empty($row['notes'])) {
             $data['notes'] = $row['notes'];
+        } elseif ($this->notes) {
+            $data['notes'] = $this->notes;
         }
 
         // Set default values
-        $data['created_by'] = $user->id;
-        $data['status'] = 'pending';
-
-        return $data;
-    }
-
-    protected function parseDate($dateValue): string
-    {
-        if ($dateValue instanceof \DateTime) {
-            return $dateValue->format('Y-m-d');
-        }
-
-        // Handle Excel date serial numbers
-        if (is_numeric($dateValue)) {
-            $excelDate = intval($dateValue);
-            // Excel epoch is 1900-01-01
-            $date = \Carbon\Carbon::createFromFormat('Y-m-d', '1900-01-01')
-                ->addDays($excelDate - 2); // -2 for Excel's leap year bug
-            return $date->format('Y-m-d');
+        $data['created_by'] = auth()->user()->id;
         }
 
         // Try parsing string dates
