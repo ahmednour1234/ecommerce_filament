@@ -257,6 +257,7 @@ class FinanceTranslationsSeeder extends Seeder
         // ============================================
         $this->command->info('Step 8.3: Creating Import page translations...');
         $translations = array_merge($translations, [
+            'sidebar.finance.import_excel' => ['en' => 'Import from Excel', 'ar' => 'استيراد من Excel'],
             'sidebar.finance.import' => ['en' => 'Import from Excel', 'ar' => 'استيراد من Excel'],
             'pages.finance.import.title' => ['en' => 'Import from Excel', 'ar' => 'استيراد من Excel'],
             'pages.finance.import.download_template' => ['en' => 'Download Excel Template', 'ar' => 'تحميل قالب Excel'],

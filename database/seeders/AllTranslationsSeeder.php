@@ -128,6 +128,7 @@ class AllTranslationsSeeder extends Seeder
             'sidebar.finance.reports.income_statement' => ['en' => 'Income Statement', 'ar' => 'قائمة الدخل'],
             'sidebar.finance.reports.income' => ['en' => 'Income Report', 'ar' => 'تقرير الإيرادات'],
             'sidebar.finance.reports.expense' => ['en' => 'Expense Report', 'ar' => 'تقرير المصروفات'],
+            'sidebar.finance.import_excel' => ['en' => 'Import from Excel', 'ar' => 'استيراد من Excel'],
             'sidebar.finance.import' => ['en' => 'Import from Excel', 'ar' => 'استيراد من Excel'],
         ]);
 
