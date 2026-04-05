@@ -53,7 +53,7 @@ return [
                             'title' => 'sidebar.finance.import_excel',
                             'icon' => 'heroicon-o-arrow-up-tray',
                             'url' => fn() => \App\Filament\Pages\Finance\ImportBranchTransactionsPage::getUrl(),
-                            'permission' => 'finance.view_any',
+                            'permission' => 'finance.transactions.import',
                         ],
                         [
                             'title' => 'sidebar.finance.income_statement_by_branch',

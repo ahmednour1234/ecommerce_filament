@@ -3,13 +3,10 @@
 namespace App\Filament\Resources\Finance\BranchTransactionResource\Pages;
 
 use App\Filament\Concerns\ExportsResourceTable;
+use App\Filament\Pages\Finance\ImportBranchTransactionsPage;
 use App\Filament\Resources\Finance\BranchTransactionResource;
-use App\Imports\BranchTransactionImport;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
-use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Facades\Excel;
-use Filament\Notifications\Notification;
 
 class ListBranchTransactions extends ListRecords
 {
@@ -27,8 +24,52 @@ class ListBranchTransactions extends ListRecords
                 ->label(tr('actions.import_excel', [], null, 'dashboard') ?: 'استيراد من Excel')
                 ->icon('heroicon-o-arrow-up-tray')
                 ->color('info')
-                ->form([
-                    \Filament\Forms\Components\Section::make('إعدادات الاستيراد')
+                ->url(fn () => ImportBranchTransactionsPage::getUrl())
+                ->visible(fn () => auth()->user()?->hasRole('super_admin')
+                    || auth()->user()?->can('finance.transactions.import')
+                    || auth()->user()?->can('finance.create_transactions')),
+
+            Actions\Action::make('export_excel')
+                ->label(tr('actions.export_excel', [], null, 'dashboard') ?: 'Export to Excel')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->action(fn () => $this->exportToExcel()),
+
+            Actions\Action::make('export_pdf')
+                ->label(tr('actions.export_pdf', [], null, 'dashboard') ?: 'Export to PDF')
+                ->icon('heroicon-o-document-arrow-down')
+                ->action(fn () => $this->exportToPdf()),
+
+            Actions\Action::make('print_pdf')
+                ->label(tr('actions.print_pdf', [], null, 'dashboard') ?: 'Print PDF')
+                ->icon('heroicon-o-document-arrow-down')
+                ->action(function () {
+                    $response = $this->exportToPdf();
+                    $response->headers->set('Content-Disposition', 'inline; filename="' . $this->getExportFilename('pdf') . '"');
+                    return $response;
+                })
+                ->color('gray'),
+        ];
+    }
+}
+
+class ListBranchTransactions extends ListRecords
+{
+    use ExportsResourceTable;
+
+    protected static string $resource = BranchTransactionResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Actions\CreateAction::make()
+                ->visible(fn () => auth()->user()?->hasRole('super_admin') || auth()->user()?->can('finance.create_transactions') ?? false),
+
+            Actions\Action::make('import')
+                ->label(tr('actions.import_excel', [], null, 'dashboard') ?: 'استيراد من Excel')
+                ->icon('heroicon-o-arrow-up-tray')
+                ->color('info')
+                ->url(fn () => ImportBranchTransactionsPage::getUrl())
+                ->visible(fn () => auth()->user()?->hasRole('super_admin') || auth()->user()?->can('finance.transactions.import') || auth()->user()?->can('finance.create_transactions')),
                         ->schema([
                             \Filament\Forms\Components\Select::make('branch_id')
                                 ->label('الفرع')

@@ -313,7 +313,9 @@ class ImportBranchTransactionsPage extends Page implements HasForms
     public static function canAccess(): bool
     {
         $user = auth()->user();
-        return (bool) ($user?->hasRole('super_admin') || ($user?->can('finance.transactions.import') ?? false));
+        return (bool) ($user?->hasRole('super_admin')
+            || $user?->can('finance.transactions.import')
+            || $user?->can('finance.create_transactions'));
     }
 
     public static function shouldRegisterNavigation(): bool
