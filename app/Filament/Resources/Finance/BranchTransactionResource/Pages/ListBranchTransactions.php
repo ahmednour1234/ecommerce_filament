@@ -37,8 +37,7 @@ class ListBranchTransactions extends ListRecords
                 ])
                 ->action(function (array $data) {
                     $this->importBranchTransactions($data['file']);
-                })
-                ->visible(fn () => auth()->user()?->hasRole('super_admin') || auth()->user()?->can('finance.create_transactions') ?? false),
+                }),
 
             Actions\Action::make('download_template')
                 ->label(tr('actions.download_template', [], null, 'dashboard') ?: 'تحميل نموذج')
