@@ -24,19 +24,68 @@ class ListBranchTransactions extends ListRecords
                 ->visible(fn () => auth()->user()?->hasRole('super_admin') || auth()->user()?->can('finance.create_transactions') ?? false),
 
             Actions\Action::make('import')
-                ->label(tr('actions.import_excel', [], null, 'dashboard') ?: 'استيراد اكسل')
+                ->label(tr('actions.import_excel', [], null, 'dashboard') ?: 'استيراد من Excel')
                 ->icon('heroicon-o-arrow-up-tray')
                 ->color('info')
                 ->form([
+                    \Filament\Forms\Components\Section::make('إعدادات الاستيراد')
+                        ->schema([
+                            \Filament\Forms\Components\Select::make('branch_id')
+                                ->label('الفرع')
+                                ->options(function () {
+                                    $user = auth()->user();
+                                    if ($user?->hasRole('super_admin')) {
+                                        return \App\Models\MainCore\Branch::pluck('name_ar', 'id');
+                                    }
+                                    $userBranches = $user?->branches()->pluck('branches.id')->toArray() ?? [];
+                                    if (!empty($user?->branch_id)) {
+                                        $userBranches[] = (int) $user->branch_id;
+                                    }
+                                    return \App\Models\MainCore\Branch::whereIn('id', array_unique($userBranches))->pluck('name_ar', 'id');
+                                })
+                                ->searchable(),
+
+                            \Filament\Forms\Components\Select::make('finance_type_id')
+                                ->label('النوع')
+                                ->options(\App\Models\Finance\FinanceType::where('is_active', true)->pluck('name_ar', 'id'))
+                                ->searchable(),
+
+                            \Filament\Forms\Components\Select::make('currency_id')
+                                ->label('العملة')
+                                ->options(\App\Models\MainCore\Currency::pluck('code', 'id'))
+                                ->searchable(),
+
+                            \Filament\Forms\Components\Select::make('country_id')
+                                ->label('الدولة')
+                                ->options(\App\Models\MainCore\Country::pluck('name_ar', 'id'))
+                                ->searchable(),
+
+                            \Filament\Forms\Components\DatePicker::make('trx_date')
+                                ->label('تاريخ العملية الافتراضي')
+                                ->default(now()),
+
+                            \Filament\Forms\Components\TextInput::make('payment_method')
+                                ->label('طريقة الدفع'),
+
+                            \Filament\Forms\Components\Textarea::make('notes')
+                                ->label('ملاحظات عامة')
+                                ->rows(3),
+
+                            \Filament\Forms\Components\Toggle::make('allow_partial_import')
+                                ->label('السماح بالاستيراد الجزئي')
+                                ->helperText('استيراد الصفوف الصحيحة حتى لو كان هناك أخطاء')
+                                ->default(true),
+                        ]),
+
                     \Filament\Forms\Components\FileUpload::make('file')
-                        ->label(tr('forms.excel_file', [], null, 'dashboard') ?: 'ملف اكسل')
+                        ->label('ملف اكسل')
                         ->acceptedFileTypes(['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'])
                         ->required()
                         ->disk('public')
                         ->directory('imports'),
                 ])
                 ->action(function (array $data) {
-                    $this->importBranchTransactions($data['file']);
+                    $this->importBranchTransactions($data);
                 }),
 
             Actions\Action::make('download_template')
@@ -99,16 +148,26 @@ class ListBranchTransactions extends ListRecords
         return Storage::disk('public')->download($path, $fileName);
     }
 
-    protected function importBranchTransactions(string $filePath)
+    protected function importBranchTransactions(array $formData)
     {
         try {
-            $import = new BranchTransactionImport();
+            $filePath = $formData['file'];
+            $import = new BranchTransactionImport(
+                branch_id: $formData['branch_id'] ?? null,
+                finance_type_id: $formData['finance_type_id'] ?? null,
+                currency_id: $formData['currency_id'] ?? null,
+                country_id: $formData['country_id'] ?? null,
+                default_date: $formData['trx_date'] ?? null,
+                payment_method: $formData['payment_method'] ?? null,
+                notes: $formData['notes'] ?? null,
+                allow_partial: $formData['allow_partial_import'] ?? true,
+            );
             Excel::import($import, $filePath, 'public');
 
             $successCount = $import->getSuccessCount();
             $errors = $import->getErrors();
 
-            $message = tr('finance.transactions.import_success', [], null, 'dashboard') ?: 'تم استيراد ' . $successCount . ' عملية بنجاح';
+            $message = 'تم استيراد ' . $successCount . ' عملية بنجاح';
 
             if (!empty($errors)) {
                 $errorMessage = 'حدثت أخطاء في الصفوف التالية: ';
