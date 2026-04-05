@@ -12,7 +12,6 @@ use App\Models\MainCore\Branch;
 use App\Models\MainCore\Country;
 use App\Models\MainCore\Currency;
 use App\Services\Finance\BranchTransactionImportService;
-use App\Services\MainCore\CurrencyService;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -42,14 +41,14 @@ class ImportBranchTransactionsPage extends Page implements HasForms
         $userBranches = $user?->branches()->pluck('branches.id')->toArray() ?? [];
         $canViewAllBranches = (bool) ($user?->hasRole('super_admin') || $user?->can('finance.view_all_branches'));
 
-        $defaultCurrency = app(CurrencyService::class)->defaultCurrency();
+        $saudiCountryId = Country::where('iso2', 'SA')->value('id');
 
         $this->form->fill([
             'branch_id' => !$canViewAllBranches && !empty($userBranches) ? $userBranches[0] : null,
             'kind' => null,
             'finance_type_id' => null,
-            'currency_code' => $defaultCurrency?->code,
-            'country_id' => null,
+            'currency_code' => 'SAR',
+            'country_id' => $saudiCountryId,
             'payment_method' => null,
             'default_transaction_date' => now()->format('Y-m-d'),
             'global_notes' => null,
@@ -119,29 +118,21 @@ class ImportBranchTransactionsPage extends Page implements HasForms
 
                         Forms\Components\Select::make('currency_code')
                             ->label(tr('forms.branch_transactions.currency_id', [], null, 'dashboard') ?: 'Currency')
-                            ->placeholder(tr('forms.common.select_placeholder', [], null, 'dashboard') ?: tr('forms.branch_transactions.select', [], null, 'dashboard') ?: 'Select')
-                            ->options(function () {
-                                return Currency::where('is_active', true)
-                                    ->get()
-                                    ->pluck('code', 'code');
-                            })
-                            ->searchable()
-                            ->preload()
-                            ->required()
-                            ->reactive(),
+                            ->options(['SAR' => 'SAR - ريال سعودي'])
+                            ->default('SAR')
+                            ->disabled()
+                            ->dehydrated()
+                            ->required(),
 
                         Forms\Components\Select::make('country_id')
                             ->label(tr('forms.branch_transactions.country_id', [], null, 'dashboard') ?: 'Country')
-                            ->placeholder(tr('forms.common.select_placeholder', [], null, 'dashboard') ?: tr('forms.branch_transactions.select', [], null, 'dashboard') ?: 'Select')
                             ->options(function () {
-                                return Country::where('is_active', true)
-                                    ->get()
-                                    ->mapWithKeys(function ($country) {
-                                        return [$country->id => $country->name_text ?? $country->name['en'] ?? ''];
-                                    });
+                                $saudi = Country::where('iso2', 'SA')->first();
+                                return $saudi ? [$saudi->id => $saudi->name_text ?? ($saudi->name['ar'] ?? 'المملكة العربية السعودية')] : [];
                             })
-                            ->searchable()
-                            ->preload()
+                            ->default(fn () => Country::where('iso2', 'SA')->value('id'))
+                            ->disabled()
+                            ->dehydrated()
                             ->nullable(),
 
                         Forms\Components\TextInput::make('payment_method')
