@@ -72,17 +72,16 @@ class ImportBranchTransactionsPage extends Page implements HasForms
                         Forms\Components\Select::make('branch_id')
                             ->label(tr('forms.branch_transactions.branch_id', [], null, 'dashboard') ?: 'Branch')
                             ->placeholder(tr('forms.common.select_placeholder', [], null, 'dashboard') ?: tr('forms.branch_transactions.select', [], null, 'dashboard') ?: 'Select')
-                            ->options(function () {
-                                return Branch::where('status', 'active')
-                                    ->get()
-                                    ->pluck('name', 'id');
+                            ->options(function () use ($canViewAllBranches, $userBranches) {
+                                $query = Branch::where('status', 'active');
+                                if (!$canViewAllBranches && !empty($userBranches)) {
+                                    $query->whereIn('id', $userBranches);
+                                }
+                                return $query->pluck('name', 'id');
                             })
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->disabled(fn () => !$canViewAllBranches)
-                            ->default(fn () => !$canViewAllBranches && !empty($userBranches) ? $userBranches[0] : null)
-                            ->visible(fn () => $canViewAllBranches || !empty($userBranches))
                             ->reactive(),
 
                         Forms\Components\Select::make('kind')
