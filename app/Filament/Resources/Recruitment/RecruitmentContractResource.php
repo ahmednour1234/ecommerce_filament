@@ -700,6 +700,18 @@ class RecruitmentContractResource extends Resource
                     ->sortable()
                     ->toggleable(),
 
+                Tables\Columns\TextColumn::make('nationality_display')
+                    ->label(tr('recruitment_contract.fields.nationality', [], null, 'dashboard') ?: 'الجنسية')
+                    ->getStateUsing(function (RecruitmentContract $record): string {
+                        $nationality = $record->worker?->nationality ?? $record->nationality;
+                        if (!$nationality) {
+                            return '—';
+                        }
+                        return app()->getLocale() === 'ar' ? ($nationality->name_ar ?? '—') : ($nationality->name_en ?? '—');
+                    })
+                    ->sortable(query: fn ($query, string $direction) => $query->orderBy('nationality_id', $direction))
+                    ->toggleable(),
+
                 Tables\Columns\BadgeColumn::make('status')
                     ->label(tr('recruitment_contract.fields.status', [], null, 'dashboard') ?: 'Status')
                     ->color(fn (string $state): string => match ($state) {
