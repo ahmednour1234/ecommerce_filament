@@ -543,6 +543,20 @@ class RecruitmentContractResource extends Resource
                                             ->nullable()
                                             ->disabled(fn () => static::isCoordinationTabDisabled())
                                             ->columnSpan(1),
+                                        Forms\Components\Select::make('agent_id')
+                                            ->label(tr('recruitment_contract.fields.agent', [], null, 'dashboard') ?: 'الوكيل')
+                                            ->options(function () {
+                                                return Agent::query()
+                                                    ->get()
+                                                    ->mapWithKeys(function ($agent) {
+                                                        $label = app()->getLocale() === 'ar' ? $agent->name_ar : $agent->name_en;
+                                                        return [$agent->id => $label];
+                                                    });
+                                            })
+                                            ->searchable()
+                                            ->nullable()
+                                            ->disabled(fn () => static::isCoordinationTabDisabled())
+                                            ->columnSpan(1),
                                         Forms\Components\Select::make('current_section')
                                             ->label('العقد عند القسم')
                                             ->options(RecruitmentContract::currentSectionOptions())
