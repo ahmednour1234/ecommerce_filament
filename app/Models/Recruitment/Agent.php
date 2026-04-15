@@ -18,6 +18,7 @@ class Agent extends Model
         'name_en',
         'email',
         'country_id',
+        'nationality_id',
         'city_ar',
         'city_en',
         'address_ar',
@@ -44,6 +45,11 @@ class Agent extends Model
     public function country(): BelongsTo
     {
         return $this->belongsTo(Country::class);
+    }
+
+    public function nationality(): BelongsTo
+    {
+        return $this->belongsTo(Nationality::class);
     }
 
     public function laborPrices(): HasMany
