@@ -64,30 +64,83 @@
         {{-- Stats row 1 (4 cards) --}}
         <div class="lg:col-span-4 grid grid-cols-2 md:grid-cols-4 gap-4">
             @php
-            $stats1 = [
-                ['icon' => '📋', 'label' => 'إجمالي عقود الاستقدام',    'id' => 'stat-totalContracts',     'value' => $totalContracts,      'sub' => 'عقود الاستقدام الكلية', 'url' => url('/admin/recruitment/recruitment-contracts')],
-                ['icon' => '⏳', 'label' => 'عقود الاستقدام قيد التنفيذ', 'id' => 'stat-inProgress',         'value' => $inProgressContracts, 'sub' => 'تحتاج متابعة يومية',     'url' => url('/admin/recruitment/recruitment-contracts')],
-                ['icon' => '✉️', 'label' => 'طلبات الإجازة',     'id' => 'stat-pendingLeave',       'value' => $pendingLeave,         'sub' => 'بانتظار الاعتماد',        'url' => url('/admin/h-r/leave-requests')],
-                ['icon' => '🕐', 'label' => 'طلبات الاستئذان',   'id' => 'stat-pendingExcuse',      'value' => $pendingExcuse,        'sub' => 'معلقة لدى الإدارة',       'url' => url('/admin/h-r/excuse-requests')],
+            $baseUrl = url('/admin/recruitment/recruitment-contracts');
+            $sections = [
+                ['label' => 'عقود قسم الحسابات',   'key' => 'accounts',         'color' => 'blue',   'icon' => '🧾'],
+                ['label' => 'عقود قسم التنسيق',     'key' => 'coordination',     'color' => 'purple', 'icon' => '📌'],
+                ['label' => 'عقود خدمة العملاء',    'key' => 'customer_service', 'color' => 'emerald','icon' => '🤝'],
+                ['label' => 'عقود تم التسليم',      'key' => '_received',        'color' => 'gray',   'icon' => '✅'],
+            ];
+            $colorMap = [
+                'blue'    => ['bg'=>'bg-blue-50',    'text'=>'text-blue-700',    'dot'=>'bg-blue-500'],
+                'purple'  => ['bg'=>'bg-purple-50',  'text'=>'text-purple-700',  'dot'=>'bg-purple-500'],
+                'emerald' => ['bg'=>'bg-emerald-50', 'text'=>'text-emerald-700', 'dot'=>'bg-emerald-500'],
+                'gray'    => ['bg'=>'bg-gray-50',    'text'=>'text-gray-700',    'dot'=>'bg-gray-400'],
             ];
             @endphp
-            @foreach($stats1 as $stat)
-            <a href="{{ $stat['url'] }}" class="bg-white rounded-2xl p-5 stat-card flex flex-col gap-3 hover:shadow-lg transition-all" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
+            @foreach($sections as $sec)
+            @php
+            $cnt = $sec['key'] === '_received'
+                ? ($statusCounts['received'] ?? 0)
+                : ($sectionCounts[$sec['key']] ?? 0);
+            $href = $sec['key'] === '_received'
+                ? $baseUrl . '?tableFilters[status][value]=received'
+                : $baseUrl . '?tableFilters[current_section][value]=' . $sec['key'];
+            $c = $colorMap[$sec['color']];
+            @endphp
+            <a href="{{ $href }}" class="bg-white rounded-2xl p-5 stat-card flex flex-col gap-2 hover:shadow-lg transition-all" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
                 <div class="flex items-center justify-between">
-                    <div class="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-xl border border-gray-100">{{ $stat['icon'] }}</div>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#d1d5db" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    <div class="w-9 h-9 rounded-xl {{ $c['bg'] }} flex items-center justify-center text-lg">{{ $sec['icon'] }}</div>
+                    <span class="w-2 h-2 rounded-full {{ $c['dot'] }}"></span>
                 </div>
                 <div class="text-right">
-                    <p class="text-xs text-gray-400 font-medium">{{ $stat['label'] }}</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-0.5 leading-none" id="{{ $stat['id'] }}">{{ number_format($stat['value']) }}</p>
-                    <p class="text-xs text-gray-400 mt-1">{{ $stat['sub'] }}</p>
+                    <p class="text-xs text-gray-400 font-medium leading-snug">{{ $sec['label'] }}</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-0.5 leading-none">{{ number_format($cnt) }}</p>
                 </div>
             </a>
             @endforeach
         </div>
     </div>
 
-    {{-- ══════════════════ STATS ROW 2 ══════════════════ --}}
+    {{-- ══════════════════ CONTRACT STATUS CARDS ══════════════════ --}}
+    @php
+    $statusLabels = [
+        'new'                              => ['label' => 'جديد',                                   'color' => '#3b82f6'],
+        'external_office_approval'         => ['label' => 'بانتظار موافقة المكتب الخارجي',         'color' => '#f59e0b'],
+        'contract_accepted_external_office'=> ['label' => 'قبول العقد من المكتب الخارجي',         'color' => '#f59e0b'],
+        'waiting_approval'                 => ['label' => 'انتظار الموافقة',                       'color' => '#8b5cf6'],
+        'contract_accepted_labor_ministry' => ['label' => 'قبول العقد من وزارة العمل',            'color' => '#8b5cf6'],
+        'sent_to_saudi_embassy'            => ['label' => 'إرسال التأشيرة إلى السفارة السعودية',  'color' => '#06b6d4'],
+        'visa_issued'                      => ['label' => 'إصدار التأشيرة',                        'color' => '#10b981'],
+        'visa_cancelled'                   => ['label' => 'إلغاء التفييز',                         'color' => '#ef4444'],
+        'travel_permit_after_visa_issued'  => ['label' => 'تصريح سفر بعد تم التفييز',             'color' => '#14b8a6'],
+        'waiting_flight_booking'           => ['label' => 'انتظار حجز تذكرة الطيران',             'color' => '#f97316'],
+        'arrival_scheduled'                => ['label' => 'معاد الوصول',                           'color' => '#6366f1'],
+        'received'                         => ['label' => 'تم الاستلام',                           'color' => '#22c55e'],
+        'return_during_warranty'           => ['label' => 'رجع خلال فترة الضمان',                 'color' => '#f43f5e'],
+        'runaway'                          => ['label' => 'هروب',                                  'color' => '#dc2626'],
+    ];
+    $baseUrl = url('/admin/recruitment/recruitment-contracts');
+    @endphp
+    <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
+        <div class="flex items-center justify-between mb-5">
+            <a href="{{ $baseUrl }}" class="text-xs text-emerald-600 hover:underline font-medium">عرض كل العقود ←</a>
+            <h3 class="text-sm font-bold text-gray-900">حالات عقود الاستقدام</h3>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-3">
+            @foreach($statusLabels as $statusKey => $info)
+            @php $cnt = $statusCounts[$statusKey] ?? 0; @endphp
+            <a href="{{ $baseUrl }}?tableFilters[status][value]={{ $statusKey }}"
+               class="rounded-xl p-3 text-right hover:scale-105 transition-all cursor-pointer border"
+               style="background:{{ $info['color'] }}12; border-color:{{ $info['color'] }}30;">
+                <p class="text-2xl font-bold leading-none" style="color:{{ $info['color'] }};">{{ $cnt }}</p>
+                <p class="text-xs text-gray-600 mt-1.5 leading-snug font-medium">{{ $info['label'] }}</p>
+            </a>
+            @endforeach
+        </div>
+    </div>
+
+    {{-- ══════════════════ STATS ROW 2 (HR/Finance quick stats) ══════════════════ --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         @php
         $stats2 = [
@@ -114,27 +167,15 @@
 
     {{-- ══════════════════ CHARTS ROW ══════════════════ --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {{-- Nationality bars --}}
+        {{-- Branch comparison bar chart --}}
         <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
-            <h3 class="text-sm font-bold text-gray-900 text-right mb-5">الجنسيات الأكثر طلباً</h3>
-            @php
-            $maxNat = $topNationalities->max('count') ?: 1;
-            @endphp
-            @foreach($topNationalities as $nat)
-            <div class="mb-4">
-                <div class="flex items-center justify-between mb-1">
-                    <span class="text-xs text-gray-500">{{ $nat['percent'] }}%</span>
-                    <span class="text-sm font-semibold text-gray-800">{{ $nat['name'] }}</span>
-                </div>
-                <div class="h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                    <div class="h-full bg-blue-500 rounded-full"
-                         style="width: {{ $nat['percent'] }}%"></div>
-                </div>
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-full">آخر 6 أشهر</span>
+                <h3 class="text-sm font-bold text-gray-900">مقارنة العقود بين الفروع</h3>
             </div>
-            @endforeach
-            @if($topNationalities->isEmpty())
-            <p class="text-center text-gray-400 text-sm py-8">لا توجد بيانات</p>
-            @endif
+            <canvas id="branchComparisonChart" height="200"></canvas>
+            {{-- legend --}}
+            <div class="flex flex-wrap gap-4 justify-center mt-4" id="branchLegend"></div>
         </div>
 
         {{-- Monthly bar chart --}}
@@ -420,7 +461,58 @@
 {{-- Chart.js script --}}
 <script>
 (function () {
-    // ── Initial data from server ───────────────────────
+    // ── Branch comparison chart ────────────────────────────────
+    const bcMonths = @json($branchComparisonMonths);
+    const bcData   = @json($branchComparisonData);
+    const branchColors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
+
+    const bcCtx = document.getElementById('branchComparisonChart');
+    if (bcCtx && Object.keys(bcData).length > 0) {
+        const datasets = Object.entries(bcData).map(([name, data], i) => ({
+            label: name,
+            data,
+            backgroundColor: branchColors[i % branchColors.length],
+            borderRadius: 6,
+            borderSkipped: false,
+        }));
+
+        new Chart(bcCtx, {
+            type: 'bar',
+            data: { labels: bcMonths, datasets },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { rtl: true, textDirection: 'rtl' }
+                },
+                scales: {
+                    x: {
+                        reverse: true,
+                        grid: { display: false },
+                        ticks: { font: { family: 'Cairo', size: 11 } }
+                    },
+                    y: {
+                        grid: { color: '#f3f4f6' },
+                        ticks: { font: { family: 'Cairo', size: 11 }, stepSize: 1 }
+                    }
+                }
+            }
+        });
+
+        // Build legend
+        const legend = document.getElementById('branchLegend');
+        if (legend) {
+            Object.keys(bcData).forEach((name, i) => {
+                legend.innerHTML += `<span class="flex items-center gap-1.5 text-xs text-gray-600 font-medium">
+                    <span class="w-3 h-3 rounded-full inline-block" style="background:${branchColors[i % branchColors.length]}"></span>${name}
+                </span>`;
+            });
+        }
+    } else if (bcCtx) {
+        bcCtx.closest('.bg-white').innerHTML += '<p class="text-center text-gray-400 text-sm py-8">لا توجد بيانات للفروع المحددة</p>';
+    }
+
+    // ── Monthly total chart ────────────────────────────────────
     let chartLabels = @json($months);
     let chartData   = @json($monthlyData);
 

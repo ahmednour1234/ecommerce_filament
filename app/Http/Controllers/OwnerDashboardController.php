@@ -45,6 +45,40 @@ class OwnerDashboardController extends Controller
         $pendingFinance   = BranchTransaction::where('status', 'pending')->count();
         $todayPending     = $pendingLeave + $pendingExcuse + $pendingJournals + $pendingFinance + $openComplaints;
 
+        // ── Contracts by section ─────────────────────────────────────────
+        $sectionCounts = RecruitmentContract::select('current_section', DB::raw('count(*) as total'))
+            ->groupBy('current_section')
+            ->pluck('total', 'current_section')
+            ->toArray();
+
+        // ── Contracts by status ───────────────────────────────────────────
+        $statusCounts = RecruitmentContract::select('status', DB::raw('count(*) as total'))
+            ->groupBy('status')
+            ->pluck('total', 'status')
+            ->toArray();
+
+        // ── Branch comparison chart (الرياض, عرعر, حفر الباطن) ───────────
+        $comparisonBranches = Branch::where('status', 'active')
+            ->where(function ($q) {
+                $q->where('name', 'like', '%الرياض%')
+                  ->orWhere('name', 'like', '%عرعر%')
+                  ->orWhere('name', 'like', '%حفر الباطن%');
+            })
+            ->get();
+
+        $branchComparisonMonths = [];
+        $branchComparisonData   = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $date = Carbon::now()->subMonths($i);
+            $branchComparisonMonths[] = $this->arabicMonths[$date->month];
+            foreach ($comparisonBranches as $br) {
+                $branchComparisonData[$br->name][] = RecruitmentContract::where('branch_id', $br->id)
+                    ->whereYear('created_at', $date->year)
+                    ->whereMonth('created_at', $date->month)
+                    ->count();
+            }
+        }
+
         // ── Monthly contracts chart (last 6 months) ───────────────────────
         $months       = [];
         $monthlyData  = [];
@@ -155,6 +189,10 @@ class OwnerDashboardController extends Controller
             'approvedToday',
             'resolvedComplaints',
             'activeContracts',
+            'sectionCounts',
+            'statusCounts',
+            'branchComparisonMonths',
+            'branchComparisonData',
         ));
     }
 
