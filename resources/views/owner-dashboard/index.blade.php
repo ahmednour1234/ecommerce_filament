@@ -7,41 +7,32 @@
 
     {{-- ══════════════════ TOP NAV CARD ══════════════════ --}}
     <div class="bg-white rounded-2xl shadow-sm p-5">
-        <div class="flex flex-col lg:flex-row lg:items-center gap-4">
-            {{-- Title --}}
+        <div class="flex flex-col lg:flex-row-reverse lg:items-start gap-4">
+            {{-- Title (right side in RTL = flex-row-reverse start) --}}
             <div class="flex-1 text-right">
                 <h1 class="text-2xl font-bold text-gray-900">لوحة تحكم مكتب الاستقدام</h1>
                 <p class="text-sm text-gray-500 mt-1">واجهة سهلة وواضحة لمتابعة الطلبات، الموارد البشرية، المحاسبة، الفروع، والشكاوى</p>
             </div>
 
-            {{-- Nav Pills --}}
-            <div class="flex flex-wrap gap-2 justify-center lg:justify-end">
+            {{-- Nav Pills (left side) --}}
+            <div class="flex flex-wrap gap-2 justify-start">
                 <a href="{{ route('owner.dashboard') }}"
                    class="px-4 py-2 rounded-full text-sm font-semibold bg-emerald-500 text-white">الرئيسية</a>
-                <a href="{{ url('/admin/recruitment-contracts') }}"
+                <a href="{{ route('filament.admin.resources.recruitment-contracts.index') }}"
                    class="px-4 py-2 rounded-full text-sm text-gray-600 hover:bg-gray-100">الطلبات</a>
-                <a href="{{ url('/admin/hr/employees') }}"
+                <a href="{{ route('filament.admin.resources.employees.index') }}"
                    class="px-4 py-2 rounded-full text-sm text-gray-600 hover:bg-gray-100">الموارد البشرية</a>
-                <a href="{{ url('/admin/rental-contracts') }}"
+                <a href="{{ route('filament.admin.resources.rental-contracts.index') }}"
                    class="px-4 py-2 rounded-full text-sm text-gray-600 hover:bg-gray-100">العقود</a>
-                <a href="{{ url('/admin/accounting') }}"
+                <a href="{{ route('filament.admin.resources.journal-entries.index') }}"
                    class="px-4 py-2 rounded-full text-sm text-gray-600 hover:bg-gray-100">المحاسبة</a>
-                <a href="{{ url('/admin/complaints') }}"
+                <a href="{{ route('filament.admin.resources.complaints.index') }}"
                    class="px-4 py-2 rounded-full text-sm text-gray-600 hover:bg-gray-100">الشكاوى</a>
-                <a href="{{ url('/admin/branches') }}"
+                <a href="{{ route('filament.admin.resources.branches.index') }}"
                    class="px-4 py-2 rounded-full text-sm text-gray-600 hover:bg-gray-100">الفروع</a>
-                <a href="{{ url('/admin/reports') }}"
+                <a href="{{ route('filament.admin.pages.dashboard') }}"
                    class="px-4 py-2 rounded-full text-sm text-gray-600 hover:bg-gray-100">التقارير</a>
             </div>
-        </div>
-
-        {{-- Search + Action --}}
-        <div class="flex flex-col sm:flex-row items-center gap-3 mt-4">
-            <button class="flex items-center gap-2 bg-gray-900 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-800">
-                <span>+</span> إضافة معاملة
-            </button>
-            <input type="text" placeholder="ابحث عن طلب، عميل، موظف، أو فرع..."
-                   class="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-right outline-none focus:ring-2 focus:ring-emerald-300">
         </div>
     </div>
 
@@ -150,18 +141,18 @@
             </div>
             <div class="space-y-3">
                 <div class="bg-amber-50 border border-amber-100 rounded-xl p-4 flex items-center justify-between">
+                    <span class="text-2xl font-bold text-amber-600">{{ $pendingJournals }}</span>
                     <div class="text-right">
                         <p class="font-bold text-gray-900 text-sm">قيود يومية تنتظر الاعتماد</p>
                         <p class="text-xs text-gray-500 mt-0.5">تحتاج اعتماد سريع</p>
                     </div>
-                    <span class="text-2xl font-bold text-amber-600">{{ $pendingJournals }}</span>
                 </div>
                 <div class="bg-amber-50 border border-amber-100 rounded-xl p-4 flex items-center justify-between">
+                    <span class="text-2xl font-bold text-amber-600">{{ $pendingVouchers }}</span>
                     <div class="text-right">
                         <p class="font-bold text-gray-900 text-sm">سندات صرف تنتظر الموافقة</p>
                         <p class="text-xs text-gray-500 mt-0.5">تحتاج اعتماد سريع</p>
                     </div>
-                    <span class="text-2xl font-bold text-amber-600">{{ $pendingVouchers }}</span>
                 </div>
             </div>
         </div>
@@ -350,13 +341,19 @@
     </div>
 
     {{-- ══════════════════ BRANCH COMPLAINTS RESOLUTION ══════════════════ --}}
+    @php
+    $targetBranches = ['الرياض', 'عرعر', 'حفر الباطن'];
+    $filteredBranchStats = collect($branchStats)->filter(
+        fn($b) => in_array($b['name'], $targetBranches)
+    )->values();
+    @endphp
     <div class="bg-white rounded-2xl p-6 shadow-sm">
         <div class="flex items-center justify-between mb-5">
             <p class="text-xs text-gray-400">كلما ارتفعت نسبة الحل كان الأداء أفضل</p>
             <h3 class="text-base font-bold text-gray-900">أداء الفروع في معالجة الشكاوى</h3>
         </div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            @forelse($branchStats as $b)
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            @forelse($filteredBranchStats as $b)
             <div class="border border-gray-100 rounded-xl p-4 text-right">
                 <div class="flex items-center justify-between mb-2">
                     <span class="text-xs text-emerald-600 font-semibold">{{ $b['resolve_rate'] }}% حل</span>
@@ -371,7 +368,7 @@
                 </div>
             </div>
             @empty
-            <div class="col-span-4 text-center text-gray-400 py-6">لا توجد بيانات فروع</div>
+            <div class="col-span-3 text-center text-gray-400 py-6">لا توجد بيانات للفروع المحددة</div>
             @endforelse
         </div>
     </div>
