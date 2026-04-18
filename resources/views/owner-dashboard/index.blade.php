@@ -66,7 +66,7 @@
             @php
             $baseUrl = url('/admin/recruitment/recruitment-contracts');
             $sections = [
-                ['label' => 'عقود قسم الحسابات',   'key' => 'accounts',         'color' => 'blue',   'icon' => '🧾'],
+                ['label' => 'عقود قسم الاستقدام',  'key' => 'accounts',         'color' => 'blue',   'icon' => '🧾'],
                 ['label' => 'عقود قسم التنسيق',     'key' => 'coordination',     'color' => 'purple', 'icon' => '📌'],
                 ['label' => 'عقود خدمة العملاء',    'key' => 'customer_service', 'color' => 'emerald','icon' => '🤝'],
                 ['label' => 'عقود تم التسليم',      'key' => '_received',        'color' => 'gray',   'icon' => '✅'],
