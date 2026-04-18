@@ -10,9 +10,12 @@ Route::get('/', function () {
 });
 
 // Owner Dashboard (company_owner only)
-Route::middleware(['web', 'auth', 'company.owner'])
-    ->get('/owner-dashboard', [OwnerDashboardController::class, 'index'])
-    ->name('owner.dashboard');
+Route::middleware(['web', 'auth', 'company.owner'])->group(function () {
+    Route::get('/owner-dashboard', [OwnerDashboardController::class, 'index'])
+        ->name('owner.dashboard');
+    Route::post('/owner-dashboard/filter', [OwnerDashboardController::class, 'filter'])
+        ->name('owner.dashboard.filter');
+});
 
 // Public storage files route - allow direct access to all storage files
 Route::get('/storage/{path}', function ($path) {

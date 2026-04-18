@@ -5,6 +5,39 @@
 @section('content')
 <div class="max-w-screen-2xl mx-auto space-y-5">
 
+    {{-- ══════════════════ FILTER BAR ══════════════════ --}}
+    <div class="bg-white rounded-2xl px-5 py-4 flex flex-wrap items-center gap-3" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
+        <div class="flex items-center gap-2 text-gray-500 text-xs font-medium ml-auto">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/></svg>
+            تصفية البيانات
+        </div>
+
+        <select id="filterBranch" class="text-sm border border-gray-200 rounded-xl px-3 py-2 text-gray-700 bg-gray-50 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 cursor-pointer" style="min-width:140px;">
+            <option value="">كل الفروع</option>
+            @foreach(\App\Models\MainCore\Branch::where('status','active')->get() as $br)
+            <option value="{{ $br->id }}">{{ $br->name }}</option>
+            @endforeach
+        </select>
+
+        <select id="filterPeriod" class="text-sm border border-gray-200 rounded-xl px-3 py-2 text-gray-700 bg-gray-50 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 cursor-pointer" style="min-width:140px;">
+            <option value="6">آخر 6 أشهر</option>
+            <option value="3">آخر 3 أشهر</option>
+            <option value="12">آخر 12 شهر</option>
+            <option value="1">الشهر الحالي</option>
+        </select>
+
+        <input type="date" id="filterFrom" class="text-sm border border-gray-200 rounded-xl px-3 py-2 text-gray-700 bg-gray-50 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400" placeholder="من تاريخ">
+        <input type="date" id="filterTo" class="text-sm border border-gray-200 rounded-xl px-3 py-2 text-gray-700 bg-gray-50 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400" placeholder="إلى تاريخ">
+
+        <button id="applyFilter" class="text-sm font-semibold text-white bg-emerald-500 hover:bg-emerald-600 px-4 py-2 rounded-xl transition-colors flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/></svg>
+            تطبيق
+        </button>
+        <button id="resetFilter" class="text-sm font-medium text-gray-500 hover:text-gray-700 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors">
+            إعادة تعيين
+        </button>
+    </div>
+
     {{-- ══════════════════ ROW: DARK SUMMARY + STATS ══════════════════ --}}
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
         {{-- Dark summary card --}}
@@ -12,7 +45,7 @@
             <div class="absolute inset-0 opacity-10" style="background:radial-gradient(circle at 20% 80%, #10b981 0%, transparent 60%);"></div>
             <div class="relative">
                 <p class="text-xs font-medium mb-1" style="color:#8b949e;">إجراءات اليوم</p>
-                <p class="text-5xl font-bold text-white">{{ $todayPending }}</p>
+                <p class="text-5xl font-bold text-white" id="stat-todayPending">{{ $todayPending }}</p>
                 <p class="text-xs mt-1" style="color:#8b949e;">تحتاج متابعة من الإدارة</p>
             </div>
             <div class="mt-4 pt-4 relative" style="border-top:1px solid rgba(255,255,255,.07);">
@@ -32,10 +65,10 @@
         <div class="lg:col-span-4 grid grid-cols-2 md:grid-cols-4 gap-4">
             @php
             $stats1 = [
-                ['icon' => '📋', 'label' => 'إجمالي عقود الاستقدام',    'value' => $totalContracts,      'sub' => 'عقود الاستقدام الكلية', 'url' => url('/admin/recruitment/recruitment-contracts')],
-                ['icon' => '⏳', 'label' => 'عقود الاستقدام قيد التنفيذ', 'value' => $inProgressContracts, 'sub' => 'تحتاج متابعة يومية',     'url' => url('/admin/recruitment/recruitment-contracts')],
-                ['icon' => '✉️', 'label' => 'طلبات الإجازة',     'value' => $pendingLeave,         'sub' => 'بانتظار الاعتماد',        'url' => url('/admin/h-r/leave-requests')],
-                ['icon' => '🕐', 'label' => 'طلبات الاستئذان',   'value' => $pendingExcuse,        'sub' => 'معلقة لدى الإدارة',       'url' => url('/admin/h-r/excuse-requests')],
+                ['icon' => '📋', 'label' => 'إجمالي عقود الاستقدام',    'id' => 'stat-totalContracts',     'value' => $totalContracts,      'sub' => 'عقود الاستقدام الكلية', 'url' => url('/admin/recruitment/recruitment-contracts')],
+                ['icon' => '⏳', 'label' => 'عقود الاستقدام قيد التنفيذ', 'id' => 'stat-inProgress',         'value' => $inProgressContracts, 'sub' => 'تحتاج متابعة يومية',     'url' => url('/admin/recruitment/recruitment-contracts')],
+                ['icon' => '✉️', 'label' => 'طلبات الإجازة',     'id' => 'stat-pendingLeave',       'value' => $pendingLeave,         'sub' => 'بانتظار الاعتماد',        'url' => url('/admin/h-r/leave-requests')],
+                ['icon' => '🕐', 'label' => 'طلبات الاستئذان',   'id' => 'stat-pendingExcuse',      'value' => $pendingExcuse,        'sub' => 'معلقة لدى الإدارة',       'url' => url('/admin/h-r/excuse-requests')],
             ];
             @endphp
             @foreach($stats1 as $stat)
@@ -46,7 +79,7 @@
                 </div>
                 <div class="text-right">
                     <p class="text-xs text-gray-400 font-medium">{{ $stat['label'] }}</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-0.5 leading-none">{{ number_format($stat['value']) }}</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-0.5 leading-none" id="{{ $stat['id'] }}">{{ number_format($stat['value']) }}</p>
                     <p class="text-xs text-gray-400 mt-1">{{ $stat['sub'] }}</p>
                 </div>
             </a>
@@ -58,10 +91,10 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         @php
         $stats2 = [
-            ['icon' => '🏢', 'label' => 'العقود الإيجارية',    'value' => $activeRentals,          'sub' => 'عقود فعالة حالياً',  'url' => url('/admin/rental/rental-contracts')],
-            ['icon' => '💰', 'label' => 'معاملات مالية تحتاج موافقة', 'value' => $pendingJournals,        'sub' => 'في قسم المالية',   'url' => url('/admin/finance/branch-transactions') . '?tableFilters[status][value]=pending'],
-            ['icon' => '✍️', 'label' => 'عدد الشكاوى',        'value' => $openComplaints,         'sub' => 'مفتوحة ومعلقة',     'url' => url('/admin/complaints')],
-            ['icon' => '⭐', 'label' => 'نسبة رضا العملاء',   'value' => $satisfactionRate . '%', 'sub' => 'مؤشر عام ممتاز',    'url' => url('/admin/complaints')],
+            ['icon' => '🏢', 'label' => 'العقود الإيجارية',    'id' => 'stat-activeRentals',      'value' => $activeRentals,          'sub' => 'عقود فعالة حالياً',  'url' => url('/admin/rental/rental-contracts')],
+            ['icon' => '💰', 'label' => 'معاملات مالية تحتاج موافقة', 'id' => 'stat-pendingJournals', 'value' => $pendingJournals,  'sub' => 'في قسم المالية',   'url' => url('/admin/finance/branch-transactions') . '?tableFilters[status][value]=pending'],
+            ['icon' => '✍️', 'label' => 'عدد الشكاوى',        'id' => 'stat-openComplaints',     'value' => $openComplaints,         'sub' => 'مفتوحة ومعلقة',     'url' => url('/admin/complaints')],
+            ['icon' => '⭐', 'label' => 'نسبة رضا العملاء',   'id' => 'stat-satisfactionRate',   'value' => $satisfactionRate . '%', 'sub' => 'مؤشر عام ممتاز',    'url' => url('/admin/complaints')],
         ];
         @endphp
         @foreach($stats2 as $stat)
@@ -72,7 +105,7 @@
             </div>
             <div class="text-right">
                 <p class="text-xs text-gray-400 font-medium">{{ $stat['label'] }}</p>
-                <p class="text-3xl font-bold text-gray-900 mt-0.5 leading-none">{{ $stat['value'] }}</p>
+                <p class="text-3xl font-bold text-gray-900 mt-0.5 leading-none" id="{{ $stat['id'] }}">{{ $stat['value'] }}</p>
                 <p class="text-xs text-gray-400 mt-1">{{ $stat['sub'] }}</p>
             </div>
         </a>
@@ -107,7 +140,7 @@
         {{-- Monthly bar chart --}}
         <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
             <div class="flex items-center justify-between mb-4">
-                <span class="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-full">آخر 6 أشهر</span>
+                <span id="chartPeriodLabel" class="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-full">آخر 6 أشهر</span>
                 <h3 class="text-sm font-bold text-gray-900">حركة عقود الاستقدام الشهرية</h3>
             </div>
             <canvas id="monthlyChart" height="180"></canvas>
@@ -314,16 +347,16 @@
             <div class="absolute inset-0 opacity-10" style="background:radial-gradient(circle at 80% 20%, #10b981 0%, transparent 55%);"></div>
             <h3 class="text-sm font-bold mb-3 text-right relative">مؤشر الإدارة اليومي</h3>
             <div class="relative text-center my-2">
-                <p class="text-6xl font-bold text-white">{{ $kpiRate }}%</p>
+                <p class="text-6xl font-bold text-white" id="stat-kpiRate">{{ $kpiRate }}%</p>
                 <div class="mt-3 h-1.5 rounded-full overflow-hidden mx-2" style="background:rgba(255,255,255,.1);">
-                    <div class="h-full bg-emerald-400 rounded-full" style="width:{{ $kpiRate }}%;"></div>
+                    <div class="h-full bg-emerald-400 rounded-full" id="kpi-bar" style="width:{{ $kpiRate }}%;"></div>
                 </div>
             </div>
             <p class="text-xs text-center mb-4 relative" style="color:#8b949e;">نسبة إنجاز المهام والاعتمادات اليومية</p>
             <div class="space-y-2 border-t border-gray-700 pt-4 text-sm relative">
                 <a href="{{ url('/admin/accounting/journal-entries') }}"
                    class="flex justify-between hover:text-emerald-400 transition-colors">
-                    <span class="text-white font-semibold">{{ $approvedToday }}</span>
+                    <span class="text-white font-semibold" id="stat-approvedToday">{{ $approvedToday }}</span>
                     <span class="text-gray-400">الموافقات المنجزة</span>
                 </a>
                 <a href="{{ url('/admin/complaints') }}"
@@ -379,18 +412,19 @@
 {{-- Chart.js script --}}
 <script>
 (function () {
-    const labels = @json($months);
-    const data   = @json($monthlyData);
+    // ── Initial data from server ───────────────────────
+    let chartLabels = @json($months);
+    let chartData   = @json($monthlyData);
 
     const ctx = document.getElementById('monthlyChart');
     if (!ctx) return;
 
-    new Chart(ctx, {
+    const chart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels,
+            labels: chartLabels,
             datasets: [{
-                data,
+                data: chartData,
                 backgroundColor: '#10b981',
                 borderRadius: 8,
                 borderSkipped: false,
@@ -411,6 +445,82 @@
                 }
             }
         }
+    });
+
+    // ── Filter logic ───────────────────────────────────
+    function getFilters() {
+        return {
+            branch_id : document.getElementById('filterBranch').value,
+            period    : document.getElementById('filterPeriod').value,
+            from      : document.getElementById('filterFrom').value,
+            to        : document.getElementById('filterTo').value,
+            _token    : '{{ csrf_token() }}'
+        };
+    }
+
+    function setLoading(on) {
+        document.getElementById('applyFilter').disabled = on;
+        document.getElementById('applyFilter').textContent = on ? '...' : 'تطبيق';
+    }
+
+    function applyFilters() {
+        const params = getFilters();
+        setLoading(true);
+
+        fetch('{{ route("owner.dashboard.filter") }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': params._token },
+            body: JSON.stringify(params)
+        })
+        .then(r => r.json())
+        .then(d => {
+            // Update chart
+            chart.data.labels   = d.months;
+            chart.data.datasets[0].data = d.monthlyData;
+            chart.update();
+
+            // Update period label
+            const pMap = {'1':'الشهر الحالي','3':'آخر 3 أشهر','6':'آخر 6 أشهر','12':'آخر 12 شهر'};
+            document.getElementById('chartPeriodLabel').textContent = pMap[params.period] || 'آخر 6 أشهر';
+
+            // Update stat cards
+            const ids = {
+                'stat-totalContracts'     : d.totalContracts,
+                'stat-inProgress'         : d.inProgressContracts,
+                'stat-pendingLeave'       : d.pendingLeave,
+                'stat-pendingExcuse'      : d.pendingExcuse,
+                'stat-activeRentals'      : d.activeRentals,
+                'stat-pendingJournals'    : d.pendingJournals,
+                'stat-openComplaints'     : d.openComplaints,
+                'stat-satisfactionRate'   : d.satisfactionRate + '%',
+                'stat-todayPending'       : d.todayPending,
+                'stat-pendingVouchers'    : d.pendingVouchers,
+                'stat-kpiRate'            : d.kpiRate + '%',
+                'stat-approvedToday'      : d.approvedToday,
+                'stat-resolvedComplaints' : d.resolvedComplaints,
+                'stat-activeContracts'    : d.activeContracts,
+            };
+            Object.entries(ids).forEach(([id, val]) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = val;
+            });
+
+            // KPI bar
+            const kpiBar = document.getElementById('kpi-bar');
+            if (kpiBar) kpiBar.style.width = d.kpiRate + '%';
+        })
+        .catch(() => {})
+        .finally(() => setLoading(false));
+    }
+
+    document.getElementById('applyFilter').addEventListener('click', applyFilters);
+
+    document.getElementById('resetFilter').addEventListener('click', function () {
+        document.getElementById('filterBranch').value = '';
+        document.getElementById('filterPeriod').value = '6';
+        document.getElementById('filterFrom').value   = '';
+        document.getElementById('filterTo').value     = '';
+        applyFilters();
     });
 })();
 </script>

@@ -17,6 +17,12 @@ use App\Models\Recruitment\Nationality;
 
 class OwnerDashboardController extends Controller
 {
+    private array $arabicMonths = [
+        1 => 'يناير', 2 => 'فبراير', 3 => 'مارس', 4 => 'أبريل',
+        5 => 'مايو', 6 => 'يونيو', 7 => 'يوليو', 8 => 'أغسطس',
+        9 => 'سبتمبر', 10 => 'أكتوبر', 11 => 'نوفمبر', 12 => 'ديسمبر',
+    ];
+
     public function index()
     {
         // ── Stats row 1 ──────────────────────────────────────────────────
@@ -44,7 +50,7 @@ class OwnerDashboardController extends Controller
         $monthlyData  = [];
         for ($i = 5; $i >= 0; $i--) {
             $date      = Carbon::now()->subMonths($i);
-            $months[]  = $date->translatedFormat('F'); // Arabic month name
+            $months[]  = $this->arabicMonths[$date->month];
             $monthlyData[] = RecruitmentContract::whereYear('created_at', $date->year)
                 ->whereMonth('created_at', $date->month)
                 ->count();
@@ -150,5 +156,82 @@ class OwnerDashboardController extends Controller
             'resolvedComplaints',
             'activeContracts',
         ));
+    }
+
+    public function filter(Request $request)
+    {
+        $branchId = $request->input('branch_id');
+        $period   = (int) $request->input('period', 6);
+        $from     = $request->input('from');
+        $to       = $request->input('to');
+
+        // Date range helper
+        $applyDateRange = function ($query) use ($from, $to) {
+            if ($from) $query->whereDate('created_at', '>=', $from);
+            if ($to)   $query->whereDate('created_at', '<=', $to);
+            return $query;
+        };
+
+        $applyBranch = function ($query) use ($branchId) {
+            if ($branchId) $query->where('branch_id', $branchId);
+            return $query;
+        };
+
+        // ── Stats row 1 ──────────────────────────────────────────────────
+        $totalContracts      = $applyDateRange(RecruitmentContract::query())->count();
+        $inProgressContracts = $applyDateRange(RecruitmentContract::whereNotIn('status', ['received']))->count();
+        $pendingLeave        = LeaveRequest::where('status', 'pending')->count();
+        $pendingExcuse       = ExcuseRequest::where('status', 'pending')->count();
+
+        // ── Stats row 2 ──────────────────────────────────────────────────
+        $activeRentals    = RentalContract::where('status', 'active')->count();
+        $pendingJournals  = JournalEntry::where('status', 'pending_approval')->count();
+        $openComplaints   = $applyBranch(Complaint::whereIn('status', ['pending', 'in_progress']))->count();
+        $resolvedComplaints = $applyBranch(Complaint::where('status', 'resolved'))->count();
+        $totalComplaints  = $applyBranch(Complaint::query())->count();
+        $satisfactionRate = $totalComplaints > 0 ? round(($resolvedComplaints / $totalComplaints) * 100) : 0;
+
+        $pendingFinance   = $applyBranch(BranchTransaction::where('status', 'pending'))->count();
+        $todayPending     = $pendingLeave + $pendingExcuse + $pendingJournals + $pendingFinance + $openComplaints;
+
+        $pendingVouchers  = $pendingFinance;
+
+        // ── Monthly chart ─────────────────────────────────────────────────
+        $months      = [];
+        $monthlyData = [];
+        $numMonths   = max(1, min(12, $period));
+
+        for ($i = $numMonths - 1; $i >= 0; $i--) {
+            $date        = Carbon::now()->subMonths($i);
+            $months[]    = $this->arabicMonths[$date->month];
+            $q           = RecruitmentContract::whereYear('created_at', $date->year)
+                ->whereMonth('created_at', $date->month);
+            $monthlyData[] = $q->count();
+        }
+
+        // ── KPI ───────────────────────────────────────────────────────────
+        $approvedToday  = JournalEntry::where('status', 'approved')->whereDate('updated_at', today())->count();
+        $totalApprovals = JournalEntry::whereDate('updated_at', today())->count();
+        $kpiRate        = $totalApprovals > 0 ? round(($approvedToday / $totalApprovals) * 100) : 87;
+        $activeContracts = RentalContract::where('status', 'active')->count();
+
+        return response()->json([
+            'totalContracts'     => $totalContracts,
+            'inProgressContracts'=> $inProgressContracts,
+            'pendingLeave'       => $pendingLeave,
+            'pendingExcuse'      => $pendingExcuse,
+            'activeRentals'      => $activeRentals,
+            'pendingJournals'    => $pendingJournals,
+            'openComplaints'     => $openComplaints,
+            'satisfactionRate'   => $satisfactionRate,
+            'todayPending'       => $todayPending,
+            'pendingVouchers'    => $pendingVouchers,
+            'resolvedComplaints' => $resolvedComplaints,
+            'activeContracts'    => $activeContracts,
+            'approvedToday'      => $approvedToday,
+            'kpiRate'            => $kpiRate,
+            'months'             => $months,
+            'monthlyData'        => $monthlyData,
+        ]);
     }
 }
