@@ -275,6 +275,40 @@
 
     </div>
 
+    {{-- ══════════════════ BRANCH COMPLAINTS RESOLUTION ══════════════════ --}}
+    @php
+    $targetBranches = ['الرياض', 'عرعر', 'حفر الباطن'];
+    $filteredBranchStats = collect($branchStats)->filter(
+        fn($b) => in_array($b['name'], $targetBranches)
+    )->reverse()->values();
+    @endphp
+    <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
+        <div class="flex items-center justify-between mb-5">
+            <span class="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-full">كلما ارتفعت نسبة الحل كان الأداء أفضل</span>
+            <h3 class="text-sm font-bold text-gray-900">أداء الفروع في معالجة الشكاوى</h3>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            @forelse($filteredBranchStats as $b)
+            <a href="{{ url('/admin/complaints') }}"
+               class="border border-gray-100 rounded-xl p-4 text-right hover:shadow-md transition-shadow block">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs text-emerald-600 font-semibold">{{ $b['resolve_rate'] }}% حل</span>
+                    <span class="font-bold text-gray-900 text-sm">{{ $b['name'] }}</span>
+                </div>
+                <div class="h-2 bg-gray-100 rounded-full overflow-hidden mb-2">
+                    <div class="h-full bg-emerald-500 rounded-full" style="width: {{ $b['resolve_rate'] }}%"></div>
+                </div>
+                <div class="flex justify-between text-xs text-gray-400">
+                    <span>معلق: %{{ $b['pending_rate'] }}</span>
+                    <span>تم الحل: %{{ $b['resolve_rate'] }}</span>
+                </div>
+            </a>
+            @empty
+            <div class="col-span-3 text-center text-gray-400 py-6">لا توجد بيانات للفروع المحددة</div>
+            @endforelse
+        </div>
+    </div>
+
     {{-- ══════════════════ STATS ROW 2 (HR/Finance quick stats) ══════════════════ --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         @php
@@ -531,40 +565,6 @@
                     <span class="text-gray-400">العقود النشطة</span>
                 </a>
             </div>
-        </div>
-    </div>
-
-    {{-- ══════════════════ BRANCH COMPLAINTS RESOLUTION ══════════════════ --}}
-    @php
-    $targetBranches = ['الرياض', 'عرعر', 'حفر الباطن'];
-    $filteredBranchStats = collect($branchStats)->filter(
-        fn($b) => in_array($b['name'], $targetBranches)
-    )->reverse()->values();
-    @endphp
-    <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
-        <div class="flex items-center justify-between mb-5">
-            <span class="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-full">كلما ارتفعت نسبة الحل كان الأداء أفضل</span>
-            <h3 class="text-sm font-bold text-gray-900">أداء الفروع في معالجة الشكاوى</h3>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            @forelse($filteredBranchStats as $b)
-            <a href="{{ url('/admin/complaints') }}"
-               class="border border-gray-100 rounded-xl p-4 text-right hover:shadow-md transition-shadow block">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs text-emerald-600 font-semibold">{{ $b['resolve_rate'] }}% حل</span>
-                    <span class="font-bold text-gray-900 text-sm">{{ $b['name'] }}</span>
-                </div>
-                <div class="h-2 bg-gray-100 rounded-full overflow-hidden mb-2">
-                    <div class="h-full bg-emerald-500 rounded-full" style="width: {{ $b['resolve_rate'] }}%"></div>
-                </div>
-                <div class="flex justify-between text-xs text-gray-400">
-                    <span>معلق: %{{ $b['pending_rate'] }}</span>
-                    <span>تم الحل: %{{ $b['resolve_rate'] }}</span>
-                </div>
-            </a>
-            @empty
-            <div class="col-span-3 text-center text-gray-400 py-6">لا توجد بيانات للفروع المحددة</div>
-            @endforelse
         </div>
     </div>
 
