@@ -3,51 +3,42 @@
 @section('title', 'لوحة تحكم مكتب الاستقدام')
 
 @section('content')
-<div class="max-w-screen-2xl mx-auto px-4 py-6 space-y-6">
+<div class="max-w-screen-2xl mx-auto space-y-5">
 
-    {{-- ══════════════════ TOP NAV CARD ══════════════════ --}}
-    <div class="bg-white rounded-2xl shadow-sm p-5">
-        <div class="flex flex-col lg:flex-row-reverse lg:items-start gap-4">
-            {{-- Title (right side in RTL = flex-row-reverse start) --}}
-            <div class="flex-1 text-right">
-                <h1 class="text-2xl font-bold text-gray-900">لوحة تحكم مكتب الاستقدام</h1>
-                <p class="text-sm text-gray-500 mt-1">واجهة سهلة وواضحة لمتابعة الطلبات، الموارد البشرية، المحاسبة، الفروع، والشكاوى</p>
-            </div>
-
-            {{-- Nav Pills (left side) --}}
-            <div class="flex flex-wrap gap-2 justify-start">
-                <a href="{{ route('owner.dashboard') }}"
-                   class="px-4 py-2 rounded-full text-sm font-semibold bg-emerald-500 text-white">الرئيسية</a>
-                <a href="{{ url('/admin/recruitment-contracts') }}"
-                   class="px-4 py-2 rounded-full text-sm text-gray-600 hover:bg-gray-100">الطلبات</a>
-                <a href="{{ url('/admin/employees') }}"
-                   class="px-4 py-2 rounded-full text-sm text-gray-600 hover:bg-gray-100">الموارد البشرية</a>
-                <a href="{{ url('/admin/rental-contracts') }}"
-                   class="px-4 py-2 rounded-full text-sm text-gray-600 hover:bg-gray-100">العقود</a>
-                <a href="{{ url('/admin/journal-entries') }}"
-                   class="px-4 py-2 rounded-full text-sm text-gray-600 hover:bg-gray-100">المحاسبة</a>
-                <a href="{{ url('/admin/complaints') }}"
-                   class="px-4 py-2 rounded-full text-sm text-gray-600 hover:bg-gray-100">الشكاوى</a>
-                <a href="{{ url('/admin/branches') }}"
-                   class="px-4 py-2 rounded-full text-sm text-gray-600 hover:bg-gray-100">الفروع</a>
-                <a href="{{ route('filament.admin.pages.dashboard') }}"
-                   class="px-4 py-2 rounded-full text-sm text-gray-600 hover:bg-gray-100">التقارير</a>
-            </div>
+    {{-- ══════════════════ PAGE HEADER ══════════════════ --}}
+    <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full">
+                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse inline-block"></span>
+                مباشر
+            </span>
+        </div>
+        <div class="text-right">
+            <h1 class="text-xl font-bold text-gray-900">لوحة تحكم مكتب الاستقدام</h1>
+            <p class="text-xs text-gray-400 mt-0.5">نظرة شاملة على أداء الشركة والطلبات والموارد البشرية</p>
         </div>
     </div>
 
     {{-- ══════════════════ ROW: DARK SUMMARY + STATS ══════════════════ --}}
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
         {{-- Dark summary card --}}
-        <div class="bg-gray-900 text-white rounded-2xl p-6 flex flex-col justify-between lg:col-span-1">
-            <div>
-                <p class="text-xs text-gray-400 font-medium mb-1">ملخص اليوم</p>
-                <p class="text-5xl font-bold">{{ $todayPending }}</p>
+        <div class="lg:col-span-1 rounded-2xl p-6 flex flex-col justify-between text-white relative overflow-hidden" style="background:linear-gradient(145deg,#0d1117 0%,#1a2332 100%);">
+            <div class="absolute inset-0 opacity-10" style="background:radial-gradient(circle at 20% 80%, #10b981 0%, transparent 60%);"></div>
+            <div class="relative">
+                <p class="text-xs font-medium mb-1" style="color:#8b949e;">إجراءات اليوم</p>
+                <p class="text-5xl font-bold text-white">{{ $todayPending }}</p>
+                <p class="text-xs mt-1" style="color:#8b949e;">تحتاج متابعة من الإدارة</p>
             </div>
-            <div class="mt-4">
-                <p class="text-xs text-gray-400">إجراء يحتاج متابعة من الإدارة</p>
-                <p class="text-sm font-semibold mt-2">{{ auth()->user()->name }}</p>
-                <p class="text-xs text-gray-400">صاحب الشركة</p>
+            <div class="mt-4 pt-4 relative" style="border-top:1px solid rgba(255,255,255,.07);">
+                <div class="flex items-center gap-2 justify-end">
+                    <div class="text-right">
+                        <p class="text-sm font-semibold text-white">{{ auth()->user()->name }}</p>
+                        <p class="text-xs" style="color:#8b949e;">صاحب الشركة</p>
+                    </div>
+                    <div class="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center flex-shrink-0">
+                        <span class="text-white text-xs font-bold">{{ mb_substr(auth()->user()->name,0,1) }}</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -62,11 +53,14 @@
             ];
             @endphp
             @foreach($stats1 as $stat)
-            <a href="{{ $stat['url'] }}" class="bg-white rounded-2xl p-5 stat-card shadow-sm flex items-start gap-3 hover:shadow-md transition-shadow">
-                <div class="text-3xl">{{ $stat['icon'] }}</div>
-                <div class="text-right flex-1">
-                    <p class="text-xs text-gray-500 font-medium">{{ $stat['label'] }}</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">{{ number_format($stat['value']) }}</p>
+            <a href="{{ $stat['url'] }}" class="bg-white rounded-2xl p-5 stat-card flex flex-col gap-3 hover:shadow-lg transition-all" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
+                <div class="flex items-center justify-between">
+                    <div class="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-xl border border-gray-100">{{ $stat['icon'] }}</div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#d1d5db" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs text-gray-400 font-medium">{{ $stat['label'] }}</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-0.5 leading-none">{{ number_format($stat['value']) }}</p>
                     <p class="text-xs text-gray-400 mt-1">{{ $stat['sub'] }}</p>
                 </div>
             </a>
@@ -85,11 +79,14 @@
         ];
         @endphp
         @foreach($stats2 as $stat)
-        <a href="{{ $stat['url'] }}" class="bg-white rounded-2xl p-5 stat-card shadow-sm flex items-start gap-3 hover:shadow-md transition-shadow">
-            <div class="text-3xl">{{ $stat['icon'] }}</div>
-            <div class="text-right flex-1">
-                <p class="text-xs text-gray-500 font-medium">{{ $stat['label'] }}</p>
-                <p class="text-3xl font-bold text-gray-900 mt-1">{{ $stat['value'] }}</p>
+        <a href="{{ $stat['url'] }}" class="bg-white rounded-2xl p-5 stat-card flex flex-col gap-3 hover:shadow-lg transition-all" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
+            <div class="flex items-center justify-between">
+                <div class="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-xl border border-gray-100">{{ $stat['icon'] }}</div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#d1d5db" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            </div>
+            <div class="text-right">
+                <p class="text-xs text-gray-400 font-medium">{{ $stat['label'] }}</p>
+                <p class="text-3xl font-bold text-gray-900 mt-0.5 leading-none">{{ $stat['value'] }}</p>
                 <p class="text-xs text-gray-400 mt-1">{{ $stat['sub'] }}</p>
             </div>
         </a>
@@ -99,17 +96,17 @@
     {{-- ══════════════════ CHARTS ROW ══════════════════ --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {{-- Monthly bar chart --}}
-        <div class="bg-white rounded-2xl p-6 shadow-sm">
+        <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
             <div class="flex items-center justify-between mb-4">
-                <p class="text-xs text-gray-400">آخر 6 أشهر</p>
-                <h3 class="text-base font-bold text-gray-900">حركة الطلبات الشهرية</h3>
+                <span class="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-full">آخر 6 أشهر</span>
+                <h3 class="text-sm font-bold text-gray-900">حركة الطلبات الشهرية</h3>
             </div>
             <canvas id="monthlyChart" height="180"></canvas>
         </div>
 
         {{-- Nationality bars --}}
-        <div class="bg-white rounded-2xl p-6 shadow-sm">
-            <h3 class="text-base font-bold text-gray-900 text-right mb-5">الجنسيات الأكثر طلباً</h3>
+        <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
+            <h3 class="text-sm font-bold text-gray-900 text-right mb-5">الجنسيات الأكثر طلباً</h3>
             @php
             $maxNat = $topNationalities->max('count') ?: 1;
             @endphp
@@ -134,10 +131,10 @@
     {{-- ══════════════════ ACCOUNTING + HR PENDING ══════════════════ --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {{-- Accounting --}}
-        <div class="bg-white rounded-2xl p-6 shadow-sm">
+        <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
             <div class="flex items-center justify-between mb-4">
-                <span class="text-xs text-gray-400">بانتظار المدير</span>
-                <h3 class="text-base font-bold text-gray-900">المحاسبة والاعتمادات</h3>
+                <span class="text-xs text-amber-600 bg-amber-50 border border-amber-100 px-2.5 py-1 rounded-full">بانتظار المدير</span>
+                <h3 class="text-sm font-bold text-gray-900">المحاسبة والاعتمادات</h3>
             </div>
             <div class="space-y-3">
                 <a href="{{ url('/admin/journal-entries') }}"
@@ -160,10 +157,10 @@
         </div>
 
         {{-- HR --}}
-        <div class="bg-white rounded-2xl p-6 shadow-sm">
+        <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
             <div class="flex items-center justify-between mb-4">
-                <span class="text-xs text-gray-400">المهام الحالية</span>
-                <h3 class="text-base font-bold text-gray-900">الموارد البشرية HR</h3>
+                <span class="text-xs text-blue-600 bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-full">المهام الحالية</span>
+                <h3 class="text-sm font-bold text-gray-900">الموارد البشرية HR</h3>
             </div>
             <div class="grid grid-cols-2 gap-3">
                 <a href="{{ url('/admin/excuse-requests') }}"
@@ -193,8 +190,8 @@
     {{-- ══════════════════ ALERTS + BRANCH TABLE ══════════════════ --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {{-- Alerts --}}
-        <div class="bg-white rounded-2xl p-6 shadow-sm">
-            <h3 class="text-base font-bold text-gray-900 text-right mb-4">تنبيهات سريعة</h3>
+        <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
+            <h3 class="text-sm font-bold text-gray-900 text-right mb-4">تنبيهات سريعة</h3>
             <div class="space-y-3">
                 @if($pendingLeave > 0)
                 <div class="bg-amber-50 border-r-4 border-amber-400 rounded-xl px-4 py-3 text-right">
@@ -230,10 +227,10 @@
         </div>
 
         {{-- Branch revenue table --}}
-        <div class="bg-white rounded-2xl p-6 shadow-sm">
+        <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
             <div class="flex items-center justify-between mb-4">
-                <a href="{{ url('/admin/branch-transactions') }}" class="text-xs text-emerald-600 hover:underline">عرض التقارير المالية</a>
-                <h3 class="text-base font-bold text-gray-900">إيرادات ومصاريف الفروع</h3>
+                <a href="{{ url('/admin/branch-transactions') }}" class="text-xs text-emerald-600 hover:underline font-medium">عرض التقارير المالية ←</a>
+                <h3 class="text-sm font-bold text-gray-900">إيرادات ومصاريف الفروع</h3>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-right">
@@ -278,11 +275,17 @@
     {{-- ══════════════════ KPI + LATEST CONTRACTS ══════════════════ --}}
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {{-- KPI Card --}}
-        <div class="bg-gray-900 text-white rounded-2xl p-6 flex flex-col">
-            <h3 class="text-base font-bold mb-4 text-right">مؤشر الإدارة اليومي</h3>
-            <p class="text-6xl font-bold text-center my-4">{{ $kpiRate }}%</p>
-            <p class="text-xs text-gray-400 text-center mb-6">نسبة إنجاز المهام والاعتمادات اليومية</p>
-            <div class="space-y-2 border-t border-gray-700 pt-4 text-sm">
+        <div class="text-white rounded-2xl p-6 flex flex-col relative overflow-hidden" style="background:linear-gradient(145deg,#0d1117 0%,#1a2332 100%);">
+            <div class="absolute inset-0 opacity-10" style="background:radial-gradient(circle at 80% 20%, #10b981 0%, transparent 55%);"></div>
+            <h3 class="text-sm font-bold mb-3 text-right relative">مؤشر الإدارة اليومي</h3>
+            <div class="relative text-center my-2">
+                <p class="text-6xl font-bold text-white">{{ $kpiRate }}%</p>
+                <div class="mt-3 h-1.5 rounded-full overflow-hidden mx-2" style="background:rgba(255,255,255,.1);">
+                    <div class="h-full bg-emerald-400 rounded-full" style="width:{{ $kpiRate }}%;"></div>
+                </div>
+            </div>
+            <p class="text-xs text-center mb-4 relative" style="color:#8b949e;">نسبة إنجاز المهام والاعتمادات اليومية</p>
+            <div class="space-y-2 border-t border-gray-700 pt-4 text-sm relative">
                 <a href="{{ url('/admin/journal-entries') }}"
                    class="flex justify-between hover:text-emerald-400 transition-colors">
                     <span class="text-white font-semibold">{{ $approvedToday }}</span>
@@ -302,10 +305,10 @@
         </div>
 
         {{-- Latest contracts --}}
-        <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm">
+        <div class="lg:col-span-2 bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
             <div class="flex items-center justify-between mb-4">
-                <a href="{{ url('/admin/recruitment-contracts') }}" class="text-xs text-emerald-600 hover:underline">عرض الكل</a>
-                <h3 class="text-base font-bold text-gray-900">آخر الطلبات</h3>
+                <a href="{{ url('/admin/recruitment-contracts') }}" class="text-xs text-emerald-600 hover:underline font-medium">عرض الكل ←</a>
+                <h3 class="text-sm font-bold text-gray-900">آخر الطلبات</h3>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-right">
@@ -358,10 +361,10 @@
         fn($b) => in_array($b['name'], $targetBranches)
     )->values();
     @endphp
-    <div class="bg-white rounded-2xl p-6 shadow-sm">
+    <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
         <div class="flex items-center justify-between mb-5">
-            <p class="text-xs text-gray-400">كلما ارتفعت نسبة الحل كان الأداء أفضل</p>
-            <h3 class="text-base font-bold text-gray-900">أداء الفروع في معالجة الشكاوى</h3>
+            <span class="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-full">كلما ارتفعت نسبة الحل كان الأداء أفضل</span>
+            <h3 class="text-sm font-bold text-gray-900">أداء الفروع في معالجة الشكاوى</h3>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             @forelse($filteredBranchStats as $b)
