@@ -10,6 +10,7 @@ use App\Models\HR\LeaveRequest;
 use App\Models\HR\ExcuseRequest;
 use App\Models\Complaint;
 use App\Models\Rental\RentalContract;
+use App\Models\Rental\RentalContractRequest;
 use App\Models\Accounting\JournalEntry;
 use App\Models\Finance\BranchTransaction;
 use App\Models\MainCore\Branch;
@@ -89,7 +90,42 @@ class OwnerDashboardController extends Controller
                 ->whereMonth('created_at', $date->month)
                 ->count();
         }
+        // ── Rental contracts stats ──────────────────────────────────────────────────────────────────────────────────────
+        $rentalStatusCounts = RentalContract::select('status', DB::raw('count(*) as total'))
+            ->groupBy('status')
+            ->pluck('total', 'status')
+            ->toArray();
 
+        $rentalTotalContracts = RentalContract::count();
+
+        $rentalRequestCounts = RentalContractRequest::select('status', DB::raw('count(*) as total'))
+            ->groupBy('status')
+            ->pluck('total', 'status')
+            ->toArray();
+
+        $rentalTotalRequests = array_sum($rentalRequestCounts) ?: 0;
+
+        // ── Rental monthly trend (last 6 months, reuse $branchComparisonMonths labels) ─
+        $rentalMonthlyData = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $date = Carbon::now()->subMonths($i);
+            $rentalMonthlyData[] = RentalContract::whereYear('created_at', $date->year)
+                ->whereMonth('created_at', $date->month)
+                ->count();
+        }
+
+        // ── Rental branch comparison ────────────────────────────────────────────────────
+        $rentalBranchData = [];
+        foreach ($comparisonBranches as $br) {
+            $rentalBranchData[$br->name] = [];
+            for ($i = 5; $i >= 0; $i--) {
+                $date = Carbon::now()->subMonths($i);
+                $rentalBranchData[$br->name][] = RentalContract::where('branch_id', $br->id)
+                    ->whereYear('created_at', $date->year)
+                    ->whereMonth('created_at', $date->month)
+                    ->count();
+            }
+        }
         // ── Top nationalities ────────────────────────────────────────────
         $topNationalities = RecruitmentContract::select('nationality_id', DB::raw('count(*) as total'))
             ->with('nationality:id,name_ar,name_en')
@@ -193,6 +229,12 @@ class OwnerDashboardController extends Controller
             'statusCounts',
             'branchComparisonMonths',
             'branchComparisonData',
+            'rentalStatusCounts',
+            'rentalTotalContracts',
+            'rentalRequestCounts',
+            'rentalTotalRequests',
+            'rentalMonthlyData',
+            'rentalBranchData',
         ));
     }
 

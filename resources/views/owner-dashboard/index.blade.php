@@ -123,6 +123,137 @@
 
     </div>
 
+    {{-- ══════════════════ RENTAL CONTRACTS SECTION ══════════════════ --}}
+    @php
+    $rentalStatusLabels = [
+        'pending_approval' => ['label' => 'ينتظر الموافقة',   'color' => '#f59e0b'],
+        'active'           => ['label' => 'نشط',              'color' => '#10b981'],
+        'suspended'        => ['label' => 'معلق',             'color' => '#f97316'],
+        'completed'        => ['label' => 'مكتمل',            'color' => '#3b82f6'],
+        'cancelled'        => ['label' => 'ملغي',             'color' => '#ef4444'],
+        'returned'         => ['label' => 'مرتجع',            'color' => '#8b5cf6'],
+        'archived'         => ['label' => 'مؤرشف',            'color' => '#6b7280'],
+        'rejected'         => ['label' => 'مرفوض',            'color' => '#dc2626'],
+    ];
+    $rentalReqLabels = [
+        'pending'     => ['label' => 'طلبات قيد الانتظار', 'color' => '#f59e0b'],
+        'under_review'=> ['label' => 'قيد المراجعة',       'color' => '#6366f1'],
+        'approved'    => ['label' => 'موافق عليها',        'color' => '#10b981'],
+        'rejected'    => ['label' => 'طلبات مرفوضة',      'color' => '#ef4444'],
+        'converted'   => ['label' => 'تم التحويل',         'color' => '#06b6d4'],
+    ];
+    $rentalBaseUrl = url('/admin/rental/rental-contracts');
+    $rentalReqBaseUrl = url('/admin/rental/rental-contract-requests');
+    @endphp
+
+    {{-- ROW: Rental dark card + status cards --}}
+    <div class="flex gap-4 items-stretch">
+
+        {{-- Rental dark summary card --}}
+        <div class="flex-shrink-0 w-64 rounded-2xl p-5 flex flex-col gap-3 text-white relative overflow-hidden" style="background:linear-gradient(145deg,#0f172a 0%,#1e293b 100%);">
+            <div class="absolute inset-0 opacity-10" style="background:radial-gradient(circle at 80% 20%, #3b82f6 0%, transparent 60%);"></div>
+
+            <a href="{{ $rentalBaseUrl }}" class="relative block">
+                <p class="text-xs font-medium mb-0.5" style="color:#94a3b8;">إجمالي عقود الإيجار</p>
+                <p class="text-4xl font-bold text-white leading-none" id="stat-rentalTotal">{{ $rentalTotalContracts }}</p>
+            </a>
+
+            <div class="relative" style="border-top:1px solid rgba(255,255,255,.07);padding-top:10px;">
+                <a href="{{ $rentalBaseUrl }}?tableFilters[status][value]=active"
+                   class="flex items-center justify-between py-1.5 hover:opacity-80 transition-opacity">
+                    <span class="text-lg font-bold text-emerald-400" id="rsc-active">{{ $rentalStatusCounts['active'] ?? 0 }}</span>
+                    <span class="text-xs text-right" style="color:#94a3b8;">عقود نشطة</span>
+                </a>
+                <a href="{{ $rentalBaseUrl }}?tableFilters[status][value]=pending_approval"
+                   class="flex items-center justify-between py-1.5 hover:opacity-80 transition-opacity">
+                    <span class="text-lg font-bold text-amber-400" id="rsc-pending_approval">{{ $rentalStatusCounts['pending_approval'] ?? 0 }}</span>
+                    <span class="text-xs text-right" style="color:#94a3b8;">تنتظر الموافقة</span>
+                </a>
+                <a href="{{ $rentalBaseUrl }}?tableFilters[status][value]=completed"
+                   class="flex items-center justify-between py-1.5 hover:opacity-80 transition-opacity">
+                    <span class="text-lg font-bold text-blue-400" id="rsc-completed">{{ $rentalStatusCounts['completed'] ?? 0 }}</span>
+                    <span class="text-xs text-right" style="color:#94a3b8;">مكتملة</span>
+                </a>
+            </div>
+
+            {{-- Requests footer --}}
+            <div class="relative mt-auto pt-3" style="border-top:1px solid rgba(255,255,255,.07);">
+                <a href="{{ $rentalReqBaseUrl }}" class="flex items-center gap-2 justify-end hover:opacity-80">
+                    <div class="text-right">
+                        <p class="text-sm font-semibold text-white" id="stat-rentalReqTotal">{{ $rentalTotalRequests }}</p>
+                        <p class="text-xs" style="color:#94a3b8;">إجمالي الطلبات</p>
+                    </div>
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#3b82f620;">
+                        <span class="text-blue-400 text-base">📋</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        {{-- Rental status cards grid --}}
+        <div class="flex-1 bg-white rounded-2xl p-5" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
+            <div class="flex items-center justify-between mb-4">
+                <a href="{{ $rentalBaseUrl }}" class="text-xs text-blue-600 hover:underline font-medium">عرض كل العقود ←</a>
+                <h3 class="text-sm font-bold text-gray-900">حالات عقود الإيجار</h3>
+            </div>
+
+            {{-- Contract statuses --}}
+            <div class="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-8 gap-2 mb-3" id="rentalStatusCardsGrid">
+                @foreach($rentalStatusLabels as $sk => $info)
+                @php $cnt = $rentalStatusCounts[$sk] ?? 0; @endphp
+                <a href="{{ $rentalBaseUrl }}?tableFilters[status][value]={{ $sk }}"
+                   class="rounded-xl p-3 text-right hover:scale-105 transition-all cursor-pointer border"
+                   style="background:{{ $info['color'] }}12; border-color:{{ $info['color'] }}30;"
+                   data-rental-status="{{ $sk }}">
+                    <p class="text-2xl font-bold leading-none rental-status-count" style="color:{{ $info['color'] }};">{{ $cnt }}</p>
+                    <p class="text-xs text-gray-600 mt-1.5 leading-snug font-medium">{{ $info['label'] }}</p>
+                </a>
+                @endforeach
+            </div>
+
+            {{-- Divider --}}
+            <div class="border-t border-gray-100 pt-3">
+                <p class="text-xs font-semibold text-gray-400 text-right mb-2">طلبات الإيجار</p>
+                <div class="grid grid-cols-3 sm:grid-cols-5 gap-2" id="rentalReqCardsGrid">
+                    @foreach($rentalReqLabels as $sk => $info)
+                    @php $cnt = $rentalRequestCounts[$sk] ?? 0; @endphp
+                    <a href="{{ $rentalReqBaseUrl }}?tableFilters[status][value]={{ $sk }}"
+                       class="rounded-xl p-3 text-right hover:scale-105 transition-all cursor-pointer border"
+                       style="background:{{ $info['color'] }}12; border-color:{{ $info['color'] }}30;"
+                       data-rental-req-status="{{ $sk }}">
+                        <p class="text-xl font-bold leading-none rental-req-count" style="color:{{ $info['color'] }};">{{ $cnt }}</p>
+                        <p class="text-xs text-gray-600 mt-1.5 leading-snug font-medium">{{ $info['label'] }}</p>
+                    </a>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    {{-- ROW: Rental charts (branch comparison bar + monthly trend line) --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+        {{-- Rental branch comparison bar chart --}}
+        <div class="bg-white rounded-2xl p-5" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-xs text-gray-400">آخر 6 أشهر</span>
+                <h3 class="text-sm font-bold text-gray-900">مقارنة الفروع — عقود الإيجار</h3>
+            </div>
+            <canvas id="rentalBranchChart" height="220"></canvas>
+        </div>
+
+        {{-- Rental monthly trend line chart --}}
+        <div class="bg-white rounded-2xl p-5" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-xs text-gray-400" id="rentalChartPeriodLabel">آخر 6 أشهر</span>
+                <h3 class="text-sm font-bold text-gray-900">إجمالي عقود الإيجار الشهري</h3>
+            </div>
+            <canvas id="rentalLineChart" height="220"></canvas>
+        </div>
+
+    </div>
+
     {{-- ══════════════════ STATS ROW 2 (HR/Finance quick stats) ══════════════════ --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         @php
@@ -242,17 +373,21 @@
                 <table class="w-full text-sm text-right">
                     <thead>
                         <tr class="text-xs text-gray-400 border-b border-gray-100">
-                            <th class="pb-2 font-medium">الأداء</th>
-                            <th class="pb-2 font-medium">الشكاوى</th>
-                            <th class="pb-2 font-medium">المصاريف</th>
-                            <th class="pb-2 font-medium">الإيرادات</th>
                             <th class="pb-2 font-medium">الفرع</th>
+                            <th class="pb-2 font-medium">الإيرادات</th>
+                            <th class="pb-2 font-medium">المصاريف</th>
+                            <th class="pb-2 font-medium">الشكاوى</th>
+                            <th class="pb-2 font-medium">الأداء</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
                         @forelse($branchStats as $b)
                         <tr class="text-sm cursor-pointer hover:bg-gray-50 transition-colors"
                             onclick="window.location='{{ url('/admin/main-core/branches') }}'">
+                            <td class="py-3 font-medium text-gray-900">{{ $b['name'] }}</td>
+                            <td class="py-3 text-gray-900 font-semibold">{{ number_format($b['income']) }} ر.س</td>
+                            <td class="py-3 text-red-600 font-semibold">{{ number_format($b['expense']) }} ر.س</td>
+                            <td class="py-3 text-gray-600">{{ $b['complaints'] }}</td>
                             <td class="py-3">
                                 @php
                                 $badgeColor = match($b['rating']) {
@@ -264,10 +399,6 @@
                                 @endphp
                                 <span class="px-2 py-0.5 rounded-full text-xs font-semibold {{ $badgeColor }}">{{ $b['rating'] }}</span>
                             </td>
-                            <td class="py-3 text-gray-600">{{ $b['complaints'] }}</td>
-                            <td class="py-3 text-red-600 font-semibold">{{ number_format($b['expense']) }} ر.س</td>
-                            <td class="py-3 text-gray-900 font-semibold">{{ number_format($b['income']) }} ر.س</td>
-                            <td class="py-3 font-medium text-gray-900">{{ $b['name'] }}</td>
                         </tr>
                         @empty
                         <tr><td colspan="5" class="py-6 text-center text-gray-400">لا توجد بيانات فروع</td></tr>
@@ -611,6 +742,74 @@
         .catch(() => {})
         .finally(() => setLoading(false));
     }
+
+    // ── Rental branch comparison bar chart ────────────────────────
+    const rentalBranchData   = @json($rentalBranchData);
+    const rentalBranchColors = ['#10b981', '#3b82f6', '#f59e0b'];
+
+    const rbCtx = document.getElementById('rentalBranchChart');
+    if (rbCtx) {
+        const rbDatasets = Object.entries(rentalBranchData).map(([name, data], i) => ({
+            label: name,
+            data,
+            backgroundColor: rentalBranchColors[i % rentalBranchColors.length],
+            borderRadius: 6,
+            borderSkipped: false,
+        }));
+
+        new Chart(rbCtx, {
+            type: 'bar',
+            data: { labels: bcMonths, datasets: rbDatasets },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        rtl: true,
+                        labels: { font: { family: 'Cairo', size: 11 }, usePointStyle: true, pointStyleWidth: 10 }
+                    },
+                    tooltip: { rtl: true, textDirection: 'rtl' }
+                },
+                scales: {
+                    x: { reverse: true, grid: { display: false }, ticks: { font: { family: 'Cairo', size: 11 } } },
+                    y: { grid: { color: '#f3f4f6' }, ticks: { font: { family: 'Cairo', size: 11 }, stepSize: 1 } }
+                }
+            }
+        });
+    }
+
+    // ── Rental monthly trend line chart ───────────────────────────
+    const rentalLineCtx = document.getElementById('rentalLineChart');
+    const rentalLineChart = rentalLineCtx ? new Chart(rentalLineCtx, {
+        type: 'line',
+        data: {
+            labels: bcMonths,
+            datasets: [{
+                label: 'عقود الإيجار',
+                data: @json($rentalMonthlyData),
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59,130,246,0.08)',
+                borderWidth: 2.5,
+                pointBackgroundColor: '#3b82f6',
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                fill: true,
+                tension: 0.4,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: { rtl: true, textDirection: 'rtl' }
+            },
+            scales: {
+                x: { reverse: true, grid: { display: false }, ticks: { font: { family: 'Cairo', size: 11 } } },
+                y: { grid: { color: '#f3f4f6' }, ticks: { font: { family: 'Cairo', size: 11 }, stepSize: 1 }, beginAtZero: true }
+            }
+        }
+    }) : null;
 
     document.getElementById('applyFilter').addEventListener('click', applyFilters);
 
