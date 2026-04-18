@@ -52,7 +52,7 @@ class OwnerDashboardController extends Controller
 
         // ── Top nationalities ────────────────────────────────────────────
         $topNationalities = RecruitmentContract::select('nationality_id', DB::raw('count(*) as total'))
-            ->with('nationality:id,name')
+            ->with('nationality:id,name_ar,name_en')
             ->whereNotNull('nationality_id')
             ->groupBy('nationality_id')
             ->orderByDesc('total')
