@@ -178,8 +178,8 @@
         {{-- Branch revenue table --}}
         <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
             <div class="flex items-center justify-between mb-4">
-                <a href="{{ url('/admin/finance/branch-transactions') }}" class="text-xs text-emerald-600 hover:underline font-medium">عرض التقارير المالية ←</a>
                 <h3 class="text-sm font-bold text-gray-900">إيرادات ومصاريف الفروع</h3>
+                <a href="{{ url('/admin/finance/branch-transactions') }}" class="text-xs text-emerald-600 hover:underline font-medium">عرض التقارير المالية ←</a>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-right">
