@@ -46,8 +46,8 @@
         <div class="lg:col-span-4 grid grid-cols-2 md:grid-cols-4 gap-4">
             @php
             $stats1 = [
-                ['icon' => '📋', 'label' => 'إجمالي الطلبات',    'value' => $totalContracts,      'sub' => 'طلبات الاستقدام الكلية', 'url' => url('/admin/recruitment-contracts')],
-                ['icon' => '⏳', 'label' => 'طلبات قيد التنفيذ', 'value' => $inProgressContracts, 'sub' => 'تحتاج متابعة يومية',     'url' => url('/admin/recruitment-contracts')],
+                ['icon' => '📋', 'label' => 'إجمالي الطلبات',    'value' => $totalContracts,      'sub' => 'طلبات الاستقدام الكلية', 'url' => url('/admin/recruitment/recruitment-contracts')],
+                ['icon' => '⏳', 'label' => 'طلبات قيد التنفيذ', 'value' => $inProgressContracts, 'sub' => 'تحتاج متابعة يومية',     'url' => url('/admin/recruitment/recruitment-contracts')],
                 ['icon' => '✉️', 'label' => 'طلبات الإجازة',     'value' => $pendingLeave,         'sub' => 'بانتظار الاعتماد',        'url' => url('/admin/leave-requests')],
                 ['icon' => '🕐', 'label' => 'طلبات الاستئذان',   'value' => $pendingExcuse,        'sub' => 'معلقة لدى الإدارة',       'url' => url('/admin/excuse-requests')],
             ];
@@ -189,43 +189,6 @@
 
     {{-- ══════════════════ ALERTS + BRANCH TABLE ══════════════════ --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {{-- Alerts --}}
-        <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
-            <h3 class="text-sm font-bold text-gray-900 text-right mb-4">تنبيهات سريعة</h3>
-            <div class="space-y-3">
-                @if($pendingLeave > 0)
-                <div class="bg-amber-50 border-r-4 border-amber-400 rounded-xl px-4 py-3 text-right">
-                    <a href="{{ url('/admin/leave-requests') }}" class="text-sm font-bold text-amber-700">
-                        {{ $pendingLeave }} طلب إجازة بانتظار الاعتماد
-                    </a>
-                    <p class="text-xs text-gray-500 mt-0.5">يفضل مراجعتها اليوم</p>
-                </div>
-                @endif
-                @if($pendingJournals > 0 || $pendingVouchers > 0)
-                <div class="bg-rose-50 border-r-4 border-rose-400 rounded-xl px-4 py-3 text-right">
-                    <a href="{{ url('/admin/journal-entries') }}" class="text-sm font-bold text-rose-700">
-                        {{ $pendingJournals + $pendingVouchers }} معاملة محاسبية معلقة
-                    </a>
-                    <p class="text-xs text-gray-500 mt-0.5">هناك موافقات متأخرة</p>
-                </div>
-                @endif
-                @if($openComplaints > 0)
-                <div class="bg-blue-50 border-r-4 border-blue-400 rounded-xl px-4 py-3 text-right">
-                    <a href="{{ url('/admin/complaints') }}" class="text-sm font-bold text-blue-700">
-                        {{ $openComplaints }} شكوى مسجلة
-                    </a>
-                    <p class="text-xs text-gray-500 mt-0.5">بعض الفروع تحتاج تحسين سرعة المعالجة</p>
-                </div>
-                @endif
-                @if($pendingLeave === 0 && ($pendingJournals + $pendingVouchers) === 0 && $openComplaints === 0)
-                <div class="bg-emerald-50 border-r-4 border-emerald-400 rounded-xl px-4 py-3 text-right">
-                    <p class="text-sm font-bold text-emerald-700">لا توجد تنبيهات عاجلة</p>
-                    <p class="text-xs text-gray-500 mt-0.5">كل شيء على ما يرام اليوم</p>
-                </div>
-                @endif
-            </div>
-        </div>
-
         {{-- Branch revenue table --}}
         <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
             <div class="flex items-center justify-between mb-4">
@@ -270,6 +233,43 @@
                 </table>
             </div>
         </div>
+
+        {{-- Alerts --}}
+        <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
+            <h3 class="text-sm font-bold text-gray-900 text-right mb-4">تنبيهات سريعة</h3>
+            <div class="space-y-3">
+                @if($pendingLeave > 0)
+                <div class="bg-amber-50 border-r-4 border-amber-400 rounded-xl px-4 py-3 text-right">
+                    <a href="{{ url('/admin/leave-requests') }}" class="text-sm font-bold text-amber-700">
+                        {{ $pendingLeave }} طلب إجازة بانتظار الاعتماد
+                    </a>
+                    <p class="text-xs text-gray-500 mt-0.5">يفضل مراجعتها اليوم</p>
+                </div>
+                @endif
+                @if($pendingJournals > 0 || $pendingVouchers > 0)
+                <div class="bg-rose-50 border-r-4 border-rose-400 rounded-xl px-4 py-3 text-right">
+                    <a href="{{ url('/admin/journal-entries') }}" class="text-sm font-bold text-rose-700">
+                        {{ $pendingJournals + $pendingVouchers }} معاملة محاسبية معلقة
+                    </a>
+                    <p class="text-xs text-gray-500 mt-0.5">هناك موافقات متأخرة</p>
+                </div>
+                @endif
+                @if($openComplaints > 0)
+                <div class="bg-blue-50 border-r-4 border-blue-400 rounded-xl px-4 py-3 text-right">
+                    <a href="{{ url('/admin/complaints') }}" class="text-sm font-bold text-blue-700">
+                        {{ $openComplaints }} شكوى مسجلة
+                    </a>
+                    <p class="text-xs text-gray-500 mt-0.5">بعض الفروع تحتاج تحسين سرعة المعالجة</p>
+                </div>
+                @endif
+                @if($pendingLeave === 0 && ($pendingJournals + $pendingVouchers) === 0 && $openComplaints === 0)
+                <div class="bg-emerald-50 border-r-4 border-emerald-400 rounded-xl px-4 py-3 text-right">
+                    <p class="text-sm font-bold text-emerald-700">لا توجد تنبيهات عاجلة</p>
+                    <p class="text-xs text-gray-500 mt-0.5">كل شيء على ما يرام اليوم</p>
+                </div>
+                @endif
+            </div>
+        </div>
     </div>
 
     {{-- ══════════════════ KPI + LATEST CONTRACTS ══════════════════ --}}
@@ -307,7 +307,7 @@
         {{-- Latest contracts --}}
         <div class="lg:col-span-2 bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
             <div class="flex items-center justify-between mb-4">
-                <a href="{{ url('/admin/recruitment-contracts') }}" class="text-xs text-emerald-600 hover:underline font-medium">عرض الكل ←</a>
+                <a href="{{ url('/admin/recruitment/recruitment-contracts') }}" class="text-xs text-emerald-600 hover:underline font-medium">عرض الكل ←</a>
                 <h3 class="text-sm font-bold text-gray-900">آخر الطلبات</h3>
             </div>
             <div class="overflow-x-auto">
@@ -324,7 +324,7 @@
                     <tbody class="divide-y divide-gray-50">
                         @forelse($latestContracts as $contract)
                         <tr class="cursor-pointer hover:bg-gray-50 transition-colors"
-                            onclick="window.location='{{ url('/admin/recruitment-contracts/' . $contract->id . '/edit') }}'">
+                            onclick="window.location='{{ url('/admin/recruitment/recruitment-contracts/' . $contract->id . '/edit') }}'">
                             <td class="py-3 font-semibold text-gray-900">
                                 {{ number_format($contract->total_cost ?? 0) }} ر.س
                             </td>
@@ -415,6 +415,7 @@
             plugins: { legend: { display: false } },
             scales: {
                 x: {
+                    reverse: true,
                     grid: { display: false },
                     ticks: { font: { family: 'Cairo', size: 11 } }
                 },
