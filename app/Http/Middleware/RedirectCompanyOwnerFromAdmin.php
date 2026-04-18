@@ -12,7 +12,13 @@ class RedirectCompanyOwnerFromAdmin
     {
         $user = $request->user();
 
-        if ($user && $user->type === \App\Models\User::TYPE_COMPANY_OWNER) {
+        // Only redirect when hitting exactly /admin or /admin/ (no sub-pages)
+        $path = rtrim($request->path(), '/');
+        if (
+            $user &&
+            $user->type === \App\Models\User::TYPE_COMPANY_OWNER &&
+            $path === 'admin'
+        ) {
             return redirect()->route('owner.dashboard');
         }
 
