@@ -179,6 +179,38 @@ class OwnerDashboardController extends Controller
             ];
         });
 
+        // ── Monthly income/expense per branch (last 6 months, 3 main branches) ──
+        $financeChartMonths = [];
+        $financeChartData   = []; // [branchName => ['income'=>[], 'expense'=>[]]]
+
+        $mainBranchNames = ['الرياض', 'عرعر', 'حفر الباطن'];
+        $mainBranches    = Branch::where('status', 'active')
+            ->where(function ($q) {
+                $q->where('name', 'like', '%الرياض%')
+                  ->orWhere('name', 'like', '%عرعر%')
+                  ->orWhere('name', 'like', '%حفر الباطن%');
+            })->get();
+
+        for ($i = 5; $i >= 0; $i--) {
+            $date = Carbon::now()->subMonths($i);
+            $financeChartMonths[] = $this->arabicMonths[$date->month];
+            foreach ($mainBranches as $br) {
+                $financeChartData[$br->name]['income'][] = (float) BranchTransaction::where('branch_id', $br->id)
+                    ->where('status', 'approved')
+                    ->whereHas('financeType', fn ($q) => $q->where('kind', 'income'))
+                    ->whereYear('created_at', $date->year)
+                    ->whereMonth('created_at', $date->month)
+                    ->sum('amount');
+
+                $financeChartData[$br->name]['expense'][] = (float) BranchTransaction::where('branch_id', $br->id)
+                    ->where('status', 'approved')
+                    ->whereHas('financeType', fn ($q) => $q->where('kind', 'expense'))
+                    ->whereYear('created_at', $date->year)
+                    ->whereMonth('created_at', $date->month)
+                    ->sum('amount');
+            }
+        }
+
         // ── Latest 4 recruitment contracts ──────────────────────────────
         $latestContracts = RecruitmentContract::with(['client', 'nationality'])
             ->latest()
@@ -235,6 +267,8 @@ class OwnerDashboardController extends Controller
             'rentalTotalRequests',
             'rentalMonthlyData',
             'rentalBranchData',
+            'financeChartMonths',
+            'financeChartData',
         ));
     }
 
