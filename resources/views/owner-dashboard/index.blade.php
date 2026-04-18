@@ -41,14 +41,38 @@
     {{-- ══════════════════ ROW: DARK SUMMARY + STATS ══════════════════ --}}
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
         {{-- Dark summary card --}}
-        <div class="lg:col-span-1 rounded-2xl p-6 flex flex-col justify-between text-white relative overflow-hidden" style="background:linear-gradient(145deg,#0d1117 0%,#1a2332 100%);">
+        <div class="lg:col-span-1 rounded-2xl p-5 flex flex-col gap-3 text-white relative overflow-hidden" style="background:linear-gradient(145deg,#0d1117 0%,#1a2332 100%);">
             <div class="absolute inset-0 opacity-10" style="background:radial-gradient(circle at 20% 80%, #10b981 0%, transparent 60%);"></div>
-            <div class="relative">
-                <p class="text-xs font-medium mb-1" style="color:#8b949e;">إجراءات اليوم</p>
-                <p class="text-5xl font-bold text-white" id="stat-todayPending">{{ $todayPending }}</p>
-                <p class="text-xs mt-1" style="color:#8b949e;">تحتاج متابعة من الإدارة</p>
+
+            {{-- Total --}}
+            <a href="{{ url('/admin/recruitment/recruitment-contracts') }}" class="relative block">
+                <p class="text-xs font-medium mb-0.5" style="color:#8b949e;">إجمالي عقود الاستقدام</p>
+                <p class="text-4xl font-bold text-white leading-none">{{ $totalContracts }}</p>
+            </a>
+
+            <div class="relative" style="border-top:1px solid rgba(255,255,255,.07);padding-top:10px;">
+                {{-- Accounts --}}
+                <a href="{{ url('/admin/recruitment/recruitment-contracts') }}?tableFilters[current_section][value]=accounts"
+                   class="flex items-center justify-between py-1.5 hover:opacity-80 transition-opacity">
+                    <span class="text-lg font-bold text-emerald-400">{{ $sectionCounts['accounts'] ?? 0 }}</span>
+                    <span class="text-xs text-right" style="color:#8b949e;">عقود قسم الاستقدام</span>
+                </a>
+                {{-- Coordination --}}
+                <a href="{{ url('/admin/recruitment/recruitment-contracts') }}?tableFilters[current_section][value]=coordination"
+                   class="flex items-center justify-between py-1.5 hover:opacity-80 transition-opacity">
+                    <span class="text-lg font-bold text-blue-400">{{ $sectionCounts['coordination'] ?? 0 }}</span>
+                    <span class="text-xs text-right" style="color:#8b949e;">عقود قسم التنسيق</span>
+                </a>
+                {{-- Customer service --}}
+                <a href="{{ url('/admin/recruitment/recruitment-contracts') }}?tableFilters[current_section][value]=customer_service"
+                   class="flex items-center justify-between py-1.5 hover:opacity-80 transition-opacity">
+                    <span class="text-lg font-bold text-purple-400">{{ $sectionCounts['customer_service'] ?? 0 }}</span>
+                    <span class="text-xs text-right" style="color:#8b949e;">عقود خدمة العملاء</span>
+                </a>
             </div>
-            <div class="mt-4 pt-4 relative" style="border-top:1px solid rgba(255,255,255,.07);">
+
+            {{-- User footer --}}
+            <div class="relative mt-auto pt-3" style="border-top:1px solid rgba(255,255,255,.07);">
                 <div class="flex items-center gap-2 justify-end">
                     <div class="text-right">
                         <p class="text-sm font-semibold text-white">{{ auth()->user()->name }}</p>
