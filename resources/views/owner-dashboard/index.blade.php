@@ -123,6 +123,27 @@
 
     </div>
 
+    {{-- ══════════════════ RECRUITMENT CHARTS ══════════════════ --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {{-- Branch comparison bar chart --}}
+        <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-full">آخر 6 أشهر</span>
+                <h3 class="text-sm font-bold text-gray-900">مقارنة عقود الاستقدام بين الفروع</h3>
+            </div>
+            <canvas id="branchComparisonChart" height="200"></canvas>
+            <div class="flex flex-wrap gap-4 justify-center mt-4" id="branchLegend"></div>
+        </div>
+        {{-- Monthly bar chart --}}
+        <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
+            <div class="flex items-center justify-between mb-4">
+                <span id="chartPeriodLabel" class="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-full">آخر 6 أشهر</span>
+                <h3 class="text-sm font-bold text-gray-900">حركة عقود الاستقدام الشهرية</h3>
+            </div>
+            <canvas id="monthlyChart" height="180"></canvas>
+        </div>
+    </div>
+
     {{-- ══════════════════ RENTAL CONTRACTS SECTION ══════════════════ --}}
     @php
     $rentalStatusLabels = [
@@ -277,29 +298,6 @@
             </div>
         </a>
         @endforeach
-    </div>
-
-    {{-- ══════════════════ CHARTS ROW ══════════════════ --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {{-- Branch comparison bar chart --}}
-        <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
-            <div class="flex items-center justify-between mb-4">
-                <span class="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-full">آخر 6 أشهر</span>
-                <h3 class="text-sm font-bold text-gray-900">مقارنة العقود بين الفروع</h3>
-            </div>
-            <canvas id="branchComparisonChart" height="200"></canvas>
-            {{-- legend --}}
-            <div class="flex flex-wrap gap-4 justify-center mt-4" id="branchLegend"></div>
-        </div>
-
-        {{-- Monthly bar chart --}}
-        <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
-            <div class="flex items-center justify-between mb-4">
-                <span id="chartPeriodLabel" class="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-full">آخر 6 أشهر</span>
-                <h3 class="text-sm font-bold text-gray-900">حركة عقود الاستقدام الشهرية</h3>
-            </div>
-            <canvas id="monthlyChart" height="180"></canvas>
-        </div>
     </div>
 
     {{-- ══════════════════ ACCOUNTING + HR PENDING ══════════════════ --}}
