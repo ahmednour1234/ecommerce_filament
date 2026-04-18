@@ -39,39 +39,55 @@
     </div>
 
     {{-- ══════════════════ ROW: DARK SUMMARY + STATS ══════════════════ --}}
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+    {{-- ══════════════════ ROW: DARK SUMMARY + STATUS CARDS ══════════════════ --}}
+    @php
+    $statusLabels = [
+        'new'                              => ['label' => 'جديد',                                  'color' => '#3b82f6'],
+        'external_office_approval'         => ['label' => 'بانتظار موافقة المكتب الخارجي',        'color' => '#f59e0b'],
+        'contract_accepted_external_office'=> ['label' => 'قبول العقد من المكتب الخارجي',        'color' => '#f59e0b'],
+        'waiting_approval'                 => ['label' => 'انتظار الموافقة',                      'color' => '#8b5cf6'],
+        'contract_accepted_labor_ministry' => ['label' => 'قبول العقد من وزارة العمل',           'color' => '#8b5cf6'],
+        'sent_to_saudi_embassy'            => ['label' => 'إرسال التأشيرة إلى السفارة السعودية', 'color' => '#06b6d4'],
+        'visa_issued'                      => ['label' => 'إصدار التأشيرة',                       'color' => '#10b981'],
+        'visa_cancelled'                   => ['label' => 'إلغاء التفييز',                        'color' => '#ef4444'],
+        'travel_permit_after_visa_issued'  => ['label' => 'تصريح سفر بعد تم التفييز',            'color' => '#14b8a6'],
+        'waiting_flight_booking'           => ['label' => 'انتظار حجز تذكرة الطيران',            'color' => '#f97316'],
+        'arrival_scheduled'                => ['label' => 'معاد الوصول',                          'color' => '#6366f1'],
+        'received'                         => ['label' => 'تم الاستلام',                          'color' => '#22c55e'],
+        'return_during_warranty'           => ['label' => 'رجع خلال فترة الضمان',                'color' => '#f43f5e'],
+        'runaway'                          => ['label' => 'هروب',                                 'color' => '#dc2626'],
+    ];
+    $baseUrl = url('/admin/recruitment/recruitment-contracts');
+    @endphp
+    <div class="flex gap-4 items-stretch">
+
         {{-- Dark summary card --}}
-        <div class="lg:col-span-1 rounded-2xl p-5 flex flex-col gap-3 text-white relative overflow-hidden" style="background:linear-gradient(145deg,#0d1117 0%,#1a2332 100%);">
+        <div class="flex-shrink-0 w-64 rounded-2xl p-5 flex flex-col gap-3 text-white relative overflow-hidden" style="background:linear-gradient(145deg,#0d1117 0%,#1a2332 100%);">
             <div class="absolute inset-0 opacity-10" style="background:radial-gradient(circle at 20% 80%, #10b981 0%, transparent 60%);"></div>
 
-            {{-- Total --}}
-            <a href="{{ url('/admin/recruitment/recruitment-contracts') }}" class="relative block">
+            <a href="{{ $baseUrl }}" class="relative block">
                 <p class="text-xs font-medium mb-0.5" style="color:#8b949e;">إجمالي عقود الاستقدام</p>
-                <p class="text-4xl font-bold text-white leading-none">{{ $totalContracts }}</p>
+                <p class="text-4xl font-bold text-white leading-none" id="stat-totalContracts">{{ $totalContracts }}</p>
             </a>
 
             <div class="relative" style="border-top:1px solid rgba(255,255,255,.07);padding-top:10px;">
-                {{-- Accounts --}}
-                <a href="{{ url('/admin/recruitment/recruitment-contracts') }}?tableFilters[current_section][value]=accounts"
+                <a href="{{ $baseUrl }}?tableFilters[current_section][value]=accounts"
                    class="flex items-center justify-between py-1.5 hover:opacity-80 transition-opacity">
-                    <span class="text-lg font-bold text-emerald-400">{{ $sectionCounts['accounts'] ?? 0 }}</span>
+                    <span class="text-lg font-bold text-emerald-400" id="sc-accounts">{{ $sectionCounts['accounts'] ?? 0 }}</span>
                     <span class="text-xs text-right" style="color:#8b949e;">عقود قسم الاستقدام</span>
                 </a>
-                {{-- Coordination --}}
-                <a href="{{ url('/admin/recruitment/recruitment-contracts') }}?tableFilters[current_section][value]=coordination"
+                <a href="{{ $baseUrl }}?tableFilters[current_section][value]=coordination"
                    class="flex items-center justify-between py-1.5 hover:opacity-80 transition-opacity">
-                    <span class="text-lg font-bold text-blue-400">{{ $sectionCounts['coordination'] ?? 0 }}</span>
+                    <span class="text-lg font-bold text-blue-400" id="sc-coordination">{{ $sectionCounts['coordination'] ?? 0 }}</span>
                     <span class="text-xs text-right" style="color:#8b949e;">عقود قسم التنسيق</span>
                 </a>
-                {{-- Customer service --}}
-                <a href="{{ url('/admin/recruitment/recruitment-contracts') }}?tableFilters[current_section][value]=customer_service"
+                <a href="{{ $baseUrl }}?tableFilters[current_section][value]=customer_service"
                    class="flex items-center justify-between py-1.5 hover:opacity-80 transition-opacity">
-                    <span class="text-lg font-bold text-purple-400">{{ $sectionCounts['customer_service'] ?? 0 }}</span>
+                    <span class="text-lg font-bold text-purple-400" id="sc-customer_service">{{ $sectionCounts['customer_service'] ?? 0 }}</span>
                     <span class="text-xs text-right" style="color:#8b949e;">عقود خدمة العملاء</span>
                 </a>
             </div>
 
-            {{-- User footer --}}
             <div class="relative mt-auto pt-3" style="border-top:1px solid rgba(255,255,255,.07);">
                 <div class="flex items-center gap-2 justify-end">
                     <div class="text-right">
@@ -85,45 +101,26 @@
             </div>
         </div>
 
+        {{-- Status cards grid --}}
+        <div class="flex-1 bg-white rounded-2xl p-5" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
+            <div class="flex items-center justify-between mb-4">
+                <a href="{{ $baseUrl }}" class="text-xs text-emerald-600 hover:underline font-medium">عرض كل العقود ←</a>
+                <h3 class="text-sm font-bold text-gray-900">حالات عقود الاستقدام</h3>
+            </div>
+            <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-2.5" id="statusCardsGrid">
+                @foreach($statusLabels as $statusKey => $info)
+                @php $cnt = $statusCounts[$statusKey] ?? 0; @endphp
+                <a href="{{ $baseUrl }}?tableFilters[status][value]={{ $statusKey }}"
+                   class="rounded-xl p-3 text-right hover:scale-105 transition-all cursor-pointer border"
+                   style="background:{{ $info['color'] }}12; border-color:{{ $info['color'] }}30;"
+                   data-status="{{ $statusKey }}">
+                    <p class="text-2xl font-bold leading-none status-count" style="color:{{ $info['color'] }};">{{ $cnt }}</p>
+                    <p class="text-xs text-gray-600 mt-1.5 leading-snug font-medium">{{ $info['label'] }}</p>
+                </a>
+                @endforeach
+            </div>
         </div>
-    </div>
 
-    {{-- ══════════════════ CONTRACT STATUS CARDS ══════════════════ --}}
-    @php
-    $statusLabels = [
-        'new'                              => ['label' => 'جديد',                                   'color' => '#3b82f6'],
-        'external_office_approval'         => ['label' => 'بانتظار موافقة المكتب الخارجي',         'color' => '#f59e0b'],
-        'contract_accepted_external_office'=> ['label' => 'قبول العقد من المكتب الخارجي',         'color' => '#f59e0b'],
-        'waiting_approval'                 => ['label' => 'انتظار الموافقة',                       'color' => '#8b5cf6'],
-        'contract_accepted_labor_ministry' => ['label' => 'قبول العقد من وزارة العمل',            'color' => '#8b5cf6'],
-        'sent_to_saudi_embassy'            => ['label' => 'إرسال التأشيرة إلى السفارة السعودية',  'color' => '#06b6d4'],
-        'visa_issued'                      => ['label' => 'إصدار التأشيرة',                        'color' => '#10b981'],
-        'visa_cancelled'                   => ['label' => 'إلغاء التفييز',                         'color' => '#ef4444'],
-        'travel_permit_after_visa_issued'  => ['label' => 'تصريح سفر بعد تم التفييز',             'color' => '#14b8a6'],
-        'waiting_flight_booking'           => ['label' => 'انتظار حجز تذكرة الطيران',             'color' => '#f97316'],
-        'arrival_scheduled'                => ['label' => 'معاد الوصول',                           'color' => '#6366f1'],
-        'received'                         => ['label' => 'تم الاستلام',                           'color' => '#22c55e'],
-        'return_during_warranty'           => ['label' => 'رجع خلال فترة الضمان',                 'color' => '#f43f5e'],
-        'runaway'                          => ['label' => 'هروب',                                  'color' => '#dc2626'],
-    ];
-    $baseUrl = url('/admin/recruitment/recruitment-contracts');
-    @endphp
-    <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
-        <div class="flex items-center justify-between mb-5">
-            <a href="{{ $baseUrl }}" class="text-xs text-emerald-600 hover:underline font-medium">عرض كل العقود ←</a>
-            <h3 class="text-sm font-bold text-gray-900">حالات عقود الاستقدام</h3>
-        </div>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-3">
-            @foreach($statusLabels as $statusKey => $info)
-            @php $cnt = $statusCounts[$statusKey] ?? 0; @endphp
-            <a href="{{ $baseUrl }}?tableFilters[status][value]={{ $statusKey }}"
-               class="rounded-xl p-3 text-right hover:scale-105 transition-all cursor-pointer border"
-               style="background:{{ $info['color'] }}12; border-color:{{ $info['color'] }}30;">
-                <p class="text-2xl font-bold leading-none" style="color:{{ $info['color'] }};">{{ $cnt }}</p>
-                <p class="text-xs text-gray-600 mt-1.5 leading-snug font-medium">{{ $info['label'] }}</p>
-            </a>
-            @endforeach
-        </div>
     </div>
 
     {{-- ══════════════════ STATS ROW 2 (HR/Finance quick stats) ══════════════════ --}}
@@ -594,6 +591,22 @@
             // KPI bar
             const kpiBar = document.getElementById('kpi-bar');
             if (kpiBar) kpiBar.style.width = d.kpiRate + '%';
+
+            // Update section counts in dark card
+            const scMap = { 'sc-accounts': 'accounts', 'sc-coordination': 'coordination', 'sc-customer_service': 'customer_service' };
+            Object.entries(scMap).forEach(([elId, key]) => {
+                const el = document.getElementById(elId);
+                if (el) el.textContent = (d.sectionCounts && d.sectionCounts[key] != null) ? d.sectionCounts[key] : 0;
+            });
+
+            // Update status cards
+            if (d.statusCounts) {
+                document.querySelectorAll('#statusCardsGrid [data-status]').forEach(card => {
+                    const key = card.dataset.status;
+                    const countEl = card.querySelector('.status-count');
+                    if (countEl) countEl.textContent = d.statusCounts[key] != null ? d.statusCounts[key] : 0;
+                });
+            }
         })
         .catch(() => {})
         .finally(() => setLoading(false));

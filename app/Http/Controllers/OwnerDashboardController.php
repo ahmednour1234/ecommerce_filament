@@ -218,6 +218,13 @@ class OwnerDashboardController extends Controller
         // ── Stats row 1 ──────────────────────────────────────────────────
         $totalContracts      = $applyDateRange(RecruitmentContract::query())->count();
         $inProgressContracts = $applyDateRange(RecruitmentContract::whereNotIn('status', ['received']))->count();
+
+        // ── Section & Status counts ───────────────────────────────────────
+        $sectionCounts = $applyDateRange(RecruitmentContract::select('current_section', DB::raw('count(*) as total'))
+            ->groupBy('current_section'))->pluck('total', 'current_section')->toArray();
+
+        $statusCounts = $applyDateRange(RecruitmentContract::select('status', DB::raw('count(*) as total'))
+            ->groupBy('status'))->pluck('total', 'status')->toArray();
         $pendingLeave        = LeaveRequest::where('status', 'pending')->count();
         $pendingExcuse       = ExcuseRequest::where('status', 'pending')->count();
 
@@ -270,6 +277,8 @@ class OwnerDashboardController extends Controller
             'kpiRate'            => $kpiRate,
             'months'             => $months,
             'monthlyData'        => $monthlyData,
+            'sectionCounts'      => $sectionCounts,
+            'statusCounts'       => $statusCounts,
         ]);
     }
 }
