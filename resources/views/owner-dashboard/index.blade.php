@@ -18,17 +18,17 @@
             <div class="flex flex-wrap gap-2 justify-start">
                 <a href="{{ route('owner.dashboard') }}"
                    class="px-4 py-2 rounded-full text-sm font-semibold bg-emerald-500 text-white">الرئيسية</a>
-                <a href="{{ route('filament.admin.resources.recruitment-contracts.index') }}"
+                <a href="{{ url('/admin/recruitment-contracts') }}"
                    class="px-4 py-2 rounded-full text-sm text-gray-600 hover:bg-gray-100">الطلبات</a>
-                <a href="{{ route('filament.admin.resources.employees.index') }}"
+                <a href="{{ url('/admin/employees') }}"
                    class="px-4 py-2 rounded-full text-sm text-gray-600 hover:bg-gray-100">الموارد البشرية</a>
-                <a href="{{ route('filament.admin.resources.rental-contracts.index') }}"
+                <a href="{{ url('/admin/rental-contracts') }}"
                    class="px-4 py-2 rounded-full text-sm text-gray-600 hover:bg-gray-100">العقود</a>
-                <a href="{{ route('filament.admin.resources.journal-entries.index') }}"
+                <a href="{{ url('/admin/journal-entries') }}"
                    class="px-4 py-2 rounded-full text-sm text-gray-600 hover:bg-gray-100">المحاسبة</a>
-                <a href="{{ route('filament.admin.resources.complaints.index') }}"
+                <a href="{{ url('/admin/complaints') }}"
                    class="px-4 py-2 rounded-full text-sm text-gray-600 hover:bg-gray-100">الشكاوى</a>
-                <a href="{{ route('filament.admin.resources.branches.index') }}"
+                <a href="{{ url('/admin/branches') }}"
                    class="px-4 py-2 rounded-full text-sm text-gray-600 hover:bg-gray-100">الفروع</a>
                 <a href="{{ route('filament.admin.pages.dashboard') }}"
                    class="px-4 py-2 rounded-full text-sm text-gray-600 hover:bg-gray-100">التقارير</a>
@@ -55,10 +55,10 @@
         <div class="lg:col-span-4 grid grid-cols-2 md:grid-cols-4 gap-4">
             @php
             $stats1 = [
-                ['icon' => '📋', 'label' => 'إجمالي الطلبات',    'value' => $totalContracts,      'sub' => 'طلبات الاستقدام الكلية', 'url' => route('filament.admin.resources.recruitment-contracts.index')],
-                ['icon' => '⏳', 'label' => 'طلبات قيد التنفيذ', 'value' => $inProgressContracts, 'sub' => 'تحتاج متابعة يومية',     'url' => route('filament.admin.resources.recruitment-contracts.index')],
-                ['icon' => '✉️', 'label' => 'طلبات الإجازة',     'value' => $pendingLeave,         'sub' => 'بانتظار الاعتماد',        'url' => route('filament.admin.resources.leave-requests.index')],
-                ['icon' => '🕐', 'label' => 'طلبات الاستئذان',   'value' => $pendingExcuse,        'sub' => 'معلقة لدى الإدارة',       'url' => route('filament.admin.resources.excuse-requests.index')],
+                ['icon' => '📋', 'label' => 'إجمالي الطلبات',    'value' => $totalContracts,      'sub' => 'طلبات الاستقدام الكلية', 'url' => url('/admin/recruitment-contracts')],
+                ['icon' => '⏳', 'label' => 'طلبات قيد التنفيذ', 'value' => $inProgressContracts, 'sub' => 'تحتاج متابعة يومية',     'url' => url('/admin/recruitment-contracts')],
+                ['icon' => '✉️', 'label' => 'طلبات الإجازة',     'value' => $pendingLeave,         'sub' => 'بانتظار الاعتماد',        'url' => url('/admin/leave-requests')],
+                ['icon' => '🕐', 'label' => 'طلبات الاستئذان',   'value' => $pendingExcuse,        'sub' => 'معلقة لدى الإدارة',       'url' => url('/admin/excuse-requests')],
             ];
             @endphp
             @foreach($stats1 as $stat)
@@ -78,10 +78,10 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         @php
         $stats2 = [
-            ['icon' => '🏢', 'label' => 'العقود الإيجارية',    'value' => $activeRentals,          'sub' => 'عقود فعالة حالياً',  'url' => route('filament.admin.resources.rental-contracts.index')],
-            ['icon' => '💰', 'label' => 'قيود محاسبية معلقة', 'value' => $pendingJournals,        'sub' => 'بانتظار الموافقة',   'url' => route('filament.admin.resources.journal-entries.index')],
-            ['icon' => '✍️', 'label' => 'عدد الشكاوى',        'value' => $openComplaints,         'sub' => 'مفتوحة ومعلقة',     'url' => route('filament.admin.resources.complaints.index')],
-            ['icon' => '⭐', 'label' => 'نسبة رضا العملاء',   'value' => $satisfactionRate . '%', 'sub' => 'مؤشر عام ممتاز',    'url' => route('filament.admin.resources.complaints.index')],
+            ['icon' => '🏢', 'label' => 'العقود الإيجارية',    'value' => $activeRentals,          'sub' => 'عقود فعالة حالياً',  'url' => url('/admin/rental-contracts')],
+            ['icon' => '💰', 'label' => 'قيود محاسبية معلقة', 'value' => $pendingJournals,        'sub' => 'بانتظار الموافقة',   'url' => url('/admin/journal-entries')],
+            ['icon' => '✍️', 'label' => 'عدد الشكاوى',        'value' => $openComplaints,         'sub' => 'مفتوحة ومعلقة',     'url' => url('/admin/complaints')],
+            ['icon' => '⭐', 'label' => 'نسبة رضا العملاء',   'value' => $satisfactionRate . '%', 'sub' => 'مؤشر عام ممتاز',    'url' => url('/admin/complaints')],
         ];
         @endphp
         @foreach($stats2 as $stat)
@@ -140,7 +140,7 @@
                 <h3 class="text-base font-bold text-gray-900">المحاسبة والاعتمادات</h3>
             </div>
             <div class="space-y-3">
-                <a href="{{ route('filament.admin.resources.journal-entries.index') }}"
+                <a href="{{ url('/admin/journal-entries') }}"
                    class="bg-amber-50 border border-amber-100 rounded-xl p-4 flex items-center justify-between hover:bg-amber-100 transition-colors block">
                     <span class="text-2xl font-bold text-amber-600">{{ $pendingJournals }}</span>
                     <div class="text-right">
@@ -148,7 +148,7 @@
                         <p class="text-xs text-gray-500 mt-0.5">تحتاج اعتماد سريع</p>
                     </div>
                 </a>
-                <a href="{{ route('filament.admin.resources.vouchers.index') }}"
+                <a href="{{ url('/admin/vouchers') }}"
                    class="bg-amber-50 border border-amber-100 rounded-xl p-4 flex items-center justify-between hover:bg-amber-100 transition-colors block">
                     <span class="text-2xl font-bold text-amber-600">{{ $pendingVouchers }}</span>
                     <div class="text-right">
@@ -166,22 +166,22 @@
                 <h3 class="text-base font-bold text-gray-900">الموارد البشرية HR</h3>
             </div>
             <div class="grid grid-cols-2 gap-3">
-                <a href="{{ route('filament.admin.resources.excuse-requests.index') }}"
+                <a href="{{ url('/admin/excuse-requests') }}"
                    class="border border-gray-100 rounded-xl p-4 text-right hover:bg-gray-50 transition-colors block">
                     <p class="text-xs text-gray-500">طلبات استئذان اليوم</p>
                     <p class="text-3xl font-bold text-gray-900 mt-1">{{ $pendingExcuse }}</p>
                 </a>
-                <a href="{{ route('filament.admin.resources.leave-requests.index') }}"
+                <a href="{{ url('/admin/leave-requests') }}"
                    class="border border-gray-100 rounded-xl p-4 text-right hover:bg-gray-50 transition-colors block">
                     <p class="text-xs text-gray-500">طلبات إجازة بانتظار المدير</p>
                     <p class="text-3xl font-bold text-gray-900 mt-1">{{ $pendingLeave }}</p>
                 </a>
-                <a href="{{ route('filament.admin.resources.employees.index') }}"
+                <a href="{{ url('/admin/employees') }}"
                    class="border border-gray-100 rounded-xl p-4 text-right hover:bg-gray-50 transition-colors block">
                     <p class="text-xs text-gray-500">مقابلات مجدولة هذا الأسبوع</p>
                     <p class="text-3xl font-bold text-gray-900 mt-1">{{ $scheduledInterviews }}</p>
                 </a>
-                <a href="{{ route('filament.admin.resources.rental-contracts.index') }}"
+                <a href="{{ url('/admin/rental-contracts') }}"
                    class="border border-gray-100 rounded-xl p-4 text-right hover:bg-gray-50 transition-colors block">
                     <p class="text-xs text-gray-500">عقود موظفين تحتاج تجديد</p>
                     <p class="text-3xl font-bold text-gray-900 mt-1">{{ $activeRentals }}</p>
@@ -198,7 +198,7 @@
             <div class="space-y-3">
                 @if($pendingLeave > 0)
                 <div class="bg-amber-50 border-r-4 border-amber-400 rounded-xl px-4 py-3 text-right">
-                    <a href="{{ route('filament.admin.resources.leave-requests.index') }}" class="text-sm font-bold text-amber-700">
+                    <a href="{{ url('/admin/leave-requests') }}" class="text-sm font-bold text-amber-700">
                         {{ $pendingLeave }} طلب إجازة بانتظار الاعتماد
                     </a>
                     <p class="text-xs text-gray-500 mt-0.5">يفضل مراجعتها اليوم</p>
@@ -206,7 +206,7 @@
                 @endif
                 @if($pendingJournals > 0 || $pendingVouchers > 0)
                 <div class="bg-rose-50 border-r-4 border-rose-400 rounded-xl px-4 py-3 text-right">
-                    <a href="{{ route('filament.admin.resources.journal-entries.index') }}" class="text-sm font-bold text-rose-700">
+                    <a href="{{ url('/admin/journal-entries') }}" class="text-sm font-bold text-rose-700">
                         {{ $pendingJournals + $pendingVouchers }} معاملة محاسبية معلقة
                     </a>
                     <p class="text-xs text-gray-500 mt-0.5">هناك موافقات متأخرة</p>
@@ -214,7 +214,7 @@
                 @endif
                 @if($openComplaints > 0)
                 <div class="bg-blue-50 border-r-4 border-blue-400 rounded-xl px-4 py-3 text-right">
-                    <a href="{{ route('filament.admin.resources.complaints.index') }}" class="text-sm font-bold text-blue-700">
+                    <a href="{{ url('/admin/complaints') }}" class="text-sm font-bold text-blue-700">
                         {{ $openComplaints }} شكوى مسجلة
                     </a>
                     <p class="text-xs text-gray-500 mt-0.5">بعض الفروع تحتاج تحسين سرعة المعالجة</p>
@@ -232,7 +232,7 @@
         {{-- Branch revenue table --}}
         <div class="bg-white rounded-2xl p-6 shadow-sm">
             <div class="flex items-center justify-between mb-4">
-                <a href="{{ route('filament.admin.resources.branch-transactions.index') }}" class="text-xs text-emerald-600 hover:underline">عرض التقارير المالية</a>
+                <a href="{{ url('/admin/branch-transactions') }}" class="text-xs text-emerald-600 hover:underline">عرض التقارير المالية</a>
                 <h3 class="text-base font-bold text-gray-900">إيرادات ومصاريف الفروع</h3>
             </div>
             <div class="overflow-x-auto">
@@ -249,7 +249,7 @@
                     <tbody class="divide-y divide-gray-50">
                         @forelse($branchStats as $b)
                         <tr class="text-sm cursor-pointer hover:bg-gray-50 transition-colors"
-                            onclick="window.location='{{ route('filament.admin.resources.branches.index') }}'">
+                            onclick="window.location='{{ url('/admin/branches') }}'">
                             <td class="py-3">
                                 @php
                                 $badgeColor = match($b['rating']) {
@@ -283,17 +283,17 @@
             <p class="text-6xl font-bold text-center my-4">{{ $kpiRate }}%</p>
             <p class="text-xs text-gray-400 text-center mb-6">نسبة إنجاز المهام والاعتمادات اليومية</p>
             <div class="space-y-2 border-t border-gray-700 pt-4 text-sm">
-                <a href="{{ route('filament.admin.resources.journal-entries.index') }}"
+                <a href="{{ url('/admin/journal-entries') }}"
                    class="flex justify-between hover:text-emerald-400 transition-colors">
                     <span class="text-white font-semibold">{{ $approvedToday }}</span>
                     <span class="text-gray-400">الموافقات المنجزة</span>
                 </a>
-                <a href="{{ route('filament.admin.resources.complaints.index') }}"
+                <a href="{{ url('/admin/complaints') }}"
                    class="flex justify-between hover:text-emerald-400 transition-colors">
                     <span class="text-white font-semibold">{{ $resolvedComplaints }}</span>
                     <span class="text-gray-400">الشكاوى المغلقة</span>
                 </a>
-                <a href="{{ route('filament.admin.resources.rental-contracts.index') }}"
+                <a href="{{ url('/admin/rental-contracts') }}"
                    class="flex justify-between hover:text-emerald-400 transition-colors">
                     <span class="text-white font-semibold">{{ $activeContracts }}</span>
                     <span class="text-gray-400">العقود النشطة</span>
@@ -304,7 +304,7 @@
         {{-- Latest contracts --}}
         <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm">
             <div class="flex items-center justify-between mb-4">
-                <a href="{{ route('filament.admin.resources.recruitment-contracts.index') }}" class="text-xs text-emerald-600 hover:underline">عرض الكل</a>
+                <a href="{{ url('/admin/recruitment-contracts') }}" class="text-xs text-emerald-600 hover:underline">عرض الكل</a>
                 <h3 class="text-base font-bold text-gray-900">آخر الطلبات</h3>
             </div>
             <div class="overflow-x-auto">
@@ -321,7 +321,7 @@
                     <tbody class="divide-y divide-gray-50">
                         @forelse($latestContracts as $contract)
                         <tr class="cursor-pointer hover:bg-gray-50 transition-colors"
-                            onclick="window.location='{{ route('filament.admin.resources.recruitment-contracts.edit', $contract->id) }}'">
+                            onclick="window.location='{{ url('/admin/recruitment-contracts/' . $contract->id . '/edit') }}'">
                             <td class="py-3 font-semibold text-gray-900">
                                 {{ number_format($contract->total_cost ?? 0) }} ر.س
                             </td>
@@ -365,7 +365,7 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             @forelse($filteredBranchStats as $b)
-            <a href="{{ route('filament.admin.resources.complaints.index') }}"
+            <a href="{{ url('/admin/complaints') }}"
                class="border border-gray-100 rounded-xl p-4 text-right hover:shadow-md transition-shadow block">
                 <div class="flex items-center justify-between mb-2">
                     <span class="text-xs text-emerald-600 font-semibold">{{ $b['resolve_rate'] }}% حل</span>
