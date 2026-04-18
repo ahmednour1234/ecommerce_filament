@@ -5,20 +5,6 @@
 @section('content')
 <div class="max-w-screen-2xl mx-auto space-y-5">
 
-    {{-- ══════════════════ PAGE HEADER ══════════════════ --}}
-    <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
-            <span class="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full">
-                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse inline-block"></span>
-                مباشر
-            </span>
-        </div>
-        <div class="text-right">
-            <h1 class="text-xl font-bold text-gray-900">لوحة تحكم مكتب الاستقدام</h1>
-            <p class="text-xs text-gray-400 mt-0.5">نظرة شاملة على أداء الشركة وعقود الاستقدام والموارد البشرية</p>
-        </div>
-    </div>
-
     {{-- ══════════════════ ROW: DARK SUMMARY + STATS ══════════════════ --}}
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
         {{-- Dark summary card --}}
@@ -73,7 +59,7 @@
         @php
         $stats2 = [
             ['icon' => '🏢', 'label' => 'العقود الإيجارية',    'value' => $activeRentals,          'sub' => 'عقود فعالة حالياً',  'url' => url('/admin/rental-contracts')],
-            ['icon' => '💰', 'label' => 'قيود محاسبية معلقة', 'value' => $pendingJournals,        'sub' => 'بانتظار الموافقة',   'url' => url('/admin/journal-entries')],
+            ['icon' => '💰', 'label' => 'معاملات مالية تحتاج موافقة', 'value' => $pendingJournals,        'sub' => 'في قسم المالية',   'url' => url('/admin/journal-entries')],
             ['icon' => '✍️', 'label' => 'عدد الشكاوى',        'value' => $openComplaints,         'sub' => 'مفتوحة ومعلقة',     'url' => url('/admin/complaints')],
             ['icon' => '⭐', 'label' => 'نسبة رضا العملاء',   'value' => $satisfactionRate . '%', 'sub' => 'مؤشر عام ممتاز',    'url' => url('/admin/complaints')],
         ];
@@ -359,7 +345,7 @@
     $targetBranches = ['الرياض', 'عرعر', 'حفر الباطن'];
     $filteredBranchStats = collect($branchStats)->filter(
         fn($b) => in_array($b['name'], $targetBranches)
-    )->values();
+    )->reverse()->values();
     @endphp
     <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
         <div class="flex items-center justify-between mb-5">
