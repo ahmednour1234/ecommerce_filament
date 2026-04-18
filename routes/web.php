@@ -3,10 +3,16 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\VoucherPrintController;
 use App\Http\Controllers\Finance\BranchTransactionPrintController;
+use App\Http\Controllers\OwnerDashboardController;
 
 Route::get('/', function () {
     return redirect()->route('filament.admin.pages.dashboard');
 });
+
+// Owner Dashboard (company_owner only)
+Route::middleware(['web', 'auth', 'company.owner'])
+    ->get('/owner-dashboard', [OwnerDashboardController::class, 'index'])
+    ->name('owner.dashboard');
 
 // Public storage files route - allow direct access to all storage files
 Route::get('/storage/{path}', function ($path) {

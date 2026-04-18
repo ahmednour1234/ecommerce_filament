@@ -17,6 +17,7 @@ $app = Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'max_request_size' => \App\Http\Middleware\MaxRequestSizeMiddleware::class,
             'device.key' => \App\Http\Middleware\AuthenticateDeviceKey::class,
+            'company.owner' => \App\Http\Middleware\EnsureCompanyOwner::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
