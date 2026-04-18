@@ -15,7 +15,7 @@
         </div>
         <div class="text-right">
             <h1 class="text-xl font-bold text-gray-900">لوحة تحكم مكتب الاستقدام</h1>
-            <p class="text-xs text-gray-400 mt-0.5">نظرة شاملة على أداء الشركة والطلبات والموارد البشرية</p>
+            <p class="text-xs text-gray-400 mt-0.5">نظرة شاملة على أداء الشركة وعقود الاستقدام والموارد البشرية</p>
         </div>
     </div>
 
@@ -46,8 +46,8 @@
         <div class="lg:col-span-4 grid grid-cols-2 md:grid-cols-4 gap-4">
             @php
             $stats1 = [
-                ['icon' => '📋', 'label' => 'إجمالي الطلبات',    'value' => $totalContracts,      'sub' => 'طلبات الاستقدام الكلية', 'url' => url('/admin/recruitment/recruitment-contracts')],
-                ['icon' => '⏳', 'label' => 'طلبات قيد التنفيذ', 'value' => $inProgressContracts, 'sub' => 'تحتاج متابعة يومية',     'url' => url('/admin/recruitment/recruitment-contracts')],
+                ['icon' => '📋', 'label' => 'إجمالي عقود الاستقدام',    'value' => $totalContracts,      'sub' => 'عقود الاستقدام الكلية', 'url' => url('/admin/recruitment/recruitment-contracts')],
+                ['icon' => '⏳', 'label' => 'عقود الاستقدام قيد التنفيذ', 'value' => $inProgressContracts, 'sub' => 'تحتاج متابعة يومية',     'url' => url('/admin/recruitment/recruitment-contracts')],
                 ['icon' => '✉️', 'label' => 'طلبات الإجازة',     'value' => $pendingLeave,         'sub' => 'بانتظار الاعتماد',        'url' => url('/admin/leave-requests')],
                 ['icon' => '🕐', 'label' => 'طلبات الاستئذان',   'value' => $pendingExcuse,        'sub' => 'معلقة لدى الإدارة',       'url' => url('/admin/excuse-requests')],
             ];
@@ -122,7 +122,7 @@
         <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
             <div class="flex items-center justify-between mb-4">
                 <span class="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-full">آخر 6 أشهر</span>
-                <h3 class="text-sm font-bold text-gray-900">حركة الطلبات الشهرية</h3>
+                <h3 class="text-sm font-bold text-gray-900">حركة عقود الاستقدام الشهرية</h3>
             </div>
             <canvas id="monthlyChart" height="180"></canvas>
         </div>
@@ -308,7 +308,7 @@
         <div class="lg:col-span-2 bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
             <div class="flex items-center justify-between mb-4">
                 <a href="{{ url('/admin/recruitment/recruitment-contracts') }}" class="text-xs text-emerald-600 hover:underline font-medium">عرض الكل ←</a>
-                <h3 class="text-sm font-bold text-gray-900">آخر الطلبات</h3>
+                <h3 class="text-sm font-bold text-gray-900">آخر عقود الاستقدام</h3>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-right">
