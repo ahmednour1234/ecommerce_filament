@@ -85,44 +85,6 @@
             </div>
         </div>
 
-        {{-- Stats row 1 (4 cards) --}}
-        <div class="lg:col-span-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-            @php
-            $baseUrl = url('/admin/recruitment/recruitment-contracts');
-            $sections = [
-                ['label' => 'عقود قسم الاستقدام',  'key' => 'accounts',         'color' => 'blue',   'icon' => '🧾'],
-                ['label' => 'عقود قسم التنسيق',     'key' => 'coordination',     'color' => 'purple', 'icon' => '📌'],
-                ['label' => 'عقود خدمة العملاء',    'key' => 'customer_service', 'color' => 'emerald','icon' => '🤝'],
-                ['label' => 'عقود تم التسليم',      'key' => '_received',        'color' => 'gray',   'icon' => '✅'],
-            ];
-            $colorMap = [
-                'blue'    => ['bg'=>'bg-blue-50',    'text'=>'text-blue-700',    'dot'=>'bg-blue-500'],
-                'purple'  => ['bg'=>'bg-purple-50',  'text'=>'text-purple-700',  'dot'=>'bg-purple-500'],
-                'emerald' => ['bg'=>'bg-emerald-50', 'text'=>'text-emerald-700', 'dot'=>'bg-emerald-500'],
-                'gray'    => ['bg'=>'bg-gray-50',    'text'=>'text-gray-700',    'dot'=>'bg-gray-400'],
-            ];
-            @endphp
-            @foreach($sections as $sec)
-            @php
-            $cnt = $sec['key'] === '_received'
-                ? ($statusCounts['received'] ?? 0)
-                : ($sectionCounts[$sec['key']] ?? 0);
-            $href = $sec['key'] === '_received'
-                ? $baseUrl . '?tableFilters[status][value]=received'
-                : $baseUrl . '?tableFilters[current_section][value]=' . $sec['key'];
-            $c = $colorMap[$sec['color']];
-            @endphp
-            <a href="{{ $href }}" class="bg-white rounded-2xl p-5 stat-card flex flex-col gap-2 hover:shadow-lg transition-all" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
-                <div class="flex items-center justify-between">
-                    <div class="w-9 h-9 rounded-xl {{ $c['bg'] }} flex items-center justify-center text-lg">{{ $sec['icon'] }}</div>
-                    <span class="w-2 h-2 rounded-full {{ $c['dot'] }}"></span>
-                </div>
-                <div class="text-right">
-                    <p class="text-xs text-gray-400 font-medium leading-snug">{{ $sec['label'] }}</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-0.5 leading-none">{{ number_format($cnt) }}</p>
-                </div>
-            </a>
-            @endforeach
         </div>
     </div>
 
