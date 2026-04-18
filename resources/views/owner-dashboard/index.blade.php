@@ -309,65 +309,6 @@
         </div>
     </div>
 
-    {{-- ══════════════════ ACCOUNTING + HR PENDING ══════════════════ --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {{-- Accounting --}}
-        <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
-            <div class="flex items-center justify-between mb-4">
-                <span class="text-xs text-amber-600 bg-amber-50 border border-amber-100 px-2.5 py-1 rounded-full">بانتظار المدير</span>
-                <h3 class="text-sm font-bold text-gray-900">المحاسبة والاعتمادات</h3>
-            </div>
-            <div class="space-y-3">
-                <a href="{{ url('/admin/accounting/journal-entries') }}"
-                   class="bg-amber-50 border border-amber-100 rounded-xl p-4 flex items-center justify-between hover:bg-amber-100 transition-colors block">
-                    <span class="text-2xl font-bold text-amber-600">{{ $pendingJournals }}</span>
-                    <div class="text-right">
-                        <p class="font-bold text-gray-900 text-sm">قيود يومية تنتظر الاعتماد</p>
-                        <p class="text-xs text-gray-500 mt-0.5">تحتاج اعتماد سريع</p>
-                    </div>
-                </a>
-                <a href="{{ url('/admin/accounting/vouchers') }}"
-                   class="bg-amber-50 border border-amber-100 rounded-xl p-4 flex items-center justify-between hover:bg-amber-100 transition-colors block">
-                    <span class="text-2xl font-bold text-amber-600">{{ $pendingVouchers }}</span>
-                    <div class="text-right">
-                        <p class="font-bold text-gray-900 text-sm">سندات صرف تنتظر الموافقة</p>
-                        <p class="text-xs text-gray-500 mt-0.5">تحتاج اعتماد سريع</p>
-                    </div>
-                </a>
-            </div>
-        </div>
-
-        {{-- HR --}}
-        <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
-            <div class="flex items-center justify-between mb-4">
-                <span class="text-xs text-blue-600 bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-full">المهام الحالية</span>
-                <h3 class="text-sm font-bold text-gray-900">الموارد البشرية HR</h3>
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-                <a href="{{ url('/admin/h-r/excuse-requests') }}"
-                   class="border border-gray-100 rounded-xl p-4 text-right hover:bg-gray-50 transition-colors block">
-                    <p class="text-xs text-gray-500">طلبات استئذان اليوم</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">{{ $pendingExcuse }}</p>
-                </a>
-                <a href="{{ url('/admin/h-r/leave-requests') }}"
-                   class="border border-gray-100 rounded-xl p-4 text-right hover:bg-gray-50 transition-colors block">
-                    <p class="text-xs text-gray-500">طلبات إجازة بانتظار المدير</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">{{ $pendingLeave }}</p>
-                </a>
-                <a href="{{ url('/admin/h-r/employees') }}"
-                   class="border border-gray-100 rounded-xl p-4 text-right hover:bg-gray-50 transition-colors block">
-                    <p class="text-xs text-gray-500">مقابلات مجدولة هذا الأسبوع</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">{{ $scheduledInterviews }}</p>
-                </a>
-                <a href="{{ url('/admin/rental/rental-contracts') }}"
-                   class="border border-gray-100 rounded-xl p-4 text-right hover:bg-gray-50 transition-colors block">
-                    <p class="text-xs text-gray-500">عقود موظفين تحتاج تجديد</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">{{ $activeRentals }}</p>
-                </a>
-            </div>
-        </div>
-    </div>
-
     {{-- ══════════════════ ALERTS + BRANCH TABLE ══════════════════ --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {{-- Branch revenue table --}}
