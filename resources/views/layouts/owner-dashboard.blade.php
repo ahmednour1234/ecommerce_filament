@@ -49,17 +49,47 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .sidebar::-webkit-scrollbar-thumb { background: #21262d; }
+
+        /* ── Mobile sidebar ───────────────────────── */
+        #sidebar {
+            transition: transform .28s cubic-bezier(.4,0,.2,1);
+        }
+        @media (max-width: 1023px) {
+            #mainContent { margin-right: 0 !important; }
+            #sidebar { transform: translateX(100%); }
+            #sidebar.sidebar-open { transform: translateX(0); }
+        }
+        @media (min-width: 1024px) {
+            #sidebar { transform: translateX(0) !important; }
+            #sidebarOverlay { display: none !important; }
+        }
+        #sidebarOverlay {
+            display: none; position: fixed; inset: 0; z-index: 39;
+            background: rgba(0,0,0,.45); backdrop-filter: blur(2px);
+        }
+        #sidebarOverlay.show { display: block; }
+
+        /* ── Hamburger ────────────────────────────── */
+        .hamburger-btn { display: none; }
+        @media (max-width: 1023px) { .hamburger-btn { display: flex; } }
     </style>
 </head>
 <body class="min-h-screen">
 <div class="flex min-h-screen">
 
+    {{-- Mobile sidebar overlay --}}
+    <div id="sidebarOverlay" onclick="closeSidebar()"></div>
+
     {{-- ═══ MAIN CONTENT ═══ --}}
-    <main class="flex-1 min-w-0 overflow-y-auto" style="margin-right:260px;">
+    <main class="flex-1 min-w-0 overflow-y-auto" style="margin-right:260px;" id="mainContent">
         {{-- Top bar --}}
-        <div class="bg-white border-b border-gray-100 px-6 py-3 flex items-center justify-between sticky top-0 z-30" style="box-shadow:0 1px 8px rgba(0,0,0,.05);">
+        <div class="bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between sticky top-0 z-30" style="box-shadow:0 1px 8px rgba(0,0,0,.05);">
             <div class="flex items-center gap-3">
-                <span class="text-xs text-gray-400">
+                {{-- Hamburger (mobile only) --}}
+                <button onclick="toggleSidebar()" class="hamburger-btn items-center justify-center w-9 h-9 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors" aria-label="القائمة">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
+                <span class="text-xs text-gray-400 hidden sm:block">
                     {{ \Carbon\Carbon::now()->locale('ar')->isoFormat('dddd، D MMMM YYYY') }}
                 </span>
             </div>
@@ -73,22 +103,27 @@
                 </div>
             </div>
         </div>
-        <div class="p-5">
+        <div class="p-3 sm:p-5">
             @yield('content')
         </div>
     </main>
 
     {{-- ═══ SIDEBAR (right side — RTL) ═══ --}}
-    <aside class="sidebar fixed top-0 right-0 bottom-0 flex flex-col z-40 overflow-y-auto">
+    <aside class="sidebar fixed top-0 right-0 bottom-0 flex flex-col z-40 overflow-y-auto" id="sidebar">
 
-        {{-- Brand --}}
-        <div class="p-5 flex items-center gap-3 justify-end" style="border-bottom:1px solid rgba(255,255,255,.06);">
-            <div class="text-right">
-                <h1 class="text-white font-bold text-base leading-tight">مكتب الاستقدام</h1>
-                <p class="text-xs mt-0.5" style="color:#8b949e;">لوحة تحكم مبسطة وسهلة</p>
-            </div>
-            <div class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center flex-shrink-0" style="box-shadow:0 4px 12px rgba(16,185,129,.4);">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+        {{-- Brand + close button (mobile) --}}
+        <div class="p-5 flex items-center gap-3 justify-between" style="border-bottom:1px solid rgba(255,255,255,.06);">
+            <button onclick="closeSidebar()" class="hamburger-btn items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:bg-white/10 transition-colors flex-shrink-0" aria-label="إغلاق">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <div class="flex items-center gap-3">
+                <div class="text-right">
+                    <h1 class="text-white font-bold text-base leading-tight">مكتب الاستقدام</h1>
+                    <p class="text-xs mt-0.5" style="color:#8b949e;">لوحة تحكم مبسطة وسهلة</p>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center flex-shrink-0" style="box-shadow:0 4px 12px rgba(16,185,129,.4);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                </div>
             </div>
         </div>
 
@@ -166,5 +201,21 @@
 
     </aside>
 </div>
+<script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('sidebar-open');
+        document.getElementById('sidebarOverlay').classList.toggle('show');
+    }
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('sidebar-open');
+        document.getElementById('sidebarOverlay').classList.remove('show');
+    }
+    // Close sidebar on nav link click (mobile UX)
+    document.querySelectorAll('#sidebar .nav-item').forEach(function(el) {
+        el.addEventListener('click', function() {
+            if (window.innerWidth < 1024) closeSidebar();
+        });
+    });
+</script>
 </body>
 </html>

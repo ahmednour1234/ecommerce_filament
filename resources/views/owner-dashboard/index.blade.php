@@ -6,28 +6,28 @@
 <div class="max-w-screen-2xl mx-auto space-y-5">
 
     {{-- ══════════════════ FILTER BAR ══════════════════ --}}
-    <div class="bg-white rounded-2xl px-5 py-4 flex flex-wrap items-center gap-3" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
-        <div class="flex items-center gap-2 text-gray-500 text-xs font-medium ml-auto">
+    <div class="bg-white rounded-2xl px-4 py-4 flex flex-wrap items-center gap-2.5" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
+        <div class="flex items-center gap-2 text-gray-500 text-xs font-medium w-full sm:w-auto sm:ml-auto">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/></svg>
             تصفية البيانات
         </div>
 
-        <select id="filterBranch" class="text-sm border border-gray-200 rounded-xl px-3 py-2 text-gray-700 bg-gray-50 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 cursor-pointer" style="min-width:140px;">
+        <select id="filterBranch" class="flex-1 sm:flex-none text-sm border border-gray-200 rounded-xl px-3 py-2 text-gray-700 bg-gray-50 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 cursor-pointer" style="min-width:130px;">
             <option value="">كل الفروع</option>
             @foreach(\App\Models\MainCore\Branch::where('status','active')->get() as $br)
             <option value="{{ $br->id }}">{{ $br->name }}</option>
             @endforeach
         </select>
 
-        <select id="filterPeriod" class="text-sm border border-gray-200 rounded-xl px-3 py-2 text-gray-700 bg-gray-50 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 cursor-pointer" style="min-width:140px;">
+        <select id="filterPeriod" class="flex-1 sm:flex-none text-sm border border-gray-200 rounded-xl px-3 py-2 text-gray-700 bg-gray-50 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 cursor-pointer" style="min-width:130px;">
             <option value="6">آخر 6 أشهر</option>
             <option value="3">آخر 3 أشهر</option>
             <option value="12">آخر 12 شهر</option>
             <option value="1">الشهر الحالي</option>
         </select>
 
-        <input type="date" id="filterFrom" class="text-sm border border-gray-200 rounded-xl px-3 py-2 text-gray-700 bg-gray-50 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400" placeholder="من تاريخ">
-        <input type="date" id="filterTo" class="text-sm border border-gray-200 rounded-xl px-3 py-2 text-gray-700 bg-gray-50 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400" placeholder="إلى تاريخ">
+        <input type="date" id="filterFrom" class="flex-1 sm:flex-none text-sm border border-gray-200 rounded-xl px-3 py-2 text-gray-700 bg-gray-50 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400" placeholder="من تاريخ">
+        <input type="date" id="filterTo" class="flex-1 sm:flex-none text-sm border border-gray-200 rounded-xl px-3 py-2 text-gray-700 bg-gray-50 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400" placeholder="إلى تاريخ">
 
         <button id="applyFilter" class="text-sm font-semibold text-white bg-emerald-500 hover:bg-emerald-600 px-4 py-2 rounded-xl transition-colors flex items-center gap-1.5">
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/></svg>
@@ -59,10 +59,10 @@
     ];
     $baseUrl = url('/admin/recruitment/recruitment-contracts');
     @endphp
-    <div class="flex gap-4 items-stretch">
+    <div class="flex flex-col lg:flex-row gap-4 lg:items-stretch">
 
         {{-- Dark summary card --}}
-        <div class="flex-shrink-0 w-64 rounded-2xl p-5 flex flex-col gap-3 text-white relative overflow-hidden" style="background:linear-gradient(145deg,#0d1117 0%,#1a2332 100%);">
+        <div class="flex-shrink-0 lg:w-64 w-full rounded-2xl p-5 flex flex-col gap-3 text-white relative overflow-hidden" style="background:linear-gradient(145deg,#0d1117 0%,#1a2332 100%)">
             <div class="absolute inset-0 opacity-10" style="background:radial-gradient(circle at 20% 80%, #10b981 0%, transparent 60%);"></div>
 
             <a href="{{ $baseUrl }}" class="relative block">
@@ -107,7 +107,7 @@
                 <a href="{{ $baseUrl }}" class="text-xs text-emerald-600 hover:underline font-medium">عرض كل العقود ←</a>
                 <h3 class="text-sm font-bold text-gray-900">حالات عقود الاستقدام</h3>
             </div>
-            <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-2.5" id="statusCardsGrid">
+            <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-2" id="statusCardsGrid">
                 @foreach($statusLabels as $statusKey => $info)
                 @php $cnt = $statusCounts[$statusKey] ?? 0; @endphp
                 <a href="{{ $baseUrl }}?tableFilters[status][value]={{ $statusKey }}"
@@ -168,10 +168,10 @@
     @endphp
 
     {{-- ROW: Rental dark card + status cards --}}
-    <div class="flex gap-4 items-stretch">
+    <div class="flex flex-col lg:flex-row gap-4 lg:items-stretch">
 
         {{-- Rental dark summary card --}}
-        <div class="flex-shrink-0 w-64 rounded-2xl p-5 flex flex-col gap-3 text-white relative overflow-hidden" style="background:linear-gradient(145deg,#0f172a 0%,#1e293b 100%);">
+        <div class="flex-shrink-0 lg:w-64 w-full rounded-2xl p-5 flex flex-col gap-3 text-white relative overflow-hidden" style="background:linear-gradient(145deg,#0f172a 0%,#1e293b 100%)">
             <div class="absolute inset-0 opacity-10" style="background:radial-gradient(circle at 80% 20%, #3b82f6 0%, transparent 60%);"></div>
 
             <a href="{{ $rentalBaseUrl }}" class="relative block">
@@ -219,7 +219,7 @@
             </div>
 
             {{-- Contract statuses --}}
-            <div class="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-8 gap-2 mb-3" id="rentalStatusCardsGrid">
+            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 mb-3" id="rentalStatusCardsGrid">
                 @foreach($rentalStatusLabels as $sk => $info)
                 @php $cnt = $rentalStatusCounts[$sk] ?? 0; @endphp
                 <a href="{{ $rentalBaseUrl }}?tableFilters[status][value]={{ $sk }}"
@@ -235,7 +235,7 @@
             {{-- Divider --}}
             <div class="border-t border-gray-100 pt-3">
                 <p class="text-xs font-semibold text-gray-400 text-right mb-2">طلبات الإيجار</p>
-                <div class="grid grid-cols-3 sm:grid-cols-5 gap-2" id="rentalReqCardsGrid">
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2" id="rentalReqCardsGrid">
                     @foreach($rentalReqLabels as $sk => $info)
                     @php $cnt = $rentalRequestCounts[$sk] ?? 0; @endphp
                     <a href="{{ $rentalReqBaseUrl }}?tableFilters[status][value]={{ $sk }}"
