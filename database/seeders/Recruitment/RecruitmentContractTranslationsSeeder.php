@@ -109,6 +109,7 @@ class RecruitmentContractTranslationsSeeder extends Seeder
             'recruitment_contract.fields.visa_image' => ['en' => 'Visa Image', 'ar' => 'صورة التأشيرة'],
             'recruitment_contract.fields.musaned_contract_file' => ['en' => 'Musaned Contract File', 'ar' => 'ملف عقد مساند'],
             'recruitment_contract.fields.worker' => ['en' => 'Worker', 'ar' => 'العامل'],
+            'recruitment_contract.fields.agent' => ['en' => 'Agent', 'ar' => 'الوكيل'],
             'recruitment_contract.fields.marketer' => ['en' => 'Employee', 'ar' => 'اسم الموظف'],
             'recruitment_contract.fields.amount' => ['en' => 'Amount', 'ar' => 'المبلغ'],
             'recruitment_contract.fields.payment_method' => ['en' => 'Payment Method', 'ar' => 'طريقة الدفع'],

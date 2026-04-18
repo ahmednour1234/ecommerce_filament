@@ -313,6 +313,20 @@ class RecruitmentContractResource extends Resource
                                             ->searchable()
                                             ->nullable()
                                             ->columnSpan(1),
+                                        Forms\Components\Select::make('nationality_id')
+                                            ->disabled(fn () => static::isCustomerServiceTabDisabled())
+                                            ->label(tr('recruitment_contract.fields.nationality', [], null, 'dashboard') ?: 'الجنسية')
+                                            ->options(function () {
+                                                return Nationality::where('is_active', true)
+                                                    ->get()
+                                                    ->mapWithKeys(function ($nationality) {
+                                                        $label = app()->getLocale() === 'ar' ? $nationality->name_ar : $nationality->name_en;
+                                                        return [$nationality->id => $label];
+                                                    });
+                                            })
+                                            ->searchable()
+                                            ->nullable()
+                                            ->columnSpan(1),
                                     ])
                                     ->columns(2)
                                     ->columnSpanFull(),
@@ -529,6 +543,20 @@ class RecruitmentContractResource extends Resource
                                             ->nullable()
                                             ->disabled(fn () => static::isCoordinationTabDisabled())
                                             ->columnSpan(1),
+                                        Forms\Components\Select::make('agent_id')
+                                            ->label(tr('recruitment_contract.fields.agent', [], null, 'dashboard') ?: 'الوكيل')
+                                            ->options(function () {
+                                                return Agent::query()
+                                                    ->get()
+                                                    ->mapWithKeys(function ($agent) {
+                                                        $label = app()->getLocale() === 'ar' ? $agent->name_ar : $agent->name_en;
+                                                        return [$agent->id => $label];
+                                                    });
+                                            })
+                                            ->searchable()
+                                            ->nullable()
+                                            ->disabled(fn () => static::isCoordinationTabDisabled())
+                                            ->columnSpan(1),
                                         Forms\Components\Select::make('current_section')
                                             ->label('العقد عند القسم')
                                             ->options(RecruitmentContract::currentSectionOptions())
@@ -670,6 +698,18 @@ class RecruitmentContractResource extends Resource
                     ->label(tr('recruitment_contract.fields.branch', [], null, 'dashboard') ?: 'Branch')
                     ->searchable()
                     ->sortable()
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('nationality_display')
+                    ->label(tr('recruitment_contract.fields.nationality', [], null, 'dashboard') ?: 'الجنسية')
+                    ->getStateUsing(function (RecruitmentContract $record): string {
+                        $nationality = $record->worker?->nationality ?? $record->nationality;
+                        if (!$nationality) {
+                            return '—';
+                        }
+                        return app()->getLocale() === 'ar' ? ($nationality->name_ar ?? '—') : ($nationality->name_en ?? '—');
+                    })
+                    ->sortable(query: fn ($query, string $direction) => $query->orderBy('nationality_id', $direction))
                     ->toggleable(),
 
                 Tables\Columns\BadgeColumn::make('status')

@@ -5,6 +5,7 @@ namespace App\Models\Recruitment;
 use App\Models\Client;
 use App\Models\MainCore\Branch;
 use App\Models\MainCore\Country;
+use App\Models\Recruitment\Agent;
 use App\Models\User;
 use App\Services\Recruitment\RecruitmentContractService;
 use Illuminate\Database\Eloquent\Model;
@@ -78,6 +79,7 @@ class RecruitmentContract extends Model
         'visa_image',
         'musaned_contract_file',
         'worker_id',
+        'agent_id',
         'created_by',
         'marketer_id',
     ];
@@ -231,6 +233,11 @@ class RecruitmentContract extends Model
     public function worker(): BelongsTo
     {
         return $this->belongsTo(Laborer::class);
+    }
+
+    public function agent(): BelongsTo
+    {
+        return $this->belongsTo(Agent::class);
     }
 
     public function creator(): BelongsTo
