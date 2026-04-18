@@ -265,12 +265,20 @@
                     <p class="text-xs text-gray-500 mt-0.5">يفضل مراجعتها اليوم</p>
                 </div>
                 @endif
-                @if($pendingJournals > 0 || $pendingVouchers > 0)
+                @if($pendingJournals > 0)
                 <div class="bg-rose-50 border-r-4 border-rose-400 rounded-xl px-4 py-3 text-right">
                     <a href="{{ url('/admin/accounting/journal-entries') }}" class="text-sm font-bold text-rose-700">
-                        {{ $pendingJournals + $pendingVouchers }} معاملة محاسبية معلقة
+                        {{ $pendingJournals }} قيد محاسبي معلق
                     </a>
                     <p class="text-xs text-gray-500 mt-0.5">هناك موافقات متأخرة</p>
+                </div>
+                @endif
+                @if($pendingVouchers > 0)
+                <div class="bg-rose-50 border-r-4 border-rose-400 rounded-xl px-4 py-3 text-right">
+                    <a href="{{ url('/admin/finance/branch-transactions') }}?tableFilters[status][value]=pending" class="text-sm font-bold text-rose-700">
+                        {{ $pendingVouchers }} معاملة مالية معلقة
+                    </a>
+                    <p class="text-xs text-gray-500 mt-0.5">معاملات الفروع بانتظار الاعتماد</p>
                 </div>
                 @endif
                 @if($openComplaints > 0)
@@ -281,7 +289,7 @@
                     <p class="text-xs text-gray-500 mt-0.5">بعض الفروع تحتاج تحسين سرعة المعالجة</p>
                 </div>
                 @endif
-                @if($pendingLeave === 0 && ($pendingJournals + $pendingVouchers) === 0 && $openComplaints === 0)
+                @if($pendingLeave === 0 && $pendingJournals === 0 && $pendingVouchers === 0 && $openComplaints === 0)
                 <div class="bg-emerald-50 border-r-4 border-emerald-400 rounded-xl px-4 py-3 text-right">
                     <p class="text-sm font-bold text-emerald-700">لا توجد تنبيهات عاجلة</p>
                     <p class="text-xs text-gray-500 mt-0.5">كل شيء على ما يرام اليوم</p>
