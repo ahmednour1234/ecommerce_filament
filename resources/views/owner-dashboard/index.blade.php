@@ -164,7 +164,7 @@
         'converted'   => ['label' => 'تم التحويل',         'color' => '#06b6d4'],
     ];
     $rentalBaseUrl = url('/admin/rental/rental-contracts');
-    $rentalReqBaseUrl = url('/admin/rental/rental-contract-requests');
+    $rentalReqBaseUrl = url('/admin/rental/rental-requests');
     @endphp
 
     {{-- ROW: Rental dark card + status cards --}}
