@@ -274,36 +274,6 @@
 
     {{-- ══════════════════ KPI + LATEST CONTRACTS ══════════════════ --}}
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {{-- KPI Card --}}
-        <div class="text-white rounded-2xl p-6 flex flex-col relative overflow-hidden" style="background:linear-gradient(145deg,#0d1117 0%,#1a2332 100%);">
-            <div class="absolute inset-0 opacity-10" style="background:radial-gradient(circle at 80% 20%, #10b981 0%, transparent 55%);"></div>
-            <h3 class="text-sm font-bold mb-3 text-right relative">مؤشر الإدارة اليومي</h3>
-            <div class="relative text-center my-2">
-                <p class="text-6xl font-bold text-white">{{ $kpiRate }}%</p>
-                <div class="mt-3 h-1.5 rounded-full overflow-hidden mx-2" style="background:rgba(255,255,255,.1);">
-                    <div class="h-full bg-emerald-400 rounded-full" style="width:{{ $kpiRate }}%;"></div>
-                </div>
-            </div>
-            <p class="text-xs text-center mb-4 relative" style="color:#8b949e;">نسبة إنجاز المهام والاعتمادات اليومية</p>
-            <div class="space-y-2 border-t border-gray-700 pt-4 text-sm relative">
-                <a href="{{ url('/admin/journal-entries') }}"
-                   class="flex justify-between hover:text-emerald-400 transition-colors">
-                    <span class="text-white font-semibold">{{ $approvedToday }}</span>
-                    <span class="text-gray-400">الموافقات المنجزة</span>
-                </a>
-                <a href="{{ url('/admin/complaints') }}"
-                   class="flex justify-between hover:text-emerald-400 transition-colors">
-                    <span class="text-white font-semibold">{{ $resolvedComplaints }}</span>
-                    <span class="text-gray-400">الشكاوى المغلقة</span>
-                </a>
-                <a href="{{ url('/admin/rental-contracts') }}"
-                   class="flex justify-between hover:text-emerald-400 transition-colors">
-                    <span class="text-white font-semibold">{{ $activeContracts }}</span>
-                    <span class="text-gray-400">العقود النشطة</span>
-                </a>
-            </div>
-        </div>
-
         {{-- Latest contracts --}}
         <div class="lg:col-span-2 bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
             <div class="flex items-center justify-between mb-4">
@@ -350,6 +320,36 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        {{-- KPI Card --}}
+        <div class="text-white rounded-2xl p-6 flex flex-col relative overflow-hidden" style="background:linear-gradient(145deg,#0d1117 0%,#1a2332 100%);">
+            <div class="absolute inset-0 opacity-10" style="background:radial-gradient(circle at 80% 20%, #10b981 0%, transparent 55%);"></div>
+            <h3 class="text-sm font-bold mb-3 text-right relative">مؤشر الإدارة اليومي</h3>
+            <div class="relative text-center my-2">
+                <p class="text-6xl font-bold text-white">{{ $kpiRate }}%</p>
+                <div class="mt-3 h-1.5 rounded-full overflow-hidden mx-2" style="background:rgba(255,255,255,.1);">
+                    <div class="h-full bg-emerald-400 rounded-full" style="width:{{ $kpiRate }}%;"></div>
+                </div>
+            </div>
+            <p class="text-xs text-center mb-4 relative" style="color:#8b949e;">نسبة إنجاز المهام والاعتمادات اليومية</p>
+            <div class="space-y-2 border-t border-gray-700 pt-4 text-sm relative">
+                <a href="{{ url('/admin/journal-entries') }}"
+                   class="flex justify-between hover:text-emerald-400 transition-colors">
+                    <span class="text-white font-semibold">{{ $approvedToday }}</span>
+                    <span class="text-gray-400">الموافقات المنجزة</span>
+                </a>
+                <a href="{{ url('/admin/complaints') }}"
+                   class="flex justify-between hover:text-emerald-400 transition-colors">
+                    <span class="text-white font-semibold">{{ $resolvedComplaints }}</span>
+                    <span class="text-gray-400">الشكاوى المغلقة</span>
+                </a>
+                <a href="{{ url('/admin/rental-contracts') }}"
+                   class="flex justify-between hover:text-emerald-400 transition-colors">
+                    <span class="text-white font-semibold">{{ $activeContracts }}</span>
+                    <span class="text-gray-400">العقود النشطة</span>
+                </a>
             </div>
         </div>
     </div>
