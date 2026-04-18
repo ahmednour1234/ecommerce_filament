@@ -309,31 +309,6 @@
         </div>
     </div>
 
-    {{-- ══════════════════ STATS ROW 2 (HR/Finance quick stats) ══════════════════ --}}
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        @php
-        $stats2 = [
-            ['icon' => '🏢', 'label' => 'العقود الإيجارية',    'id' => 'stat-activeRentals',      'value' => $activeRentals,          'sub' => 'عقود فعالة حالياً',  'url' => url('/admin/rental/rental-contracts')],
-            ['icon' => '💰', 'label' => 'معاملات مالية تحتاج موافقة', 'id' => 'stat-pendingJournals', 'value' => $pendingJournals,  'sub' => 'في قسم المالية',   'url' => url('/admin/finance/branch-transactions') . '?tableFilters[status][value]=pending'],
-            ['icon' => '✍️', 'label' => 'عدد الشكاوى',        'id' => 'stat-openComplaints',     'value' => $openComplaints,         'sub' => 'مفتوحة ومعلقة',     'url' => url('/admin/complaints')],
-            ['icon' => '⭐', 'label' => 'نسبة رضا العملاء',   'id' => 'stat-satisfactionRate',   'value' => $satisfactionRate . '%', 'sub' => 'مؤشر عام ممتاز',    'url' => url('/admin/complaints')],
-        ];
-        @endphp
-        @foreach($stats2 as $stat)
-        <a href="{{ $stat['url'] }}" class="bg-white rounded-2xl p-5 stat-card flex flex-col gap-3 hover:shadow-lg transition-all" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
-            <div class="flex items-center justify-between">
-                <div class="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-xl border border-gray-100">{{ $stat['icon'] }}</div>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#d1d5db" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            </div>
-            <div class="text-right">
-                <p class="text-xs text-gray-400 font-medium">{{ $stat['label'] }}</p>
-                <p class="text-3xl font-bold text-gray-900 mt-0.5 leading-none" id="{{ $stat['id'] }}">{{ $stat['value'] }}</p>
-                <p class="text-xs text-gray-400 mt-1">{{ $stat['sub'] }}</p>
-            </div>
-        </a>
-        @endforeach
-    </div>
-
     {{-- ══════════════════ ACCOUNTING + HR PENDING ══════════════════ --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {{-- Accounting --}}
