@@ -34,8 +34,8 @@
             $stats1 = [
                 ['icon' => '📋', 'label' => 'إجمالي عقود الاستقدام',    'value' => $totalContracts,      'sub' => 'عقود الاستقدام الكلية', 'url' => url('/admin/recruitment/recruitment-contracts')],
                 ['icon' => '⏳', 'label' => 'عقود الاستقدام قيد التنفيذ', 'value' => $inProgressContracts, 'sub' => 'تحتاج متابعة يومية',     'url' => url('/admin/recruitment/recruitment-contracts')],
-                ['icon' => '✉️', 'label' => 'طلبات الإجازة',     'value' => $pendingLeave,         'sub' => 'بانتظار الاعتماد',        'url' => url('/admin/leave-requests')],
-                ['icon' => '🕐', 'label' => 'طلبات الاستئذان',   'value' => $pendingExcuse,        'sub' => 'معلقة لدى الإدارة',       'url' => url('/admin/excuse-requests')],
+                ['icon' => '✉️', 'label' => 'طلبات الإجازة',     'value' => $pendingLeave,         'sub' => 'بانتظار الاعتماد',        'url' => url('/admin/h-r/leave-requests')],
+                ['icon' => '🕐', 'label' => 'طلبات الاستئذان',   'value' => $pendingExcuse,        'sub' => 'معلقة لدى الإدارة',       'url' => url('/admin/h-r/excuse-requests')],
             ];
             @endphp
             @foreach($stats1 as $stat)
@@ -58,8 +58,8 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         @php
         $stats2 = [
-            ['icon' => '🏢', 'label' => 'العقود الإيجارية',    'value' => $activeRentals,          'sub' => 'عقود فعالة حالياً',  'url' => url('/admin/rental-contracts')],
-            ['icon' => '💰', 'label' => 'معاملات مالية تحتاج موافقة', 'value' => $pendingJournals,        'sub' => 'في قسم المالية',   'url' => url('/admin/journal-entries')],
+            ['icon' => '🏢', 'label' => 'العقود الإيجارية',    'value' => $activeRentals,          'sub' => 'عقود فعالة حالياً',  'url' => url('/admin/rental/rental-contracts')],
+            ['icon' => '💰', 'label' => 'معاملات مالية تحتاج موافقة', 'value' => $pendingJournals,        'sub' => 'في قسم المالية',   'url' => url('/admin/finance/branch-transactions') . '?tableFilters[status][value]=pending'],
             ['icon' => '✍️', 'label' => 'عدد الشكاوى',        'value' => $openComplaints,         'sub' => 'مفتوحة ومعلقة',     'url' => url('/admin/complaints')],
             ['icon' => '⭐', 'label' => 'نسبة رضا العملاء',   'value' => $satisfactionRate . '%', 'sub' => 'مؤشر عام ممتاز',    'url' => url('/admin/complaints')],
         ];
@@ -123,7 +123,7 @@
                 <h3 class="text-sm font-bold text-gray-900">المحاسبة والاعتمادات</h3>
             </div>
             <div class="space-y-3">
-                <a href="{{ url('/admin/journal-entries') }}"
+                <a href="{{ url('/admin/accounting/journal-entries') }}"
                    class="bg-amber-50 border border-amber-100 rounded-xl p-4 flex items-center justify-between hover:bg-amber-100 transition-colors block">
                     <span class="text-2xl font-bold text-amber-600">{{ $pendingJournals }}</span>
                     <div class="text-right">
@@ -131,7 +131,7 @@
                         <p class="text-xs text-gray-500 mt-0.5">تحتاج اعتماد سريع</p>
                     </div>
                 </a>
-                <a href="{{ url('/admin/vouchers') }}"
+                <a href="{{ url('/admin/accounting/vouchers') }}"
                    class="bg-amber-50 border border-amber-100 rounded-xl p-4 flex items-center justify-between hover:bg-amber-100 transition-colors block">
                     <span class="text-2xl font-bold text-amber-600">{{ $pendingVouchers }}</span>
                     <div class="text-right">
@@ -149,22 +149,22 @@
                 <h3 class="text-sm font-bold text-gray-900">الموارد البشرية HR</h3>
             </div>
             <div class="grid grid-cols-2 gap-3">
-                <a href="{{ url('/admin/excuse-requests') }}"
+                <a href="{{ url('/admin/h-r/excuse-requests') }}"
                    class="border border-gray-100 rounded-xl p-4 text-right hover:bg-gray-50 transition-colors block">
                     <p class="text-xs text-gray-500">طلبات استئذان اليوم</p>
                     <p class="text-3xl font-bold text-gray-900 mt-1">{{ $pendingExcuse }}</p>
                 </a>
-                <a href="{{ url('/admin/leave-requests') }}"
+                <a href="{{ url('/admin/h-r/leave-requests') }}"
                    class="border border-gray-100 rounded-xl p-4 text-right hover:bg-gray-50 transition-colors block">
                     <p class="text-xs text-gray-500">طلبات إجازة بانتظار المدير</p>
                     <p class="text-3xl font-bold text-gray-900 mt-1">{{ $pendingLeave }}</p>
                 </a>
-                <a href="{{ url('/admin/employees') }}"
+                <a href="{{ url('/admin/h-r/employees') }}"
                    class="border border-gray-100 rounded-xl p-4 text-right hover:bg-gray-50 transition-colors block">
                     <p class="text-xs text-gray-500">مقابلات مجدولة هذا الأسبوع</p>
                     <p class="text-3xl font-bold text-gray-900 mt-1">{{ $scheduledInterviews }}</p>
                 </a>
-                <a href="{{ url('/admin/rental-contracts') }}"
+                <a href="{{ url('/admin/rental/rental-contracts') }}"
                    class="border border-gray-100 rounded-xl p-4 text-right hover:bg-gray-50 transition-colors block">
                     <p class="text-xs text-gray-500">عقود موظفين تحتاج تجديد</p>
                     <p class="text-3xl font-bold text-gray-900 mt-1">{{ $activeRentals }}</p>
@@ -178,7 +178,7 @@
         {{-- Branch revenue table --}}
         <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
             <div class="flex items-center justify-between mb-4">
-                <a href="{{ url('/admin/branch-transactions') }}" class="text-xs text-emerald-600 hover:underline font-medium">عرض التقارير المالية ←</a>
+                <a href="{{ url('/admin/finance/branch-transactions') }}" class="text-xs text-emerald-600 hover:underline font-medium">عرض التقارير المالية ←</a>
                 <h3 class="text-sm font-bold text-gray-900">إيرادات ومصاريف الفروع</h3>
             </div>
             <div class="overflow-x-auto">
@@ -195,7 +195,7 @@
                     <tbody class="divide-y divide-gray-50">
                         @forelse($branchStats as $b)
                         <tr class="text-sm cursor-pointer hover:bg-gray-50 transition-colors"
-                            onclick="window.location='{{ url('/admin/branches') }}'">
+                            onclick="window.location='{{ url('/admin/main-core/branches') }}'">
                             <td class="py-3">
                                 @php
                                 $badgeColor = match($b['rating']) {
@@ -226,7 +226,7 @@
             <div class="space-y-3">
                 @if($pendingLeave > 0)
                 <div class="bg-amber-50 border-r-4 border-amber-400 rounded-xl px-4 py-3 text-right">
-                    <a href="{{ url('/admin/leave-requests') }}" class="text-sm font-bold text-amber-700">
+                    <a href="{{ url('/admin/h-r/leave-requests') }}" class="text-sm font-bold text-amber-700">
                         {{ $pendingLeave }} طلب إجازة بانتظار الاعتماد
                     </a>
                     <p class="text-xs text-gray-500 mt-0.5">يفضل مراجعتها اليوم</p>
@@ -234,7 +234,7 @@
                 @endif
                 @if($pendingJournals > 0 || $pendingVouchers > 0)
                 <div class="bg-rose-50 border-r-4 border-rose-400 rounded-xl px-4 py-3 text-right">
-                    <a href="{{ url('/admin/journal-entries') }}" class="text-sm font-bold text-rose-700">
+                    <a href="{{ url('/admin/accounting/journal-entries') }}" class="text-sm font-bold text-rose-700">
                         {{ $pendingJournals + $pendingVouchers }} معاملة محاسبية معلقة
                     </a>
                     <p class="text-xs text-gray-500 mt-0.5">هناك موافقات متأخرة</p>
@@ -321,7 +321,7 @@
             </div>
             <p class="text-xs text-center mb-4 relative" style="color:#8b949e;">نسبة إنجاز المهام والاعتمادات اليومية</p>
             <div class="space-y-2 border-t border-gray-700 pt-4 text-sm relative">
-                <a href="{{ url('/admin/journal-entries') }}"
+                <a href="{{ url('/admin/accounting/journal-entries') }}"
                    class="flex justify-between hover:text-emerald-400 transition-colors">
                     <span class="text-white font-semibold">{{ $approvedToday }}</span>
                     <span class="text-gray-400">الموافقات المنجزة</span>
@@ -331,7 +331,7 @@
                     <span class="text-white font-semibold">{{ $resolvedComplaints }}</span>
                     <span class="text-gray-400">الشكاوى المغلقة</span>
                 </a>
-                <a href="{{ url('/admin/rental-contracts') }}"
+                <a href="{{ url('/admin/rental/rental-contracts') }}"
                    class="flex justify-between hover:text-emerald-400 transition-colors">
                     <span class="text-white font-semibold">{{ $activeContracts }}</span>
                     <span class="text-gray-400">العقود النشطة</span>
