@@ -309,14 +309,26 @@
         </div>
     </div>
 
-    {{-- ══════════════════ FINANCE BRANCH CHART ══════════════════ --}}
-    <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
-        <div class="flex items-center justify-between mb-5">
-            <span class="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-full">آخر 6 أشهر</span>
-            <h3 class="text-sm font-bold text-gray-900">مقارنة الإيرادات والمصاريف بين الفروع</h3>
+    {{-- ══════════════════ FINANCE BRANCH CHARTS ══════════════════ --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {{-- Income bar chart --}}
+        <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-full">آخر 6 أشهر</span>
+                <h3 class="text-sm font-bold text-gray-900">مقارنة الإيرادات بين الفروع</h3>
+            </div>
+            <canvas id="financeIncomeChart" height="200"></canvas>
+            <div class="flex flex-wrap gap-4 justify-center mt-4" id="financeIncomeLegend"></div>
         </div>
-        <canvas id="financeBranchChart" height="120"></canvas>
-        <div class="flex flex-wrap gap-4 justify-center mt-4" id="financeBranchLegend"></div>
+        {{-- Expense line chart --}}
+        <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-full">آخر 6 أشهر</span>
+                <h3 class="text-sm font-bold text-gray-900">مقارنة المصاريف بين الفروع</h3>
+            </div>
+            <canvas id="financeExpenseChart" height="200"></canvas>
+            <div class="flex flex-wrap gap-4 justify-center mt-4" id="financeExpenseLegend"></div>
+        </div>
     </div>
 
     {{-- ══════════════════ ALERTS + BRANCH TABLE ══════════════════ --}}
@@ -735,90 +747,96 @@
         }
     }) : null;
 
-    // ── Finance branch comparison chart (bars = income, line = expense) ──
-    const financeMonths   = @json($financeChartMonths);
-    const financeData     = @json($financeChartData);
-    const fbCtx = document.getElementById('financeBranchChart');
-    if (fbCtx && Object.keys(financeData).length > 0) {
-        const branchPalette = [
-            { income: '#10b981', expense: '#34d399' },
-            { income: '#3b82f6', expense: '#93c5fd' },
-            { income: '#f59e0b', expense: '#fcd34d' },
-        ];
-        const datasets = [];
-        const legendEl = document.getElementById('financeBranchLegend');
+    // ── Finance charts: income (bar) + expense (line) — separate ──────
+    const financeMonths = @json($financeChartMonths);
+    const financeData   = @json($financeChartData);
+    const branchPalette = ['#10b981', '#3b82f6', '#f59e0b'];
 
-        Object.entries(financeData).forEach(([name, vals], i) => {
-            const p = branchPalette[i % branchPalette.length];
-            // Bar = income
-            datasets.push({
-                type: 'bar',
-                label: name + ' — إيرادات',
-                data: vals.income,
-                backgroundColor: p.income + 'cc',
-                borderRadius: 5,
-                borderSkipped: false,
-                yAxisID: 'y',
-                order: 2,
-            });
-            // Line = expense
-            datasets.push({
-                type: 'line',
-                label: name + ' — مصاريف',
-                data: vals.expense,
-                borderColor: p.expense,
-                backgroundColor: p.expense + '22',
-                borderWidth: 2.5,
-                pointBackgroundColor: p.expense,
-                pointRadius: 4,
-                fill: false,
-                tension: 0.4,
-                yAxisID: 'y',
-                order: 1,
-            });
-            if (legendEl) {
-                legendEl.innerHTML += `
-                    <span class="flex items-center gap-1.5 text-xs text-gray-600 font-medium">
-                        <span class="w-3 h-3 rounded-sm inline-block" style="background:${p.income}"></span>${name} إيرادات
-                    </span>
-                    <span class="flex items-center gap-1.5 text-xs text-gray-600 font-medium">
-                        <span class="w-3 h-3 rounded-full inline-block" style="background:${p.expense}"></span>${name} مصاريف
-                    </span>`;
-            }
+    function makeFinanceLegend(elId, names) {
+        const el = document.getElementById(elId);
+        if (!el) return;
+        names.forEach((name, i) => {
+            el.innerHTML += `<span class="flex items-center gap-1.5 text-xs text-gray-600 font-medium">
+                <span class="w-3 h-3 rounded-sm inline-block" style="background:${branchPalette[i]}"></span>${name}
+            </span>`;
         });
+    }
 
-        new Chart(fbCtx, {
-            data: { labels: financeMonths, datasets },
+    const branchNames = Object.keys(financeData);
+
+    // Income — bar chart
+    const incomeCtx = document.getElementById('financeIncomeChart');
+    if (incomeCtx && branchNames.length > 0) {
+        new Chart(incomeCtx, {
+            type: 'bar',
+            data: {
+                labels: financeMonths,
+                datasets: branchNames.map((name, i) => ({
+                    label: name,
+                    data: financeData[name].income,
+                    backgroundColor: branchPalette[i % branchPalette.length] + 'cc',
+                    borderRadius: 6,
+                    borderSkipped: false,
+                }))
+            },
             options: {
                 responsive: true,
                 interaction: { mode: 'index', intersect: false },
                 plugins: {
                     legend: { display: false },
-                    tooltip: {
-                        rtl: true,
-                        textDirection: 'rtl',
-                        callbacks: {
-                            label: ctx => `${ctx.dataset.label}: ${Number(ctx.raw).toLocaleString('ar-SA')} ر.س`
-                        }
+                    tooltip: { rtl: true, textDirection: 'rtl',
+                        callbacks: { label: ctx => `${ctx.dataset.label}: ${Number(ctx.raw).toLocaleString('ar-SA')} ر.س` }
                     }
                 },
                 scales: {
-                    x: {
-                        reverse: true,
-                        grid: { display: false },
-                        ticks: { font: { family: 'Cairo', size: 11 } }
-                    },
-                    y: {
-                        grid: { color: '#f3f4f6' },
-                        ticks: {
-                            font: { family: 'Cairo', size: 11 },
-                            callback: v => Number(v).toLocaleString('ar-SA') + ' ر.س'
-                        },
-                        beginAtZero: true
+                    x: { reverse: true, grid: { display: false }, ticks: { font: { family: 'Cairo', size: 11 } } },
+                    y: { grid: { color: '#f3f4f6' }, beginAtZero: true,
+                        ticks: { font: { family: 'Cairo', size: 11 }, callback: v => Number(v).toLocaleString('ar-SA') + ' ر.س' }
                     }
                 }
             }
         });
+        makeFinanceLegend('financeIncomeLegend', branchNames);
+    }
+
+    // Expense — line chart
+    const expenseCtx = document.getElementById('financeExpenseChart');
+    if (expenseCtx && branchNames.length > 0) {
+        new Chart(expenseCtx, {
+            type: 'line',
+            data: {
+                labels: financeMonths,
+                datasets: branchNames.map((name, i) => ({
+                    label: name,
+                    data: financeData[name].expense,
+                    borderColor: branchPalette[i % branchPalette.length],
+                    backgroundColor: branchPalette[i % branchPalette.length] + '18',
+                    borderWidth: 2.5,
+                    pointBackgroundColor: branchPalette[i % branchPalette.length],
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    fill: true,
+                    tension: 0.4,
+                }))
+            },
+            options: {
+                responsive: true,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { rtl: true, textDirection: 'rtl',
+                        callbacks: { label: ctx => `${ctx.dataset.label}: ${Number(ctx.raw).toLocaleString('ar-SA')} ر.س` }
+                    }
+                },
+                scales: {
+                    x: { reverse: true, grid: { display: false }, ticks: { font: { family: 'Cairo', size: 11 } } },
+                    y: { grid: { color: '#f3f4f6' }, beginAtZero: true,
+                        ticks: { font: { family: 'Cairo', size: 11 }, callback: v => Number(v).toLocaleString('ar-SA') + ' ر.س' }
+                    }
+                }
+            }
+        });
+        makeFinanceLegend('financeExpenseLegend', branchNames);
     }
 
     document.getElementById('applyFilter').addEventListener('click', applyFilters);
