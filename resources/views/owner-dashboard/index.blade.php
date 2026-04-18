@@ -95,15 +95,6 @@
 
     {{-- ══════════════════ CHARTS ROW ══════════════════ --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {{-- Monthly bar chart --}}
-        <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
-            <div class="flex items-center justify-between mb-4">
-                <span class="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-full">آخر 6 أشهر</span>
-                <h3 class="text-sm font-bold text-gray-900">حركة الطلبات الشهرية</h3>
-            </div>
-            <canvas id="monthlyChart" height="180"></canvas>
-        </div>
-
         {{-- Nationality bars --}}
         <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
             <h3 class="text-sm font-bold text-gray-900 text-right mb-5">الجنسيات الأكثر طلباً</h3>
@@ -125,6 +116,15 @@
             @if($topNationalities->isEmpty())
             <p class="text-center text-gray-400 text-sm py-8">لا توجد بيانات</p>
             @endif
+        </div>
+
+        {{-- Monthly bar chart --}}
+        <div class="bg-white rounded-2xl p-6" style="box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid #f1f5f9;">
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-full">آخر 6 أشهر</span>
+                <h3 class="text-sm font-bold text-gray-900">حركة الطلبات الشهرية</h3>
+            </div>
+            <canvas id="monthlyChart" height="180"></canvas>
         </div>
     </div>
 
