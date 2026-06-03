@@ -66,7 +66,11 @@ class ListBranchTransactions extends ListRecords
             $this->ensureUtf8(tr('tables.branch_transactions.amount', [], null, 'dashboard') ?: 'Amount'),
             $this->ensureUtf8(tr('tables.branch_transactions.currency', [], null, 'dashboard') ?: 'Currency'),
             $this->ensureUtf8(tr('tables.branch_transactions.reference_no', [], null, 'dashboard') ?: 'Reference'),
-            $this->ensureUtf8(tr('tables.branch_transactions.recipient_name', [], null, 'dashboard') ?: 'Recipient'),
+            $this->ensureUtf8(
+                (tr('tables.branch_transactions.recipient_name', [], null, 'dashboard') ?: 'Recipient')
+                . ' / '
+                . (tr('tables.branch_transactions.notes', [], null, 'dashboard') ?: 'Notes')
+            ),
             $this->ensureUtf8(tr('tables.branch_transactions.payment_method', [], null, 'dashboard') ?: 'Payment Method'),
             $this->ensureUtf8(tr('tables.branch_transactions.status', [], null, 'dashboard') ?: 'Status'),
         ];
@@ -79,6 +83,12 @@ class ListBranchTransactions extends ListRecords
             };
 
             $status = tr('fields.status_' . $record->status, [], null, 'dashboard') ?: ucfirst((string) $record->status);
+            $recipientAndNotes = collect([
+                $record->recipient_name,
+                $record->notes,
+            ])
+                ->filter(fn ($value) => filled($value))
+                ->implode(' - ');
 
             return array_combine($headers, [
                 $record->trx_date?->format('Y-m-d') ?? '',
@@ -88,7 +98,7 @@ class ListBranchTransactions extends ListRecords
                 number_format((float) $record->amount, 2),
                 $this->ensureUtf8($record->currency?->code ?? ''),
                 $this->ensureUtf8($record->reference_no ?? ''),
-                $this->ensureUtf8($record->recipient_name ?? ''),
+                $this->ensureUtf8($recipientAndNotes),
                 $this->ensureUtf8($record->payment_method ?? ''),
                 $this->ensureUtf8($status),
             ]);
