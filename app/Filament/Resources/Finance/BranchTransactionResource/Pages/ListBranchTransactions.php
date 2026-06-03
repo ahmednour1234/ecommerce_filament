@@ -50,4 +50,53 @@ class ListBranchTransactions extends ListRecords
                 ->color('gray'),
         ];
     }
+
+    protected function getTableDataForExport(): array
+    {
+        $records = $this->getTable()
+            ->getQuery()
+            ->with(['branch', 'currency', 'financeType'])
+            ->get();
+
+        $headers = [
+            $this->ensureUtf8(tr('tables.branch_transactions.trx_date', [], null, 'dashboard') ?: 'Date'),
+            $this->ensureUtf8(tr('tables.branch_transactions.branch', [], null, 'dashboard') ?: 'Branch'),
+            $this->ensureUtf8(tr('tables.branch_transactions.kind', [], null, 'dashboard') ?: 'Kind'),
+            $this->ensureUtf8(tr('tables.branch_transactions.type', [], null, 'dashboard') ?: 'Type'),
+            $this->ensureUtf8(tr('tables.branch_transactions.amount', [], null, 'dashboard') ?: 'Amount'),
+            $this->ensureUtf8(tr('tables.branch_transactions.currency', [], null, 'dashboard') ?: 'Currency'),
+            $this->ensureUtf8(tr('tables.branch_transactions.reference_no', [], null, 'dashboard') ?: 'Reference'),
+            $this->ensureUtf8(tr('tables.branch_transactions.recipient_name', [], null, 'dashboard') ?: 'Recipient'),
+            $this->ensureUtf8(tr('tables.branch_transactions.payment_method', [], null, 'dashboard') ?: 'Payment Method'),
+            $this->ensureUtf8(tr('tables.branch_transactions.status', [], null, 'dashboard') ?: 'Status'),
+        ];
+
+        $data = $records->map(function ($record) use ($headers) {
+            $kind = match ($record->financeType?->kind) {
+                'income' => tr('forms.finance_types.kind_income', [], null, 'dashboard') ?: 'Income',
+                'expense' => tr('forms.finance_types.kind_expense', [], null, 'dashboard') ?: 'Expense',
+                default => '',
+            };
+
+            $status = tr('fields.status_' . $record->status, [], null, 'dashboard') ?: ucfirst((string) $record->status);
+
+            return array_combine($headers, [
+                $record->trx_date?->format('Y-m-d') ?? '',
+                $this->ensureUtf8($record->branch?->name ?? ''),
+                $this->ensureUtf8($kind),
+                $this->ensureUtf8($record->financeType?->name_text ?? ''),
+                number_format((float) $record->amount, 2),
+                $this->ensureUtf8($record->currency?->code ?? ''),
+                $this->ensureUtf8($record->reference_no ?? ''),
+                $this->ensureUtf8($record->recipient_name ?? ''),
+                $this->ensureUtf8($record->payment_method ?? ''),
+                $this->ensureUtf8($status),
+            ]);
+        });
+
+        return [
+            'data' => $data,
+            'headers' => $headers,
+        ];
+    }
 }
